@@ -24,38 +24,6 @@
     </properties>
 
 
-    <licenses>
-        <license>
-            <name>CC-BY-NC-ND</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>Klaudiusz Wojtkowiak</name>
-            <email>klaudiusz.wojtkowiak@gmail.com</email>
-            <organization>Elephant Software</organization>
-            <organizationUrl>http://www.daobab.io</organizationUrl>
-        </developer>
-    </developers>
-
-    <scm>
-        <url>https://github.com/KlaudiuszWojtkowiak/drummer-examples.git</url>
-        <connection>scm:git:git://github.com/KlaudiuszWojtkowiak/drummer-examples.git</connection>
-        <developerConnection>scm:git:git@github.com/KlaudiuszWojtkowiak/drummer-examples.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
-
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus snapshot repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
 
 
 	<dependencies>
@@ -136,66 +104,8 @@
                 </executions>
             </plugin>
 
-            <!-- include javadoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <failOnError>false</failOnError>
-                            <additionalOptions>-Xdoclint:none</additionalOptions>
-                            <additionalJOption>-Xdoclint:none</additionalJOption>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <minmemory>128m</minmemory>
-                    <maxmemory>1g</maxmemory>
-                </configuration>
-            </plugin>
-
-
-
-            <!-- Sign artifacts -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
     </build>
-
-
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
-                    <show>public</show>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
 
 
 
@@ -218,44 +128,7 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- include javadoc -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <configuration>
-                            <additionalJOptions>
-                                <additionalJOption> -Xdoclint:none</additionalJOption>
-                            </additionalJOptions>
-                            <additionalOptions>
-                                <additionalOption>-Xdoclint:none</additionalOption>
-                            </additionalOptions>
-                            <javadocExecutable>${java.home}/javadoc</javadocExecutable>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Sign artifacts -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+
                 </plugins>
             </build>
         </profile>
