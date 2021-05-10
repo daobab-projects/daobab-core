@@ -20,7 +20,7 @@ public class GenerateTable {
     private String remarks;
     private List<GenerateColumn> primaryKeys;
     private String compositeKeyName;
-    private List<GenerateTable> anotherComposites = new ArrayList<>();
+    private List<GenerateTable> inheritedSubCompositeKeys = new ArrayList<>();
     private List<GenerateColumn> columnList = new LinkedList<>();
 
     private String javaPackage;
@@ -128,25 +128,25 @@ public class GenerateTable {
     public String getCompositeKeyInterfaces2(String tableCamelName) {
         StringBuilder sb = new StringBuilder();
 
-        List<GenerateColumn> target = new ArrayList<>();
+        List<GenerateColumn> anotherCompositesColumns = new ArrayList<>();
 
-        for (int i = 0; i < getAnotherComposites().size(); i++) {
-            GenerateTable gt = getAnotherComposites().get(i);
-            target.addAll(gt.getPrimaryKeys());
-            sb.append(" ");
-            sb.append(gt.getCompositeKeyName());
-            sb.append("<");
-            sb.append(tableCamelName);
-            sb.append(">,");
-//            if (i < getPrimaryKeys().size() - 1) sb.append(",");
-        }
+//        for (int i = 0; i < getInheritedSubCompositeKeys().size(); i++) {
+//            GenerateTable gt = getInheritedSubCompositeKeys().get(i);
+//
+//            anotherCompositesColumns.addAll(gt.getPrimaryKeys());
+//            sb.append(" ");
+//            sb.append(gt.getCompositeKeyName());
+//            sb.append("<");
+//            sb.append(tableCamelName);
+//            sb.append(">,");
+//        }
 
         boolean atLeastOneColumnAdded = false;
         for (int i = 0; i < getPrimaryKeys().size(); i++) {
-            GenerateColumn gc = getPrimaryKeys().get(i);
+            GenerateColumn primKeyColumn = getPrimaryKeys().get(i);
             boolean columnAlreadyImported = false;
-            for (GenerateColumn targetgt : target) {
-                if (targetgt.getColumnName().equals(gc.getColumnName())) {
+            for (GenerateColumn targetgt : anotherCompositesColumns) {
+                if (targetgt.getColumnName().equals(primKeyColumn.getColumnName())) {
                     columnAlreadyImported = true;
                     break;
                 }
@@ -154,18 +154,18 @@ public class GenerateTable {
             if (columnAlreadyImported) continue;
             atLeastOneColumnAdded = true;
             sb.append(" ");
-            sb.append(gc.getColumnInterfaceType(tableCamelName));
+            sb.append(primKeyColumn.getColumnInterfaceType(tableCamelName));
             if (i < getPrimaryKeys().size() - 1) sb.append(",");
         }
 
-        if (!getAnotherComposites().isEmpty() && !atLeastOneColumnAdded) {
+        if (!getInheritedSubCompositeKeys().isEmpty() && !atLeastOneColumnAdded) {
             sb.append(",");
         }
 
-        if (getAnotherComposites().isEmpty()) {
+      //  if (getInheritedSubCompositeKeys().isEmpty()) {
             sb.append(", " + Composite.class.getSimpleName());
             sb.append("<" + tableCamelName + ">");
-        }
+      //  }
 
         return sb.toString();
     }
@@ -387,31 +387,15 @@ public class GenerateTable {
         this.compositeKeyName = compositeKeyName;
     }
 
-    public List<GenerateTable> getAnotherComposites() {
-        return anotherComposites;
+    public List<GenerateTable> getInheritedSubCompositeKeys() {
+        return inheritedSubCompositeKeys;
     }
 
-    public void setAnotherComposites(List<GenerateTable> anotherComposites) {
-        this.anotherComposites = anotherComposites;
+    public void setInheritedSubCompositeKeys(List<GenerateTable> inheritedSubCompositeKeys) {
+        this.inheritedSubCompositeKeys = inheritedSubCompositeKeys;
     }
 
     public boolean containsPrimaryKeyAllCollumns(List<GenerateColumn> columns) {
-//        if (getPrimaryKeys()==null||getPrimaryKeys().size()<columns.size()){
-//            return false;
-//        }
-//        for (GenerateColumn col:columns){
-//            boolean contains=false;
-//            for (GenerateColumn tabcol:getPrimaryKeys()){
-//                if (tabcol.getColumnName().equals(col.getColumnName())){
-//                    contains=true;
-//                }
-//            }
-//            if (!contains){
-//                return false;
-//            }
-//        }
-//        return true;
-
         return containsPrimaryKeyAllCollumns(getPrimaryKeys(), columns);
     }
 

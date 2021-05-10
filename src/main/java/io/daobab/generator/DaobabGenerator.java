@@ -213,12 +213,13 @@ public class DaobabGenerator {
                     continue;
                 }
                 if (tblinner.containsPrimaryKeyAllCollumns(tbl.getPrimaryKeys())) {
-                    tblinner.getAnotherComposites().add(tbl);
+                    tblinner.getInheritedSubCompositeKeys().add(tbl);
                 }
             }
         }
 
         if (generateTables) {
+
             allTables.stream().filter(t -> t.getCompositeKeyName() != null).forEach(t -> writter.generateCompositeKey(t, getPath(), isOverride()));
         }
 
@@ -240,10 +241,7 @@ public class DaobabGenerator {
         generatedCompositesCount = generatedCompositesCount + writter.generatedCompositesCount;
         generatedTargetsCount = generatedTargetsCount + writter.generatedTargetsCount;
         return allTables;
-
     }
-
-
 
 
     private GenerateColumn prepareColumn(String catalog, String schema, GenerateColumn column) {
@@ -383,7 +381,6 @@ public class DaobabGenerator {
                 generateTable.setTableName(rs.getString("TABLE_NAME"));
                 generateTable.setSchemaName(rs.getString("TABLE_SCHEM"));
                 generateTable.setCatalogName(rs.getString("TABLE_CAT"));
-//                    generateTable.setSchemaName(s.getSchema());
                 generateTable.setRemarks(rs.getString("REMARKS"));
                 generateTable.setType(rs.getString("TABLE_TYPE"));
                 generateTable.setView(generateTable.getType().equalsIgnoreCase("view"));
