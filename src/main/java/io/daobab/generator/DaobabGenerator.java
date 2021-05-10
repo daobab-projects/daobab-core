@@ -257,13 +257,7 @@ public class DaobabGenerator {
         }
         column.setInterfaceName(interfaceName);
 
-        StringBuilder javaPackage = new StringBuilder(getPackage());
-        if (catalog != null && !catalog.trim().isEmpty() && !"%".equals(catalog)) {
-            javaPackage.append(".").append(catalog);
-        }
-        if (schema != null && !schema.trim().isEmpty() && !"%".equals(schema)) {
-            javaPackage.append(".").append(schema);
-        }
+        StringBuilder javaPackage = JavaPackageResolver.resolve(getPackage(),catalog,schema);
 
         javaPackage.append(".column");
 
@@ -552,13 +546,8 @@ public class DaobabGenerator {
         GenerateColumn column = new GenerateColumn();
         column.setColumnName(databaseColumnName);
         column.setDataType(jdbcType.getType());
-        StringBuilder javaPackage = new StringBuilder(getPackage());
-        if (catalog != null && !catalog.trim().isEmpty() && !"%".equals(catalog)) {
-            javaPackage.append(".").append(catalog);
-        }
-        if (schema != null && !schema.trim().isEmpty() && !"%".equals(schema)) {
-            javaPackage.append(".").append(schema);
-        }
+
+        StringBuilder javaPackage = JavaPackageResolver.resolve(getPackage(),catalog,schema);
 
         javaPackage.append(".column");
 

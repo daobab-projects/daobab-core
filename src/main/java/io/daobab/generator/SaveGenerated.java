@@ -20,13 +20,20 @@ public interface SaveGenerated {
         StringBuilder sbfol = new StringBuilder();
 
         sbfol.append(fpath).append(File.separator);
-        if (catalog != null && !"%".equalsIgnoreCase(catalog) && !catalog.trim().isEmpty()) {
-            sbfol.append(catalog.trim().toLowerCase() + File.separator);
+
+        StringBuilder properCatalog=JavaPackageResolver.resolveCatalog(catalog);
+        StringBuilder properSchema=JavaPackageResolver.resolveSchema(schema);
+
+        if (properCatalog.length()>0){
+            sbfol.append(properCatalog);
+            sbfol.append(File.separator);
         }
 
-        if (schema != null && !"%".equalsIgnoreCase(schema) && !schema.trim().isEmpty()) {
-            sbfol.append(schema.trim().toLowerCase() + File.separator);
+        if (properSchema.length()>0){
+            sbfol.append(properSchema);
+            sbfol.append(File.separator);
         }
+
 
         if (subfolder != null && !subfolder.trim().isEmpty()) {
             sbfol.append(subfolder.trim().toLowerCase() + File.separator);

@@ -40,14 +40,7 @@ public class Writter implements DaobabClassGeneratorTemplates {
         target.setCatalogName(catalog);
         target.setTableList(tables);
 
-        StringBuilder javaPackage = new StringBuilder(javapackage);
-        if (catalog != null && !catalog.trim().isEmpty() && !"%".equals(catalog)) {
-            javaPackage.append(".").append(catalog);
-        }
-        if (schema != null && !schema.trim().isEmpty() && !"%".equals(schema)) {
-            javaPackage.append(".").append(schema);
-        }
-
+        StringBuilder javaPackage = JavaPackageResolver.resolve(javapackage,catalog,schema);
         target.setJavaPackage(javaPackage.toString());
 
         Replacer replacer = new Replacer();
@@ -123,14 +116,7 @@ public class Writter implements DaobabClassGeneratorTemplates {
         boolean pkExist = table.getPrimaryKeys() != null;
         String compositeKeyName = createCompositeKeyName(tableNameCamel, allTables);
 
-        StringBuilder javaPackage = new StringBuilder(javaackage);
-        if (catalog != null && !catalog.trim().isEmpty() && !"%".equals(catalog)) {
-            javaPackage.append(".").append(catalog);
-        }
-        if (schema != null && !schema.trim().isEmpty() && !"%".equals(schema)) {
-            javaPackage.append(".").append(schema);
-        }
-
+        StringBuilder javaPackage = JavaPackageResolver.resolve(javaackage,catalog,schema);
         javaPackage.append(table.isView() ? ".view" : ".table");
 
         table.setJavaPackage(javaPackage.toString());
