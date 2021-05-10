@@ -88,7 +88,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         try {
             getLog().debug("Start getConnection");
             Connection connection = getDataSource().getConnection();
-            getLog().debug("Connection retrieved: #0");
+            getLog().debug(format("Connection retrieved: %s",connection));
             return connection;
         } catch (SQLException e) {
             throw new DaobabSQLException("Error while retrieving connection from datasource", e);
@@ -99,11 +99,11 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
 
     default <F> F getNextId(Connection conn, String sequenceName, Class<F> fieldClazz) {
         if (sequenceName == null || sequenceName.isEmpty()) throw new NoSequenceException();
-        getLog().debug("Start getNextId (conn = #0, objectMetaData = #1)");
+        getLog().debug(format("Start getNextId (conn = %s, sequenceName =%s)",conn,sequenceName));
         PreparedStatement stmt = null;
         try {
             stmt = conn.prepareStatement("select " + sequenceName + ".nextval from dual");
-            getLog().debug("Executing statement #0");
+            getLog().debug("Executing statement");
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return RSReader.readColumnValue(rs, 1, fieldClazz);
@@ -430,7 +430,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         List<TableColumn> fields = query.getFields();
 
-        getLog().debug("Start readProjectionList");
+        getLog().debug("Start readPlateList");
         Connection conn = null;
         PreparedStatement stmt = null;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
@@ -442,7 +442,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
             stmt = conn.prepareStatement(sqlQuery);
 
             ResultSet rs = stmt.executeQuery();
-            getLog().debug("readProjectionList executed statement: #0");
+            getLog().debug(format("readPlateList executed statement: %0",sqlQuery));
 
             while (rs.next()) {
                 rv.add(RSReader.readPlate(rs, fields));
@@ -456,7 +456,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         } finally {
             RSReader.closeStatement(stmt, this);
             this.closeConnection(conn);
-            getLog().debug("Finish readProjectionList");
+            getLog().debug("Finish readPlateList");
         }
     }
 

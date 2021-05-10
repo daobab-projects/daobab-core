@@ -18,7 +18,6 @@ public interface ParserDate {
     static Date toDateFromGreg(XMLGregorianCalendar from) {
         if (from == null) return null;
         return from.toGregorianCalendar().getTime();
-
     }
 
     static XMLGregorianCalendar toGreg(Date from) {

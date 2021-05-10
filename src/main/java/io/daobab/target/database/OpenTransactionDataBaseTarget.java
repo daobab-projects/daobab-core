@@ -11,6 +11,7 @@ import io.daobab.result.PlateBuffer;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.OpenedTransactionTarget;
 import io.daobab.target.QueryReceiver;
+import io.daobab.target.QueryTarget;
 import io.daobab.target.meta.MetaData;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.transaction.Propagation;
@@ -161,6 +162,11 @@ public class OpenTransactionDataBaseTarget extends BaseTarget implements OpenedT
     @Override
     public DataSource getDataSource() {
         return db.getDataSource();
+    }
+
+    @Override
+    public TransactionalTarget getSourceTarget(){
+        return db;
     }
 
     @Override

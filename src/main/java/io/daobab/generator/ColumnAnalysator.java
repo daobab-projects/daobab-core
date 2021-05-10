@@ -15,32 +15,13 @@ import static io.daobab.generator.GenerateFormatter.toUpperCaseFirstCharacter;
  */
 public class ColumnAnalysator {
 
-
-    static List<String> forbiddenColumnClassNames = Arrays.asList(
-            "id", "entityrelationmap", "entitymap", "object", "class", "field",
-            "con", "nul", "aux", "lst", "prn", "eof", "inp", "out" //Windows forbidden
-    );
-
-
     static void fixColumnName(GenerateColumn col) {
         if (col == null) return;
         if (col.getFinalFieldName() == null || col.getFinalFieldName().isEmpty()) return;
-        if (forbiddenColumnClassNames.contains(col.getFinalFieldName().toLowerCase())) {
+        if (JavaPackageResolver.forbiddenNames.contains(col.getFinalFieldName().toLowerCase())) {
             col.setFinalFieldName(col.getFinalFieldName() + "Column");
         }
-//        if (
-//                "Id".equals((col.getFinalFieldName()))
-//                        || "EntityRelationMap".equals(col.getFinalFieldName())
-//                        || "EntityMap".equals(col.getFinalFieldName())
-//                        || "Object".equals(col.getFinalFieldName())
-//                        || "Class".equals(col.getFinalFieldName())
-//                        || "Con".equals(col.getFinalFieldName())
-//                        || "Nul".equals(col.getFinalFieldName())
-//                        || "Field".equals(col.getFinalFieldName())
-//
-//        ) {
-//            col.setFinalFieldName(col.getFinalFieldName() + "Column");
-//        }
+
     }
 
 

@@ -150,14 +150,14 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     }
 
 
-    public <Y, T extends TransactionalTarget & QueryReceiver> Y handleTransactionalTarget(T target, Propagation propagation, BiFunction<QueryReceiver, Boolean, Y> jobToDo) {
+    public <Y, T extends TransactionalTarget> Y handleTransactionalTarget(T target, Propagation propagation, BiFunction<QueryReceiver, Boolean, Y> jobToDo) {
         TransactionIndicator indicator = propagation.mayBeProceeded(target);
         switch (indicator) {
             case EXECUTE_WITHOUT: {
-                return jobToDo.apply(target, false);
+                return jobToDo.apply(target.getSourceTarget(), false);
             }
             case START_NEW_JUST_FOR_IT: {
-                return target.wrapTransaction(t -> jobToDo.apply(t, true));
+                return target.wrapTransaction(t -> jobToDo.apply(t.getSourceTarget(), true));
             }
             case GO_AHEAD: {
                 return jobToDo.apply(target, true);

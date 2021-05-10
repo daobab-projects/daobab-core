@@ -46,7 +46,7 @@ public interface EntityDuplicator {
         }
         Plate clone = null;
         try {
-            clone = (Plate) src.getClass().getDeclaredConstructor().newInstance();
+            clone = src.getClass().getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new DaobabEntityCreationException(src.getClass(), e);
         }

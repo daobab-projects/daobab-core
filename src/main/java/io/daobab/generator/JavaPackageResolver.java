@@ -8,7 +8,7 @@ public class JavaPackageResolver {
 
     private JavaPackageResolver(){}
 
-    private static final List<String> forbiddenNames = Arrays.asList("abstract", "assert", "boolean", "break", "byte", "case",
+    static final List<String> forbiddenNames = Arrays.asList("abstract", "assert", "boolean", "break", "byte", "case",
             "catch", "char", "class", "const", "continue", "default",
             "double", "do", "else", "enum", "extends", "false",
             "final", "finally", "float", "for", "goto", "if",
@@ -16,7 +16,11 @@ public class JavaPackageResolver {
             "native", "new", "null", "package", "private", "protected",
             "public", "return", "short", "static", "strictfp", "super",
             "switch", "synchronized", "this", "throw", "throws", "transient",
-            "true", "try", "void", "volatile", "while");
+            "true", "try", "void", "volatile", "while",
+
+            "id", "entityrelationmap", "entitymap", "object", "class", "field",
+            "con", "nul", "aux", "lst", "prn", "eof", "inp", "out" //Windows forbidden
+            );
 
     public static StringBuilder resolve(String jpackage,String catalog, String schema){
 

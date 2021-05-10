@@ -5,12 +5,14 @@ import io.daobab.query.QueryDelete;
 import io.daobab.query.QueryInsert;
 import io.daobab.query.QueryUpdate;
 import io.daobab.target.BaseTarget;
+import io.daobab.target.QueryReceiver;
 import io.daobab.target.meta.MetaData;
 import io.daobab.transaction.Propagation;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
@@ -28,6 +30,10 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
 
     private boolean enabledLogQueries = false;
 
+    @Override
+    public  TransactionalTarget getSourceTarget(){
+        return  this;
+    }
 
     @Override
     public boolean isLogQueriesEnabled() {
@@ -55,10 +61,9 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     @Override
     public DataSource getDataSource() {
         if (dataSource == null) {
+            UUID.randomUUID().toString(); //to init UUID
             this.dataSource = initDataSource();
-            if (getSchemaName() == null) {
-                log.warn("There is no schema name information. It may cause some problems with getting schema meta specifics.");
-            }
+
             try {
                 this.metaData = new MetaDataBaseTarget(getCatalogName(), getSchemaName(), this);
             } catch (SQLException throwables) {
@@ -126,9 +131,6 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
 
     public MetaData getMetaData() {
         if (metaData == null) {
-            if (getSchemaName() == null) {
-                log.warn("There is no schema name information. It may cause some problems while getting schema meta specifics.");
-            }
             try {
                 this.metaData = new MetaDataBaseTarget(getCatalogName(), getSchemaName(), this);
             } catch (SQLException throwables) {

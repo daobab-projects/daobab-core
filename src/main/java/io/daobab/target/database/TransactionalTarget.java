@@ -2,6 +2,7 @@ package io.daobab.target.database;
 
 import io.daobab.error.DaobabException;
 import io.daobab.target.QueryReceiver;
+import io.daobab.target.QueryTarget;
 import io.daobab.target.Target;
 
 import java.util.concurrent.CompletableFuture;
@@ -9,6 +10,8 @@ import java.util.concurrent.Executor;
 import java.util.function.Function;
 
 public interface TransactionalTarget extends Target, QueryReceiver {
+
+    TransactionalTarget getSourceTarget();
 
     //TODO: wywal database na rzecz czysciocha
     default OpenTransactionDataBaseTarget beginTransaction() {
@@ -24,6 +27,7 @@ public interface TransactionalTarget extends Target, QueryReceiver {
     }
 
     default <R> R wrapTransaction(Function<OpenTransactionDataBaseTarget, R> consumer) {
+
         OpenTransactionDataBaseTarget otx = beginTransaction();
         try {
             R rv = consumer.apply(otx);
