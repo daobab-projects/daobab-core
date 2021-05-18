@@ -442,7 +442,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
             stmt = conn.prepareStatement(sqlQuery);
 
             ResultSet rs = stmt.executeQuery();
-            getLog().debug(format("readPlateList executed statement: %0",sqlQuery));
+            getLog().debug(format("readPlateList executed statement: %s",sqlQuery));
 
             while (rs.next()) {
                 rv.add(RSReader.readPlate(rs, fields));
