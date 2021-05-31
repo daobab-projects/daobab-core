@@ -30,4 +30,16 @@ public interface QueryOrder<Q extends Query> {
         return orderBy(new Order().asc(key));
     }
 
+    default Q orderDescBy(String key) {
+        return orderBy(new Order().desc(key));
+    }
+
+    default Q orderAscBy(String key) {
+        return orderBy(new Order().asc(key));
+    }
+
+    default Q orderBy(String key) {
+        return orderBy(new Order().asc(key));
+    }
+
 }

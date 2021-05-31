@@ -108,8 +108,6 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
     }
 
 
-
-
     public Q groupBy(Column<?, ?, ?>... columns) {
         if (columns == null || columns.length == 0) return (Q) this;
         _groupBy.addAll(Arrays.asList(columns));

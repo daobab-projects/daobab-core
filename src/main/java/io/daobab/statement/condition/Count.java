@@ -27,6 +27,13 @@ public class Count {
         return c;
     }
 
+    public static final Count field(String col) {
+        Count c = new Count();
+        c.map.put(KEY + c.getCounter(), col);
+        c.setCounter(c.getCounter() + 1);
+        return c;
+    }
+
     public static final Count fieldDistinct(Column<?, ?, ?> col) {
         Count c = new Count();
         c.map.put(KEY + c.getCounter(), col);
@@ -45,11 +52,11 @@ public class Count {
     }
 
     public boolean countEntities() {
-        return getCounter() == 1 && getFieldForPointer(1) == null;
+        return getCounter() == 1 && getObjectForPointer(1) == null;
     }
 
-    public Column getFieldForPointer(int pointer) {
-        return (Column) map.get(KEY + pointer);
+    public Object getObjectForPointer(int pointer) {
+        return map.get(KEY + pointer);
     }
 
     public boolean isDistinctForPointer(int pointer) {
