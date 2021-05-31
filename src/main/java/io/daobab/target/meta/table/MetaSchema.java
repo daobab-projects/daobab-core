@@ -51,7 +51,7 @@ public class MetaSchema extends Table implements
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        PrimaryKey other = (PrimaryKey) obj;
+        PrimaryKey<?,?,?> other = (PrimaryKey<?,?,?>) obj;
         return Objects.equals(getId(), other.getId());
     }
 

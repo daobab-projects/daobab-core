@@ -17,7 +17,7 @@ import java.util.Map;
 public class Order {
 
 
-    private HashMap<String, Column<?, ?, ?>> orderMap = new HashMap<>();
+    private HashMap<String, Object> orderMap = new HashMap<>();
 
     private int counter = 1;
 
@@ -44,6 +44,18 @@ public class Order {
         return this;
     }
 
+    public Order asc(String identifier) {
+        getOrderMap().put(OrderDirection.ORDERASC + getCounter(), identifier);
+        setCounter(getCounter() + 1);
+        return this;
+    }
+
+    public Order desc(String identifier) {
+        getOrderMap().put(OrderDirection.ORDERDESC + getCounter(), identifier);
+        setCounter(getCounter() + 1);
+        return this;
+    }
+
     public int getCounter() {
         return counter;
     }
@@ -60,29 +72,33 @@ public class Order {
         return null;
     }
 
-    public Column<?, ?, ?> getFieldForPointer(int pointer) {
-        Column<?, ?, ?> asc = getOrderMap().get(OrderDirection.ORDERASC + pointer);
-        Column<?, ?, ?> desc = getOrderMap().get(OrderDirection.ORDERDESC + pointer);
+    public Object getObjectForPointer(int pointer) {
+        Object asc = getOrderMap().get(OrderDirection.ORDERASC + pointer);
+        Object desc = getOrderMap().get(OrderDirection.ORDERDESC + pointer);
         if (asc == null && desc != null) return desc;
         if (asc != null && desc == null) return asc;
         return null;
     }
 
+    //Warning. If query is related to in-memory buffers, this order may skip string based arguments.
     public LinkedList<OrderField> toOrderFieldList() {
         LinkedList<OrderField> rv = new LinkedList<>();
         for (int i = 1; i < getCounter(); i++) {
-            Column<?, ?, ?> field = getFieldForPointer(i);
+            Object field = getObjectForPointer(i);
+            if (!(field instanceof Column)){
+                continue;
+            }
             String orderkind = getOrderKindForPointer(i);
-            rv.add(new OrderField<>(field, orderkind));
+            rv.add(new OrderField<>(((Column)field), orderkind));
         }
         return rv;
     }
 
-    public HashMap<String, Column<?, ?, ?>> getOrderMap() {
+    public HashMap<String, Object> getOrderMap() {
         return orderMap;
     }
 
-    public void setOrderMap(HashMap<String, Column<?, ?, ?>> orderMap) {
+    public void setOrderMap(HashMap<String, Object> orderMap) {
         this.orderMap = orderMap;
     }
 

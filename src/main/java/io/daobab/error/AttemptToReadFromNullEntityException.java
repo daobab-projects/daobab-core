@@ -12,7 +12,7 @@ public class AttemptToReadFromNullEntityException extends DaobabException {
 
 
     public AttemptToReadFromNullEntityException() {
-        super("Attempt to read from entity which is null");
+        super("Attempt to read from an entity which is null");
     }
 
     public AttemptToReadFromNullEntityException(Class<? extends Entity> clazz, String field) {
@@ -20,7 +20,7 @@ public class AttemptToReadFromNullEntityException extends DaobabException {
     }
 
     public AttemptToReadFromNullEntityException(Column<?,?,?> column) {
-        super("Attempt to read from entity which is null. Entity:" + column.getEntityName() + " field " + column.getFieldName());
+        super("Attempt to read from an entity which is null. Entity:" + column.getEntityName() + " field " + column.getFieldName());
     }
 
 }

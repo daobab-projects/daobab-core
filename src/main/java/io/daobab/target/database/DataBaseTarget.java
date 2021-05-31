@@ -1,12 +1,19 @@
 package io.daobab.target.database;
 
+import io.daobab.error.ColumnMandatory;
+import io.daobab.error.DaobabSQLException;
+import io.daobab.error.EntityMandatory;
+import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.query.QueryDelete;
 import io.daobab.query.QueryInsert;
 import io.daobab.query.QueryUpdate;
+import io.daobab.statement.where.WhereAnd;
 import io.daobab.target.BaseTarget;
-import io.daobab.target.QueryReceiver;
 import io.daobab.target.meta.MetaData;
+import io.daobab.target.meta.MetaDataTables;
+import io.daobab.target.meta.table.MetaColumn;
+import io.daobab.target.meta.table.MetaTable;
 import io.daobab.transaction.Propagation;
 
 import javax.sql.DataSource;
@@ -17,15 +24,15 @@ import java.util.UUID;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public abstract class DataBaseTarget extends BaseTarget implements DataBaseTargetLogic {
+public abstract class DataBaseTarget extends BaseTarget implements DataBaseTargetLogic, MetaDataTables {
 
     private List<Entity> tables = null;
     private DataSource dataSource;
     String dataBaseProductName;
     String dataBaseMajorVersion;
+    String dataBaseMinorVersion;
     private MetaDataBaseTarget metaData;
     private String schemaName;
-
     private String catalogName;
 
     private boolean enabledLogQueries = false;
@@ -64,11 +71,20 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
             UUID.randomUUID().toString(); //to init UUID
             this.dataSource = initDataSource();
 
+            doSthOnConnection("",(x,c)->{
+                try {
+                    setSchemaName(c.getSchema());
+                    setCatalogName(c.getCatalog());
+                }catch(SQLException e){
+                    throw new DaobabSQLException(e);
+                }
+                return null;
+            });
+
             try {
                 this.metaData = new MetaDataBaseTarget(getCatalogName(), getSchemaName(), this);
             } catch (SQLException throwables) {
                 log.warn("DataBase Meta Specifics wasn't taken. ", throwables);
-
             }
             DaobabDataBaseMetaData meta = getDataBaseMetaData();
 
@@ -76,6 +92,9 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
 
             setDataBaseProductName(meta.getDatabaseProductName());
             setDataBaseMajorVersion(meta.getDatabaseMajorVersion());
+            setDataBaseMinorVersion(""+meta.getDatabaseMinorVersion());
+
+
         }
         return dataSource;
     }
@@ -102,6 +121,14 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
 
     public void setDataBaseMajorVersion(String dataBaseMajorVersion) {
         this.dataBaseMajorVersion = dataBaseMajorVersion;
+    }
+
+    public String getDataBaseMinorVersion() {
+        return dataBaseMinorVersion;
+    }
+
+    public void setDataBaseMinorVersion(String dataBaseMinorVersion) {
+        this.dataBaseMinorVersion = dataBaseMinorVersion;
     }
 
     @Override
@@ -135,10 +162,24 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
                 this.metaData = new MetaDataBaseTarget(getCatalogName(), getSchemaName(), this);
             } catch (SQLException throwables) {
                 log.warn("DataBase Meta Specifics wasn't taken. ", throwables);
-//                throwables.printStackTrace();
             }
         }
         return metaData;
+    }
+
+    public MetaColumn getMetaDataForColumn(Column<?, ?, ?> column) {
+        if (column == null) throw new ColumnMandatory();
+        return getMetaData().select(tabMetaColumn).where(new WhereAnd()
+                .equal(tabMetaColumn.colTableName(), column.getEntityName())
+                .equal(tabMetaColumn.colColumnName(), column.getColumnName()))
+                .findOne();
+    }
+
+    public <E extends Entity> MetaTable getMetaDataForTable(E entity) {
+        if (entity == null) throw new EntityMandatory();
+        return getMetaData().select(tabMetaTable)
+                .whereEqual(tabMetaTable.colTableName(), entity.getEntityName())
+                .findOne();
     }
 
 
@@ -149,6 +190,8 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     public void setCatalogName(String catalogName) {
         this.catalogName = catalogName;
     }
+
+
 
 
 }

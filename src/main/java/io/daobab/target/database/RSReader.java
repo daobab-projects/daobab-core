@@ -15,13 +15,7 @@ import java.util.TimeZone;
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
 public interface RSReader {
-    //    static Plate readPlate(ResultSet rs, List<Column<Entity, ?, ?>> col) throws SQLException {
-//        Plate plate = new Plate(col);
-//        for (int i = 0; i < col.size(); i++) {
-//            putColumnValueAtPlate(rs, i + 1, plate, col.get(i));
-//        }
-//        return plate;
-//    }
+
     static Plate readPlate(ResultSet rs, List<TableColumn> col) throws SQLException {
         Plate plate = new Plate(col);
         for (int i = 0; i < col.size(); i++) {
@@ -30,27 +24,19 @@ public interface RSReader {
         return plate;
     }
 
+    static <O extends ProcedureParameters> O readProcedure(ResultSet rs, O out) throws SQLException {
+        for (int i = 1; i < out.getColumns().size()+1; i++) { //starting from 1 not from 0
+            out.setValue(i, rs.getObject(i));
+        }
+        return out;
+    }
+
+    @SuppressWarnings({"unchecked","rawtypes"})
     static <E extends Entity, F, R extends EntityRelation> Plate putColumnValueAtPlate(ResultSet rs, int colNo, Plate e, TableColumn col) throws SQLException {
         e.setValue(col, rs.getObject(colNo, col.getColumn().getFieldClass()));
         return e;
     }
 
-    //    static <F, R extends EntityRelation> Plate readPlateRow(ResultSet rs, List<Column<Entity, ?, ?>> columns) {
-//        Plate rv = new Plate(columns);
-//        for (int colNo = 0; colNo < columns.size(); colNo++) {
-//
-//            Column<?, F, R> col = (Column<?, F, R>) columns.get(colNo);
-//            Class<F> columnType = col.getFieldClass();
-//
-//            try {
-//                rv.setValue(col, rs.getObject(colNo + 1, columnType));
-//            } catch (SQLException e) {
-//                throw new DaobabSQLException(e);
-//            }
-//        }
-//        return rv;
-//
-//    }
     static <E extends Entity> E readTableRow(ResultSet rs, E e, List<Column<E, ?, ?>> col) {
         for (int i = 0; i < col.size(); i++) {
             putColumnValueIntoEntity(rs, i + 1, e, col.get(i));
@@ -58,6 +44,7 @@ public interface RSReader {
         return e;
     }
 
+    @SuppressWarnings({"unchecked"})
     static <E extends Entity> E readTableRowInfo(ResultSet rs, E e, List<TableColumn> col) {
         for (int i = 0; i < col.size(); i++) {
             putColumnValueIntoEntity(rs, i + 1, e, col.get(i).getColumn());
@@ -70,6 +57,7 @@ public interface RSReader {
         return new Timestamp(timestamp.getTime() - timeZone.getOffset(timestamp.getTime()));
     }
 
+    @SuppressWarnings({"unchecked","rawtypes"})
     static <E extends Entity, F, R extends EntityRelation> void putColumnValueIntoEntity(ResultSet rs, int colNo, E e, Column<E, F, R> col) {
         Class<F> columnType = col.getFieldClass();
         col.setValue((R) e, readSingleColumn(rs, colNo, columnType));
@@ -84,7 +72,7 @@ public interface RSReader {
         return readSingleColumn(rs, colNo, col.getFieldClass());
     }
 
-    @SuppressWarnings("java:S3740")
+    @SuppressWarnings({"unchecked","rawtypes"})
     static <F> F readSingleColumn(ResultSet rs, int colNo, Class columnType) {
         try {
             if (Timestamp.class.equals(columnType)) {
@@ -143,6 +131,7 @@ public interface RSReader {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     static <E extends Entity, F, R extends EntityRelation> F executeInsert(QuerySpecialParameters insertQueryParameters, Connection conn, ILoggerBean loggerBean, Column<E, F, R> pk) {
         PreparedStatement stmt = null;
         try {

@@ -184,6 +184,7 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         this.statisticEnabled = statisticEnabled;
     }
 
+    @Override
     public AccessProtector getAccessProtector() {
         return accessProtector;
     }

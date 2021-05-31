@@ -1,8 +1,6 @@
 package io.daobab.query;
 
-import io.daobab.error.ColumnMandatory;
-import io.daobab.error.NullOrEmptyParameter;
-import io.daobab.error.TargetNoCacheNoEntityManagerException;
+import io.daobab.error.*;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.query.base.QueryExpressionProvider;
@@ -12,9 +10,11 @@ import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
 import io.daobab.result.PlateProvider;
 import io.daobab.result.Plates;
+import io.daobab.statement.base.IdentifierStorage;
 import io.daobab.statement.condition.Count;
 import io.daobab.target.QueryTarget;
 import io.daobab.target.database.DataBaseTarget;
+import io.daobab.target.meta.table.MetaColumn;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,6 +58,7 @@ public final class QueryPlate extends Query<Entity, QueryPlate> implements Query
         Column<?, ?, ?> fielddao = columndaos[0];
         if (fielddao == null) throw new ColumnMandatory();
         init(target, fielddao.getInstance());
+
         andColumn(fielddao);
 
         Set<String> entities = new HashSet<>();
@@ -69,7 +70,8 @@ public final class QueryPlate extends Query<Entity, QueryPlate> implements Query
         setSingleEntity(entities.size() == 1);
     }
 
-    public QueryPlate(QueryTarget target, List<Column<? extends Entity, ?, ?>> columndaos) {
+
+    public QueryPlate(QueryTarget target, List<? extends Column> columndaos) {
 
         Column<?, ?, ?> fielddao = columndaos.get(0);
         if (fielddao == null) throw new ColumnMandatory();

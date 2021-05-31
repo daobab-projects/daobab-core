@@ -15,6 +15,7 @@ import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.statement.inner.InnerSelectManyEntities;
 import io.daobab.target.QueryTarget;
 import io.daobab.target.database.DataBaseTarget;
+import io.daobab.target.meta.table.MetaTable;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -44,26 +45,27 @@ public final class QueryEntity<E extends Entity> extends Query<E, QueryEntity<E>
         entity.columns().forEach(e -> getFields().add(e));
     }
 
+
     public QueryEntity(String nativeQuery, QueryTarget target, E entity) {
         this(target,entity);
         this._nativeQuery = nativeQuery;
     }
 
 
-    /**
-     * Prepare Select to usage into Where clause as subselect
-     *
-     * @return
-     */
-    @Override
-    public InnerSelectManyEntities<E> innerResult() {
-
-        if (this.getTarget().isBuffer()) {
-            return new InnerSelectManyEntities<>(findMany());
-        } else {
-            return new InnerSelectManyEntities<>(this);
-        }
-    }
+//    /**
+//     * Prepare Select to usage into Where clause as subselect
+//     *
+//     * @return
+//     */
+//    @Override
+//    public InnerSelectManyEntities<E> innerResult() {
+//
+//        if (this.getTarget().isBuffer()) {
+//            return new InnerSelectManyEntities<>(findMany());
+//        } else {
+//            return new InnerSelectManyEntities<>(this);
+//        }
+//    }
 
 
 

@@ -49,6 +49,27 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
         return (F) entityMap.get(df.getFieldName());
     }
 
+    public <F> F getValueOrDefault(Column<?, F, ?> df, F defaultValue) {
+        if (df == null) return defaultValue;
+        Map<String, Object> entityMap = get(df.getEntityName());
+        if (entityMap == null) return defaultValue;
+        F rv= (F) entityMap.get(df.getFieldName());
+        if (rv==null){
+            return defaultValue;
+        }
+        return rv;
+    }
+    public <F> F getValueOrDefault(Column<?, F, ?> df, Class<F> clazz,F defaultValue) {
+        if (df == null) return defaultValue;
+        Map<String, Object> entityMap = get(df.getEntityName());
+        if (entityMap == null) return defaultValue;
+        F rv= clazz.cast(entityMap.get(df.getFieldName()));
+        if (rv==null){
+            return defaultValue;
+        }
+        return rv;
+    }
+
 
     public <F> F getValueIgnoreEntity(Column<?, F, ?> df) {
         if (df == null) return null;
@@ -81,6 +102,16 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
             }
         }
         return null;
+    }
+    public <F> F getValueOrDefault(String fieldName,F defaultValue) {
+        if (fieldName == null) return defaultValue;
+        for (String entitykey : this.keySet()) {
+            Map<String, Object> entityMap = get(entitykey);
+            if (entityMap.containsKey(fieldName)) {
+                return (F) entityMap.get(fieldName);
+            }
+        }
+        return defaultValue;
     }
 
     public <E extends Entity> E getEntity(Class<E> entityClass) {

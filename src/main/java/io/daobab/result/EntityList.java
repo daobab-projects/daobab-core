@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -46,10 +47,10 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     private transient Logger log;
 
-    private StatisticCollector statistic;
+    private transient StatisticCollector statistic;
     private boolean statisticEnabled = false;
 
-    private AccessProtector accessProtector = new BasicAccessProtector();
+    private transient AccessProtector accessProtector = new BasicAccessProtector();
 
     public EntityList(List<E> entities, E entityinstance) {
         this(entities, (Class<E>) entityinstance.getClass());
@@ -58,6 +59,10 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     public EntityList(List<E> entities, Class<E> entityClass) { //clear();
         super(entities);
         this.entityClazz = entityClass;
+    }
+
+    public EntityList(Class<E> entityClass) {
+        this(new ArrayList<>(),entityClass);
     }
 
 
@@ -82,7 +87,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        EntityList<E> rv = new EntityList<>(filter((Query<E, ?>) query), query.getEntityClass());
+        EntityList<E> rv = new EntityList<>(filter((Query<E, ?>) query), (Class<E>)query.getEntityClass());
 
         rv.orderAndLimit((Query<E, ?>) query);
 
@@ -96,7 +101,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        EntityList<E> rv = new EntityList<>(filter((Query<E, ?>) query), query.getEntityClass());
+        EntityList<E> rv = new EntityList<>(filter((Query<E, ?>) query), (Class<E>)query.getEntityClass());
         rv.orderAndLimit((Query<E, ?>) query);
         Entities<E1> rt = (Entities<E1>) rv;
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, rv.size());
@@ -106,7 +111,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     private <R extends EntityRelation> PlateBuffer resultPlates(QueryPlate query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        EntityList<E> matched = new EntityList<>(filter((Query<E, ?>) query), query.getEntityClass());
+        EntityList<E> matched = new EntityList<>(filter((Query<E, ?>) query), (Class<E>)query.getEntityClass());
         List<Plate> frl = new LinkedList<>();
 
         if (matched == null || matched.size() == 0) return new PlateBuffer(frl);
@@ -136,7 +141,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         EntityList<E> matched = new EntityList<>(filter(query), query.getEntityClass());
 
-        if (matched == null || matched.size() == 0) return new LinkedList<>();
+        if (matched == null || matched.isEmpty()) return new LinkedList<>();
         Entities<E> el = matched.orderAndLimit(query);
         Column<E, F, R> col = (Column<E, F, R>) query.getFields().get(0).getColumn();
         List<F> rv = el.stream().map(e -> col.getValueOf((R) e)).collect(Collectors.toList());
@@ -313,14 +318,10 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     @Override
     public void refreshImmediately() {
         // no action here
-
     }
-
 
     @Override
     public void markRefreshCache() {
-        //if (isCached()==false) throw new DeveloperException("You can callDaobabServer this method for cached DAO's only. DAO '"+getEntityClassSimpleName()+"' is not cached.");
-//		getLog().info("DAO "+getEntityClassSimpleName()+" marked as refresh needed.");
         needRefresh = true;
     }
 
@@ -438,5 +439,11 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     public void setAccessProtector(AccessProtector accessProtector) {
         this.accessProtector = accessProtector;
+    }
+
+
+    @Override
+    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+        throw new DaobabException("This target does not supports procedures.");
     }
 }

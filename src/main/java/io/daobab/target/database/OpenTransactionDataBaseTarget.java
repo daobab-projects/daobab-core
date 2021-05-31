@@ -4,6 +4,7 @@ import io.daobab.error.DaobabSQLException;
 import io.daobab.error.TransactionAlreadyOpened;
 import io.daobab.error.TransactionClosedException;
 import io.daobab.model.Entity;
+import io.daobab.model.ProcedureParameters;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
 import io.daobab.query.base.QuerySpecialParameters;
@@ -11,7 +12,6 @@ import io.daobab.result.PlateBuffer;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.OpenedTransactionTarget;
 import io.daobab.target.QueryReceiver;
-import io.daobab.target.QueryTarget;
 import io.daobab.target.meta.MetaData;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.transaction.Propagation;
@@ -94,13 +94,13 @@ public class OpenTransactionDataBaseTarget extends BaseTarget implements OpenedT
     }
 
     @Override
-    public <E extends Entity> String deleteQueryToExpression(QueryDelete<E> base) {
-        return db.deleteQueryToExpression(base);
+    public <E extends Entity> String toDeleteSqlQuery(QueryDelete<E> base) {
+        return db.toDeleteSqlQuery(base);
     }
 
     @Override
-    public <E extends Entity> QuerySpecialParameters insertQueryToExpression(QueryInsert<E> base) {
-        return db.insertQueryToExpression(base);
+    public <E extends Entity> QuerySpecialParameters toInsertSqlQuery(QueryInsert<E> base) {
+        return db.toInsertSqlQuery(base);
     }
 
     @Override
@@ -148,6 +148,11 @@ public class OpenTransactionDataBaseTarget extends BaseTarget implements OpenedT
         return db.toSqlQuery(query);
     }
 
+    @Override
+    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+        return db.callProcedure(name,in,out);
+    }
+
 
     @Override
     public boolean isBuffer() {
@@ -188,11 +193,14 @@ public class OpenTransactionDataBaseTarget extends BaseTarget implements OpenedT
         this.transactionActive = transactionActive;
     }
 
-
+    @Override
+    public <E extends Entity> QuerySpecialParameters toUpdateSqlQuery(QueryUpdate<E> base) {
+        return db.toUpdateSqlQuery(base);
+    }
 
     @Override
-    public <E extends Entity> QuerySpecialParameters toQueryUpdateExpression(QueryUpdate<E> base) {
-        return db.toQueryUpdateExpression(base);
+    public String toCallProcedureSqlQuery(String procedureName, ProcedureParameters input) {
+        return db.toCallProcedureSqlQuery(procedureName,input);
     }
 
 

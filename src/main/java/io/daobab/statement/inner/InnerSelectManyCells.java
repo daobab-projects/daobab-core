@@ -2,6 +2,7 @@ package io.daobab.statement.inner;
 
 import io.daobab.model.Entity;
 import io.daobab.query.QueryField;
+import io.daobab.query.base.Query;
 import io.daobab.query.base.QueryExpressionProvider;
 import io.daobab.result.FieldsProvider;
 

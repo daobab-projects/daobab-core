@@ -1,11 +1,7 @@
 package io.daobab.target.database;
 
-import io.daobab.model.IdGeneratorType;
+import io.daobab.model.*;
 import io.daobab.error.*;
-import io.daobab.model.Entity;
-import io.daobab.model.Plate;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.TableColumn;
 import io.daobab.parser.ParserNumber;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
@@ -132,7 +128,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
                 conn.setAutoCommit(false);
             }
             if (query.getEntity() != null) query.getEntity().beforeDelete(this);
-            String sqlquery = deleteQueryToExpression(query);
+            String sqlquery = toDeleteSqlQuery(query);
             query.setSentQuery(sqlquery);
             int rv = RSReader.execute(sqlquery, conn, this);
             if (query.getEntity() != null) query.getEntity().afterDelete(this);
@@ -160,7 +156,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
                 conn.setAutoCommit(false);
             }
             if (query.getEntity() != null) query.getEntity().beforeUpdate(this);
-            QuerySpecialParameters q = toQueryUpdateExpression(query);
+            QuerySpecialParameters q = toUpdateSqlQuery(query);
             query.setSentQuery(q.getQuery().toString());
             int rv = RSReader.executeUpdate(q, conn);
             if (query.getEntity() != null) query.getEntity().afterUpdate(this);
@@ -174,7 +170,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         }
     }
 
-    @SuppressWarnings("java:S3740")
+    @SuppressWarnings({"java:S3740","unchecked","rawtypes"})
     default <E extends Entity> E insert(QueryInsert<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.INSERT);
         Connection conn = null;
@@ -193,7 +189,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
             }
 
 //            query.getEntity().beforeInsert(this);
-            QuerySpecialParameters insertQueryParameters = insertQueryToExpression(query);
+            QuerySpecialParameters insertQueryParameters = toInsertSqlQuery(query);
 
 
             query.setSentQuery(insertQueryParameters.getQuery().toString());
@@ -510,5 +506,38 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         });
     }
 
+    default <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O outEmpty){
+        List<Column> columns=new ArrayList<>();
+        columns.addAll(outEmpty.getColumns());
+        getAccessProtector().removeViolatedColumns(columns, OperationType.READ);
+        String query= toCallProcedureSqlQuery(name,in);
 
+        System.out.println(query);
+        return doSthOnConnection(query, (s, conn) -> {
+            PreparedStatement stmt = null;
+            String identifier=null;
+            if (isStatisticCollectingEnabled()) {
+                identifier=getStatisticCollector().sendProcedure(name);
+            }
+            try {
+                stmt = conn.prepareStatement(s);
+
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    O plate = RSReader.readProcedure(rs, outEmpty);
+                    if (isStatisticCollectingEnabled()) getStatisticCollector().receivedProcedure(name,identifier,s, outEmpty.getColumns().size());
+                    return plate;
+                }
+                if (isStatisticCollectingEnabled()) getStatisticCollector().receivedProcedure(name,identifier,query, 0);
+                return null;
+            } catch (SQLException e) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().errorProcedure(name,identifier,query, e);
+                throw new DaobabSQLException(e);
+            } finally {
+                RSReader.closeStatement(stmt, this);
+            }
+        });
+
+    }
 }

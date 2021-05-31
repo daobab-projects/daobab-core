@@ -2,10 +2,7 @@ package io.daobab.target.statistic.table;
 
 
 import io.daobab.clone.EntityDuplicator;
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.target.statistic.column.*;
 
 import java.util.Arrays;
@@ -21,7 +18,10 @@ public class StatisticRecord extends Table implements
         RelatedEntity<StatisticRecord>,
         ExecutionTime<StatisticRecord>,
         RequestType<StatisticRecord>,
+        ProcedureName<StatisticRecord>,
         SqlQuery<StatisticRecord>,
+        ErrorDesc<StatisticRecord>,
+        Status<StatisticRecord>,
 
         PrimaryKey<StatisticRecord, String, Key> {
 
@@ -44,7 +44,10 @@ public class StatisticRecord extends Table implements
                 new TableColumn(colRequestDate()),
                 new TableColumn(colExecutionTime()),
                 new TableColumn(colRequestType()),
+                new TableColumn(colStatus()),
+                new TableColumn(colProcedureName()).size(256),
                 new TableColumn(colRelatedEntity()).size(256),
+                new TableColumn(colErrorDesc()).size(1024),
                 new TableColumn(colSqlQuery()).size(1024)
         );
     }
@@ -64,7 +67,7 @@ public class StatisticRecord extends Table implements
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        PrimaryKey other = (PrimaryKey) obj;
+        PrimaryKey<?,?,?> other = (PrimaryKey<?,?,?>) obj;
         return Objects.equals(getId(), other.getId());
     }
 

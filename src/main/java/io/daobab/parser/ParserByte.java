@@ -23,7 +23,7 @@ public interface ParserByte {
      * Decrypt from base64
      */
     static byte[] toBytesFromBase64(String from) {
-        if (from == null) return null;
+        if (from == null) return new byte[]{};
         return Decoder.parseBase64Binary(from);
     }
 

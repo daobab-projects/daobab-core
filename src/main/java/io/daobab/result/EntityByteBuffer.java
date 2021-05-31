@@ -211,7 +211,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Query q = query;
         List<E> list = (List<E>) finalFilter(q);
-        EntityList rv = new EntityList<>(list, query.getEntityClass());
+        EntityList rv = new EntityList<>(list, (Class<E>)query.getEntityClass());
         return rv;
     }
 
@@ -325,6 +325,11 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
     @Override
     public <E extends Entity> String toSqlQuery(Query<E, ?> query) {
         throw new DaobabException("This target does not produce sql query");
+    }
+
+    @Override
+    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+        throw new DaobabException("This target does not supports procedures.");
     }
 
     @Override

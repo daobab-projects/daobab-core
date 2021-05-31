@@ -189,14 +189,16 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
         return (E) finalFilter(q).get(0);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E1 extends Entity> Entities<E1> readEntityList(QueryEntity<E1> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        Query q = query;
+        Query<E1,?> q = query;
         List<Plate> list = finalFilter(q);
-        EntityList rv = new EntityList<E1>((List<E1>) list.stream().map(p -> p.toEntity(query.getEntityClass(), query.getFields())).collect(Collectors.toList()), query.getEntityClass());
-        return rv;
+        return new EntityList<>((List<E1>) list.stream()
+                .map(p ->p.toEntity((Class<EntityMap>)query.getEntityClass(), query.getFields()))
+                .collect(Collectors.toList()), query.getEntityClass());
     }
 
     @Override
@@ -310,5 +312,11 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
     @Override
     public <E extends Entity> String toSqlQuery(Query<E, ?> query) {
         throw new DaobabException("This target does not produce sql query");
+    }
+
+
+    @Override
+    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+        throw new DaobabException("This target does not supports procedures.");
     }
 }

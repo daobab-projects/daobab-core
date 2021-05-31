@@ -9,7 +9,6 @@ import io.daobab.query.base.QueryType;
 import io.daobab.target.QueryTarget;
 import io.daobab.transaction.Propagation;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
