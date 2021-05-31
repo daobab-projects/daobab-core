@@ -40,9 +40,6 @@ public interface SaveGenerated {
         }
 
 
-//        String folder = (fpath + (schema == null || schema.trim().isEmpty() ? File.separator + (subfolder == null ? "" : subfolder + File.separator) : File.separator + schema.trim().toLowerCase() + File.separator + (subfolder == null ? "" : subfolder + File.separator)));
-
-
         File stockDir = new File(sbfol.toString());
 
         try {

@@ -2,6 +2,7 @@ package io.daobab.target;
 
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
+import io.daobab.model.ProcedureParameters;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
 import io.daobab.result.Entities;
@@ -40,4 +41,6 @@ public interface QueryReceiver extends Target{
     <E extends Entity> E insert(QueryInsert<E> query, Propagation propagation);
 
     <E extends Entity> String toSqlQuery(Query<E, ?> query);
+
+    <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out);
 }

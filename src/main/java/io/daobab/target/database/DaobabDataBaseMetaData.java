@@ -1,7 +1,6 @@
 package io.daobab.target.database;
 
 import io.daobab.result.Entities;
-import io.daobab.result.EntityList;
 import io.daobab.target.meta.table.*;
 
 /**

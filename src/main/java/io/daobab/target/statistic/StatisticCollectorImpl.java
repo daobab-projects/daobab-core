@@ -3,8 +3,10 @@ package io.daobab.target.statistic;
 import io.daobab.error.DaobabException;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.query.base.Query;
+import io.daobab.query.base.QueryType;
 import io.daobab.result.Entities;
 import io.daobab.result.EntityList;
+import io.daobab.target.statistic.dictionary.CallStatus;
 import io.daobab.target.statistic.table.StatisticRecord;
 
 import java.util.ArrayList;
@@ -12,12 +14,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ */
 public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecord> implements StatisticCollector, ParserGeneral {
 
-
     private int bufferSize = 500;
-    private String lineSep = System.getProperty("line.separator");
+    private final String lineSep = System.getProperty("line.separator");
 
     private boolean ignoreSuccessful = false;
     private long ignoreBelowMilliseconds = 0;
@@ -28,16 +31,17 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
         if (ignoreSuccessful) {
             return;
         }
-        StatisticRecord record = new StatisticRecord(query.getIdentifier());
+        StatisticRecord statisticRecord = new StatisticRecord(query.getIdentifier());
         if (query.getIdentifier() == null) {
             query.setIdentifier(generateIdentifier());
         }
-        record.setId(query.getIdentifier())
+        statisticRecord.setId(query.getIdentifier())
                 .setRequestDate(toCurrentTimestamp())
                 .setRelatedEntity(query.getEntityName())
-                .setRequestType(query.getQueryType());
+                .setRequestType(query.getQueryType())
+                .setStatus(CallStatus.SEND);
 
-        put(query.getIdentifier(), record);
+        put(query.getIdentifier(), statisticRecord);
     }
 
     @Override
@@ -48,45 +52,135 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
         if (query.getIdentifier() == null) {
             query.setIdentifier(generateIdentifier());
         }
-        StatisticRecord record = get(query.getIdentifier());
-        if (record == null) {
-            record = new StatisticRecord(query.getIdentifier());
-            put(query.getIdentifier(), record);
+        StatisticRecord statisticRecord = get(query.getIdentifier());
+        if (statisticRecord == null) {
+            statisticRecord = new StatisticRecord(query.getIdentifier());
+            put(query.getIdentifier(), statisticRecord);
         }
 
-        record.setResponseDate(toCurrentTimestamp());
+        statisticRecord.setResponseDate(toCurrentTimestamp())
+                .setStatus(CallStatus.RECEIVED);
         if (query.getSentQuery() != null) {
 
-            record.setSqlQuery(query.getSentQuery().replaceAll(lineSep, ""));
+            statisticRecord.setSqlQuery(query.getSentQuery().replaceAll(lineSep, ""));
         }
-        long executionTime = record.getResponseDate().getTime() - record.getRequestDate().getTime();
+        long executionTime = getExecutionTime(statisticRecord);
         if (executionTime < ignoreBelowMilliseconds) {
             remove(query.getIdentifier());
         }
-        record.setExecutionTime(executionTime);
+        statisticRecord.setExecutionTime(executionTime);
     }
 
     @Override
     public void error(Query<?, ?> query, Throwable result) {
         boolean daobabException = result instanceof DaobabException;
+        String couse="";
         if (daobabException) {
             DaobabException daobabException1 = (DaobabException) result;
-            String couse = daobabException1.getStatusDesc();
+            couse = daobabException1.getStatusDesc();
+        }else{
+            couse = result.getMessage();
         }
+        StatisticRecord statisticRecord = get(query.getIdentifier());
+        if (statisticRecord == null) {
+            statisticRecord = new StatisticRecord(query.getIdentifier());
+            put(query.getIdentifier(), statisticRecord);
+        }
+        statisticRecord.setStatus(CallStatus.ERROR)
+                .setErrorDesc(couse);
+        long executionTime = getExecutionTime(statisticRecord);
+        if (executionTime < ignoreBelowMilliseconds) {
+            remove(query.getIdentifier());
+        }
+        statisticRecord.setExecutionTime(executionTime);
+    }
+
+    private long getExecutionTime(StatisticRecord statisticRecord){
+        if (statisticRecord==null||statisticRecord.getResponseDate()==null||statisticRecord.getRequestDate()==null){
+            return 0;
+        }
+        return statisticRecord.getResponseDate().getTime() - statisticRecord.getRequestDate().getTime();
+    }
+
+
+    @Override
+    public String sendProcedure(String procedureName) {
+        if (ignoreSuccessful) {
+            return "";
+        }
+
+        String identifier=generateIdentifier();
+        StatisticRecord statisticRecord = new StatisticRecord(identifier)
+                .setId(identifier)
+                .setRequestDate(toCurrentTimestamp())
+                .setProcedureName(procedureName)
+                .setRequestType(QueryType.PROCEDURE)
+                .setStatus(CallStatus.SEND);
+
+        put(identifier, statisticRecord);
+
+        return identifier;
+    }
+
+    @Override
+    public void receivedProcedure(String procedureName, String identifier, String query, Integer result) {
+        if (ignoreSuccessful) {
+            return;
+        }
+
+        StatisticRecord statisticRecord = computeIfAbsent(identifier, r ->
+                new StatisticRecord(identifier)
+                        .setId(identifier)
+                        .setRequestDate(toCurrentTimestamp())
+                        .setProcedureName(procedureName)
+                        .setRequestType(QueryType.PROCEDURE)
+                        .setStatus(CallStatus.RECEIVED));
+
+        statisticRecord.setResponseDate(toCurrentTimestamp());
+        if (query != null) {
+            statisticRecord.setSqlQuery(query.replaceAll(lineSep, ""));
+        }
+        long executionTime = getExecutionTime(statisticRecord);
+        if (executionTime < ignoreBelowMilliseconds) {
+            remove(identifier);
+        }
+        statisticRecord.setExecutionTime(executionTime);
+    }
+
+    @Override
+    public void errorProcedure(String procedureName, String identifier, String query,  Throwable result) {
+        boolean daobabException = result instanceof DaobabException;
+        String couse="";
+        if (daobabException) {
+            DaobabException daobabException1 = (DaobabException) result;
+            couse = daobabException1.getStatusDesc();
+        }else{
+            couse = result.getMessage();
+        }
+        StatisticRecord statisticRecord = get(identifier);
+        if (statisticRecord == null) {
+            statisticRecord = new StatisticRecord(identifier);
+            put(identifier, statisticRecord);
+        }
+        statisticRecord.setStatus(CallStatus.ERROR)
+                .setErrorDesc(couse);
+        long executionTime = statisticRecord.getResponseDate().getTime() - statisticRecord.getRequestDate().getTime();
+        if (executionTime < ignoreBelowMilliseconds) {
+            remove(identifier);
+        }
+        statisticRecord.setExecutionTime(executionTime);
     }
 
 
     public Entities<StatisticRecord> getTarget() {
-        EntityList rv = new EntityList<>(new ArrayList<>(values()), StatisticRecord.class);
+        EntityList<StatisticRecord> rv = new EntityList<>(new ArrayList<>(values()), StatisticRecord.class);
         rv.enableStatisticCollecting(false);
         return rv;
     }
 
-
     public String generateIdentifier() {
         return UUID.randomUUID().toString();
     }
-
 
     public int getBufferSize() {
         return bufferSize;
@@ -105,7 +199,6 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
     public void ignoreExecutionTimeBelow(long milliseconds) {
         ignoreBelowMilliseconds = milliseconds > 0 ? milliseconds : 0;
     }
-
 
     @Override
     protected boolean removeEldestEntry(Map.Entry<String, StatisticRecord> eldest) {

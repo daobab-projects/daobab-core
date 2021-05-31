@@ -6,7 +6,9 @@ import io.daobab.model.Column;
 import io.daobab.model.PrimaryKey;
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
-import io.daobab.target.meta.column.*;
+import io.daobab.target.meta.column.MetaCatalogName;
+import io.daobab.target.meta.column.MetaSchemaName;
+import io.daobab.target.meta.column.Remarks;
 
 import java.util.Arrays;
 import java.util.List;
@@ -51,7 +53,7 @@ public class MetaSchema extends Table implements
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        PrimaryKey other = (PrimaryKey) obj;
+        PrimaryKey<?,?,?> other = (PrimaryKey<?,?,?>) obj;
         return Objects.equals(getId(), other.getId());
     }
 

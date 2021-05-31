@@ -5,11 +5,11 @@ import java.util.TimeZone;
 
 public class TimestampMatchLT extends TimestampMatchEQ {
 
-
     public TimestampMatchLT(Object valueToCompare) {
         super(valueToCompare);
     }
 
+    @Override
     public boolean test(Object valueFromEntityField) {
         if (valueFromEntityField == null) {
             return false;

@@ -38,7 +38,7 @@ public interface JsonHandler {
         } else if (val instanceof JsonHandler) {
             rv.append(((JsonHandler) val).toJSON());
         } else if (val instanceof Number) {
-            rv.append(val.toString());
+            rv.append(val);
         } else {
             rv.append(JsonEscape.quote(val.toString()));
         }

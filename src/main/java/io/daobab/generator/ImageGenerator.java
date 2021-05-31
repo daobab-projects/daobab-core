@@ -5,7 +5,7 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.result.Entities;
 import io.daobab.target.database.DaobabDataBaseMetaData;
-import io.daobab.target.meta.MetaSpecificsTables;
+import io.daobab.target.meta.MetaDataTables;
 import io.daobab.target.meta.table.MetaCatalog;
 import io.daobab.target.meta.table.MetaColumn;
 import io.daobab.target.meta.table.MetaSchema;
@@ -17,7 +17,7 @@ import static io.daobab.generator.GenerateFormatter.toCamelCase;
 import static io.daobab.statement.where.WhereAnd.and;
 
 
-public class ImageGenerator implements MetaSpecificsTables {
+public class ImageGenerator implements MetaDataTables {
 
     private String fileDirectoryPath;
     private String javaPackage;
@@ -36,9 +36,6 @@ public class ImageGenerator implements MetaSpecificsTables {
                 .where(and()
                         .ifTrue(catalog != null, w -> w.equal(tabMetaSchema.colCatalogName(), catalog)))
                 .forEach(schema -> generateTables(dataBaseMetaData, catalog, schema));
-
-//        generateTables(dataBaseMetaData,catalog,null);
-//        generateTables(dataBaseMetaData,null,null);
 
     }
 
@@ -62,7 +59,6 @@ public class ImageGenerator implements MetaSpecificsTables {
 
         for (MetaTable table : tables) {
             if (table.getCamelName() == null) continue;
-//            String camel= toCamelCase(table.getTableName());
             table.setCamelName(getFreeName(tables, toCamelCase(table.getTableName()), table.colCamelName()));
 
             List<MetaColumn> columns = dataBaseMetaData.getColumns().select(tabMetaColumn)
@@ -72,9 +68,6 @@ public class ImageGenerator implements MetaSpecificsTables {
                             .equal(tabMetaColumn.colTableName(), table))
                     .findMany();
 
-            for (MetaColumn column : columns) {
-
-            }
         }
 
     }
@@ -142,30 +135,5 @@ public class ImageGenerator implements MetaSpecificsTables {
         this.generateTypeScriptClasses = generateTypeScriptClasses;
     }
 
-
-//    private void generateColumn(MetaColumn column) {
-//
-//        Replacer replacer = new Replacer();
-//
-//        boolean columnAndTypeTheSameType = column.getFieldClass().getSimpleName().equalsIgnoreCase(column.getFinalFieldName());
-//
-//        if (byte[].class.equals(column.getFieldClass()) || columnAndTypeTheSameType) {
-//            replacer.add(GenKeys.CLASS_FULL_NAME, "");
-//        } else {
-//            replacer.add(GenKeys.CLASS_FULL_NAME, "import " + column.getFieldClass().getName() + ";");
-//        }
-//        replacer.add(GenKeys.CLASS_SIMPLE_NAME, columnAndTypeTheSameType ? column.getFieldClass().getName() : column.getFieldClass().getSimpleName());
-//        replacer.add(GenKeys.COLUMN_NAME, column.getColumnName());
-//        replacer.add(GenKeys.INTERFACE_NAME, column.getInterfaceName());
-//        replacer.add(GenKeys.FIELD_NAME, column.getFinalFieldName());
-//        replacer.add(GenKeys.TABLES_AND_TYPE, column.getTableTypeDescription());
-//        replacer.add(GenKeys.DB_TYPE, TypeConverter.getDbTypeName(column.getDatatype().getType()));
-//        replacer.add(GenKeys.PACKAGE, getJavaPackage());
-//
-//        column.setAlreadyGenerated(true);
-//
-//        SaveGenerated.saveGeneratedTo(replacer.replateAll(coltemp), getFileDirectoryPath(), getSchema(), "column", column.getFinalFieldName(), FileType.JAVA, isOverride());
-//
-//    }
 
 }

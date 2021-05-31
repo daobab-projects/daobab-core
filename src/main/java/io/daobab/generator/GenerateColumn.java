@@ -17,7 +17,6 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
     private String javaPackage;
     private String fieldName;
     private String finalFieldName;
-//    private boolean schemaIntoTableName=false;
 
     private boolean alreadyGenerated;
 
@@ -30,13 +29,13 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
     public GenerateColumn(String columnName, Class<?> fieldClass) {
         setColumnName(columnName.replace("\\s", "_").replace("#", "_"));
         setFieldClass(fieldClass);
-//        addTableUsage(table,jdbcType);
     }
 
     public void addTableUsage(String tableName, String jdbcType) {
         tables.add(new TableAndType(tableName, jdbcType));
     }
 
+    @Override
     public String toString() {
         return "name:" + columnName + ",type:" + dataType;
     }
@@ -154,14 +153,8 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
     }
 
     public GeneratedColumnInTable getColumnInTableOrCreate(String tableName) {
-        GeneratedColumnInTable rv = this.get(tableName);
-        if (rv == null) {
-            rv = new GeneratedColumnInTable();
-            this.put(tableName, rv);
-        }
-        return rv;
+        return this.computeIfAbsent(tableName, k -> new GeneratedColumnInTable());
     }
-
 
     private class TableAndType {
         private String table;
@@ -178,9 +171,8 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         StringBuilder sb = new StringBuilder();
         sb.append("    /**\n");
         for (TableAndType tt : tables) {
-            sb.append("     * " + tt.table + ": " + tt.type + "\n");
+            sb.append("     * ").append(tt.table).append(": ").append(tt.type).append("\n");
         }
-
         sb.append("     */\n");
 
         return sb.toString();

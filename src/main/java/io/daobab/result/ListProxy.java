@@ -1,17 +1,17 @@
 package io.daobab.result;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 public class ListProxy<T> implements List<T> {
-
-    ArrayList<T> dd;
 
     List<T> entities;
 
     public ListProxy(List<T> entities) {
         this.entities = entities;
     }
-
 
     @Override
     public int size() {
@@ -39,7 +39,7 @@ public class ListProxy<T> implements List<T> {
     }
 
     @Override
-    public <T> T[] toArray(T[] ts) {
+    public <T1> T1[] toArray(T1[] ts) {
         return entities.toArray(ts);
     }
 

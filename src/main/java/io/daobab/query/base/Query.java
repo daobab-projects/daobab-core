@@ -13,7 +13,7 @@ import io.daobab.model.TableColumn;
 import io.daobab.query.marschal.Marschaller;
 import io.daobab.statement.base.IdentifierStorage;
 import io.daobab.statement.condition.*;
-import io.daobab.statement.function.base.ColumnFunction;
+import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
@@ -32,18 +32,18 @@ import java.util.function.UnaryOperator;
 public abstract class Query<E extends Entity, Q extends Query> implements QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, RemoteQuery<Q>, ILoggerBean {
 
     public List<Column<?, ?, ?>> _groupBy = new LinkedList<>();
+    public String _groupByAlias = null;
     public boolean _unique = false;
     public boolean _calcJoins = false;
     private boolean logQueryEnabled = false;
     protected Order orderBy;
-    protected boolean refreshCasheWhenNoResult = false;
     protected String _nativeQuery;
-    private List<TableColumn> fields = new ArrayList<>();
+    protected List<TableColumn> fields = new ArrayList<>();
     private List<JoinWrapper> joins = new ArrayList<>();
     private IdentifierStorage identifierStorage;
     private QueryTarget target;
     private String entityName;
-    private Class entityClass;
+    private Class<E> entityClass;
     private Where whereWrapper;
     private Having havingWrapper;
     private Count _count;
@@ -85,7 +85,6 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
         to.limit = from.limit;
         to._unique = from._unique;
         to._calcJoins = from._calcJoins;
-        to.refreshCasheWhenNoResult = from.refreshCasheWhenNoResult;
         to._nativeQuery = from._nativeQuery;
         to.identifier = from.identifier;
        // to.logQueryConsumer = from.logQueryConsumer;
@@ -108,8 +107,10 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
     }
 
 
-
-
+    public Q groupBy(String alias) {
+        this._groupByAlias=alias;
+        return (Q) this;
+    }
     public Q groupBy(Column<?, ?, ?>... columns) {
         if (columns == null || columns.length == 0) return (Q) this;
         _groupBy.addAll(Arrays.asList(columns));
@@ -295,7 +296,7 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
         this.entityName = entityName;
     }
 
-    public Class getEntityClass() {
+    public Class<E> getEntityClass() {
         return entityClass;
     }
 
@@ -358,15 +359,15 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
 
         Object where = rv.get(DictRemoteKey.WHERE);
         Object fields = rv.get(DictRemoteKey.FIELDS);
-        Object entityName = rv.get(DictRemoteKey.ENTITY_NAME);
-        Object entityClass = rv.get(DictRemoteKey.ENTITY_CLASS);
+        Object remoteEntityName = rv.get(DictRemoteKey.ENTITY_NAME);
+        Object remoteEntityClass = rv.get(DictRemoteKey.ENTITY_CLASS);
         Object unique = rv.get(DictRemoteKey.UNIQUE);
         Object cache = rv.get(DictRemoteKey.CACHE);
 
-        Entity ent = Marschaller.fromRemote(target, (String) entityName);
+        Entity ent = Marschaller.fromRemote(target, (String) remoteEntityName);
 
         if (ent!= null) setEntityClass(ent.getEntityClass());
-        setEntityName((String) entityName);
+        setEntityName((String) remoteEntityName);
 
         if (unique!= null) _unique = "true".equals(unique);
 
@@ -398,9 +399,9 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
             try {
                 EnhancedEntity emb = (EnhancedEntity) getEntityClass().getDeclaredConstructor().newInstance();
                 if (emb.joinedColumns() != null) {
-                    for (Column<?, ?, ?> c : emb.joinedColumns()) {
+                    for (Column<?, ?, ?> joinedColumn : emb.joinedColumns()) {
                         for (TableColumn col : emb.columns()) {
-                            if (col.getColumn().equalsColumn(c)) {
+                            if (col.getColumn().equalsColumn(joinedColumn)) {
                                 getFields().add(col);
                             }
                         }
@@ -459,5 +460,15 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
 
     public void setSentQuery(String sentQuery) {
         this.sentQuery = sentQuery;
+    }
+
+    public <E extends Entity> Q from(E entity){
+        if (entity == null) throw new NullEntityException();
+        setEntityName(entity.getEntityName());
+        setEntityClass(entity.getEntityClass());
+        IdentifierStorage storage = new IdentifierStorage();
+        setIdentifierStorage(storage);
+        getIdentifierStorage().registerIdentifiers(getEntityName());
+        return (Q)this;
     }
 }

@@ -10,6 +10,7 @@ public class DateMatchLT extends DateMatchEQ {
         super(valueToCompare);
     }
 
+    @Override
     public boolean test(Object valueFromEntityField) {
         if (valueFromEntityField == null) {
             return false;

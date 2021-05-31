@@ -34,12 +34,10 @@ public interface QuerySetOperator<Q extends Query> {
         return (Q) this;
     }
 
-
     default Q intersect(Query<?, ?> query) {
         this.addSetOperator(new SetOperator(SetOperator.INTERSECT, query));
         return (Q) this;
     }
-
 
     default Q minus(Query<?, ?> query) {
         this.addSetOperator(new SetOperator(SetOperator.MINUS, query));

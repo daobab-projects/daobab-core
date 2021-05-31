@@ -2,7 +2,6 @@ package io.daobab.result;
 
 import io.daobab.model.Plate;
 import io.daobab.model.TableColumn;
-import io.daobab.target.protection.AccessProtector;
 
 import java.util.Collection;
 import java.util.Iterator;

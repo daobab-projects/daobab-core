@@ -38,7 +38,6 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
         findMany().stream().forEach(consumer::accept);
     }
 
-
     Entities<E> copy();
 
     Entities<E> clone();

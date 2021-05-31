@@ -1,18 +1,12 @@
 package io.daobab.generator;
 
 import io.daobab.model.Column;
-import io.daobab.model.PrimaryCompositeKey;
-import io.daobab.model.PrimaryKey;
 import io.daobab.target.database.JdbcType;
 
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import static io.daobab.generator.DaobabClassGeneratorTemplates.COLUMN_TEMPLATE;
 

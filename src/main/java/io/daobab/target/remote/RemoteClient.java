@@ -3,10 +3,7 @@ package io.daobab.target.remote;
 import io.daobab.error.RemoteDaobabException;
 import io.daobab.error.RemoteReadingException;
 import io.daobab.error.RemoteTargetCanNotHandleOpenedTransactionException;
-import io.daobab.model.Entity;
-import io.daobab.model.EntityMap;
-import io.daobab.model.Plate;
-import io.daobab.model.ResponseWrapper;
+import io.daobab.model.*;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
 import io.daobab.result.Entities;
@@ -222,6 +219,11 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
 
     @Override
     public <E extends Entity> String toSqlQuery(Query<E, ?> query) {
+        return null;
+    }
+
+    @Override
+    public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
         return null;
     }
 }

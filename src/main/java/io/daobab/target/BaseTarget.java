@@ -8,10 +8,10 @@ import io.daobab.target.database.TransactionalTarget;
 import io.daobab.target.interceptor.DaobabInterceptor;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
-import io.daobab.target.statistic.StatisticProvider;
 import io.daobab.target.statistic.StatisticCollector;
 import io.daobab.target.statistic.StatisticCollectorImpl;
 import io.daobab.target.statistic.StatisticCollectorProvider;
+import io.daobab.target.statistic.StatisticProvider;
 import io.daobab.target.statistic.table.StatisticRecord;
 import io.daobab.transaction.Propagation;
 import io.daobab.transaction.TransactionIndicator;
@@ -184,6 +184,7 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         this.statisticEnabled = statisticEnabled;
     }
 
+    @Override
     public AccessProtector getAccessProtector() {
         return accessProtector;
     }

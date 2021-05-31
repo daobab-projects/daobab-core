@@ -61,79 +61,53 @@ public interface TypeConverter {
             case (Types.BIGINT):
                 return DictFieldType.CLASS_BIG_INTEGER;
             case (Types.BINARY):
-                return DictFieldType.CLASS_BYTE_ARRAY;
-            case (Types.BIT):
-                return DictFieldType.CLASS_BOOLEAN;
             case (Types.BLOB):
                 return DictFieldType.CLASS_BYTE_ARRAY;
+            case (Types.BIT):
             case (Types.BOOLEAN):
                 return DictFieldType.CLASS_BOOLEAN;
             case (Types.CHAR):
-                return DictFieldType.CLASS_STRING;
             case (Types.CLOB):
                 return DictFieldType.CLASS_STRING;
-            case (Types.DATALINK):
-                return Object.class;
             case (Types.DATE):
-                return Date.class;
-            case (Types.DECIMAL):
-                return DictFieldType.CLASS_BIG_DECIMAL;
-            case (Types.DISTINCT):
-                return Object.class;
-            case (Types.DOUBLE):
-                return DictFieldType.CLASS_BIG_DECIMAL;
-            case (Types.FLOAT):
-                return DictFieldType.CLASS_BIG_DECIMAL;
-            case (Types.INTEGER):
-                return DictFieldType.CLASS_BIG_DECIMAL;
-            case (Types.JAVA_OBJECT):
-                return Object.class;
-            case (Types.LONGNVARCHAR):
-                return String.class;
-            case (Types.LONGVARBINARY):
-                return byte[].class;
-            case (Types.LONGVARCHAR):
-                return String.class;
-            case (Types.NCHAR):
-                return String.class;
-            case (Types.NCLOB):
-                return String.class;
-            case (Types.NULL):
-                return Object.class;
-            case (Types.NUMERIC):
-                return DictFieldType.CLASS_BIG_DECIMAL;
-            case (Types.NVARCHAR):
-                return String.class;
-            case (Types.OTHER):
-                return Object.class;
-            case (Types.REAL):
-                return Float.class;
-            case (Types.REF):
-                return Object.class;
-            case (Types.REF_CURSOR):
-                return Object.class;
-            case (Types.ROWID):
-                return Object.class;
-            case (Types.SMALLINT):
-                return Integer.class;
-            case (Types.SQLXML):
-                return String.class;
-            case (Types.STRUCT):
-                return Object.class;
-            case (Types.TIME):
-                return Time.class;
             case (Types.TIME_WITH_TIMEZONE):
                 return Date.class;
-            case (Types.TIMESTAMP):
-                return Timestamp.class;
-            case (Types.TIMESTAMP_WITH_TIMEZONE):
-                return Timestamp.class;
-            case (Types.TINYINT):
-                return Integer.class;
+            case (Types.DECIMAL):
+            case (Types.FLOAT):
+            case (Types.DOUBLE):
+            case (Types.INTEGER):
+            case (Types.NUMERIC):
+                return DictFieldType.CLASS_BIG_DECIMAL;
+            case (Types.LONGNVARCHAR):
+            case (Types.LONGVARCHAR):
+            case (Types.NCHAR):
+            case (Types.NVARCHAR):
+            case (Types.VARCHAR):
+            case (Types.SQLXML):
+            case (Types.NCLOB):
+                return String.class;
+            case (Types.LONGVARBINARY):
             case (Types.VARBINARY):
                 return byte[].class;
-            case (Types.VARCHAR):
-                return String.class;
+            case (Types.REAL):
+                return Float.class;
+            case (Types.SMALLINT):
+            case (Types.TINYINT):
+                return Integer.class;
+            case (Types.TIME):
+                return Time.class;
+            case (Types.TIMESTAMP):
+            case (Types.TIMESTAMP_WITH_TIMEZONE):
+                return Timestamp.class;
+            case (Types.NULL):
+            case (Types.OTHER):
+            case (Types.REF):
+            case (Types.REF_CURSOR):
+            case (Types.ROWID):
+            case (Types.STRUCT):
+            case (Types.JAVA_OBJECT):
+            case (Types.DISTINCT):
+            case (Types.DATALINK):
             default:
                 return Object.class;
         }
@@ -240,7 +214,7 @@ public interface TypeConverter {
 
     static boolean isOneOf(Class<?> clazz, Class... classes) {
         if (clazz == null || classes == null) return false;
-        for (Class c : classes) {
+        for (Class<?> c : classes) {
             if (clazz.equals(c)) return true;
         }
         return false;

@@ -9,7 +9,7 @@ import io.daobab.model.EntityRelation;
  */
 public interface InnerQueryEntity<E extends Entity> {
 
-    InnerSelectManyEntities<E> innerResult();
+//    InnerSelectManyEntities<E> innerResult();
 
     <E1 extends Entity, F, R extends EntityRelation> InnerQueryField<E1, F> limitToField(Column<E1, F, R> field);
 

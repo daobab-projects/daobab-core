@@ -45,7 +45,7 @@ public interface Plates extends Serializable, List<Plate>, Cloneable, JsonListHa
     public Plates limit(QueryPlate query);
 
     default <F, R extends EntityRelation> List<F> getFieldList(Column<?, F, R> col) {
-        return stream().map((entity) -> col.getValueOf((R) entity)).collect(Collectors.toList());
+        return stream().map(entity -> col.getValueOf((R) entity)).collect(Collectors.toList());
     }
 
     void markRefreshCache();
@@ -57,7 +57,7 @@ public interface Plates extends Serializable, List<Plate>, Cloneable, JsonListHa
 
 
     default Plates filterBySize(int from, int to) {
-        if (to == 0) return null;
+        if (to == 0) return new PlateBuffer(Collections.emptyList());
 
         int colsize = this.size();
         if (to > colsize) {

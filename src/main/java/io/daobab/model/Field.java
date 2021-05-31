@@ -1,5 +1,6 @@
 package io.daobab.model;
 
+
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */

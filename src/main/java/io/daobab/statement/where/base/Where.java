@@ -210,8 +210,12 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W)this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W in(Field<E, F, R> column, Collection<F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W inFields(Field<E, F, R> column, Collection<F> val) {
         tempColField(column, IN, val);
+        return (W)this;
+    }
+    public final <E extends Entity, F, R extends EntityRelation> W notInFields(Field<E, F, R> column, Collection<F> val) {
+        tempColField(column, NOT_IN, val);
         return (W)this;
     }
 
@@ -220,8 +224,8 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W)this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W notIn(Field<E, F, R> column, Collection<F> val) {
-        tempColField(column, NOT_IN, val);
+    public final <E extends Entity, F, R extends EntityRelation> W notIn(Field<E, F, R> column, Entities<? extends R> val) {
+        temp(column, NOT_IN, val);
         return (W)this;
     }
 

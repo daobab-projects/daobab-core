@@ -1,8 +1,10 @@
 package io.daobab.target.multi;
 
-import io.daobab.error.*;
+import io.daobab.error.DaobabException;
+import io.daobab.error.TargetUntransactional;
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
+import io.daobab.model.ProcedureParameters;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
 import io.daobab.result.Entities;
@@ -11,11 +13,13 @@ import io.daobab.target.BaseTarget;
 import io.daobab.target.OpenedTransactionTarget;
 import io.daobab.target.QueryTarget;
 import io.daobab.target.database.TransactionalTarget;
-import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.OperationType;
 import io.daobab.transaction.Propagation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
@@ -55,14 +59,16 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         return null;
     }
 
-    protected void register(Class<? extends Entity>... entityClazz) {
+    @SafeVarargs
+    protected final void register(Class<? extends Entity>... entityClazz) {
         if (entityClazz == null) return;
         for (Class<? extends Entity> entity : entityClazz) {
             getStorage().put(entity, null);
         }
     }
 
-    protected void register(Entities<? extends Entity>... entities) {
+    @SafeVarargs
+    protected final void register(Entities<? extends Entity>... entities) {
         if (entities == null) return;
         for (Entities<? extends Entity> entity : entities) {
             getStorage().put(entity.getEntityClazz(), entity);
@@ -75,7 +81,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         if (!isRegistered(entityClass)) {
             throw new DaobabException(String.format("Entity %s is not registered into %s. Register entity or put related collection into.", entityClass.getName(), this.getClass().getName()));
         }
-        return storage.keySet().contains(entityClass);
+        return storage.containsKey(entityClass);
     }
 
 
@@ -197,5 +203,10 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         }
     }
 
+
+    @Override
+    public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
+        throw new DaobabException("This target does not supports procedures.");
+    }
 
 }

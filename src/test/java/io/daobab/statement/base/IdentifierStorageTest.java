@@ -1,6 +1,5 @@
 package io.daobab.statement.base;
 
-import io.daobab.statement.base.IdentifierStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

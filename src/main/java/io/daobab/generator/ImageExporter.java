@@ -6,8 +6,11 @@ import io.daobab.target.database.DaobabDataBaseMetaData;
 import io.daobab.target.meta.table.*;
 
 import javax.sql.DataSource;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ImageExporter {
     DataSource ds;
@@ -82,7 +85,6 @@ public class ImageExporter {
         }
 
         System.out.println(columns.toJSON());
-//        System.out.println(tables.toJSON());
     }
 
     private Entities<MetaTable> readTables(ResultSet rs) throws SQLException {
@@ -92,11 +94,7 @@ public class ImageExporter {
             table.setTableName(rs.getString("TABLE_NAME"));
             table.setSchemaName(rs.getString("TABLE_SCHEM"));
             table.setCatalogName(rs.getString("TABLE_CAT"));
-//                    generateTable.setSchemaName(s.getSchema());
             table.setRemarks(rs.getString("REMARKS"));
-//            String type=rs.getString("TABLE_TYPE");
-//            generateTable.setType();
-//            if (s.canBeGenerated(generateTable.getTableName())) tables.add(generateTable);
             metaTables.add(table);
         }
 
@@ -112,8 +110,6 @@ public class ImageExporter {
             column.setSchemaName(rs.getString("TABLE_SCHEM"));
             column.setCatalogName(rs.getString("TABLE_CAT"));
             column.setColumnDefault(rs.getString("COLUMN_DEF"));
-//            generateTable.setColumnSize(rs.getString("TABLE_SCHEM"));
-//                    generateTable.setSchemaName(s.getSchema());
             column.setRemarks(rs.getString("REMARKS"));
             column.setColumnSize(rs.getInt("COLUMN_SIZE"));
             column.setDecimalDigits(rs.getInt("DECIMAL_DIGITS"));
@@ -130,6 +126,27 @@ public class ImageExporter {
         }
 
         return new EntityList<>(metaColumns, MetaColumn.class);
+    }
+
+
+    private Entities<MetaIndex> readIndexes(ResultSet rs) throws SQLException {
+        List<MetaIndex> metaColumns = new LinkedList<>();
+        while (rs.next()) {
+            MetaIndex column = new MetaIndex();
+            column.setCatalogName(rs.getString("TABLE_CAT"));
+            column.setSchemaName(rs.getString("TABLE_SCHEM"));
+            column.setTableName(rs.getString("TABLE_NAME"));
+            column.setIndexName(rs.getString("INDEX_NAME"));
+            column.setIndexType(rs.getString("TYPE"));
+
+
+            column.setColumnName(rs.getString("COLUMN_NAME"));
+            column.setAscending(rs.getString("ASC_OR_DESC"));
+            column.setCardinality(rs.getInt("CARDINALITY"));
+            metaColumns.add(column);
+        }
+
+        return new EntityList<>(metaColumns, MetaIndex.class);
     }
 
 

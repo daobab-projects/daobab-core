@@ -1,6 +1,7 @@
 package io.daobab.query.base;
 
 import io.daobab.model.*;
+import io.daobab.result.Entities;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.statement.where.WhereAnd;
@@ -153,12 +154,20 @@ public interface QueryWhere<Q extends Query> {
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereIn(Column<E, F, R> column, Collection<F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereInFields(Column<E, F, R> column, Collection<F> val) {
+        setWhereWrapper(new WhereAnd().inFields(column, val));
+        return (Q) this;
+    }
+    default <E extends Entity, F, R extends EntityRelation> Q whereIn(Column<E, F, R> column, Entities<? extends R> val) {
         setWhereWrapper(new WhereAnd().in(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereNotIn(Column<E, F, R> column, Collection<F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereNotInFields(Column<E, F, R> column, Collection<F> val) {
+        setWhereWrapper(new WhereAnd().notInFields(column, val));
+        return (Q) this;
+    }
+    default <E extends Entity, F, R extends EntityRelation> Q whereNotIn(Column<E, F, R> column, Entities<? extends R> val) {
         setWhereWrapper(new WhereAnd().notIn(column, val));
         return (Q) this;
     }

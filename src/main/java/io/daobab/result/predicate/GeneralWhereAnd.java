@@ -17,7 +17,7 @@ import static io.daobab.statement.where.base.WhereBase.OR;
 
 public class GeneralWhereAnd<E> implements WherePredicate<E> {
 
-    protected transient Logger log = LoggerFactory.getLogger(this.getClass());
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
 
     protected Where wrapperWhere;
     protected List<Integer> skipSteps;

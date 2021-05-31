@@ -30,7 +30,6 @@ public final class QueryPlate extends Query<Entity, QueryPlate> implements Query
         fromRemote(target, remote);
     }
 
-
     public QueryPlate(QueryTarget target, Entity... entities) {
         if (entities == null || entities.length == 0) {
             throw new NullOrEmptyParameter("entities");
@@ -58,6 +57,7 @@ public final class QueryPlate extends Query<Entity, QueryPlate> implements Query
         Column<?, ?, ?> fielddao = columndaos[0];
         if (fielddao == null) throw new ColumnMandatory();
         init(target, fielddao.getInstance());
+
         andColumn(fielddao);
 
         Set<String> entities = new HashSet<>();
@@ -69,7 +69,7 @@ public final class QueryPlate extends Query<Entity, QueryPlate> implements Query
         setSingleEntity(entities.size() == 1);
     }
 
-    public QueryPlate(QueryTarget target, List<Column<? extends Entity, ?, ?>> columndaos) {
+    public QueryPlate(QueryTarget target, List<? extends Column> columndaos) {
 
         Column<?, ?, ?> fielddao = columndaos.get(0);
         if (fielddao == null) throw new ColumnMandatory();
@@ -125,7 +125,6 @@ public final class QueryPlate extends Query<Entity, QueryPlate> implements Query
         }
         throw new TargetNoCacheNoEntityManagerException(getTarget());
     }
-
 
     public FieldsProvider<FlatPlate> flat() {
         return map(Plate::toFlat);

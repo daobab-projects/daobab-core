@@ -155,13 +155,7 @@ public class BasicAccessProtector implements AccessProtector {
     @Override
     public boolean isEntityAllowedFor(String entityName, OperationType operation) {
         if (!isEnabled()) return true;
-        Set<Access> rights = entityRights.get(entityName);
-//        boolean entityIsSpecified = rights != null;
-//
-////        if (!entityIsSpecified) {
-////            return DefaultAccessStrategy.ALLOW_UNSPECIFIED.equals(getStrategy());
-////        }
-        return OperationType.isAllowed(operation, getDefaultStrategy(), rights);
+        return OperationType.isAllowed(operation, getDefaultStrategy(), entityRights.get(entityName));
     }
 
     @Override

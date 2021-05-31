@@ -5,12 +5,11 @@ import java.util.TimeZone;
 
 public class DateMatchGTEQ extends DateMatchEQ {
 
-
     public DateMatchGTEQ(Object valueToCompare) {
         super(valueToCompare);
     }
 
-
+    @Override
     public boolean test(Object valueFromEntityField) {
         if (valueFromEntityField == null) {
             return false;

@@ -11,10 +11,10 @@ import io.daobab.target.OpenedTransactionTarget;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
 import io.daobab.target.protection.OperationType;
-import io.daobab.target.statistic.StatisticProvider;
 import io.daobab.target.statistic.StatisticCollector;
 import io.daobab.target.statistic.StatisticCollectorImpl;
 import io.daobab.target.statistic.StatisticCollectorProvider;
+import io.daobab.target.statistic.StatisticProvider;
 import io.daobab.target.statistic.table.StatisticRecord;
 import io.daobab.transaction.Propagation;
 import org.slf4j.Logger;
@@ -518,5 +518,11 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     public void setAccessProtector(AccessProtector accessProtector) {
         this.accessProtector = accessProtector;
+    }
+
+
+    @Override
+    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+        throw new DaobabException("This target does not supports procedures.");
     }
 }

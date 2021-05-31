@@ -19,6 +19,7 @@ public class MetaTable extends Table implements
         CamelName<MetaTable>,
         MetaCatalogName<MetaTable>,
         ColumnCount<MetaTable>,
+        TableType<MetaTable>,
 
         PrimaryKey<MetaTable, String, MetaTableName> {
 
@@ -36,7 +37,8 @@ public class MetaTable extends Table implements
                 new TableColumn(colColumnCount()),
                 new TableColumn(colSchemaName()).size(256),
                 new TableColumn(colCamelName()).size(256),
-                new TableColumn(colCatalogName()).size(256)
+                new TableColumn(colCatalogName()).size(256),
+                new TableColumn(colTableType()).size(256)
         );
     }
 

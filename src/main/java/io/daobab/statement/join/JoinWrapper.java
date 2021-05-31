@@ -1,7 +1,9 @@
 package io.daobab.statement.join;
 
 import io.daobab.experimental.dijsktra.Edge;
-import io.daobab.model.*;
+import io.daobab.model.Column;
+import io.daobab.model.Entity;
+import io.daobab.model.EntityRelation;
 import io.daobab.query.marschal.Marschaller;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
@@ -16,6 +18,7 @@ public class JoinWrapper<E extends Entity> {
 
     private JoinType type;
     private Column<?, ?, ?> byColumn;
+    private Column<?, ?, ?> byColumn2;
     private E table;
 
     private Where where;
@@ -28,6 +31,17 @@ public class JoinWrapper<E extends Entity> {
 
         WhereAnd wh = new WhereAnd();
         wh.equal(table, byColumn);
+        setWhere(wh);
+    }
+
+    public <E1 extends Entity, E2 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType join,Column<?, ?, ?> one, Column<?,?, ?> two, boolean mark) {
+        setType(join);
+        setByColumn(one);
+        setByColumn2(two);
+        setTable((E)one.getInstance());
+
+        WhereAnd wh = new WhereAnd();
+        wh.equalColumn( (Column<?, F, ?>)byColumn, (Column<?, F, ?>)byColumn2);
         setWhere(wh);
     }
 
@@ -96,6 +110,9 @@ public class JoinWrapper<E extends Entity> {
 
     public void setByColumn(Column<?, ?, ?> byColumn) {
         this.byColumn = byColumn;
+    }
+    public void setByColumn2(Column<?, ?, ?> byColumn) {
+        this.byColumn2 = byColumn;
     }
 
     public E getTable() {

@@ -12,7 +12,6 @@ import io.daobab.result.EntityByteBuffer;
 import io.daobab.statement.condition.Count;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryField;
-import io.daobab.statement.inner.InnerSelectManyEntities;
 import io.daobab.target.QueryTarget;
 import io.daobab.target.database.DataBaseTarget;
 
@@ -44,26 +43,27 @@ public final class QueryEntity<E extends Entity> extends Query<E, QueryEntity<E>
         entity.columns().forEach(e -> getFields().add(e));
     }
 
+
     public QueryEntity(String nativeQuery, QueryTarget target, E entity) {
         this(target,entity);
         this._nativeQuery = nativeQuery;
     }
 
 
-    /**
-     * Prepare Select to usage into Where clause as subselect
-     *
-     * @return
-     */
-    @Override
-    public InnerSelectManyEntities<E> innerResult() {
-
-        if (this.getTarget().isBuffer()) {
-            return new InnerSelectManyEntities<>(findMany());
-        } else {
-            return new InnerSelectManyEntities<>(this);
-        }
-    }
+//    /**
+//     * Prepare Select to usage into Where clause as subselect
+//     *
+//     * @return
+//     */
+//    @Override
+//    public InnerSelectManyEntities<E> innerResult() {
+//
+//        if (this.getTarget().isBuffer()) {
+//            return new InnerSelectManyEntities<>(findMany());
+//        } else {
+//            return new InnerSelectManyEntities<>(this);
+//        }
+//    }
 
 
 

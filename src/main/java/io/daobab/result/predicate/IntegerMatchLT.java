@@ -9,6 +9,7 @@ public class IntegerMatchLT extends IntegerMatchEQ {
         super(valueToCompare);
     }
 
+    @Override
     public boolean test(Integer valueFromEntityField) {
         return valueFromEntityField != null && valueToCompare > valueFromEntityField;
     }
