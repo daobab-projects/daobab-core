@@ -13,7 +13,7 @@ import io.daobab.model.TableColumn;
 import io.daobab.query.marschal.Marschaller;
 import io.daobab.statement.base.IdentifierStorage;
 import io.daobab.statement.condition.*;
-import io.daobab.statement.function.base.ColumnFunction;
+import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
@@ -36,7 +36,6 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
     public boolean _calcJoins = false;
     private boolean logQueryEnabled = false;
     protected Order orderBy;
-    protected boolean refreshCasheWhenNoResult = false;
     protected String _nativeQuery;
     private List<TableColumn> fields = new ArrayList<>();
     private List<JoinWrapper> joins = new ArrayList<>();
@@ -85,7 +84,6 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
         to.limit = from.limit;
         to._unique = from._unique;
         to._calcJoins = from._calcJoins;
-        to.refreshCasheWhenNoResult = from.refreshCasheWhenNoResult;
         to._nativeQuery = from._nativeQuery;
         to.identifier = from.identifier;
        // to.logQueryConsumer = from.logQueryConsumer;
@@ -457,5 +455,15 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
 
     public void setSentQuery(String sentQuery) {
         this.sentQuery = sentQuery;
+    }
+
+    public <E extends Entity> Q from(E entity){
+        if (entity == null) throw new NullEntityException();
+        setEntityName(entity.getEntityName());
+        setEntityClass(entity.getEntityClass());
+        IdentifierStorage storage = new IdentifierStorage();
+        setIdentifierStorage(storage);
+        getIdentifierStorage().registerIdentifiers(getEntityName());
+        return (Q)this;
     }
 }

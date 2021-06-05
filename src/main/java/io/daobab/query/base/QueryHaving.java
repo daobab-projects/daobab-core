@@ -2,7 +2,7 @@ package io.daobab.query.base;
 
 import io.daobab.model.*;
 import io.daobab.statement.condition.Having;
-import io.daobab.statement.function.base.ColumnFunction;
+import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.WhereOr;

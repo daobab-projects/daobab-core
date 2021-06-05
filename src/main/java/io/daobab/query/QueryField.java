@@ -7,10 +7,11 @@ import io.daobab.model.dummy.DummyColumnTemplate;
 import io.daobab.query.base.Query;
 import io.daobab.query.base.QueryJoin;
 import io.daobab.query.base.QueryType;
-import io.daobab.result.ManyCellsProvider;
+import io.daobab.query.marker.ColumnOrQuery;
+import io.daobab.query.marker.ManyCellsProvider;
 import io.daobab.statement.condition.Count;
-import io.daobab.statement.function.base.ColumnFunction;
-import io.daobab.statement.function.base.DummyColumnRelation;
+import io.daobab.statement.function.type.ColumnFunction;
+import io.daobab.statement.function.type.DummyColumnRelation;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.statement.inner.InnerSelectManyCells;
 import io.daobab.target.QueryTarget;
@@ -26,7 +27,7 @@ import java.util.Optional;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public final class QueryField<E extends Entity, F> extends Query<E, QueryField<E, F>> implements InnerQueryField<E, F>, ManyCellsProvider<F>, QueryJoin<QueryField<E, F>> {
+public final class QueryField<E extends Entity, F> extends Query<E, QueryField<E, F>> implements InnerQueryField<E, F>, ManyCellsProvider<F>, QueryJoin<QueryField<E, F>>, ColumnOrQuery<E,F,EntityRelation> {
 
 
     @SuppressWarnings("unused")

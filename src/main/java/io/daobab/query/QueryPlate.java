@@ -69,15 +69,7 @@ public final class QueryPlate extends Query<Entity, QueryPlate> implements Query
         setSingleEntity(entities.size() == 1);
     }
 
-    public <E extends Entity> QueryPlate from(E entity){
-        if (entity == null) throw new NullEntityException();
-        setEntityName(entity.getEntityName());
-        setEntityClass(entity.getEntityClass());
-        IdentifierStorage storage = new IdentifierStorage();
-        setIdentifierStorage(storage);
-        getIdentifierStorage().registerIdentifiers(getEntityName());
-        return this;
-    }
+
 
     public QueryPlate(QueryTarget target, List<Column<? extends Entity, ?, ?>> columndaos) {
 

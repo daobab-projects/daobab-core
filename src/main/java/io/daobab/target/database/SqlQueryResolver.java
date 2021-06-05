@@ -13,10 +13,11 @@ import io.daobab.query.QueryUpdate;
 import io.daobab.query.base.Query;
 import io.daobab.query.base.QuerySpecialParameters;
 import io.daobab.result.EntitiesProvider;
-import io.daobab.result.ManyCellsProvider;
+import io.daobab.query.marker.ManyCellsProvider;
 import io.daobab.statement.base.IdentifierStorage;
 import io.daobab.statement.condition.*;
 import io.daobab.statement.function.base.*;
+import io.daobab.statement.function.type.*;
 import io.daobab.statement.inner.InnerSelectManyCells;
 import io.daobab.statement.inner.InnerSelectManyEntities;
 import io.daobab.statement.join.JoinTracker;
@@ -726,18 +727,25 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
 
     @SuppressWarnings({"java:S1872", "java:S3740"})
     default StringBuilder columnFunctionToExpression(ColumnFunction columnFunction, IdentifierStorage storage, boolean internalfunction) {
-        if (columnFunction.getClass().getName().equals(SubstringColumnRelation.class.getName())) {
-            SubstringColumnRelation sdb = (SubstringColumnRelation) columnFunction;
-            return toSubstringColumnRelationQueryExpression(sdb, storage, sdb.getMode(), sdb.from, sdb.to, sdb.fromColumn, sdb.toColumn);
-        }
+
         if (columnFunction.getClass().getName().equals(CastColumnRelation.class.getName())) {
-            CastColumnRelation sdb = (CastColumnRelation) columnFunction;
-            return toCastColumnRelationQueryExpression(sdb, storage, sdb.getMode(), sdb.type);
+            CastColumnRelation function = (CastColumnRelation) columnFunction;
+            return toCastColumnRelationQueryExpression(function, storage, function.getMode(), function.type);
+        }
+
+        if (columnFunction.getClass().getName().equals(ManyArgumentsFunction.class.getName())) {
+            ManyArgumentsFunction function = (ManyArgumentsFunction) columnFunction;
+            StringBuilder sb= toManyArgumentsFunctionQueryExpression(function, storage,columnFunction.getMode());
+
+            if (!internalfunction && columnFunction.identifier != null && !columnFunction.identifier.trim().isEmpty()) {
+                sb.append(" as ").append(columnFunction.identifier).append(SPACE);
+            }
+            return sb;
         }
         StringBuilder sb = new StringBuilder();
         boolean table = columnFunction.columns != null;
         if (table) {
-            sb.append(columnFunction.getMode() + OPEN_BRACKET);
+            sb.append(columnFunction.getMode()).append(OPEN_BRACKET);
             int counter = 1;
 
             for (Column<?,?,?> col : columnFunction.columns) {
@@ -749,7 +757,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
                 }
                 counter++;
                 if (counter < columnFunction.columns.length + 1) {
-                    sb.append(SPACE + columnFunction.mediator + SPACE);
+                    sb.append(SPACE).append(columnFunction.mediator).append(SPACE);
                 }
             }
 
@@ -761,12 +769,17 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
                     .append(CLOSED_BRACKET);
         } else if (columnFunction.column == null) {
             sb.append(columnFunction.getMode())
-                    .append(OPEN_BRACKET)
-                    .append("*")
-                    .append(CLOSED_BRACKET);
+                    .append(OPEN_BRACKET);
+            if (columnFunction.query!=null){
+                sb.append(toSqlQuery(columnFunction.query,new IdentifierStorage()));
+            }else{
+                sb.append(columnFunction.isNoParameter()?"":"*");
+            }
+
+                    sb.append(CLOSED_BRACKET);
             storage.getIdentifierFor(columnFunction.getEntityName());
         } else {
-            sb.append(toColumnFunctionQueryExpression(columnFunction.column, storage, columnFunction.getMode()));
+            sb.append(toColumnFunctionQueryExpression(columnFunction.column, columnFunction.identifier, storage, columnFunction.getMode(),columnFunction.getFunctionMap()));
         }
 
 
@@ -776,41 +789,96 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return sb;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> StringBuilder toColumnFunctionQueryExpression(Column<E, F, R> column, IdentifierStorage storage, String mode) {
+    default <E extends Entity, F, R extends EntityRelation> StringBuilder toColumnFunctionQueryExpression(Column<E, F, R> column, String stringIdentifier, IdentifierStorage storage, String mode, Map<String,Object> params) {
         StringBuilder sb = new StringBuilder();
         sb.append(mode).append(OPEN_BRACKET);
+
         if (column instanceof ColumnFunction) {
-            ColumnFunction<?,?,?,?> formerColumn = (ColumnFunction<?,?,?,?>) column;
+            ColumnFunction<?, ?, ?, ?> formerColumn = (ColumnFunction<?, ?, ?, ?>) column;
             sb.append(columnFunctionToExpression(formerColumn, storage, true));
         } else {
+            if (column ==null && stringIdentifier !=null) {
+                sb.append(stringIdentifier);
+            }
+            Object obj=params.get(ColumnFunction.BEFORE_COL3);
+            if (obj!=null){
+                sb.append(objectToSomeInFunctions(obj,storage))
+                        .append(COMMA);
+            }
+            obj=params.get(ColumnFunction.BEFORE_COL2);
+            if (obj!=null){
+                sb.append(objectToSomeInFunctions(obj,storage))
+                        .append(COMMA);
+            }
+            obj=params.get(ColumnFunction.BEFORE_COL);
+            if (obj!=null){
+                sb.append(objectToSomeInFunctions(obj,storage))
+                        .append(COMMA);
+            }
+
             sb.append(storage.getIdentifierForColumn(column));
+
+            obj=params.get(ColumnFunction.AFTER_COL);
+            if (obj!=null){
+                sb.append(SPACE)
+                        .append(COMMA)
+                        .append(objectToSomeInFunctions(obj,storage));
+            }
+
+            obj=params.get(ColumnFunction.AFTER_COL2);
+            if (obj!=null){
+                sb.append(SPACE)
+                        .append(COMMA)
+                        .append(objectToSomeInFunctions(obj,storage));
+            }
+
+            obj=params.get(ColumnFunction.AFTER_COL3);
+            if (obj!=null){
+                sb.append(SPACE)
+                        .append(COMMA)
+                        .append(objectToSomeInFunctions(obj,storage));
+            }
+
+            obj=params.get(ColumnFunction.AFTER_COL4);
+            if (obj!=null){
+                sb.append(SPACE)
+                        .append(COMMA)
+                        .append(objectToSomeInFunctions(obj,storage));
+            }
+
         }
+
+
+
         sb.append(CLOSED_BRACKET);
         return sb;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> StringBuilder toSubstringColumnRelationQueryExpression(Column<E, F, R> column, IdentifierStorage storage,String mode,Integer from, Integer to,Column fromColumn,Column toColumn) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(mode).append(OPEN_BRACKET);
-        if (column instanceof ColumnFunction) {
-            ColumnFunction formerColumn = (ColumnFunction) column;
-            sb.append(columnFunctionToExpression(formerColumn, storage, true));
-        } else {
-            if (from != null && to != null) {
-                sb.append(storage.getIdentifierForColumn(column))
-                        .append(COMMA)
-                        .append(from)
-                        .append(COMMA)
-                        .append(to);
-            } else if (from == null && to != null) {
-                sb.append(storage.getIdentifierForColumn(column))
-                        .append(COMMA)
-                        .append(toColumnFunctionQueryExpression(fromColumn, storage,mode))
-                        .append(COMMA)
-                        .append(to);
+    default StringBuilder objectToSomeInFunctions(Object secondColumn,IdentifierStorage storage){
+        StringBuilder sb=new StringBuilder();
+        if (secondColumn!=null){
+            sb.append(SPACE);
+            if (secondColumn instanceof ColumnFunction){
+                sb.append(columnFunctionToExpression((ColumnFunction)secondColumn,storage,true));
+            }else if (secondColumn instanceof Column){
+                Column col=(Column)secondColumn;
+
+                sb.append(storage.getIdentifierForColumn(col));
+            }else if (secondColumn instanceof String){
+                sb.append(APOSTROPHE)
+                .append(valueStringToSQL(secondColumn))
+                .append(APOSTROPHE);
+//            }else if (secondColumn instanceof Number){
+//                sb.append(secondColumn);
+            }else if (secondColumn instanceof FunctionKey){
+                sb.append(((FunctionKey)secondColumn).getKey());
+            }else{
+                sb.append(secondColumn);
             }
+            sb.append(SPACE);
+
         }
-        sb.append(CLOSED_BRACKET);
+
         return sb;
     }
 
@@ -824,6 +892,33 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
             sb.append(storage.getIdentifierForColumn(column) + " as " + type.toString());
         }
         sb.append(CLOSED_BRACKET);
+        return sb;
+    }
+
+    default <E extends Entity, F, R extends EntityRelation> StringBuilder toManyArgumentsFunctionQueryExpression(Column<E, F, R> column, IdentifierStorage storage,  String mode) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(mode).append(OPEN_BRACKET);
+
+        ManyArgumentsFunction sdb = (ManyArgumentsFunction) column;
+        String separator=(String)sdb.getKeyValue(ColumnFunction.KEY_ARGUMENT);
+        List<Object> objects=(List<Object>)sdb.getKeyValue(ColumnFunction.KEY_VALUES);
+
+        int objsize=objects.size();
+        for(int i = 0; i < objsize; i++){
+            Object obj=objects.get(i);
+            if (obj instanceof ColumnFunction){
+                sb.append(columnFunctionToExpression((ColumnFunction)obj,storage,true));
+            }else if (obj instanceof Column){
+                sb.append(storage.getIdentifierForColumn((Column)obj));
+            }else{
+                sb.append(objectToSomeInFunctions(obj,storage));
+            }
+            if (i<objsize-1){
+                sb.append(separator);
+            }
+        }
+
+        sb.append(CLOSED_BRACKET).append(SPACE);
         return sb;
     }
 
