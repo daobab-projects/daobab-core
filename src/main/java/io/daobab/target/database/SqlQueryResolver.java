@@ -24,6 +24,7 @@ import io.daobab.statement.join.JoinTracker;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.base.Where;
 import io.daobab.target.Target;
+import io.daobab.model.ProcedureParameters;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -167,9 +168,9 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
                         rv.getSpecialParameters().put(rv.getCounter(), val);
                         rv.setCounter(rv.getCounter() + 1);
                     } else {
-                        values.append(APOSTROPHE);
-                        values.append(valueStringToSQL(val));
-                        values.append(APOSTROPHE);
+                        values.append(APOSTROPHE)
+                                .append(valueStringToSQL(val))
+                                .append(APOSTROPHE);
                     }
                     if (i < base.getSetFields().getCounter() - 1) {
                         sb.append(COMMA);
@@ -198,6 +199,26 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         rv.setQuery(sb);
 
         return rv;
+    }
+
+    default StringBuilder toSQL(Object val,StringBuilder values){
+        if (val == null) {
+            values.append("NULL");
+        } else if (val instanceof Date) {
+            values.append(toDate(getDataBaseProductName(), (Date) val));
+        } else if (val instanceof byte[]) {
+            values.append("?");
+//            rv.getSpecialParameters().put(rv.getCounter(), val);
+//            rv.setCounter(rv.getCounter() + 1);
+        } else if (val instanceof String){
+            values.append(APOSTROPHE)
+                    .append(valueStringToSQL(val))
+                    .append(APOSTROPHE);
+        } else{
+            values.append(val);
+        }
+
+        return values;
     }
 
     default <E extends Entity> String toSqlQuery(Query<E, ?> base) {
@@ -1005,7 +1026,6 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
             sb.append(APOSTROPHE);
         }
 
-
         if (valueIsDate) {
             sb.append(toDate(databaseengine, (Date) value));
         } else {
@@ -1020,6 +1040,9 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
 
     default StringBuilder valueStringToSQL(Object value) {
         StringBuilder sb = new StringBuilder();
+        if (value==null){
+            return sb;// do sth??
+        }
         String valStr = value.toString();
         String valStrLower = value.toString().toLowerCase();
         if (valStr.contains(";")
@@ -1029,6 +1052,18 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         }
         sb.append(value.toString().replace(APOSTROPHE, "''"));
         return sb;
+    }
+
+    @Override
+    //TODO: check null
+    default String toCallProcedureQuery(String procedureName, ProcedureParameters input){
+        StringBuilder sb = new StringBuilder();
+        sb.append("call ").append(procedureName).append(SPACE).append(OPEN_BRACKET);
+
+        sb.append(input.getValues().stream().map(o->toSQL(o,new StringBuilder()).toString()).collect(Collectors.joining(",")));
+        sb.append(CLOSED_BRACKET);
+
+        return sb.toString();
     }
 
 }

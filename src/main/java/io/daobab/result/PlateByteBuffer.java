@@ -311,4 +311,10 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
     public <E extends Entity> String toSqlQuery(Query<E, ?> query) {
         throw new DaobabException("This target does not produce sql query");
     }
+
+
+    @Override
+    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+        throw new DaobabException("This target does not supports procedures.");
+    }
 }

@@ -4,6 +4,7 @@ import io.daobab.error.DaobabSQLException;
 import io.daobab.error.TransactionAlreadyOpened;
 import io.daobab.error.TransactionClosedException;
 import io.daobab.model.Entity;
+import io.daobab.model.ProcedureParameters;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
 import io.daobab.query.base.QuerySpecialParameters;
@@ -148,6 +149,11 @@ public class OpenTransactionDataBaseTarget extends BaseTarget implements OpenedT
         return db.toSqlQuery(query);
     }
 
+    @Override
+    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+        return db.callProcedure(name,in,out);
+    }
+
 
     @Override
     public boolean isBuffer() {
@@ -193,6 +199,11 @@ public class OpenTransactionDataBaseTarget extends BaseTarget implements OpenedT
     @Override
     public <E extends Entity> QuerySpecialParameters toQueryUpdateExpression(QueryUpdate<E> base) {
         return db.toQueryUpdateExpression(base);
+    }
+
+    @Override
+    public String toCallProcedureQuery(String procedureName, ProcedureParameters input) {
+        return db.toCallProcedureQuery(procedureName,input);
     }
 
 

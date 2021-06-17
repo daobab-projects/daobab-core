@@ -439,4 +439,10 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     public void setAccessProtector(AccessProtector accessProtector) {
         this.accessProtector = accessProtector;
     }
+
+
+    @Override
+    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+        throw new DaobabException("This target does not supports procedures.");
+    }
 }

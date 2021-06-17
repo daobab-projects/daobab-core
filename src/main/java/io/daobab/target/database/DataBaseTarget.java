@@ -3,9 +3,10 @@ package io.daobab.target.database;
 import io.daobab.model.Entity;
 import io.daobab.query.QueryDelete;
 import io.daobab.query.QueryInsert;
+import io.daobab.query.QueryPlate;
 import io.daobab.query.QueryUpdate;
 import io.daobab.target.BaseTarget;
-import io.daobab.target.QueryReceiver;
+import io.daobab.model.ProcedureParameters;
 import io.daobab.target.meta.MetaData;
 import io.daobab.transaction.Propagation;
 
@@ -149,6 +150,8 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     public void setCatalogName(String catalogName) {
         this.catalogName = catalogName;
     }
+
+
 
 
 }

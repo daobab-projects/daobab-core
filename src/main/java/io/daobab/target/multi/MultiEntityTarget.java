@@ -3,6 +3,7 @@ package io.daobab.target.multi;
 import io.daobab.error.*;
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
+import io.daobab.model.ProcedureParameters;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
 import io.daobab.result.Entities;
@@ -197,5 +198,10 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         }
     }
 
+
+    @Override
+    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+        throw new DaobabException("This target does not supports procedures.");
+    }
 
 }
