@@ -128,7 +128,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
                 conn.setAutoCommit(false);
             }
             if (query.getEntity() != null) query.getEntity().beforeDelete(this);
-            String sqlquery = deleteQueryToExpression(query);
+            String sqlquery = toDeleteSqlQuery(query);
             query.setSentQuery(sqlquery);
             int rv = RSReader.execute(sqlquery, conn, this);
             if (query.getEntity() != null) query.getEntity().afterDelete(this);
@@ -156,7 +156,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
                 conn.setAutoCommit(false);
             }
             if (query.getEntity() != null) query.getEntity().beforeUpdate(this);
-            QuerySpecialParameters q = toQueryUpdateExpression(query);
+            QuerySpecialParameters q = toUpdateSqlQuery(query);
             query.setSentQuery(q.getQuery().toString());
             int rv = RSReader.executeUpdate(q, conn);
             if (query.getEntity() != null) query.getEntity().afterUpdate(this);
@@ -189,7 +189,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
             }
 
 //            query.getEntity().beforeInsert(this);
-            QuerySpecialParameters insertQueryParameters = insertQueryToExpression(query);
+            QuerySpecialParameters insertQueryParameters = toInsertSqlQuery(query);
 
 
             query.setSentQuery(insertQueryParameters.getQuery().toString());
@@ -510,7 +510,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         List<Column> columns=new ArrayList<>();
         columns.addAll(outEmpty.getColumns());
         getAccessProtector().removeViolatedColumns(columns, OperationType.READ);
-        String query=toCallProcedureQuery(name,in);
+        String query= toCallProcedureSqlQuery(name,in);
 
         System.out.println(query);
         return doSthOnConnection(query, (s, conn) -> {

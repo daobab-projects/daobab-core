@@ -10,13 +10,13 @@ import io.daobab.model.ProcedureParameters;
 
 public interface QueryConsumer {
 
-    <E extends Entity> String deleteQueryToExpression(QueryDelete<E> base);
+    <E extends Entity> String toDeleteSqlQuery(QueryDelete<E> base);
 
-    <E extends Entity> QuerySpecialParameters insertQueryToExpression(QueryInsert<E> base);
+    <E extends Entity> QuerySpecialParameters toInsertSqlQuery(QueryInsert<E> base);
 
     <E extends Entity> String toSqlQuery(Query<E, ?> base);
 
-    <E extends Entity> QuerySpecialParameters toQueryUpdateExpression(QueryUpdate<E> base);
+    <E extends Entity> QuerySpecialParameters toUpdateSqlQuery(QueryUpdate<E> base);
 
-    String toCallProcedureQuery(String procedureName, ProcedureParameters input);
+    String toCallProcedureSqlQuery(String procedureName, ProcedureParameters input);
 }

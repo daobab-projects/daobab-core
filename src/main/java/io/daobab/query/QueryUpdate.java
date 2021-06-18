@@ -85,7 +85,7 @@ public final class QueryUpdate<E extends Entity> extends Query<E, QueryUpdate<E>
     }
 
     public String getSQLQuery(QueryConsumer target) {
-        return target.toQueryUpdateExpression(this).getQuery().toString();
+        return target.toUpdateSqlQuery(this).getQuery().toString();
     }
 
 

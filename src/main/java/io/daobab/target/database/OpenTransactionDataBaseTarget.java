@@ -12,7 +12,6 @@ import io.daobab.result.PlateBuffer;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.OpenedTransactionTarget;
 import io.daobab.target.QueryReceiver;
-import io.daobab.target.QueryTarget;
 import io.daobab.target.meta.MetaData;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.transaction.Propagation;
@@ -95,13 +94,13 @@ public class OpenTransactionDataBaseTarget extends BaseTarget implements OpenedT
     }
 
     @Override
-    public <E extends Entity> String deleteQueryToExpression(QueryDelete<E> base) {
-        return db.deleteQueryToExpression(base);
+    public <E extends Entity> String toDeleteSqlQuery(QueryDelete<E> base) {
+        return db.toDeleteSqlQuery(base);
     }
 
     @Override
-    public <E extends Entity> QuerySpecialParameters insertQueryToExpression(QueryInsert<E> base) {
-        return db.insertQueryToExpression(base);
+    public <E extends Entity> QuerySpecialParameters toInsertSqlQuery(QueryInsert<E> base) {
+        return db.toInsertSqlQuery(base);
     }
 
     @Override
@@ -194,16 +193,14 @@ public class OpenTransactionDataBaseTarget extends BaseTarget implements OpenedT
         this.transactionActive = transactionActive;
     }
 
-
-
     @Override
-    public <E extends Entity> QuerySpecialParameters toQueryUpdateExpression(QueryUpdate<E> base) {
-        return db.toQueryUpdateExpression(base);
+    public <E extends Entity> QuerySpecialParameters toUpdateSqlQuery(QueryUpdate<E> base) {
+        return db.toUpdateSqlQuery(base);
     }
 
     @Override
-    public String toCallProcedureQuery(String procedureName, ProcedureParameters input) {
-        return db.toCallProcedureQuery(procedureName,input);
+    public String toCallProcedureSqlQuery(String procedureName, ProcedureParameters input) {
+        return db.toCallProcedureSqlQuery(procedureName,input);
     }
 
 

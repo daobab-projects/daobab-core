@@ -51,7 +51,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
     }
 
 
-    default <E extends Entity> String deleteQueryToExpression(QueryDelete<E> base) {
+    default <E extends Entity> String toDeleteSqlQuery(QueryDelete<E> base) {
 
         IdentifierStorage storage = base.getIdentifierStorage();
         Target dbtarget = base.getTarget();
@@ -116,7 +116,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
     }
 
 
-    default <E extends Entity> QuerySpecialParameters insertQueryToExpression(QueryInsert<E> base) {
+    default <E extends Entity> QuerySpecialParameters toInsertSqlQuery(QueryInsert<E> base) {
 
         QuerySpecialParameters rv = new QuerySpecialParameters();
 
@@ -424,7 +424,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return sb;
     }
 
-    default <E extends Entity> QuerySpecialParameters toQueryUpdateExpression(QueryUpdate<E> base) {
+    default <E extends Entity> QuerySpecialParameters toUpdateSqlQuery(QueryUpdate<E> base) {
         QuerySpecialParameters rv = new QuerySpecialParameters();
 
         StringBuilder sb = new StringBuilder();
@@ -1056,7 +1056,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
 
     @Override
     //TODO: check null
-    default String toCallProcedureQuery(String procedureName, ProcedureParameters input){
+    default String toCallProcedureSqlQuery(String procedureName, ProcedureParameters input){
         StringBuilder sb = new StringBuilder();
         sb.append("call ").append(procedureName).append(SPACE).append(OPEN_BRACKET);
 
