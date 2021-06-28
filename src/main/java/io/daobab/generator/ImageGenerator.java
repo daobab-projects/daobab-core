@@ -5,7 +5,7 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.result.Entities;
 import io.daobab.target.database.DaobabDataBaseMetaData;
-import io.daobab.target.meta.MetaSpecificsTables;
+import io.daobab.target.meta.MetaDataTables;
 import io.daobab.target.meta.table.MetaCatalog;
 import io.daobab.target.meta.table.MetaColumn;
 import io.daobab.target.meta.table.MetaSchema;
@@ -17,7 +17,7 @@ import static io.daobab.generator.GenerateFormatter.toCamelCase;
 import static io.daobab.statement.where.WhereAnd.and;
 
 
-public class ImageGenerator implements MetaSpecificsTables {
+public class ImageGenerator implements MetaDataTables {
 
     private String fileDirectoryPath;
     private String javaPackage;

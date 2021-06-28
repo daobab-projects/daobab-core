@@ -1,13 +1,18 @@
 package io.daobab.target.database;
 
+import io.daobab.error.ColumnMandatory;
+import io.daobab.error.EntityMandatory;
+import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.query.QueryDelete;
 import io.daobab.query.QueryInsert;
-import io.daobab.query.QueryPlate;
 import io.daobab.query.QueryUpdate;
+import io.daobab.statement.where.WhereAnd;
 import io.daobab.target.BaseTarget;
-import io.daobab.model.ProcedureParameters;
 import io.daobab.target.meta.MetaData;
+import io.daobab.target.meta.MetaDataTables;
+import io.daobab.target.meta.table.MetaColumn;
+import io.daobab.target.meta.table.MetaTable;
 import io.daobab.transaction.Propagation;
 
 import javax.sql.DataSource;
@@ -18,7 +23,7 @@ import java.util.UUID;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public abstract class DataBaseTarget extends BaseTarget implements DataBaseTargetLogic {
+public abstract class DataBaseTarget extends BaseTarget implements DataBaseTargetLogic, MetaDataTables {
 
     private List<Entity> tables = null;
     private DataSource dataSource;
@@ -140,6 +145,21 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
             }
         }
         return metaData;
+    }
+
+    public MetaColumn getMetaDataForColumn(Column<?, ?, ?> column) {
+        if (column == null) throw new ColumnMandatory();
+        return getMetaData().select(tabMetaColumn).where(new WhereAnd()
+                .equal(tabMetaColumn.colTableName(), column.getEntityName())
+                .equal(tabMetaColumn.colColumnName(), column.getColumnName()))
+                .findOne();
+    }
+
+    public <E extends Entity> MetaTable getMetaDataForTable(E entity) {
+        if (entity == null) throw new EntityMandatory();
+        return getMetaData().select(tabMetaTable)
+                .whereEqual(tabMetaTable.colTableName(), entity.getEntityName())
+                .findOne();
     }
 
 

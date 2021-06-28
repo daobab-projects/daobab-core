@@ -2,7 +2,11 @@ package io.daobab.target.database;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
+import io.daobab.result.Entities;
 import io.daobab.result.EntityList;
+import io.daobab.target.meta.column.dict.MetaRule;
+import io.daobab.target.meta.table.MetaForeignKey;
+import io.daobab.target.meta.table.MetaIndex;
 import io.daobab.target.multi.AboveMultiEntityTarget;
 import io.daobab.target.meta.MetaData;
 import io.daobab.target.meta.table.MetaColumn;
@@ -11,10 +15,7 @@ import io.daobab.target.meta.table.MetaTable;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaData {
 
@@ -37,7 +38,6 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
         DatabaseMetaData databaseMetaData = getSourceTarget().getDataSource().getConnection().getMetaData();
 
-
         ResultSet rsTable = databaseMetaData.getTables(catalog, schema, "%", new String[]{"TABLE", "VIEW"});
 
         while (rsTable.next()) {
@@ -46,15 +46,14 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
             mt.setRemarks(rsTable.getString("REMARKS"));
 //            mt.setTableType(rs.getString("TABLE_TYPE"));
 
-
             String primaryKeyColumn = null;
 
-            ResultSet rsPk = databaseMetaData.getPrimaryKeys("", schema, mt.getTableName());
+            ResultSet rsPk = databaseMetaData.getPrimaryKeys(catalog, schema, mt.getTableName());
             while (rsPk.next()) {
                 primaryKeyColumn = rsPk.getString("COLUMN_NAME");
             }
 
-            ResultSet rsColumn = databaseMetaData.getColumns("", schema, mt.getTableName(), "%");
+            ResultSet rsColumn = databaseMetaData.getColumns(catalog, schema, mt.getTableName(), "%");
 
             int counter = 0;
             while (rsColumn.next()) {
@@ -78,14 +77,61 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
             tables.add(mt);
         }
 
-//        put(tables,columns);
-
         tables.forEach(t -> quickAccessMetaTable.put(t.getEntityName(), t));
         columns.forEach(t -> quickAccessMetaColumn.put(t.getTableColumnName(), t));
-        put(new EntityList<>(tables, MetaTable.class), new EntityList<>(columns, MetaColumn.class));
 
+        put(new EntityList<>(tables, MetaTable.class),
+                new EntityList<>(columns, MetaColumn.class),
+                readIndexes(databaseMetaData.getIndexInfo(catalog, schema, "%", false,false)),
+                readForeignKeys(databaseMetaData.getExportedKeys(catalog, schema, "%")));
     }
 
+
+    private Entities<MetaIndex> readIndexes(ResultSet rs) throws SQLException {
+        List<MetaIndex> indexList = new LinkedList<>();
+        while (rs.next()) {
+            MetaIndex index = new MetaIndex();
+            index.setCatalogName(rs.getString("TABLE_CAT"));
+            index.setSchemaName(rs.getString("TABLE_SCHEM"));
+            index.setTableName(rs.getString("TABLE_NAME"));
+            index.setIndexName(rs.getString("INDEX_NAME"));
+            index.setIndexType(rs.getString("TYPE"));
+
+            index.setColumnName(rs.getString("COLUMN_NAME"));
+            index.setAscending(rs.getString("ASC_OR_DESC"));
+            index.setCardinality(rs.getInt("CARDINALITY"));
+
+            index.setTableColumnName(index.getTableName() + "." + index.getColumnName());
+            indexList.add(index);
+        }
+
+        return new EntityList<>(indexList, MetaIndex.class);
+    }
+
+    private Entities<MetaForeignKey> readForeignKeys(ResultSet rs) throws SQLException {
+        List<MetaForeignKey> foreignKeyList = new LinkedList<>();
+        while (rs.next()) {
+            MetaForeignKey foreignKey = new MetaForeignKey();
+
+            foreignKey.setPkCatalogName(rs.getString("PKTABLE_CAT"));
+            foreignKey.setPkSchemaName(rs.getString("PKTABLE_SCHEM"));
+            foreignKey.setPkTableName(rs.getString("PKTABLE_NAME"));
+            foreignKey.setPkColumnName(rs.getString("PKCOLUMN_NAME"));
+            foreignKey.setPkName(rs.getString("PK_NAME"));
+            foreignKey.setFkCatalogName(rs.getString("FKTABLE_CAT"));
+            foreignKey.setFkSchemaName(rs.getString("FKTABLE_SCHEM"));
+            foreignKey.setFkTableName(rs.getString("FKTABLE_NAME"));
+            foreignKey.setFkColumnName(rs.getString("FKCOLUMN_NAME"));
+            foreignKey.setFkName(rs.getString("FK_NAME"));
+            foreignKey.setKeySeq(rs.getString("KEY_SEQ"));
+            foreignKey.setUpdateRule(MetaRule.ofString(rs.getString("UPDATE_RULE")));
+            foreignKey.setDeleteRule(MetaRule.ofString(rs.getString("DELETE_RULE")));
+
+            foreignKeyList.add(foreignKey);
+        }
+
+        return new EntityList<>(foreignKeyList, MetaForeignKey.class);
+    }
 
     @Override
     protected DataBaseTarget getSourceTarget() {
@@ -94,12 +140,10 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
     public Optional<MetaColumn> getMetaColumn(Column column) {
         return Optional.ofNullable(quickAccessMetaColumn.get(column.getEntityName() + "." + column.getColumnName()));
-
     }
 
     public Optional<MetaTable> getMetaTable(Entity entity) {
         return Optional.ofNullable(quickAccessMetaTable.get(entity.getEntityName()));
     }
-
 
 }

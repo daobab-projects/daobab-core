@@ -137,7 +137,7 @@ public interface QueryTarget extends Target, QueryReceiver {
         return new QueryPlate(this, entities);
     }
 
-    default QueryPlate select(List<Column<? extends Entity, ?, ?>> columns) {
+    default QueryPlate select(List<? extends Column> columns) {
         return new QueryPlate(this, columns);
     }
 

@@ -133,6 +133,27 @@ public class ImageExporter {
     }
 
 
+    private Entities<MetaIndex> readIndexes(ResultSet rs) throws SQLException {
+        List<MetaIndex> metaColumns = new LinkedList<>();
+        while (rs.next()) {
+            MetaIndex column = new MetaIndex();
+            column.setCatalogName(rs.getString("TABLE_CAT"));
+            column.setSchemaName(rs.getString("TABLE_SCHEM"));
+            column.setTableName(rs.getString("TABLE_NAME"));
+            column.setIndexName(rs.getString("INDEX_NAME"));
+            column.setIndexType(rs.getString("TYPE"));
+
+
+            column.setColumnName(rs.getString("COLUMN_NAME"));
+            column.setAscending(rs.getString("ASC_OR_DESC"));
+            column.setCardinality(rs.getInt("CARDINALITY"));
+            metaColumns.add(column);
+        }
+
+        return new EntityList<>(metaColumns, MetaIndex.class);
+    }
+
+
     private Entities<MetaPrimaryKey> readPrimaryKeys(ResultSet rs) throws SQLException {
         List<MetaPrimaryKey> metaPrimaryKeys = new LinkedList<>();
         while (rs.next()) {
