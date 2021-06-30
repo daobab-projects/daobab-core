@@ -1,6 +1,6 @@
 package io.daobab.statement.function;
 
-public interface DictPostgreSql{
+public interface DictFunctionPostgreSql {
 
 //    String Functions
 

@@ -1,7 +1,7 @@
 package io.daobab.statement.function.dictionary;
 
 @SuppressWarnings("unused")
-public interface DictOracleFunction {
+public interface DictFunctionOracle {
 
     String INTERVAL = "INTERVAL";
     String DISTINCT = "DISTINCT";

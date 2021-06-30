@@ -1,7 +1,7 @@
 package io.daobab.statement.function.dictionary;
 
 @SuppressWarnings("unused")
-public interface DictMySqlFunction {
+public interface DictFunctionMySql {
 
     String INTERVAL="INTERVAL";
     String DISTINCT="DISTINCT";

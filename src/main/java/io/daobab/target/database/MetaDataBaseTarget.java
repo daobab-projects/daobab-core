@@ -35,8 +35,11 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
         List<MetaTable> tables = new ArrayList<>();
         List<MetaColumn> columns = new ArrayList<>();
+        List<MetaIndex> indexes = new ArrayList<>();
+        List<MetaForeignKey> foreignKeys = new ArrayList<>();
 
         DatabaseMetaData databaseMetaData = getSourceTarget().getDataSource().getConnection().getMetaData();
+
 
         ResultSet rsTable = databaseMetaData.getTables(catalog, schema, "%", new String[]{"TABLE", "VIEW"});
 
@@ -52,6 +55,9 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
             while (rsPk.next()) {
                 primaryKeyColumn = rsPk.getString("COLUMN_NAME");
             }
+
+            foreignKeys.addAll(readForeignKeys(databaseMetaData.getExportedKeys(catalog, schema, mt.getTableName())));
+            indexes.addAll(readIndexes(databaseMetaData.getIndexInfo(catalog, schema, mt.getTableName(), false,false)));
 
             ResultSet rsColumn = databaseMetaData.getColumns(catalog, schema, mt.getTableName(), "%");
 
@@ -82,12 +88,12 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
         put(new EntityList<>(tables, MetaTable.class),
                 new EntityList<>(columns, MetaColumn.class),
-                readIndexes(databaseMetaData.getIndexInfo(catalog, schema, "%", false,false)),
-                readForeignKeys(databaseMetaData.getExportedKeys(catalog, schema, "%")));
+                new EntityList<>(foreignKeys,MetaForeignKey.class),
+                new EntityList<>(indexes,MetaIndex.class));
     }
 
 
-    private Entities<MetaIndex> readIndexes(ResultSet rs) throws SQLException {
+    private List<MetaIndex> readIndexes(ResultSet rs) throws SQLException {
         List<MetaIndex> indexList = new LinkedList<>();
         while (rs.next()) {
             MetaIndex index = new MetaIndex();
@@ -105,10 +111,10 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
             indexList.add(index);
         }
 
-        return new EntityList<>(indexList, MetaIndex.class);
+        return indexList;
     }
 
-    private Entities<MetaForeignKey> readForeignKeys(ResultSet rs) throws SQLException {
+    private List<MetaForeignKey> readForeignKeys(ResultSet rs) throws SQLException {
         List<MetaForeignKey> foreignKeyList = new LinkedList<>();
         while (rs.next()) {
             MetaForeignKey foreignKey = new MetaForeignKey();
@@ -130,7 +136,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
             foreignKeyList.add(foreignKey);
         }
 
-        return new EntityList<>(foreignKeyList, MetaForeignKey.class);
+        return foreignKeyList;
     }
 
     @Override
