@@ -17,10 +17,7 @@ import io.daobab.statement.inner.InnerSelectManyCells;
 import io.daobab.target.QueryTarget;
 import io.daobab.target.database.DataBaseTarget;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 //TODO: czy count nie powinien byc ograniczony do jednego wejsciowego pola? I czy wogóle powinien tu byc
 
@@ -37,64 +34,42 @@ public final class QueryField<E extends Entity, F> extends Query<E, QueryField<E
     public QueryField(QueryTarget target, Column<E, F, ?> column) {
         if (column == null) throw new ColumnMandatory();
         init(target, column.getInstance());
-        List<TableColumn> list = new LinkedList<>();
-        list.add(getInfoColumn(column));
-        setFields(list);
+        fields.add(getInfoColumn(column));
     }
-
-    public QueryField(QueryTarget target, ColumnFunction<E, ?, ?,?> column) {
-        if (column == null) throw new ColumnMandatory();
-        init(target, column.getInstance());
-        List<TableColumn> list = new LinkedList<>();
-        list.add(getInfoColumn(column));
-        setFields(list);
-    }
-
 
     public QueryField(QueryTarget target, Map<String, Object> remote) {
         fromRemote(target, remote);
     }
 
+    @SuppressWarnings("unchecked")
     public QueryField(String nativeQuery, QueryTarget target, Column<E, ?, ?> column) {
-        if (column == null) throw new ColumnMandatory();
-        init(target, column.getInstance());
-        List<TableColumn> list = new LinkedList<>();
-        list.add(getInfoColumn(column));
-        setFields(list);
+        this(target,(Column<E, F, ?>)column);
         this._nativeQuery = nativeQuery;
     }
 
+    @SuppressWarnings("rawtypes")
     public DummyColumnRelation<Dual, String, EntityRelation> as(String asName) {
         return new DummyColumnRelation<>(this, DummyColumnTemplate.dummyColumn(asName));
     }
 
+    @SuppressWarnings({"unchecked","rawtypes"})
     public <F1> DummyColumnRelation<Dual, F1, EntityRelation> as(String asName, Class<F1> clazz) {
         return new DummyColumnRelation<>(this, DummyColumnTemplate.createDummyColumn(new Dual(), clazz, asName));
     }
 
 
     @Override
-    /**
-     * Prepare Select to usage into Where clause as subselect
-     * @param field
-     * @return
-     */
     public InnerSelectManyCells<E, F> innerResult() {
         if (getFields() == null) {
             //TODO: Decide what there: exception or null?
         }
 
-        InnerSelectManyCells<E, F> rv ;
         if (this.getTarget().isBuffer()) {
-            List<F> lf = findMany();
-            rv = new InnerSelectManyCells<>(lf);
+            return new InnerSelectManyCells<>(findMany());
         } else {
-            rv = new InnerSelectManyCells<>(this);
+            return new InnerSelectManyCells<>(this);
         }
-        return rv;
     }
-
-
 
     public long countBy(Count cnt) {
         setTempCount(cnt);

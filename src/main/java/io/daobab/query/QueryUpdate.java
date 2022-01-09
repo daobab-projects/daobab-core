@@ -28,7 +28,6 @@ public final class QueryUpdate<E extends Entity> extends Query<E, QueryUpdate<E>
     private QueryUpdate() {
     }
 
-
     public QueryUpdate(QueryTarget target, Map<String, Object> remote) {
         fromRemote(target, remote);
     }
@@ -88,7 +87,6 @@ public final class QueryUpdate<E extends Entity> extends Query<E, QueryUpdate<E>
         return target.toUpdateSqlQuery(this).getQuery().toString();
     }
 
-
     public SetFields getSetFields() {
         return setFields;
     }
@@ -97,7 +95,6 @@ public final class QueryUpdate<E extends Entity> extends Query<E, QueryUpdate<E>
         this.setFields = setFields;
         return this;
     }
-
 
     public <F, R extends EntityRelation> QueryUpdate<E> set(Column<E, F, R> key, R value) {
         set(new SetFields().setValue(key, value));

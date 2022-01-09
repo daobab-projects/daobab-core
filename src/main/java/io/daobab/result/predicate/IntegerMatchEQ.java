@@ -16,7 +16,7 @@ public class IntegerMatchEQ implements WherePredicate<Integer> {
         bt = new BitFieldInteger();
     }
 
-
+    @Override
     public boolean test(Integer valueFromEntityField) {
         return valueToCompare == valueFromEntityField;
     }

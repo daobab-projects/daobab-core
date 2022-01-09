@@ -24,7 +24,6 @@ public final class QueryDelete<E extends Entity> extends Query<E, QueryDelete<E>
     private QueryDelete() {
     }
 
-
     public QueryDelete(QueryTarget target, Map<String, Object> remote) {
         fromRemote(target, remote);
     }
@@ -34,13 +33,11 @@ public final class QueryDelete<E extends Entity> extends Query<E, QueryDelete<E>
         setEntity(entity);
     }
 
-
     public QueryDelete(QueryTarget target, Column<E, ?, ?> column) {
         if (column == null) throw new TargetMandatoryException();
         init(target, column.getEntityName());
         setFields(Collections.singletonList(getInfoColumn(column)));
     }
-
 
     public int execute(boolean transaction) {
         return getTarget().delete(this, transaction);

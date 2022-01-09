@@ -12,7 +12,6 @@ import java.util.function.Supplier;
  */
 public interface Target extends ILoggerBean, AccessProtectorProvider {
 
-
     boolean isBuffer();
 
     boolean isConnectedToDatabase();

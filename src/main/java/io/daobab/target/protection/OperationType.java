@@ -23,18 +23,43 @@ public enum OperationType {
 
         switch (operation) {
             case READ: {
-                return (rights.contains(Access.FULL) || rights.contains(Access.READ)) && !rights.contains(Access.NO_READ);
+                if (rights.contains(Access.NO_READ)){
+                    return false;
+                }
+                if (rights.contains(Access.FULL) || rights.contains(Access.READ)){
+                    return true;
+                }
+                break;
             }
             case INSERT: {
-                return (rights.contains(Access.FULL) || rights.contains(Access.WRITE)) && !rights.contains(Access.NO_INSERT);
+                if (rights.contains(Access.NO_INSERT)){
+                    return false;
+                }
+                if (rights.contains(Access.FULL) || rights.contains(Access.WRITE)){
+                    return true;
+                }
+                break;
             }
             case UPDATE: {
-                return (rights.contains(Access.FULL) || rights.contains(Access.WRITE)) && !rights.contains(Access.NO_UPDATE);
+                if (rights.contains(Access.NO_UPDATE)){
+                    return false;
+                }
+                if (rights.contains(Access.FULL) || rights.contains(Access.WRITE)){
+                    return true;
+                }
+                break;
             }
             case DELETE: {
-                return (rights.contains(Access.FULL) || rights.contains(Access.WRITE)) && !rights.contains(Access.NO_DELETE);
+                if (rights.contains(Access.NO_DELETE)){
+                    return false;
+                }
+                if (rights.contains(Access.FULL) || rights.contains(Access.WRITE)){
+                    return true;
+                }
+                break;
             }
         }
+
         return !DefaultAccessStrategy.DENY.equals(defaultAccessStrategy);
     }
 }

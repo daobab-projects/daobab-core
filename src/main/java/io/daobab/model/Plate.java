@@ -49,7 +49,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
         return (F) entityMap.get(df.getFieldName());
     }
 
-    public <F> F getValueOrDefault(Column<?, F, ?> df, F defaultValue) {
+    public <F> F getValueOrElse(Column<?, F, ?> df, F defaultValue) {
         if (df == null) return defaultValue;
         Map<String, Object> entityMap = get(df.getEntityName());
         if (entityMap == null) return defaultValue;
@@ -59,7 +59,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
         }
         return rv;
     }
-    public <F> F getValueOrDefault(Column<?, F, ?> df, Class<F> clazz,F defaultValue) {
+    public <F> F getValueOrElse(Column<?, F, ?> df, Class<F> clazz, F defaultValue) {
         if (df == null) return defaultValue;
         Map<String, Object> entityMap = get(df.getEntityName());
         if (entityMap == null) return defaultValue;
@@ -103,7 +103,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
         }
         return null;
     }
-    public <F> F getValueOrDefault(String fieldName,F defaultValue) {
+    public <F> F getValueOrElse(String fieldName, F defaultValue) {
         if (fieldName == null) return defaultValue;
         for (String entitykey : this.keySet()) {
             Map<String, Object> entityMap = get(entitykey);

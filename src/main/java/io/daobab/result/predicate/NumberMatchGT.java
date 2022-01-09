@@ -10,11 +10,11 @@ public class NumberMatchGT extends NumberMatchEQ {
 
     private BitFieldInteger bt = new BitFieldInteger();
 
-
     public NumberMatchGT(Object valueToCompare) {
         super(valueToCompare);
     }
 
+    @Override
     public boolean test(Object valueFromEntityField) {
         return valueFromEntityField != null && valueToCompare < (((Number) valueFromEntityField).doubleValue());
     }

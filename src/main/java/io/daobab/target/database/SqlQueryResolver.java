@@ -99,7 +99,6 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
             sb.append(whereToExpression(base.getWhereWrapper(), storage));
         }
 
-
         if (base.getOrderBy() != null) {
             sb.append(LINE_SEPARATOR);
             sb.append(" order by ");
@@ -132,14 +131,11 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
 
         boolean select = base.getSelectQuery() != null;
 
-        boolean putComa = false;
-
         if (base.getSetFields() != null) {
 
             StringBuilder values = new StringBuilder();
 
-            sb.append(LINE_SEPARATOR);
-            sb.append(OPEN_BRACKET);
+            sb.append(LINE_SEPARATOR).append(OPEN_BRACKET);
             for (int i = 1; i < base.getSetFields().getCounter(); i++) {
                 Column<?, ?, ?> cc = base.getSetFields().getFieldForPointer(i);
                 Object val;
@@ -230,9 +226,9 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
             String query = base.geNativeQuery();
 
             if (base.getTarget().isLogQueriesEnabled() || base.isLogQueryEnabled()) {
-                base.getTarget().getLog().info("[native query] " + query);
+                base.getTarget().getLog().info("[native query] {}", query);
             } else {
-                base.getTarget().getLog().debug("[native query] " + query);
+                base.getTarget().getLog().debug("[native query] {}", query);
             }
 
             sb.append(query);
@@ -910,10 +906,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
                         .append(COMMA)
                         .append(objectToSomeInFunctions(obj,storage));
             }
-
         }
-
-
 
         sb.append(CLOSED_BRACKET);
         return sb;
@@ -954,7 +947,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
             ColumnFunction<?, ?, ?, ?> formerColumn = (ColumnFunction<?, ?, ?, ?>) column;
             sb.append(columnFunctionToExpression(formerColumn, storage, true));
         } else {
-            sb.append(storage.getIdentifierForColumn(column) + " as " + type.toString());
+            sb.append(storage.getIdentifierForColumn(column)).append(" as ").append(type.toString());
         }
         sb.append(CLOSED_BRACKET);
         return sb;

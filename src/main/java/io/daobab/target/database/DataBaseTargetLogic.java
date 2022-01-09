@@ -243,7 +243,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (s, conn) -> {
             if (s.getFields() == null || s.getFields().isEmpty()) {
-                throw new DaobabException("No column to return specified.");
+                throw new DaobabException("Query points no column to return");
             }
 
             PreparedStatement stmt = null;
@@ -278,7 +278,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
 
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
             if (s.getFields() == null || s.getFields().isEmpty()) {
-                throw new DaobabException("No column to return specified.");
+                throw new DaobabException("Query points no column to return");
             }
 
             PreparedStatement stmt = null;
@@ -512,7 +512,6 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         getAccessProtector().removeViolatedColumns(columns, OperationType.READ);
         String query= toCallProcedureSqlQuery(name,in);
 
-        System.out.println(query);
         return doSthOnConnection(query, (s, conn) -> {
             PreparedStatement stmt = null;
             String identifier=null;

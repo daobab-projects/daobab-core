@@ -38,7 +38,7 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
     private boolean logQueryEnabled = false;
     protected Order orderBy;
     protected String _nativeQuery;
-    private List<TableColumn> fields = new ArrayList<>();
+    protected List<TableColumn> fields = new ArrayList<>();
     private List<JoinWrapper> joins = new ArrayList<>();
     private IdentifierStorage identifierStorage;
     private QueryTarget target;

@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 public interface QueryTarget extends Target, QueryReceiver {
 
     default <E extends Entity> QueryInsert<E> insert(E entity) {
@@ -62,11 +63,9 @@ public interface QueryTarget extends Target, QueryReceiver {
         return new QueryUpdate<>(this, sfs);
     }
 
-
     default <E extends Entity> QueryUpdate<E> update(SetFields set) {
         return new QueryUpdate<>(this, set);
     }
-
 
     default <E extends Entity, F> QueryField<E, F> select(Column<E, F, ?> col) {
         return new QueryField<>(this, col);
@@ -74,20 +73,15 @@ public interface QueryTarget extends Target, QueryReceiver {
 
 
     //=====  FIELD LIST ======
-
-
     default <E extends Entity> QueryEntity<E> select(E entity) {
         return new QueryEntity<>(this, entity);
     }
-
 
     default <E extends Entity & PrimaryKey<E, F, R>, T extends Entity & EntityRelation<T>, F, R extends EntityRelation<?>> QueryEntity<T> selectRelated(E entity, T rel) {
         return select(rel).whereEqual(entity.colID().transformTo(rel), entity.getId());
     }
 
     //=====  ENTITY LIST ======
-
-
     default <E extends Entity> Entities<E> findAll(E entity) {
         return new QueryEntity<>(this, entity).findMany();
     }
@@ -95,7 +89,6 @@ public interface QueryTarget extends Target, QueryReceiver {
     default <E extends Entity, F> List<F> findAll(Column<E, F, ?> column) {
         return new QueryField<>(this, column).findMany();
     }
-
 
     default <E extends Entity & PrimaryKey<E, F, ? extends EntityRelation>, F> E findOneByPk(E entity, F id) {
         return new QueryEntity<>(this, entity).whereEqual(entity.colID(), id).findOne();
@@ -141,7 +134,6 @@ public interface QueryTarget extends Target, QueryReceiver {
         return new QueryPlate(this, columns);
     }
 
-
     default <E extends PrimaryKey<E, F, ?>, F> QueryDelete<E> deletePkEntity(E entity) {
         return new QueryDelete<>(this, entity);
     }
@@ -160,9 +152,7 @@ public interface QueryTarget extends Target, QueryReceiver {
         }
     }
 
-
     //  NATIVE
-
     default <E extends Entity, F> QueryField<E, F> nativeSelect(String nativeQuery, Column<E, F, ?> col) {
         return new QueryField<>(nativeQuery, this, col);
     }
@@ -175,8 +165,8 @@ public interface QueryTarget extends Target, QueryReceiver {
         return new QueryPlate(nativeQuery, this, col);
     }
 
-    default <F> IdGeneratorProvider<F> getPrimaryKeyGenerator(PrimaryKey<?, F, ?> primaryKeyEntity) {
-        throw new DaobabException("Provide a getGeneratorFor() method into " + this.getClass().getName());
+    default <E extends Entity> IdGeneratorSupplier getPrimaryKeyGenerator(E entity) {
+        throw new DaobabException("Provide a getPrimaryKeyGenerator() method into " + this.getClass().getName());
     }
 
 

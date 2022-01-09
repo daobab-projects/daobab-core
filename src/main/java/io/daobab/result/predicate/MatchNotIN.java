@@ -6,6 +6,7 @@ public class MatchNotIN extends MatchIN {
         super(valueToCompare);
     }
 
+    @Override
     public boolean test(Object valueFromEntityField) {
         return !super.test(valueFromEntityField);
     }

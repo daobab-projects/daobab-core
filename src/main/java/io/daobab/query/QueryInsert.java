@@ -58,7 +58,7 @@ public final class QueryInsert<E extends Entity> extends Query<E, QueryInsert<E>
             if (SEQUENCE.equals(idgeneratorType)) {
                 setSequenceName(pk.getSequenceName());
             } else if (GENERATOR.equals(idgeneratorType)) {
-                pk.colID().setValue((EntityRelation) entity, target.getPrimaryKeyGenerator(pk).generateId());
+                pk.colID().setValue((EntityRelation) entity, target.getPrimaryKeyGenerator(pk).generateId(target));
             }
 
             setIdGenerator(idgeneratorType);
