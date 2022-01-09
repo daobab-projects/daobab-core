@@ -2,7 +2,6 @@ package io.daobab.target.database;
 
 import io.daobab.error.DaobabException;
 import io.daobab.target.QueryReceiver;
-import io.daobab.target.QueryTarget;
 import io.daobab.target.Target;
 
 import java.util.concurrent.CompletableFuture;

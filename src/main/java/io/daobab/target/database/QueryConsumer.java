@@ -1,12 +1,12 @@
 package io.daobab.target.database;
 
 import io.daobab.model.Entity;
+import io.daobab.model.ProcedureParameters;
 import io.daobab.query.QueryDelete;
 import io.daobab.query.QueryInsert;
 import io.daobab.query.QueryUpdate;
 import io.daobab.query.base.Query;
 import io.daobab.query.base.QuerySpecialParameters;
-import io.daobab.model.ProcedureParameters;
 
 public interface QueryConsumer {
 

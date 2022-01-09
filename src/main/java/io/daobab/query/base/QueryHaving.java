@@ -1,6 +1,9 @@
 package io.daobab.query.base;
 
-import io.daobab.model.*;
+import io.daobab.model.Column;
+import io.daobab.model.ColumnHaving;
+import io.daobab.model.Entity;
+import io.daobab.model.EntityRelation;
 import io.daobab.statement.condition.Having;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.inner.InnerQueryField;

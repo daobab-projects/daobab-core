@@ -149,7 +149,7 @@ public class OpenTransactionDataBaseTarget extends BaseTarget implements OpenedT
     }
 
     @Override
-    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+    public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
         return db.callProcedure(name,in,out);
     }
 

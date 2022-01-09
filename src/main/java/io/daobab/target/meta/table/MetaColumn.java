@@ -2,8 +2,8 @@ package io.daobab.target.meta.table;
 
 
 import io.daobab.clone.EntityDuplicator;
-import io.daobab.error.DaobabException;
-import io.daobab.model.*;
+import io.daobab.model.Table;
+import io.daobab.model.TableColumn;
 import io.daobab.target.meta.column.*;
 
 import java.util.Arrays;

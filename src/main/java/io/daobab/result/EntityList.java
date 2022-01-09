@@ -13,16 +13,14 @@ import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
 import io.daobab.target.protection.OperationType;
-import io.daobab.target.statistic.StatisticProvider;
 import io.daobab.target.statistic.StatisticCollector;
 import io.daobab.target.statistic.StatisticCollectorImpl;
 import io.daobab.target.statistic.StatisticCollectorProvider;
+import io.daobab.target.statistic.StatisticProvider;
 import io.daobab.target.statistic.table.StatisticRecord;
 import io.daobab.transaction.Propagation;
 import org.slf4j.Logger;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

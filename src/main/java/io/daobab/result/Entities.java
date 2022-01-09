@@ -3,7 +3,6 @@ package io.daobab.result;
 import io.daobab.converter.JsonListHandler;
 import io.daobab.error.NullConsumer;
 import io.daobab.model.Entity;
-import io.daobab.query.QueryEntity;
 import io.daobab.query.base.Query;
 import io.daobab.target.QueryReceiver;
 import io.daobab.target.QueryTarget;

@@ -1,7 +1,7 @@
 package io.daobab.generator;
 
-import io.daobab.model.CompositeColumns;
 import io.daobab.model.Composite;
+import io.daobab.model.CompositeColumns;
 
 import java.util.ArrayList;
 import java.util.Arrays;

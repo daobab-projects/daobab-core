@@ -5,11 +5,11 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.result.Entities;
 import io.daobab.result.EntityList;
+import io.daobab.target.meta.MetaData;
 import io.daobab.target.meta.MetaDataTables;
 import io.daobab.target.meta.column.dict.MetaRule;
 import io.daobab.target.meta.table.*;
 import io.daobab.target.multi.AboveMultiEntityTarget;
-import io.daobab.target.meta.MetaData;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;

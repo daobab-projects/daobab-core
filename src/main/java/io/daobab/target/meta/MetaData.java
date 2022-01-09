@@ -4,14 +4,14 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.result.Entities;
 import io.daobab.target.QueryTarget;
-import io.daobab.target.meta.table.MetaEntity;
-import io.daobab.target.meta.table.MetaSchema;
-import io.daobab.target.multi.MultiEntity;
 import io.daobab.target.database.JdbcType;
 import io.daobab.target.meta.column.Datatype;
 import io.daobab.target.meta.column.MetaColumnSize;
 import io.daobab.target.meta.table.MetaColumn;
+import io.daobab.target.meta.table.MetaEntity;
+import io.daobab.target.meta.table.MetaSchema;
 import io.daobab.target.meta.table.MetaTable;
+import io.daobab.target.multi.MultiEntity;
 
 import java.util.Optional;
 

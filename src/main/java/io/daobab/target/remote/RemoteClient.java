@@ -223,7 +223,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
     }
 
     @Override
-    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+    public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
         return null;
     }
 }

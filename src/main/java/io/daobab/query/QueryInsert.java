@@ -1,6 +1,5 @@
 package io.daobab.query;
 
-import io.daobab.model.IdGeneratorType;
 import io.daobab.error.DaobabException;
 import io.daobab.error.QueryMandatory;
 import io.daobab.generator.DictRemoteKey;

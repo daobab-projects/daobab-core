@@ -7,8 +7,6 @@ import io.daobab.model.PrimaryKey;
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
 import io.daobab.target.meta.column.MetaCatalogName;
-import io.daobab.target.meta.column.MetaSchemaName;
-import io.daobab.target.meta.column.Remarks;
 
 import java.util.Arrays;
 import java.util.List;

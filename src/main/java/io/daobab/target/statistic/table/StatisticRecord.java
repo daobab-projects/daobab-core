@@ -2,7 +2,10 @@ package io.daobab.target.statistic.table;
 
 
 import io.daobab.clone.EntityDuplicator;
-import io.daobab.model.*;
+import io.daobab.model.Column;
+import io.daobab.model.PrimaryKey;
+import io.daobab.model.Table;
+import io.daobab.model.TableColumn;
 import io.daobab.target.statistic.column.*;
 
 import java.util.Arrays;

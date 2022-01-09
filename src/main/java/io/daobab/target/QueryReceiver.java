@@ -42,5 +42,5 @@ public interface QueryReceiver extends Target{
 
     <E extends Entity> String toSqlQuery(Query<E, ?> query);
 
-    <Out extends ProcedureParameters,In extends ProcedureParameters> Out callProcedure(String name, In in, Out out);
+    <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out);
 }

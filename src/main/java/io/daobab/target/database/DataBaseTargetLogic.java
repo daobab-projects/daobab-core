@@ -1,7 +1,7 @@
 package io.daobab.target.database;
 
-import io.daobab.model.*;
 import io.daobab.error.*;
+import io.daobab.model.*;
 import io.daobab.parser.ParserNumber;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;

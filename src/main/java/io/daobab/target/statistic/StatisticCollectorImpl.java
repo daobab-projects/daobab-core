@@ -19,7 +19,6 @@ import java.util.UUID;
  */
 public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecord> implements StatisticCollector, ParserGeneral {
 
-
     private int bufferSize = 500;
     private String lineSep = System.getProperty("line.separator");
 
@@ -32,17 +31,17 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
         if (ignoreSuccessful) {
             return;
         }
-        StatisticRecord record = new StatisticRecord(query.getIdentifier());
+        StatisticRecord statisticRecord = new StatisticRecord(query.getIdentifier());
         if (query.getIdentifier() == null) {
             query.setIdentifier(generateIdentifier());
         }
-        record.setId(query.getIdentifier())
+        statisticRecord.setId(query.getIdentifier())
                 .setRequestDate(toCurrentTimestamp())
                 .setRelatedEntity(query.getEntityName())
                 .setRequestType(query.getQueryType())
                 .setStatus(CallStatus.SEND);
 
-        put(query.getIdentifier(), record);
+        put(query.getIdentifier(), statisticRecord);
     }
 
     @Override
@@ -82,18 +81,18 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
         }else{
             couse = result.getMessage();
         }
-        StatisticRecord record = get(query.getIdentifier());
-        if (record == null) {
-            record = new StatisticRecord(query.getIdentifier());
-            put(query.getIdentifier(), record);
+        StatisticRecord statisticRecord = get(query.getIdentifier());
+        if (statisticRecord == null) {
+            statisticRecord = new StatisticRecord(query.getIdentifier());
+            put(query.getIdentifier(), statisticRecord);
         }
-        record.setStatus(CallStatus.ERROR)
+        statisticRecord.setStatus(CallStatus.ERROR)
                 .setErrorDesc(couse);
-        long executionTime = getExecutionTime(record);
+        long executionTime = getExecutionTime(statisticRecord);
         if (executionTime < ignoreBelowMilliseconds) {
             remove(query.getIdentifier());
         }
-        record.setExecutionTime(executionTime);
+        statisticRecord.setExecutionTime(executionTime);
     }
 
     private long getExecutionTime(StatisticRecord record){
@@ -111,14 +110,14 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
         }
 
         String identifier=generateIdentifier();
-        StatisticRecord record = new StatisticRecord(identifier)
+        StatisticRecord statisticRecord = new StatisticRecord(identifier)
                 .setId(identifier)
                 .setRequestDate(toCurrentTimestamp())
                 .setProcedureName(procedureName)
                 .setRequestType(QueryType.PROCEDURE)
                 .setStatus(CallStatus.SEND);
 
-        put(identifier, record);
+        put(identifier, statisticRecord);
 
         return identifier;
     }
@@ -161,18 +160,18 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
         }else{
             couse = result.getMessage();
         }
-        StatisticRecord record = get(identifier);
-        if (record == null) {
-            record = new StatisticRecord(identifier);
-            put(identifier, record);
+        StatisticRecord statisticRecord = get(identifier);
+        if (statisticRecord == null) {
+            statisticRecord = new StatisticRecord(identifier);
+            put(identifier, statisticRecord);
         }
-        record.setStatus(CallStatus.ERROR)
+        statisticRecord.setStatus(CallStatus.ERROR)
                 .setErrorDesc(couse);
-        long executionTime = record.getResponseDate().getTime() - record.getRequestDate().getTime();
+        long executionTime = statisticRecord.getResponseDate().getTime() - statisticRecord.getRequestDate().getTime();
         if (executionTime < ignoreBelowMilliseconds) {
             remove(identifier);
         }
-        record.setExecutionTime(executionTime);
+        statisticRecord.setExecutionTime(executionTime);
     }
 
 

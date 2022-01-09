@@ -2,7 +2,10 @@ package io.daobab.query;
 
 import io.daobab.error.ColumnMandatory;
 import io.daobab.error.TargetNoCacheNoEntityManagerException;
-import io.daobab.model.*;
+import io.daobab.model.Column;
+import io.daobab.model.Dual;
+import io.daobab.model.Entity;
+import io.daobab.model.EntityRelation;
 import io.daobab.model.dummy.DummyColumnTemplate;
 import io.daobab.query.base.Query;
 import io.daobab.query.base.QueryJoin;
@@ -10,14 +13,15 @@ import io.daobab.query.base.QueryType;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.query.marker.ManyCellsProvider;
 import io.daobab.statement.condition.Count;
-import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.function.type.DummyColumnRelation;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.statement.inner.InnerSelectManyCells;
 import io.daobab.target.QueryTarget;
 import io.daobab.target.database.DataBaseTarget;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 //TODO: czy count nie powinien byc ograniczony do jednego wejsciowego pola? I czy wogóle powinien tu byc
 

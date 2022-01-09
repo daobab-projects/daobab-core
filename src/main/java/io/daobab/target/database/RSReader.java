@@ -32,7 +32,7 @@ public interface RSReader {
     }
 
     @SuppressWarnings({"unchecked","rawtypes"})
-    static <E extends Entity, F, R extends EntityRelation> Plate putColumnValueAtPlate(ResultSet rs, int colNo, Plate e, TableColumn col) throws SQLException {
+    static Plate putColumnValueAtPlate(ResultSet rs, int colNo, Plate e, TableColumn col) throws SQLException {
         e.setValue(col, rs.getObject(colNo, col.getColumn().getFieldClass()));
         return e;
     }

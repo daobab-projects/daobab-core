@@ -1,7 +1,9 @@
 package io.daobab.statement.join;
 
 import io.daobab.experimental.dijsktra.Edge;
-import io.daobab.model.*;
+import io.daobab.model.Column;
+import io.daobab.model.Entity;
+import io.daobab.model.EntityRelation;
 import io.daobab.query.marschal.Marschaller;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;

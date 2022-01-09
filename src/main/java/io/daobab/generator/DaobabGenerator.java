@@ -4,7 +4,9 @@ package io.daobab.generator;
 import io.daobab.parser.ParserString;
 import io.daobab.property.DaobabProperty;
 import io.daobab.property.PropertyReader;
-import io.daobab.target.database.*;
+import io.daobab.target.database.ConnectionGateway;
+import io.daobab.target.database.DaobabDataBaseMetaData;
+import io.daobab.target.database.JdbcType;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -14,7 +16,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static io.daobab.generator.GenerateFormatter.*;
+import static io.daobab.generator.GenerateFormatter.decapitalize;
 import static io.daobab.generator.TypeConverter.getDbTypeName;
 import static java.lang.String.join;
 
