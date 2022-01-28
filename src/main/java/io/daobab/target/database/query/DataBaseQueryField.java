@@ -12,6 +12,7 @@ import io.daobab.statement.function.type.DummyColumnRelation;
 import io.daobab.statement.inner.InnerQueryFields;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryField;
 
 import java.util.List;
 import java.util.Map;
@@ -80,6 +81,10 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
 
     public TableColumn getSelectedColumn() {
         return fields.get(0);
+    }
+
+    public FrozenDataBaseQueryField<E,F> freezeQuery() {
+        return new FrozenDataBaseQueryField<>(this);
     }
 
 }

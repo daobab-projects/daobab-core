@@ -402,9 +402,8 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         return identifier;
     }
 
-    public Q setIdentifier(String identifier) {
+    public void setIdentifier(String identifier) {
         this.identifier = identifier;
-        return (Q) this;
     }
 
     protected TableColumn getInfoColumn(ColumnFunction column) {

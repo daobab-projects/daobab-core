@@ -19,6 +19,10 @@ import io.daobab.target.database.converter.type.TypeConverterPKBased;
 import io.daobab.target.database.converter.type.TypeConverterPKBasedList;
 import io.daobab.target.database.meta.MetaData;
 import io.daobab.target.database.query.*;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryEntity;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryField;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryPlate;
+import io.daobab.target.database.query.frozen.FrozenQueryProvider;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.OperationType;
@@ -294,6 +298,35 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         });
     }
 
+    @Override
+    default <E extends Entity, F> List<F> readFieldList(FrozenDataBaseQueryField<E, F> frozenQuery, List<Object> parameters, Column<?, ?, ?> column, DatabaseTypeConverter<?, ?> typeConverter) {
+        return doSthOnConnection(frozenQuery, (s, conn) -> {
+
+            if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozenQuery);
+
+            ResultSetReader rsReader = getResultSetReader();
+            Statement stmt = null;
+            List<F> rv = new ArrayList<>();
+            try {
+                String sqlQuery = withParameters(frozenQuery, parameters);
+                frozenQuery.setSentQuery(sqlQuery);
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlQuery);
+
+                while (rs.next()) {
+                    rv.add(rsReader.readCell(typeConverter, rs, 1, column));
+                }
+                if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQuery, rv.size());
+                return rv;
+            } catch (SQLException e) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQuery, e);
+                throw new DaobabSQLException(e);
+            } finally {
+                rsReader.closeStatement(stmt, this);
+            }
+        });
+    }
+
     @SuppressWarnings("java:S3776")
     @Override
     default <E extends Entity> Entities<E> readEntityList(DataBaseQueryEntity<E> query) {
@@ -372,15 +405,118 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             } catch (SQLException e) {
                 if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
                 throw new DaobabSQLException(e);
-            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e1) {
+            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException |
+                     InvocationTargetException e1) {
                 if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e1);
                 throw new DaobabEntityCreationException(clazz, e1);
             } finally {
                 rsReader.closeStatement(stmt, this);
-
             }
         });
     }
+
+    @Override
+    default <E extends Entity> Entities<E> readEntityList(FrozenDataBaseQueryEntity<E> frozenQuery, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConvertersArr) {
+        return doSthOnConnection(frozenQuery, (frozen, conn) -> {
+            if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozen);
+            Class<E> clazz = frozen.getOriginalQuery().getEntityClass();
+
+            Statement stmt = null;
+            List<E> rv = new ArrayList<>();
+            ResultSetReader rsReader = getResultSetReader();
+            try {
+                String sqlQuery = withParameters(frozenQuery, parameters);
+                frozen.setSentQuery(sqlQuery);
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlQuery);
+
+                List<TableColumn> columns = frozen.getOriginalQuery().getFields();
+                Column[] columnsArray = new Column[columns.size()];
+
+                for (int i = 0; i < columns.size(); i++) {
+                    columnsArray[i] = columns.get(i).getColumn();
+                }
+
+                while (rs.next()) {
+                    E entity = clazz.getDeclaredConstructor().newInstance();
+
+                    for (int i = 0; i < columns.size(); i++) {
+                        Column col = columnsArray[i];
+                        if (typeConvertersArr[i].isEntityConverter()) {
+                            rsReader.readCell((KeyableCache) typeConvertersArr[i], rs, i + 1, col, e -> col.setValue((EntityRelation) entity, e));
+                        } else {
+                            col.setValue((EntityRelation) entity, rsReader.readCell(typeConvertersArr[i], rs, i + 1, col));
+                        }
+                    }
+
+                    entity.afterSelect(this);
+                    rv.add(entity);
+                }
+
+                for (int i = 0; i < columns.size(); i++) {
+                    if (typeConvertersArr[i].isEntityConverter()) {
+                        EntityConverter entityConverter = (EntityConverter) typeConvertersArr[i];
+                        entityConverter.readEntities();
+                        entityConverter.applyEntities();
+                    } else if (typeConvertersArr[i].isEntityListConverter()) {
+                        EntityListConverter entityConverter = (EntityListConverter) typeConvertersArr[i];
+                        entityConverter.readEntities(rv);
+                        entityConverter.applyEntities();
+                    }
+                }
+
+                if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozen, rv.size());
+                return new EntityList<>(rv, clazz);
+            } catch (SQLException e) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQuery, e);
+                throw new DaobabSQLException(e);
+            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException |
+                     InvocationTargetException e1) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQuery, e1);
+                throw new DaobabEntityCreationException(clazz, e1);
+            } finally {
+                rsReader.closeStatement(stmt, this);
+            }
+        });
+    }
+
+    @Override
+    default <E extends Entity> E readEntity(FrozenDataBaseQueryEntity<E> frozenQuery, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConvertersArr) {
+
+        return doSthOnConnection(frozenQuery, (frozen, conn) -> {
+
+            if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozen);
+            ResultSetReader rsReader = getResultSetReader();
+            Class<E> clazz = frozen.getEntityClass();
+            Statement stmt = null;
+            try {
+                String sqlQuery = withParameters(frozenQuery, parameters);
+                frozen.setSentQuery(sqlQuery);
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlQuery);
+
+                if (rs.next()) {
+                    E entity = clazz.getDeclaredConstructor().newInstance();
+                    rsReader.readEntity(this, rs, entity, frozen.getOriginalQuery().getFields());
+                    entity.afterSelect(this);
+                    if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozen, 1);
+                    return entity;
+                }
+                if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozen, 0);
+                return null;
+            } catch (SQLException e) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozen, e);
+                throw new DaobabSQLException(e);
+            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException |
+                     InvocationTargetException e1) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozen, e1);
+                throw new DaobabEntityCreationException(clazz, e1);
+            } finally {
+                rsReader.closeStatement(stmt, this);
+            }
+        });
+    }
+
 
     @Override
     default <E extends Entity> E readEntity(DataBaseQueryEntity<E> query) {
@@ -412,7 +548,8 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             } catch (SQLException e) {
                 if (isStatisticCollectingEnabled()) getStatisticCollector().error(queryEntity, e);
                 throw new DaobabSQLException(e);
-            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e1) {
+            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException |
+                     InvocationTargetException e1) {
                 if (isStatisticCollectingEnabled()) getStatisticCollector().error(queryEntity, e1);
                 throw new DaobabEntityCreationException(clazz, e1);
             } finally {
@@ -431,6 +568,35 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 ConnectionGateway.closeConnectionIfOpened(conn);
             }
         }
+    }
+
+
+    default Plate readPlate(FrozenDataBaseQueryPlate frozenQuery, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConverters) {
+        return doSthOnConnection(frozenQuery, (frozen, conn) -> {
+            Statement stmt = null;
+            ResultSetReader rsReader = getResultSetReader();
+            if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozen);
+
+            try {
+                String sqlQuery = withParameters(frozenQuery, parameters);
+                frozen.setSentQuery(sqlQuery);
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlQuery);
+
+                if (rs.next()) {
+                    Plate plate = rsReader.readPlate(rs, frozen.getFields(), typeConverters);
+                    if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozen, 1);
+                    return plate;
+                }
+                if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozen, 0);
+                return null;
+            } catch (SQLException e) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozen, e);
+                throw new DaobabSQLException(e);
+            } finally {
+                rsReader.closeStatement(stmt, this);
+            }
+        });
     }
 
 
@@ -468,6 +634,43 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             }
         });
     }
+
+
+    @Override
+    default PlateBuffer readPlateList(FrozenDataBaseQueryPlate frozenQuery, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConverters) {
+        List<TableColumn> fields = frozenQuery.getFields();
+
+        getLog().debug("Start readPlateList");
+        Connection conn = null;
+        Statement stmt = null;
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozenQuery);
+        List<Plate> rv = new ArrayList<>();
+        ResultSetReader rsReader = getResultSetReader();
+
+        try {
+            conn = this.getConnection();
+            String sqlQuery = withParameters(frozenQuery, parameters);
+            frozenQuery.setSentQuery(sqlQuery);
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+            getLog().debug(format("readPlateList executed statement: %s", sqlQuery));
+
+            while (rs.next()) {
+                rv.add(rsReader.readPlate(rs, fields, typeConverters));
+            }
+
+            if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQuery, rv.size());
+            return new PlateBuffer(rv);
+        } catch (SQLException e) {
+            if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQuery, e);
+            throw new DaobabSQLException(e);
+        } finally {
+            rsReader.closeStatement(stmt, this);
+            this.closeConnection(conn);
+            getLog().debug("Finish readPlateList");
+        }
+    }
+
 
     @Override
     default PlateBuffer readPlateList(DataBaseQueryPlate query) {
@@ -515,6 +718,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         }
     }
 
+
     default long count(DataBaseQueryBase<?, ?> query) {
         getLog().debug("Start count ");
         Connection conn = null;
@@ -538,6 +742,36 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             throw new DaobabSQLException(e);
         } finally {
             getResultSetReader().closeStatement(stmt, query);
+            this.closeConnection(conn);
+            getLog().debug("Finish count");
+        }
+    }
+
+
+    default long count(FrozenQueryProvider frozenQueryProvider, List<Object> parameters) {
+        getLog().debug("Start count ");
+        Connection conn = null;
+        Statement stmt = null;
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozenQueryProvider);
+        try {
+            conn = this.getConnection();
+            stmt = conn.createStatement();
+
+            String sqlQuery = withParameters(frozenQueryProvider, parameters);
+            ResultSet rs = stmt.executeQuery(sqlQuery);
+
+            if (rs.next()) {
+                long cnt = rs.getLong(1);
+                if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQueryProvider, 1);
+                return cnt;
+            }
+            if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQueryProvider, 0);
+            return 0;
+        } catch (SQLException e) {
+            if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQueryProvider, e);
+            throw new DaobabSQLException(e);
+        } finally {
+            getResultSetReader().closeStatement(stmt, frozenQueryProvider);
             this.closeConnection(conn);
             getLog().debug("Finish count");
         }

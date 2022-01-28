@@ -9,6 +9,7 @@ import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.buffer.nonheap.NonHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -76,6 +77,9 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         return QueryType.ENTITY;
     }
 
+    public FrozenDataBaseQueryEntity<E> freezeQuery() {
+        return new FrozenDataBaseQueryEntity<>(this);
+    }
 
     @SuppressWarnings({"java:S2175", "rawtypes", "unchecked"})
     public DataBaseQueryEntity<E> skip(Column<E, ?, ?>... columns) {

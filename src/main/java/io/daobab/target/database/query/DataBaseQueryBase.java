@@ -20,6 +20,9 @@ import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
 import io.daobab.statement.where.base.WhereBase;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.base.DataBaseQueryHaving;
+import io.daobab.target.database.query.base.DataBaseQueryLimit;
+import io.daobab.target.database.query.base.DataBaseQueryWhere;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -30,7 +33,7 @@ import java.util.function.UnaryOperator;
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQueryBase> implements Query<E, QueryTarget, Q>, QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, QueryGroupBy<Q>, RemoteQuery<Q>, ILoggerBean {
+public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQueryBase> implements Query<E, QueryTarget, Q>, QueryJoin<Q>, DataBaseQueryWhere<Q>, QueryOrder<Q>, DataBaseQueryLimit<Q>, DataBaseQueryHaving<Q>, QuerySetOperator<Q>, QueryGroupBy<Q>, RemoteQuery<Q>, ILoggerBean {
 
     public List<Column<?, ?, ?>> _groupBy = new ArrayList<>();
     public String _groupByAlias = null;
@@ -437,12 +440,10 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         return identifier;
     }
 
-    public Q setIdentifier(String identifier) {
+    public void setIdentifier(String identifier) {
         this.identifier = identifier;
-        return (Q) this;
     }
 
-    public abstract QueryType getQueryType();
 
     protected TableColumn getInfoColumn(ColumnFunction column) {
         if (column == null) return null;

@@ -6,6 +6,7 @@ import io.daobab.error.TransactionOpenedAlready;
 import io.daobab.model.Entity;
 import io.daobab.model.ProcedureParameters;
 import io.daobab.query.base.QuerySpecialParameters;
+import io.daobab.statement.base.IdentifierStorage;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.database.DataBaseTargetLogic;
@@ -17,6 +18,7 @@ import io.daobab.target.database.converter.DatabaseConverterManager;
 import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
 import io.daobab.target.database.meta.MetaData;
 import io.daobab.target.database.query.*;
+import io.daobab.target.database.query.frozen.FrozenQueryProvider;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.transaction.Propagation;
 
@@ -123,6 +125,11 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     }
 
     @Override
+    public String withParameters(FrozenQueryProvider frozenQueryProvider, List<Object> injectionPointList) {
+        return db.withParameters(frozenQueryProvider,injectionPointList);
+    }
+
+    @Override
     public <E extends Entity> QuerySpecialParameters toInsertSqlQuery(DataBaseQueryInsert<E> base) {
         return db.toInsertSqlQuery(base);
     }
@@ -170,6 +177,11 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     @Override
     public <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> query) {
         return query.toSqlQuery();
+    }
+
+    @Override
+    public <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> query, IdentifierStorage identifierStorage) {
+        return db.toSqlQuery(query,identifierStorage);
     }
 
     @Override

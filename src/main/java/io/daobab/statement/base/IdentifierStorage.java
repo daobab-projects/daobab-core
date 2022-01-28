@@ -1,9 +1,12 @@
 package io.daobab.statement.base;
 
+import io.daobab.converter.TypeConverter;
 import io.daobab.error.DaobabException;
 import io.daobab.error.NullEntityException;
 import io.daobab.model.Column;
 import io.daobab.model.ColumnHaving;
+import io.daobab.target.database.query.frozen.DaoParam;
+import io.daobab.target.database.query.frozen.ParameterInjectionPoint;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,6 +24,8 @@ public final class IdentifierStorage {
     private final Map<String, String> joinIdentifiers = new HashMap<>();
     private final List<String> queryEntities = new ArrayList<>();
 
+    private final List<ParameterInjectionPoint> queryParameters = new ArrayList<>();
+
     public void registerIdentifiers(String... entities) {
         if (entities == null) throw new NullEntityException();
 
@@ -32,6 +37,11 @@ public final class IdentifierStorage {
     public void registerIdentifiers(Collection<String> entityNames) {
         if (entityNames == null) return;
         entityNames.forEach(this::getIdentifierFor);
+    }
+
+    public void registerParameter(DaoParam param, TypeConverter typeConverter) {
+        if (param == null) return;
+        queryParameters.add(new ParameterInjectionPoint(param,typeConverter));
     }
 
     public StringBuilder getIdentifierForColumn(Column<?, ?, ?> field) {
@@ -79,6 +89,11 @@ public final class IdentifierStorage {
 
     public List<String> getQueryEntities() {
         return queryEntities;
+    }
+
+
+    public List<ParameterInjectionPoint> getQueryParameters() {
+        return queryParameters;
     }
 
 }

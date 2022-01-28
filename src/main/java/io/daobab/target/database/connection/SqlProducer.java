@@ -1,6 +1,8 @@
 package io.daobab.target.database.connection;
 
+import io.daobab.converter.TypeConverter;
 import io.daobab.dict.DictDatabaseType;
+import io.daobab.error.DaobabException;
 import io.daobab.error.SqlInjectionDetected;
 import io.daobab.model.*;
 import io.daobab.query.base.QueryExpressionProvider;
@@ -21,11 +23,15 @@ import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.base.Where;
 import io.daobab.target.database.DataBaseTargetLogic;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.converter.standard.StandardTypeConverterInteger;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import io.daobab.target.database.query.DataBaseQueryBase;
 import io.daobab.target.database.query.DataBaseQueryDelete;
 import io.daobab.target.database.query.DataBaseQueryInsert;
 import io.daobab.target.database.query.DataBaseQueryUpdate;
+import io.daobab.target.database.query.frozen.DaoParam;
+import io.daobab.target.database.query.frozen.ParameterInjectionPoint;
+import io.daobab.target.database.query.frozen.FrozenQueryProvider;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -350,7 +356,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 if (DictDatabaseType.ORACLE.equals(getDataBaseProductName())) {
                     //oracle version
                     if (base.getWhereWrapper() != null) sb.append(" and ");
-                    sb.append(limitToExpression(base.getLimit()));
+                    sb.append(limitToExpression(base.getLimit(), storage));
                 }
             }
         }
@@ -386,7 +392,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
         if (base.getLimit() != null && !DictDatabaseType.ORACLE.equals(getDataBaseProductName())) {
             sb.append(LINE_SEPARATOR)
-                    .append(limitToExpression(base.getLimit()));
+                    .append(limitToExpression(base.getLimit(), storage));
         }
 
         String query = sb.toString();
@@ -512,22 +518,56 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         return rv;
     }
 
-    default StringBuilder limitToExpression(Limit limit) {
+    default StringBuilder limitToExpression(Limit limit, IdentifierStorage storage) {
         String databaseEngine = getDataBaseProductName();
         StringBuilder sb = new StringBuilder();
 
         if (DictDatabaseType.ORACLE.equals(databaseEngine)) {
-            sb.append(" ROWNUM <= '")
-                    .append(limit.getLimit()).append("' ")
-                    .append(limit.getOffset() > 0 ? "and ROWNUM >" + limit.getOffset() : "");
+            sb.append(" ROWNUM <= '");
+
+            if (limit.isDaoParamInUse()) {
+                DaoParam daoParam = limit.getLimitDaoParam();
+                toSql(daoParam, new StandardTypeConverterInteger(), sb, storage);
+            } else {
+                sb.append(limit.getLimit());
+            }
+
+            sb.append("' ");
+            sb.append(limit.getOffset() > 0 ? "and ROWNUM >" + limit.getOffset() : "");
         } else if (DictDatabaseType.MYSQL.equals(databaseEngine)) {
-            sb.append(LIMIT).append(limit.getOffset() > 0 ? limit.getOffset() + COMMA : "").append(limit.getLimit());
+            if (limit.isDaoParamInUse()) {
+                DaoParam daoParam = limit.getLimitDaoParam();
+                toSql(daoParam, new StandardTypeConverterInteger(), sb, storage);
+            } else {
+                sb.append(LIMIT).append(limit.getOffset() > 0 ? limit.getOffset() + COMMA : "").append(limit.getLimit());
+            }
         } else if (DictDatabaseType.PostgreSQL.equals(databaseEngine)) {
-            sb.append(LIMIT).append(limit.getLimit()).append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
+            sb.append(LIMIT);
+            if (limit.isDaoParamInUse()) {
+                DaoParam daoParam = limit.getLimitDaoParam();
+                toSql(daoParam, new StandardTypeConverterInteger(), sb, storage);
+            } else {
+                sb.append(limit.getLimit());
+            }
+            sb.append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
         } else if (DictDatabaseType.H2.equals(databaseEngine)) {
-            sb.append(LIMIT).append(limit.getLimit()).append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
+            sb.append(LIMIT);
+            if (limit.isDaoParamInUse()) {
+                DaoParam daoParam = limit.getLimitDaoParam();
+                toSql(daoParam, new StandardTypeConverterInteger(), sb, storage);
+            } else {
+                sb.append(limit.getLimit());
+            }
+            sb.append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
         } else if (limit.getOffset() > 0 && databaseEngine.startsWith(DictDatabaseType.MicrosoftSQL)) {
-            sb.append("offset ").append(limit.getOffset()).append(" rows ").append("fetch next ").append(limit.getLimit()).append(" rows only ");
+            sb.append("offset ").append(limit.getOffset()).append(" rows ").append("fetch next ");
+            if (limit.isDaoParamInUse()) {
+                DaoParam daoParam = limit.getLimitDaoParam();
+                toSql(daoParam, new StandardTypeConverterInteger(), sb, storage);
+            } else {
+                sb.append(limit.getLimit());
+            }
+            sb.append(" rows only ");
         }
 
         return sb;
@@ -654,6 +694,12 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
             if (value == null && (Operator.IS_NULL.equals(relation) || Operator.NOT_NULL.equals(relation))) {
                 appendKey(sb, storage, keyFromWrapper, relation);
+            } else if (value instanceof DaoParam) {
+                appendKey(sb, storage, keyFromWrapper, relation);
+                DaoParam daoParam = (DaoParam) value;
+                DatabaseTypeConverter typeConverter = target.getConverterManager().getConverter(keyFromWrapper).orElse(null);
+                toSql(daoParam, typeConverter, sb, storage);
+
             } else if (value instanceof ColumnFunction<?, ?, ?, ?>) {
                 appendKey(sb, storage, keyFromWrapper, relation);
                 sb.append(columnFunctionToExpression((ColumnFunction<?, ?, ?, ?>) value, storage, false));
@@ -692,6 +738,13 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             }
         }
         return sb;
+    }
+
+    default void toSql(DaoParam daoParam, TypeConverter<?, ?> typeConverter, StringBuilder sb, IdentifierStorage storage) {
+        sb.append("~~~")
+                .append(daoParam.getKey())
+                .append("~~~");
+        storage.registerParameter(daoParam, typeConverter);
     }
 
 
@@ -1000,6 +1053,43 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         return "call " + procedureName + SPACE + OPEN_BRACKET +
                 input.getValues().stream().map(o -> toProcedureSQL(o, new StringBuilder(), target).toString()).collect(Collectors.joining(",")) +
                 CLOSED_BRACKET;
+    }
+
+    @SuppressWarnings("unchecked")
+    default String withParameters(FrozenQueryProvider frozenQueryProvider, List<Object> parameters) {
+
+        List<ParameterInjectionPoint> injectionPoints = frozenQueryProvider.getQueryParametersInjectionPoints();
+
+        if (injectionPoints.size() != parameters.size()) {
+            throw new DaobabException("The number of parameters (%s) doesn't match with the query parameters count (%s)", injectionPoints.size(), parameters.size());
+        }
+
+        String sqlQuery = frozenQueryProvider.getFrozenQuery();
+
+        for (int i = 0; i < parameters.size(); i++) {
+            ParameterInjectionPoint parameterInjectionPoint = injectionPoints.get(i);
+            DaoParam daoParam = parameterInjectionPoint.getParam();
+            Object valueToPut = parameters.get(i);
+            String convertedValueToPut;
+            if (daoParam.isCollection()) {
+                Collection<Object> collection = (Collection<Object>) valueToPut;
+                convertedValueToPut = "("+collection.stream()
+                        .map(v -> parameterInjectionPoint.getTypeConverter().convertWritingTarget(v))
+                        .collect(Collectors.joining(","))+")";
+            } else {
+                convertedValueToPut = parameterInjectionPoint.getTypeConverter().convertWritingTarget(valueToPut);
+            }
+            sqlQuery = sqlQuery.replace("~~~" + daoParam.getKey() + "~~~", convertedValueToPut);
+        }
+
+        DataBaseQueryBase<?, ?> query = frozenQueryProvider.getOriginalQuery();
+        QueryTarget target = query.getTarget();
+        if (target.getShowSql() || query.isLogQueryEnabled()) {
+            target.getLog().info(sqlQuery);
+        } else {
+            target.getLog().debug(sqlQuery);
+        }
+        return sqlQuery;
     }
 
 }

@@ -67,7 +67,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <E extends Entity> E readEntity(DataBaseTarget target, ResultSet rs, E entity, Column[] columnsArr, DatabaseTypeConverter<?, ?>[] typeConverters) {
+    public <E extends Entity> E readEntity(ResultSet rs, E entity, Column[] columnsArr, DatabaseTypeConverter<?, ?>[] typeConverters) {
         for (int i = 0; i < columnsArr.length; i++) {
             columnsArr[i].setValue((EntityRelation) entity, readCell(typeConverters[i], rs, i + 1, columnsArr[i]));
         }

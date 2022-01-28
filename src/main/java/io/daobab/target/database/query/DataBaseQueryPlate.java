@@ -12,6 +12,7 @@ import io.daobab.result.PlateProvider;
 import io.daobab.statement.condition.Count;
 import io.daobab.target.buffer.single.Plates;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryPlate;
 
 import java.util.*;
 import java.util.function.Function;
@@ -177,5 +178,10 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     public QueryType getQueryType() {
         return QueryType.PLATE;
     }
+
+    public FrozenDataBaseQueryPlate freezeQuery() {
+        return new FrozenDataBaseQueryPlate(this);
+    }
+
 
 }

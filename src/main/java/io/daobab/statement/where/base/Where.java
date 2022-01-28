@@ -188,7 +188,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W like(Field<E, F, R> column, F val) {
+    public <E extends Entity, F, R extends EntityRelation> W like(Field<E, F, R> column, F val) {
         temp(column, LIKE, val);
         return (W) this;
     }

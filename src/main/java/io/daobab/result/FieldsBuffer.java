@@ -21,5 +21,10 @@ public class FieldsBuffer<F> extends LinkedList<F> implements FieldsProvider<F> 
         return this;
     }
 
+    @Override
+    public long countAny() {
+        return size();
+    }
+
 
 }
