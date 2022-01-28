@@ -29,19 +29,18 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
 
     @Override
     default EntityByteBuffer<E> createByteBuffer() {
-        return new EntityByteBuffer<E>(this);
+        return new EntityByteBuffer<>(this);
     }
 
     @Override
     default void forEach(Consumer<? super E> consumer) {
         if (consumer == null) throw new NullConsumer();
-        findMany().stream().forEach(consumer::accept);
+        findMany().forEach(consumer);
     }
 
     Entities<E> copy();
 
     Entities<E> clone();
-
 
     void markRefreshCache();
 

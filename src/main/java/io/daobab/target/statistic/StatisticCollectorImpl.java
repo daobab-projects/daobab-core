@@ -8,6 +8,8 @@ import io.daobab.result.Entities;
 import io.daobab.result.EntityList;
 import io.daobab.target.statistic.dictionary.CallStatus;
 import io.daobab.target.statistic.table.StatisticRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -24,6 +26,8 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
 
     private final boolean ignoreSuccessful = false;
     private long ignoreBelowMilliseconds = 0;
+
+    protected Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
 
     @Override
@@ -205,4 +209,8 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
         return size() > bufferSize;
     }
 
+    @Override
+    public Logger getLog() {
+        return log;
+    }
 }

@@ -80,10 +80,6 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         EntityList<E> results= new EntityList<>(filter((Query<E, ?>) query), (Class<E>)query.getEntityClass());
-        if (results.isEmpty()){
-            if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
-            return null;
-        }
         results.orderAndLimit((Query<E, ?>) query);
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
         return (E1) results.get(0);
@@ -113,12 +109,11 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         }
 
         List<Plate> results = new LinkedList<>();
-        Entities<E> el = matched.orderAndLimit((Query<E, ?>) query);
 
-        for (E e : el) {
+        for (E entity : matched.orderAndLimit((Query<E, ?>) query)) {
             Plate plate = new Plate(query.getFields());
-            for (TableColumn c : query.getFields()) {
-                plate.setValue(c, c.getColumn().getValueOf((R) e));
+            for (TableColumn tableColumn : query.getFields()) {
+                plate.setValue(tableColumn, tableColumn.getColumn().getValueOf((R) entity));
             }
             results.add(plate);
         }
@@ -140,9 +135,9 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return new ArrayList<>();
         }
-        Entities<E> el = matched.orderAndLimit(query);
+        Entities<E> entities = matched.orderAndLimit(query);
         Column<E, F, R> firstColumn = query.getFields().get(0).getColumn();
-        List<F> results = el.stream().map(e -> firstColumn.getValueOf((R) e)).collect(Collectors.toList());
+        List<F> results = entities.stream().map(e -> firstColumn.getValueOf((R) e)).collect(Collectors.toList());
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
         return results;
     }
@@ -171,24 +166,24 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     @SuppressWarnings("unchecked")
     public Entities<E> orderAndLimit(Query<E, ?> query) {
         if (query == null) return this;
-        EntityList<E> copy = new EntityList<>(this, this.entityClazz);
         if (query.getOrderBy() != null) {
+            EntityList<E> copy = new EntityList<>(this, this.entityClazz);
             @SuppressWarnings("rawtypes")
             OrderComparator<E> comparator = new OrderComparator(query.getOrderBy().toOrderFieldList());
             copy.sort(comparator);
-
             return copy.limit(query);
+        }else{
+            return limit(query);
         }
-        return copy;
     }
 
     public Entities<E> limit(Query<E, ?> query) {
-        if (query == null) return this;
-
-        if (query.getLimit() != null) {
+        if (query != null && query.getLimit() != null) {
             Limit limit = query.getLimit();
-            if (limit.getLimit() < size()) {
+            if (limit.getOffset() + limit.getLimit() < size()) {
                 return new EntityList<>(subList(limit.getOffset(), limit.getOffset() + limit.getLimit()), this.entityClazz);
+            }else if (limit.getOffset()>0){
+                return new EntityList<>(subList(limit.getOffset(), size()), this.entityClazz);
             }
         }
         return this;

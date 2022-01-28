@@ -20,7 +20,7 @@ public interface EntitiesProvider<E extends Entity> {
     Entities<E> findMany();
 
     default EntityByteBuffer<E> createByteBuffer() {
-        return new EntityByteBuffer<E>(findMany());
+        return new EntityByteBuffer<>(findMany());
     }
 
     Optional<E> findFirst();
@@ -37,7 +37,7 @@ public interface EntitiesProvider<E extends Entity> {
 
     default void forEach(Consumer<? super E> consumer) {
         if (consumer == null) throw new NullConsumer();
-        findMany().stream().forEach(consumer::accept);
+        findMany().forEach(consumer);
     }
 
     default <M> FieldsProvider<M> map(Function<? super E, M> mapper) {
@@ -49,6 +49,5 @@ public interface EntitiesProvider<E extends Entity> {
 
         return new FieldsBuffer<>(rv);
     }
-
 
 }

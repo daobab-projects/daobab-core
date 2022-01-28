@@ -64,9 +64,6 @@ public enum Operator {
 
     private final String text;
 
-    /**
-     * @param text
-     */
     Operator(final String text) {
         this.text = text;
     }

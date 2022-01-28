@@ -38,14 +38,6 @@ public class SetFields {
         return counter - 1;
     }
 
-//    public static final <F, R extends EntityRelation> SetFields setInfoColumns(R related, TableColumn... fields) {
-//        SetFields s = new SetFields();
-//        for (TableColumn field : fields) {
-//            s.setValue((Column<?, F, R>)field.getColumn(), related);
-//        }
-//        return s;
-//    }
-
     public static final <F, R extends EntityRelation> SetFields setColumns(R related, Column<?, F, R>... fields) {
         SetFields s = new SetFields();
         for (Column<?, F, R> field : fields) {

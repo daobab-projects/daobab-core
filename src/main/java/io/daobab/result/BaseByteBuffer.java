@@ -212,7 +212,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
         return null;
     }
 
-    public Integer getColumnIntoEntityPosition(Column column) {
+    public Integer getColumnIntoEntityPosition(Column<?,?,?> column) {
         for (int i = 0; i < columns.size(); i++) {
             if (columns.get(i).getColumn().equalsColumn(column)) {
                 return i;
@@ -221,7 +221,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
         return null;
     }
 
-    public Integer getBufferPositionOfColumn(Column column) {
+    public Integer getBufferPositionOfColumn(Column<?,?,?> column) {
         Integer columnIntoEntityPosition = getColumnIntoEntityPosition(column);
 //        if (...)
         return columnsPositionsQueue[columnIntoEntityPosition];
@@ -244,11 +244,6 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
             rv.add(i, (F) getValueForColumnPosition(ids.get(i), columnIntoEntityPosition, columnBufferRowPosition));
         }
         return rv;
-    }
-
-    @Override
-    public Logger getLog() {
-        return log;
     }
 
     @Override

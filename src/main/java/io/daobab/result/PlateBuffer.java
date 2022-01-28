@@ -7,6 +7,7 @@ import io.daobab.model.*;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
 import io.daobab.statement.condition.Limit;
+import io.daobab.statement.condition.base.OrderComparatorPlate;
 import io.daobab.target.OpenedTransactionTarget;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
@@ -32,7 +33,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     private static final long serialVersionUID = 2291798166104201910L;
     protected transient boolean needRefresh = false;
-    private final transient boolean transactionActive = false;
+    private transient boolean transactionActive = false;
 
     private transient StatisticCollector statistic;
     private boolean statisticEnabled = false;
@@ -137,6 +138,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     }
 
+    @SuppressWarnings({"unchecked","rawtypes"})
     private <E extends Entity, R extends EntityRelation, F> F readFieldFromBuffer(Plates entities, QueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         PlateBuffer matched = new PlateBuffer(entities.filter(query));
@@ -151,7 +153,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
             return null;
         }
 
-        Column<E, F, R> col = (Column<E, F, R>) query.getFields().get(0).getColumn();
+        Column<E, F, R> col = query.getFields().get(0).getColumn();
         F rv = col.getValueOf((R) el);
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
         return rv;
@@ -162,31 +164,41 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         if (query == null) return this;
         PlateBuffer copy = new PlateBuffer(this);
         if (query.getOrderBy() != null) {
-//            @SuppressWarnings("rawtypes")
-//            OrderComparator<Projection> comparator = new OrderComparator(query.getOrderBy().toOrderFieldList());
-//            copy.sort(comparator);
-
+            OrderComparatorPlate comparator = new OrderComparatorPlate(query.getOrderBy().toOrderFieldList());
+            copy.sort(comparator);
             return copy.limit(query);
+        }else{
+            return limit(query);
         }
-        return copy;
     }
 
     @Override
     public Plates limit(QueryPlate query) {
-        return null;
-    }
-
-    public <E extends Entity> Plates limit(Query<E, ?> query) {
         if (query == null) return this;
-
         if (query.getLimit() != null) {
             Limit limit = query.getLimit();
-            if (limit.getLimit() < size()) {
+            if (limit.getOffset() + limit.getLimit() < size()) {
                 return new PlateBuffer(subList(limit.getOffset(), limit.getOffset() + limit.getLimit()));
+            }else if (limit.getOffset()>0){
+                return new PlateBuffer(subList(limit.getOffset(), size()));
             }
         }
         return this;
     }
+
+    private <E extends Entity> Plates limit(Query<E, ?> query) {
+        if (query == null) return this;
+        if (query.getLimit() != null) {
+            Limit limit = query.getLimit();
+            if (limit.getOffset() + limit.getLimit() < size()) {
+                return new PlateBuffer(subList(limit.getOffset(), limit.getOffset() + limit.getLimit()));
+            }else if (limit.getOffset()>0){
+                return new PlateBuffer(subList(limit.getOffset(), size()));
+            }
+        }
+        return this;
+    }
+
 
     @Override
     public <M extends Entity, F> F readField(QueryField<M, F> query) {
