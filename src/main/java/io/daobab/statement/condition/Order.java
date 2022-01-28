@@ -3,24 +3,22 @@ package io.daobab.statement.condition;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.TableColumn;
-import io.daobab.query.marschal.Marschaller;
+import io.daobab.query.marschal.Marshaller;
 import io.daobab.statement.condition.base.OrderDirection;
 import io.daobab.statement.condition.base.OrderField;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class Order {
 
-
     private HashMap<String, Object> orderMap = new HashMap<>();
-
     private int counter = 1;
-
 
     public static Order ASC(Column<?, ?, ?> col) {
         Order o = new Order();
@@ -81,15 +79,15 @@ public class Order {
     }
 
     //Warning. If query is related to in-memory buffers, this order may skip string based arguments.
-    public LinkedList<OrderField> toOrderFieldList() {
-        LinkedList<OrderField> rv = new LinkedList<>();
+    public List<OrderField> toOrderFieldList() {
+        List<OrderField> rv = new ArrayList<>();
         for (int i = 1; i < getCounter(); i++) {
             Object field = getObjectForPointer(i);
-            if (!(field instanceof Column)){
+            if (!(field instanceof Column)) {
                 continue;
             }
             String orderkind = getOrderKindForPointer(i);
-            rv.add(new OrderField<>(((Column)field), orderkind));
+            rv.add(new OrderField<>(((Column) field), orderkind));
         }
         return rv;
     }
@@ -107,9 +105,9 @@ public class Order {
         for (String key : orderMap.keySet()) {
             Object val = orderMap.get(key);
             if (val instanceof Entity) {
-                rv.put(key, Marschaller.marschallEntity((Entity) val));
+                rv.put(key, Marshaller.marshalEntity((Entity) val));
             } else if (val instanceof TableColumn) {
-                rv.put(key, Marschaller.marschallColumnToString((TableColumn) val));
+                rv.put(key, Marshaller.marshallColumnToString((TableColumn) val));
             } else {
                 rv.put(key, val);
             }

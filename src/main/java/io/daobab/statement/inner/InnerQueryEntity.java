@@ -5,13 +5,14 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * Retrieves inner queries from entities related Queries
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface InnerQueryEntity<E extends Entity> {
 
-//    InnerSelectManyEntities<E> innerResult();
-
-    <E1 extends Entity, F, R extends EntityRelation> InnerQueryField<E1, F> limitToField(Column<E1, F, R> field);
+    @SuppressWarnings("rawtypes")
+    <E1 extends Entity, F, R extends EntityRelation> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> field);
 
     String getEntityName();
 }

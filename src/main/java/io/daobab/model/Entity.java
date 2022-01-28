@@ -1,41 +1,38 @@
 package io.daobab.model;
 
-import io.daobab.target.QueryReceiver;
+import io.daobab.target.QueryHandler;
+import io.daobab.target.Target;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public interface Entity extends DaobabDto, ColumnsProvider {
+public interface Entity extends ColumnsProvider {
 
     String getEntityName();
-
-//    <X> X getColumnParam(String key);
-//
-//    <X> void setColumnParam(String key, X param);
 
     default Class<? extends Entity> getEntityClass() {
         return this.getClass();
     }
 
-    default void beforeInsert(QueryReceiver target) {
+    default <T extends Target & QueryHandler> void beforeInsert(T target) {
     }
 
-    default void beforeUpdate(QueryReceiver target) {
+    default <T extends Target & QueryHandler> void beforeUpdate(T target) {
     }
 
-    default void beforeDelete(QueryReceiver target) {
+    default <T extends Target & QueryHandler> void beforeDelete(T target) {
     }
 
-    default void afterSelect(QueryReceiver target) {
+    default <T extends Target & QueryHandler> void afterSelect(T target) {
     }
 
-    default void afterInsert(QueryReceiver target) {
+    default <T extends Target & QueryHandler> void afterInsert(T target) {
     }
 
-    default void afterUpdate(QueryReceiver target) {
+    default <T extends Target & QueryHandler> void afterUpdate(T target) {
     }
 
-    default void afterDelete(QueryReceiver target) {
+    default <T extends Target & QueryHandler> void afterDelete(T target) {
     }
 
 

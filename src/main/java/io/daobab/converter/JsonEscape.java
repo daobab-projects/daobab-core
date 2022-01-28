@@ -7,7 +7,7 @@ public interface JsonEscape {
             return "\"\"";
         }
 
-        char c = 0;
+        char c;
         int i;
         int len = string.length();
         StringBuilder sb = new StringBuilder(len + 4);
@@ -43,7 +43,7 @@ public interface JsonEscape {
                 default:
                     if (c < ' ') {
                         t = "000" + Integer.toHexString(c);
-                        sb.append("\\u" + t.substring(t.length() - 4));
+                        sb.append("\\u").append(t.substring(t.length() - 4));
                     } else {
                         sb.append(c);
                     }

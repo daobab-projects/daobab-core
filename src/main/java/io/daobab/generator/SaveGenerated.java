@@ -21,22 +21,22 @@ public interface SaveGenerated {
 
         sbfol.append(fpath).append(File.separator);
 
-        StringBuilder properCatalog=JavaPackageResolver.resolveCatalog(catalog);
-        StringBuilder properSchema=JavaPackageResolver.resolveSchema(schema);
+        StringBuilder properCatalog = JavaPackageResolver.resolveCatalog(catalog);
+        StringBuilder properSchema = JavaPackageResolver.resolveSchema(schema);
 
-        if (properCatalog.length()>0){
+        if (properCatalog.length() > 0) {
             sbfol.append(properCatalog);
             sbfol.append(File.separator);
         }
 
-        if (properSchema.length()>0){
+        if (properSchema.length() > 0) {
             sbfol.append(properSchema);
             sbfol.append(File.separator);
         }
 
 
         if (subfolder != null && !subfolder.trim().isEmpty()) {
-            sbfol.append(subfolder.trim().toLowerCase() + File.separator);
+            sbfol.append(subfolder.trim().toLowerCase()).append(File.separator);
         }
 
 
@@ -53,10 +53,10 @@ public interface SaveGenerated {
         Path p = Paths.get(sbfol.append(filename).append(type.getExtension()).toString());
 
         if (Files.exists(p) && !override) {
-            System.out.println("File: " + p.getFileName() + " already exists and can't be overrided. If you want to override, setOverride(true) or simple delete file.");
+            System.out.println("File: " + p.getFileName() + " already exists and can't be overridden. Set setOverride(true) or delete the file.");
             return;
         } else if (Files.exists(p) && override) {
-            System.out.println("Overriding file: " + p.toString() + ".");
+            System.out.println("Overriding a file: " + p + ".");
         }
 
         try (BufferedWriter writer = Files.newBufferedWriter(p, charset)) {

@@ -12,25 +12,22 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public abstract class Index<E extends Entity, F> {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Column<E, ?, EntityRelation> indexedColumn;
+    private final Column<E, ?, EntityRelation> indexedColumn;
 
-    protected List<E> nullValuesEntities = new LinkedList<>();
+    protected List<E> nullValuesEntities = new ArrayList<>();
     protected TreeMap<F, List<E>> fieldEntitiesMap = new TreeMap<>();
 
-    protected List<Number> nullValuesPk = new LinkedList<>();
+    protected List<Number> nullValuesPk = new ArrayList<>();
     protected TreeMap<F, List<Number>> fieldPkMap = new TreeMap<>();
-
-    private boolean worthless = false;
-
     protected F firstKeyInMap;
     protected F lastKeyInMap;
-
+    private boolean worthless = false;
     private double efficiency = 0;
 
     //Invoked internally. Initialisation is redundand
@@ -48,7 +45,7 @@ public abstract class Index<E extends Entity, F> {
     public Index(Column<E, ?, EntityRelation> indexedColumn, EntitiesBufferIndexed<E> buffer) {
         this.indexedColumn = indexedColumn;
         init(buffer);
-        double indexSize = fieldEntitiesMap.size() ;
+        double indexSize = fieldEntitiesMap.size();
         double entitiesSize = buffer.getKeys().size();
         efficiency = (indexSize / entitiesSize) * 100;
         if (!fieldEntitiesMap.isEmpty()) {
@@ -56,20 +53,20 @@ public abstract class Index<E extends Entity, F> {
             this.lastKeyInMap = fieldEntitiesMap.lastKey();
         }
 
-        if (indexSize==1){
-            worthless=true;
+        if (indexSize == 1) {
+            worthless = true;
         }
-        log.info("Index created for column {}, Total elements: {} indexed size: {}. Index considered as {}",indexedColumn.getEntityName()+"."+indexedColumn.getColumnName(),buffer.size(),indexSize,worthless?"worthless":"useful");
+        log.info("Index created for column {}, Total elements: {} indexed size: {}. Index considered as {}", indexedColumn.getEntityName() + "." + indexedColumn.getColumnName(), buffer.size(), indexSize, worthless ? "worthless" : "useful");
     }
 
-    protected <F> F getColumnValue(FakePkEntity<Number,E> entity){
+    protected <F> F getColumnValue(FakePkEntity<Number, E> entity) {
         return (F) indexedColumn.getValue((EntityRelation) entity.getEntity());
     }
 
     private void init(EntitiesBufferIndexed<E> elements) {
 //        if (elements == null || getIndexedColumn() == null) return;
 
-        for (FakePkEntity<Number,E> fakePkEntity : elements.getValues()) {
+        for (FakePkEntity<Number, E> fakePkEntity : elements.getValues()) {
             F columnvalue = getColumnValue(fakePkEntity);
             if (columnvalue == null) {
                 nullValuesEntities.add(fakePkEntity.getEntity());
@@ -79,10 +76,10 @@ public abstract class Index<E extends Entity, F> {
 
             List<E> valueRelatedEntities = fieldEntitiesMap.get(columnvalue);
             if (valueRelatedEntities == null) {
-                List<E> entities = new LinkedList<>();
+                List<E> entities = new ArrayList<>();
                 entities.add(fakePkEntity.getEntity());
                 fieldEntitiesMap.put(columnvalue, entities);
-                List<Number> pkList = new LinkedList<>();
+                List<Number> pkList = new ArrayList<>();
                 pkList.add(fakePkEntity.getPk());
                 fieldPkMap.put(columnvalue, pkList);
             } else {
@@ -94,29 +91,30 @@ public abstract class Index<E extends Entity, F> {
     }
 
     public List<E> filter(Operator operator, F... keys) {
-        List<E> list=new LinkedList<>();
+        List<E> list = new ArrayList<>();
 
-        if (Operator.IN.equals(operator)){
-            for (F key:keys){
-                list.addAll(filter(Operator.EQ,key));
+        if (Operator.IN.equals(operator)) {
+            for (F key : keys) {
+                list.addAll(filter(Operator.EQ, key));
             }
-        }else if (Operator.NOT_IN.equals(operator)){
-            for (F key:keys){
-                list.addAll(filterNegative(Operator.EQ,key));
+        } else if (Operator.NOT_IN.equals(operator)) {
+            for (F key : keys) {
+                list.addAll(filterNegative(Operator.EQ, key));
             }
         }
         return list;
     }
-    public List<Number> filterPk(Operator operator, F... keys) {
-        List<Number> list=new LinkedList<>();
 
-        if (Operator.IN.equals(operator)){
-            for (F key:keys){
-                list.addAll(filterPk(Operator.EQ,key));
+    public List<Number> filterPk(Operator operator, F... keys) {
+        List<Number> list = new ArrayList<>();
+
+        if (Operator.IN.equals(operator)) {
+            for (F key : keys) {
+                list.addAll(filterPk(Operator.EQ, key));
             }
-        }else if (Operator.NOT_IN.equals(operator)){
-            for (F key:keys){
-                list.addAll(filterPkNegative(Operator.EQ,key));
+        } else if (Operator.NOT_IN.equals(operator)) {
+            for (F key : keys) {
+                list.addAll(filterPkNegative(Operator.EQ, key));
             }
         }
 //        merge(list);
@@ -129,64 +127,65 @@ public abstract class Index<E extends Entity, F> {
 
 
     public List<E> filterNegative(Operator operator, Object key1) {
-        F key=(F)key1;
+        F key = (F) key1;
         NavigableMap<F, List<E>> subManyMap;
         switch (operator) {
             case IN:
             case EQ: {
-                subManyMap= fieldEntitiesMap;
+                subManyMap = fieldEntitiesMap;
                 subManyMap.remove(key);
                 return toPkList(subManyMap, nullValuesEntities);
             }
             case GT: {
-                return filter(Operator.LTEQ,key);
+                return filter(Operator.LTEQ, key);
             }
             case GTEQ: {
-                return filter(Operator.LT,key);
+                return filter(Operator.LT, key);
             }
             case LT: {
-                return filter(Operator.GTEQ,key);
+                return filter(Operator.GTEQ, key);
             }
             case LTEQ: {
-                return filter(Operator.GT,key);
+                return filter(Operator.GT, key);
             }
             case IS_NULL: {
-                return filter(Operator.NOT_NULL,key);
+                return filter(Operator.NOT_NULL, key);
             }
             case NOT_NULL: {
-                return filter(Operator.IS_NULL,key);
+                return filter(Operator.IS_NULL, key);
             }
             default:
                 return null;
         }
     }
+
     public List<Number> filterPkNegative(Operator operator, Object key1) {
-        F key=(F)key1;
+        F key = (F) key1;
         NavigableMap<F, List<Number>> subManyMap;
         switch (operator) {
             case IN:
             case EQ: {
-                subManyMap= fieldPkMap;
+                subManyMap = fieldPkMap;
                 subManyMap.remove(key);
                 return toPkList2(subManyMap, nullValuesPk);
             }
             case GT: {
-                return filterPk(Operator.LTEQ,key);
+                return filterPk(Operator.LTEQ, key);
             }
             case GTEQ: {
-                return filterPk(Operator.LT,key);
+                return filterPk(Operator.LT, key);
             }
             case LT: {
-                return filterPk(Operator.GTEQ,key);
+                return filterPk(Operator.GTEQ, key);
             }
             case LTEQ: {
-                return filterPk(Operator.GT,key);
+                return filterPk(Operator.GT, key);
             }
             case IS_NULL: {
-                return filterPk(Operator.NOT_NULL,key);
+                return filterPk(Operator.NOT_NULL, key);
             }
             case NOT_NULL: {
-                return filterPk(Operator.IS_NULL,key);
+                return filterPk(Operator.IS_NULL, key);
             }
             default:
                 return null;
@@ -200,11 +199,11 @@ public abstract class Index<E extends Entity, F> {
         return toPkList(fieldEntitiesMap, nullValuesEntities);
     }
 
-    protected List<Number> toPkList2(Map<F, List<Number>> subManyMap,List<Number> nullValuesAsPK) {
-        List<Number> tempCollection=new LinkedList<>();
+    protected List<Number> toPkList2(Map<F, List<Number>> subManyMap, List<Number> nullValuesAsPK) {
+        List<Number> tempCollection = new ArrayList<>();
 
         tempCollection.addAll(nullValuesAsPK);
-        if (subManyMap != null){
+        if (subManyMap != null) {
             for (Map.Entry<F, List<Number>> entry : subManyMap.entrySet()) {
                 tempCollection.addAll(entry.getValue());
             }
@@ -213,11 +212,11 @@ public abstract class Index<E extends Entity, F> {
         return tempCollection;
     }
 
-    protected List<E> toPkList(Map<F, List<E>> subManyMap,List<E> nullValuesAsPK) {
-        List<E> tempCollection=new LinkedList<>();
+    protected List<E> toPkList(Map<F, List<E>> subManyMap, List<E> nullValuesAsPK) {
+        List<E> tempCollection = new ArrayList<>();
 
         tempCollection.addAll(nullValuesAsPK);
-        if (subManyMap != null){
+        if (subManyMap != null) {
             for (Map.Entry<F, List<E>> entry : subManyMap.entrySet()) {
                 tempCollection.addAll(entry.getValue());
             }
@@ -298,7 +297,7 @@ public abstract class Index<E extends Entity, F> {
 //        else return low;
 //    }
 
-    protected abstract Index<E, F> newInstance(Column<E, ?, EntityRelation> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E>nullValuesAsPK);
+    protected abstract Index<E, F> newInstance(Column<E, ?, EntityRelation> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E> nullValuesAsPK);
 
     public Column<E, ?, EntityRelation> getIndexedColumn() {
         return indexedColumn;

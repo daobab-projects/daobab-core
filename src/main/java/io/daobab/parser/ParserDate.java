@@ -10,17 +10,20 @@ import java.util.GregorianCalendar;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public interface ParserDate {
+@SuppressWarnings("unused")
+public class ParserDate {
 
+    public ParserDate() {
+    }
 
-    static Date toDateFromGreg(XMLGregorianCalendar from) {
+    public static Date toDateFromGreg(XMLGregorianCalendar from) {
         if (from == null) return null;
         return from.toGregorianCalendar().getTime();
     }
 
-    static XMLGregorianCalendar toGreg(Date from) {
+    public static XMLGregorianCalendar toGreg(Date from) {
         if (from == null) return null;
         GregorianCalendar gCalendar = new GregorianCalendar();
         gCalendar.setTime(from);
@@ -34,22 +37,24 @@ public interface ParserDate {
         }
     }
 
-    static String parse(Date from, String pattern) {
+    public static String parse(Date from, String pattern) {
         if (from == null) return null;
         return parse(from, new SimpleDateFormatThreadSafe(pattern));
     }
+    static final Object synchro = "";
 
-    static String parse(Date from, SimpleDateFormatThreadSafe df) {
+    public static String parse(Date from, SimpleDateFormatThreadSafe df) {
         if (from == null) return null;
         if (df == null) throw new ParserException("Invalid SimpleDateFormatThreadSafe");
         String result;
-        synchronized (df) {
+
+        synchronized (synchro) {
             result = df.format(from);
         }
         return result;
     }
 
-    static Long toLong(Date from) {
+    public static Long toLong(Date from) {
         if (from == null) return null;
         return from.getTime();
     }

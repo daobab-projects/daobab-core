@@ -2,16 +2,16 @@
 //import com.zaxxer.hikari.HikariDataSource;
 import io.daobab.model.Entity;
 import io.daobab.target.database.DataBaseTarget;
-import io.daobab.target.database.SqlQueryResolver;
+import io.daobab.target.database.connection.SqlProducer;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public class TestDB extends DataBaseTarget implements SqlQueryResolver {//implements MyTables{
+public class TestDB extends DataBaseTarget implements SqlProducer {//implements MyTables{
 
     @Override
     protected DataSource initDataSource() {

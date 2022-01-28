@@ -7,7 +7,6 @@ import java.util.Objects;
 
 public interface Dummy<E extends EntityMap> extends EntityRelationMap<E> {
 
-
     /**
      * db name: DUMMY,
      * db type: VARCHAR
@@ -16,11 +15,13 @@ public interface Dummy<E extends EntityMap> extends EntityRelationMap<E> {
         return getColumnParam("Dummy");
     }
 
+    @SuppressWarnings("unchecked")
     default E setDummy(String val) {
         setColumnParam("Dummy", val);
         return (E) this;
     }
 
+    @SuppressWarnings("rawtypes")
     default Column<E, String, Dummy> colDummy() {
         return new Column<E, String, Dummy>() {
 

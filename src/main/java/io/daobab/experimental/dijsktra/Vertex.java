@@ -13,7 +13,6 @@ public class Vertex {
         this.name = entity.getEntityName();
     }
 
-
     public String getId() {
         return id;
     }

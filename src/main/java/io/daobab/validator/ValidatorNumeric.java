@@ -4,8 +4,9 @@ package io.daobab.validator;
 import io.daobab.error.ValidationException;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings("unused")
 public interface ValidatorNumeric {
 
 
@@ -14,7 +15,7 @@ public interface ValidatorNumeric {
         String s = str.trim();
         for (int i = 0; i < s.length(); i++) {
             // If we find a non-digit character we return false.
-            if (!Character.isDigit(s.charAt(i)) && (s.charAt(i) != '.') && (s.charAt(i) != '-') )
+            if (!Character.isDigit(s.charAt(i)) && (s.charAt(i) != '.') && (s.charAt(i) != '-'))
                 return false;
         }
         return true;

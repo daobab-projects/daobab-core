@@ -1,13 +1,13 @@
 package io.daobab.result.predicate;
 
-import io.daobab.result.BaseByteBuffer;
 import io.daobab.statement.where.base.Where;
+import io.daobab.target.buffer.noheap.NoHeapBuffer;
 
 import java.util.List;
 
 public class GeneralBitFieldWhereOr<E> extends GeneralBitFieldWhereAnd<E> {
 
-    public GeneralBitFieldWhereOr(BaseByteBuffer<E> bufferEntityPointer, Where wrapperWhere, List<Integer> skipSteps) {
+    public GeneralBitFieldWhereOr(NoHeapBuffer<E> bufferEntityPointer, Where wrapperWhere, List<Integer> skipSteps) {
         super(bufferEntityPointer, wrapperWhere, skipSteps);
     }
 
@@ -21,7 +21,7 @@ public class GeneralBitFieldWhereOr<E> extends GeneralBitFieldWhereAnd<E> {
             }
 
             //if at least one record into OR clause is true, entity is matched
-            if (predicates.get(i).bitTest(bufferEntityPointer, entityPointer, columnsEntityPositionInWhere.get(i), columnsBufferPositionInWhere.get(i)))
+            if (predicates.get(i).bitTest(noHeapBuffer, entityPointer, columnsEntityPositionInWhere.get(i), columnsBufferPositionInWhere.get(i)))
                 return true;
         }
 
@@ -30,7 +30,7 @@ public class GeneralBitFieldWhereOr<E> extends GeneralBitFieldWhereAnd<E> {
 
 
     @Override
-    public boolean bitTest(BaseByteBuffer bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
+    public boolean bitTest(NoHeapBuffer buffer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
 
         for (int i = 0; i < predicates.size(); i++) {
 
@@ -44,7 +44,7 @@ public class GeneralBitFieldWhereOr<E> extends GeneralBitFieldWhereAnd<E> {
 //                }
             //if at least one record into OR clause is true, entity is matched
 //            }else
-            if (predicates.get(i).bitTest(bufferEntityPointer, entityPosition, columnsEntityPositionInWhere.get(i), columnsBufferPositionInWhere.get(i))) {
+            if (predicates.get(i).bitTest(buffer, entityPosition, columnsEntityPositionInWhere.get(i), columnsBufferPositionInWhere.get(i))) {
                 return true;
             }
         }

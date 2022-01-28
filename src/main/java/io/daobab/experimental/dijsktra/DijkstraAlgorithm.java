@@ -5,7 +5,7 @@ import java.util.*;
 
 public class DijkstraAlgorithm {
 
-   // private final List<Vertex> nodes;
+    // private final List<Vertex> nodes;
     private final List<Edge> edges;
     private Set<Vertex> settledNodes;
     private Set<Vertex> unSettledNodes;
@@ -99,12 +99,12 @@ public class DijkstraAlgorithm {
      * This method returns the path from the source to the selected target and
      * NULL if no path exists
      */
-    public LinkedList<Vertex> getPath(Vertex target) {
-        LinkedList<Vertex> path = new LinkedList<>();
+    public List<Vertex> getPath(Vertex target) {
+        List<Vertex> path = new ArrayList<>();
         Vertex step = target;
         // check if a path exists
         if (predecessors.get(step) == null) {
-            return null;
+            return Collections.emptyList();
         }
         path.add(step);
         while (predecessors.get(step) != null) {

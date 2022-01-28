@@ -1,7 +1,7 @@
 package io.daobab.test.generator;
 
-import io.daobab.result.Entities;
-import io.daobab.result.EntityList;
+import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.buffer.single.EntityList;
 import io.daobab.test.dao.table.Film;
 
 import java.math.BigDecimal;
@@ -9,11 +9,11 @@ import java.util.*;
 
 public class EntityBufferGenerator {
 
-    private static final int size = 2000000;
-    private List<String> rates = Arrays.asList("perfect", "very good", "good", "medium", "poor", "disaster");
+    private static final int size = 1000000;
+    private final List<String> rates = Arrays.asList("perfect", "very good", "good", "medium", "poor", "disaster");
 
     public Entities<Film> getFilms(){
-        List<Film> filmList = new LinkedList<>();
+        List<Film> filmList = new ArrayList<>();
         for (int i = 1; i <= size; i++) {
             Film film = new Film();
             film.setFilmId(i);
@@ -33,7 +33,7 @@ public class EntityBufferGenerator {
 
 
     public Entities<Film> getFilms2() {
-        List<Film> filmList = new LinkedList<>();
+        List<Film> filmList = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             Film film = new Film();
             film.setFilmId(i);

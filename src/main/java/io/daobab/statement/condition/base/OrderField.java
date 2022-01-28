@@ -5,8 +5,9 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings("rawtypes")
 public class OrderField<E extends Entity, F, R extends EntityRelation> {
 
     private Column<E, F, R> field;

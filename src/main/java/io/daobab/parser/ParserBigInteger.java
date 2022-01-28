@@ -4,43 +4,47 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public interface ParserBigInteger {
+@SuppressWarnings("unused")
+public class ParserBigInteger {
 
-    static BigDecimal toBigDecimal(BigInteger from) {
+    private ParserBigInteger() {
+    }
+
+    public static BigDecimal toBigDecimal(BigInteger from) {
         return ParserNumber.toBigDecimal(from);
     }
 
-    static Boolean toBooleanBig(BigInteger from, Boolean inCaseOfNull) {
+    public static Boolean toBooleanBig(BigInteger from, Boolean inCaseOfNull) {
         return ParserNumber.toBoolean(from, inCaseOfNull);
     }
 
-    static boolean toBooleanSmall(BigInteger from, boolean inCaseOfNull) {
+    public static boolean toBooleanSmall(BigInteger from, boolean inCaseOfNull) {
         return ParserNumber.toBooleanSmall(from, inCaseOfNull);
     }
 
-    static Double toDouble(BigInteger from) {
+    public static Double toDouble(BigInteger from) {
         return ParserNumber.toDouble(from);
     }
 
-    static Float toFloat(BigInteger from) {
+    public static Float toFloat(BigInteger from) {
         return ParserNumber.toFloat(from);
     }
 
-    static Integer toInteger(BigInteger from) {
+    public static Integer toInteger(BigInteger from) {
         return ParserNumber.toInteger(from);
     }
 
-    static Short toShort(BigInteger from) {
+    public static Short toShort(BigInteger from) {
         return ParserNumber.toShort(from);
     }
 
-    static Long toLong(BigInteger from) {
+    public static Long toLong(BigInteger from) {
         return ParserNumber.toLong(from);
     }
 
-    static String toString(BigInteger from) {
+    public static String toString(BigInteger from) {
         return ParserNumber.toString(from);
     }
 

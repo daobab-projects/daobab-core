@@ -10,12 +10,19 @@ public class SetOperator {
     public static final int EXCEPT_ALL = 3;
     public static final int INTERSECT = 4;
     public static final int MINUS = 5;
+    private Query<?, ?, ?> query;
+    private int type = UNION;
 
-    public Query<?, ?> getQuery() {
+    public SetOperator(int type, Query<?, ?, ?> query) {
+        setType(type);
+        setQuery(query);
+    }
+
+    public Query<?, ?, ?> getQuery() {
         return query;
     }
 
-    public void setQuery(Query<?, ?> query) {
+    public void setQuery(Query<?, ?, ?> query) {
         this.query = query;
     }
 
@@ -26,14 +33,5 @@ public class SetOperator {
     public void setType(int type) {
         this.type = type;
     }
-
-    private Query<?, ?> query;
-    private int type = UNION;
-
-    public SetOperator(int type, Query<?, ?> query) {
-        setType(type);
-        setQuery(query);
-    }
-
 
 }

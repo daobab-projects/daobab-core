@@ -1,7 +1,7 @@
 package io.daobab.dict;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface DictDatabaseType {
 
@@ -9,6 +9,7 @@ public interface DictDatabaseType {
     String MYSQL = "MySQL";
     String H2 = "H2";
     String PostgreSQL = "PostgreSQL";
+    String MicrosoftSQL = "Microsoft SQL Server";
 
 
 }

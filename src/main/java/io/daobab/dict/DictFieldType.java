@@ -7,7 +7,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface DictFieldType {
 

@@ -51,9 +51,9 @@ public class Film extends Table implements
                 new TableColumn(colLanguageId()),
                 new TableColumn(colOriginalLanguageId()),
                 new TableColumn(colRentalDuration()),
-                new TableColumn(colRentalRate()),
+                new TableColumn(colRentalRate()).size(10),
                 new TableColumn(colLength()),
-                new TableColumn(colReplacementCost()),
+                new TableColumn(colReplacementCost()).size(10),
                 new TableColumn(colRating()).size(5),
                 new TableColumn(colSpecialFeatures()).size(54),
                 new TableColumn(colLastUpdate())

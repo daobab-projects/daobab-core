@@ -1,6 +1,6 @@
 package io.daobab.model;
 
-import io.daobab.converter.JsonMarshaller;
+import io.daobab.converter.JsonHandler;
 import io.daobab.parser.ParserNumber;
 
 import java.math.BigDecimal;
@@ -8,10 +8,11 @@ import java.sql.Timestamp;
 import java.util.Map;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public interface EntityMap extends Entity, Map<String, Object>, MapParameterHandler, JsonMarshaller {
+public interface EntityMap extends Entity, Map<String, Object>, MapParameterHandler, JsonHandler {
 
+    @SuppressWarnings("unchecked")
     @Override
     default <X> X getColumnParam(String key) {
         return (X) get(key);
@@ -25,7 +26,7 @@ public interface EntityMap extends Entity, Map<String, Object>, MapParameterHand
 
     default void fixSerialisation() {
         for (TableColumn ecol : columns()) {
-            Column col = ecol.getColumn();
+            Column<?, ?, ?> col = ecol.getColumn();
             Object val = getColumnParam(col.getFieldName());
             if (val == null) continue;
 

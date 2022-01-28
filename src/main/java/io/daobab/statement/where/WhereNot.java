@@ -3,17 +3,17 @@ package io.daobab.statement.where;
 import io.daobab.statement.where.base.Where;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class WhereNot extends Where<WhereNot> {
-
-    public static final WhereNot not() {
-        return new WhereNot();
-    }
 
     // ------ Contructors
     public WhereNot() {
         super();
+    }
+
+    public static WhereNot not() {
+        return new WhereNot();
     }
 
     public WhereAnd and() {
@@ -24,7 +24,7 @@ public class WhereNot extends Where<WhereNot> {
         return new WhereOr();
     }
 
-    public WhereNot or(Where where) {
+    public WhereNot or(Where<?> where) {
         where.optimize();
         temp(where);
         return this;

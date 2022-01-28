@@ -2,7 +2,7 @@ package io.daobab.model;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface Field<E extends Entity, F, R extends EntityRelation> {
 
@@ -69,8 +69,8 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
 
     default boolean equalsField(Field another) {
         return
-           getEntityName().equals(another.getEntityName())
-             && getEntityClass().equals(another.getEntityClass());
+                getEntityName().equals(another.getEntityName())
+                        && getEntityClass().equals(another.getEntityClass());
     }
 
 

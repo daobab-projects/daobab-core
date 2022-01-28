@@ -1,10 +1,11 @@
 package io.daobab.target;
 
 import io.daobab.error.DaobabException;
+import io.daobab.model.ColumnsProvider;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityAny;
-import io.daobab.result.Entities;
-import io.daobab.target.database.TransactionalTarget;
+import io.daobab.model.TableColumn;
+import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.interceptor.DaobabInterceptor;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
@@ -13,28 +14,31 @@ import io.daobab.target.statistic.StatisticCollectorImpl;
 import io.daobab.target.statistic.StatisticCollectorProvider;
 import io.daobab.target.statistic.StatisticProvider;
 import io.daobab.target.statistic.table.StatisticRecord;
-import io.daobab.transaction.Propagation;
-import io.daobab.transaction.TransactionIndicator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
+
+import static java.lang.String.format;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings("unused")
 public abstract class BaseTarget implements Target, StatisticCollectorProvider, StatisticProvider {
 
     protected final Entity entityAny = new EntityAny();
     protected Logger log = LoggerFactory.getLogger(this.getClass().getName());
-    private Map<Entity, LinkedList<DaobabInterceptor>> interceptors;
+    private Map<Entity, List<DaobabInterceptor>> interceptors;
     private StatisticCollector statistic;
     private boolean statisticEnabled = false;
     private AccessProtector accessProtector;
+
+    private final Map<Class<? extends ColumnsProvider>, List<TableColumn>> columnsCache = new HashMap<>();
 
     protected BaseTarget() {
         accessProtector = new BasicAccessProtector();
@@ -45,52 +49,43 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         return log;
     }
 
-
-    protected Map<Entity, LinkedList<DaobabInterceptor>> getInterceptorsMap() {
+    protected Map<Entity, List<DaobabInterceptor>> getInterceptorsMap() {
         return interceptors;
     }
-
 
     public void addInterceptorForAllEntities(DaobabInterceptor interceptor) {
         addInterceptor(interceptor, entityAny);
     }
 
-    /**
-     * Add interceptor to single Entity
-     *
-     * @param interceptor
-     * @param entity
-     */
     private void addInterceptor(DaobabInterceptor interceptor, Entity entity) {
         if (entity == null)
             throw new DaobabException("You cannot add interceptor to null entity. If you want to add interceptor to any Entity into target, use addInterceptorForAllEntities(DaobabInterceptor interceptor) method.");
         if (interceptor == null) throw new DaobabException("You cannot add interceptor which is null");
-        LinkedList<DaobabInterceptor> interceptors = getInterceptorsMap().get(entity);
-        LinkedList<DaobabInterceptor> interceptors_for_any_entity = getInterceptorsMap().get(entityAny);
+        List<DaobabInterceptor> interceptors = getInterceptorsMap().get(entity);
+        List<DaobabInterceptor> interceptors_for_any_entity = getInterceptorsMap().get(entityAny);
 
-        if (interceptors_for_any_entity.contains(interceptor) && !EntityAny.class.getName().equals(entity.getClass().getName()) ) {
-            getLog().warn("Interceptor " + interceptor.getClass().getName() + " is already added to any entity into target " + this.getClass().getName());
+        if (interceptors_for_any_entity.contains(interceptor) && !EntityAny.class.getName().equals(entity.getClass().getName())) {
+            getLog().warn(format("Interceptor %s is already added to any entity into target %s", interceptor.getClass().getName(), this.getClass().getName()));
             return;
         }
 
-        boolean first_interceptor = false;
+        boolean firstInterceptor = false;
         if (interceptors == null) {
-            interceptors = new LinkedList<>();
-            first_interceptor = true;
+            interceptors = new ArrayList<>();
+            firstInterceptor = true;
         }
         if (interceptors.contains(interceptor)) {
-            getLog().warn("Interceptor " + interceptor.getClass().getName() + " is already added to target " + this.getClass().getName());
+            getLog().warn(format("Interceptor %s already added to a target %s", interceptor.getClass().getName(), this.getClass().getName()));
             return;
         }
 
         interceptors.add(interceptor);
-        getLog().info("Interceptor " + interceptor.getClass().getName() + " added succesfully to target " + this.getClass().getName());
+        getLog().info(format("Interceptor %s added successfully to a target %s", this.getClass().getName(), this.getClass().getName()));
 
-        if (first_interceptor) {
+        if (firstInterceptor) {
             getInterceptorsMap().put(entity, interceptors);
         }
     }
-
 
     public void addInterceptor(DaobabInterceptor interceptor, Entity... entities) {
         if (entities == null)
@@ -101,13 +96,12 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         }
     }
 
-
-    protected List<DaobabInterceptor> getInterceptorsForEntity(Entity entity) {
-        List<DaobabInterceptor> rv = getInterceptorsForEntity(entityAny);
-        if (rv == null) rv = new LinkedList<>();
-        rv.addAll(getInterceptorsForEntity(entity));
-        return rv;
-    }
+//    protected List<DaobabInterceptor> getInterceptorsForEntity(Entity entity) {
+//        List<DaobabInterceptor> rv = getInterceptorsForEntity(entityAny);
+//        if (rv == null) rv = new LinkedList<>();
+//        rv.addAll(getInterceptorsForEntity(entity));
+//        return rv;
+//    }
 
     protected boolean areInterceptorInUse() {
         return interceptors != null;
@@ -116,9 +110,9 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     private void handleInterceptorMethod(Entity entity, BiConsumer<Entity, DaobabInterceptor> consumer) {
         if (!areInterceptorInUse()) return;
         if (entity == null) return;
-        for (DaobabInterceptor interceptor : getInterceptorsForEntity(entity)) {
-            consumer.accept(entity, interceptor);
-        }
+//        for (DaobabInterceptor interceptor : getInterceptorsForEntity(entity)) {
+//            consumer.accept(entity, interceptor);
+//        }
     }
 
     protected void beforeInsert(Entity entity) {
@@ -147,23 +141,6 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
 
     public boolean isTransactionActive() {
         return false;
-    }
-
-
-    public <Y, T extends TransactionalTarget> Y handleTransactionalTarget(T target, Propagation propagation, BiFunction<QueryReceiver, Boolean, Y> jobToDo) {
-        TransactionIndicator indicator = propagation.mayBeProceeded(target);
-        switch (indicator) {
-            case EXECUTE_WITHOUT: {
-                return jobToDo.apply(target.getSourceTarget(), false);
-            }
-            case START_NEW_JUST_FOR_IT: {
-                return target.wrapTransaction(t -> jobToDo.apply(t.getSourceTarget(), true));
-            }
-            case GO_AHEAD: {
-                return jobToDo.apply(target, true);
-            }
-        }
-        throw new DaobabException("Problem related to specific propagation and transaction");
     }
 
 
@@ -196,5 +173,9 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     @Override
     public Entities<StatisticRecord> getStatistics() {
         return getStatisticCollector().getTarget();
+    }
+
+    public List<TableColumn> getColumnsForTable(final ColumnsProvider entity) {
+        return columnsCache.computeIfAbsent(entity.getClass(), e -> entity.columns());
     }
 }

@@ -1,26 +1,27 @@
 package io.daobab.result;
 
-import io.daobab.error.NullConsumer;
 import io.daobab.error.NullFunction;
 import io.daobab.model.Entity;
+import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.single.Entities;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings("unused")
 public interface EntitiesProvider<E extends Entity> {
 
     Class<E> getEntityClass();
 
     Entities<E> findMany();
 
-    default EntityByteBuffer<E> createByteBuffer() {
-        return new EntityByteBuffer<E>(findMany());
+    default NoHeapEntities<E> toNoHeap() {
+        return new NoHeapEntities<>(findMany());
     }
 
     Optional<E> findFirst();
@@ -35,20 +36,14 @@ public interface EntitiesProvider<E extends Entity> {
         return findFirst().orElse(null);
     }
 
-    default void forEach(Consumer<? super E> consumer) {
-        if (consumer == null) throw new NullConsumer();
-        findMany().stream().forEach(consumer::accept);
-    }
-
     default <M> FieldsProvider<M> map(Function<? super E, M> mapper) {
         if (mapper == null) throw new NullFunction();
         Entities<E> res = findMany();
 
-        List<M> rv = new LinkedList<>();
+        List<M> rv = new ArrayList<>();
         res.forEach(t -> rv.add(mapper.apply(t)));
 
         return new FieldsBuffer<>(rv);
     }
-
 
 }

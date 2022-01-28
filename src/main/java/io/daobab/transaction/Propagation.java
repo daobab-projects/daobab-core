@@ -1,7 +1,7 @@
 package io.daobab.transaction;
 
 import io.daobab.error.DaobabException;
-import io.daobab.error.TargetMandatoryException;
+import io.daobab.error.MandatoryTargetException;
 import io.daobab.error.TransactionClosedException;
 import io.daobab.error.TransactionNotAllowerForPropagationNever;
 import io.daobab.target.Target;
@@ -60,18 +60,16 @@ public enum Propagation {
 
     public TransactionIndicator mayBeProceeded(Target target) {
         if (target == null) {
-            throw new TargetMandatoryException();
+            throw new MandatoryTargetException();
         }
 
         if ((this == MANDATORY || this == SUPPORTS || this == REQUIRED) && target.isTransactionActive()) {
             return GO_AHEAD;
         }
 
-
         if (this == REQUIRED_NEW || (this == REQUIRED && !target.isTransactionActive())) {
             return START_NEW_JUST_FOR_IT;
         }
-
 
         if (this == NOT_SUPPORTED || ((this == NEVER || this == SUPPORTS) && !target.isTransactionActive())) {
             return EXECUTE_WITHOUT;
@@ -81,12 +79,11 @@ public enum Propagation {
             throw new TransactionClosedException(target);
         }
 
-
         if (this == NEVER && target.isTransactionActive()) {
             throw new TransactionNotAllowerForPropagationNever();
         }
 
-        throw new DaobabException("Unhandled transaction case: " + this.toString() + " and transaction opened:" + target.isTransactionActive());
+        throw new DaobabException("Unhandled transaction case: " + this + " and transaction opened:" + target.isTransactionActive());
 
     }
 

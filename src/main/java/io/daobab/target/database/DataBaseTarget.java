@@ -1,54 +1,60 @@
 package io.daobab.target.database;
 
-import io.daobab.error.ColumnMandatory;
+import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
-import io.daobab.error.EntityMandatory;
+import io.daobab.error.MandatoryColumn;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.query.QueryDelete;
-import io.daobab.query.QueryInsert;
-import io.daobab.query.QueryUpdate;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.target.BaseTarget;
-import io.daobab.target.meta.MetaData;
-import io.daobab.target.meta.MetaDataTables;
-import io.daobab.target.meta.table.MetaColumn;
-import io.daobab.target.meta.table.MetaTable;
+import io.daobab.target.QueryHandler;
+import io.daobab.target.database.meta.MetaData;
+import io.daobab.target.database.meta.MetaDataBaseTarget;
+import io.daobab.target.database.meta.MetaDataTables;
+import io.daobab.target.database.meta.table.MetaColumn;
+import io.daobab.target.database.meta.table.MetaTable;
+import io.daobab.target.database.query.DataBaseQueryDelete;
+import io.daobab.target.database.query.DataBaseQueryInsert;
+import io.daobab.target.database.query.DataBaseQueryUpdate;
 import io.daobab.transaction.Propagation;
+import io.daobab.transaction.TransactionIndicator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.BiFunction;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public abstract class DataBaseTarget extends BaseTarget implements DataBaseTargetLogic, MetaDataTables {
 
-    private List<Entity> tables = null;
-    private DataSource dataSource;
     String dataBaseProductName;
     String dataBaseMajorVersion;
     String dataBaseMinorVersion;
+    private List<Entity> tables = null;
+    private DataSource dataSource;
     private MetaDataBaseTarget metaData;
     private String schemaName;
     private String catalogName;
+    private boolean sql = false;
 
-    private boolean enabledLogQueries = false;
+
+    public boolean isConnectedToDatabase() {
+        return true;
+    }
+
 
     @Override
-    public  TransactionalTarget getSourceTarget(){
-        return  this;
+    public boolean getShowSql() {
+        return sql;
     }
 
     @Override
-    public boolean isLogQueriesEnabled() {
-        return enabledLogQueries;
-    }
-
-    public void setEnabledLogQueries(boolean enable) {
-        this.enabledLogQueries = enable;
+    public void setShowSql(boolean enable) {
+        this.sql = enable;
     }
 
 
@@ -71,11 +77,11 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
             UUID.randomUUID().toString(); //to init UUID
             this.dataSource = initDataSource();
 
-            doSthOnConnection("",(x,c)->{
+            doSthOnConnection("", (x, c) -> {
                 try {
                     setSchemaName(c.getSchema());
                     setCatalogName(c.getCatalog());
-                }catch(SQLException e){
+                } catch (SQLException e) {
                     throw new DaobabSQLException(e);
                 }
                 return null;
@@ -92,7 +98,7 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
 
             setDataBaseProductName(meta.getDatabaseProductName());
             setDataBaseMajorVersion(meta.getDatabaseMajorVersion());
-            setDataBaseMinorVersion(""+meta.getDatabaseMinorVersion());
+            setDataBaseMinorVersion("" + meta.getDatabaseMinorVersion());
 
 
         }
@@ -131,22 +137,34 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
         this.dataBaseMinorVersion = dataBaseMinorVersion;
     }
 
-    @Override
-    public boolean isBuffer() {
-        return false;
+    public <E extends Entity> int delete(DataBaseQueryDelete<E> query, Propagation propagation) {
+        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).delete(query, transaction));
     }
 
-    public <E extends Entity> int delete(QueryDelete<E> query, Propagation propagation) {
-        return handleTransactionalTarget(this, propagation, (target, transaction) -> target.delete(query, transaction));
+    public <E extends Entity> int update(DataBaseQueryUpdate<E> query, Propagation propagation) {
+        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).update(query, transaction));
     }
 
-    public <E extends Entity> int update(QueryUpdate<E> query, Propagation propagation) {
-        return handleTransactionalTarget(this, propagation, (target, transaction) -> target.update(query, transaction));
+    public <E extends Entity> E insert(DataBaseQueryInsert<E> query, Propagation propagation) {
+        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).insert(query, transaction));
     }
 
-    public <E extends Entity> E insert(QueryInsert<E> query, Propagation propagation) {
-        return handleTransactionalTarget(this, propagation, (target, transaction) -> target.insert(query, transaction));
+    public <Y, T extends TransactionalTarget> Y handleTransactionalTarget(T target, Propagation propagation, BiFunction<QueryHandler, Boolean, Y> jobToDo) {
+        TransactionIndicator indicator = propagation.mayBeProceeded(target);
+        switch (indicator) {
+            case EXECUTE_WITHOUT: {
+                return jobToDo.apply(target, false);
+            }
+            case START_NEW_JUST_FOR_IT: {
+                return target.wrapTransaction(t -> jobToDo.apply(t.getSourceTarget(), true));
+            }
+            case GO_AHEAD: {
+                return jobToDo.apply(target, true);
+            }
+        }
+        throw new DaobabException("Problem related to specific propagation and transaction");
     }
+
 
     public String getSchemaName() {
         return schemaName;
@@ -160,23 +178,23 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
         if (metaData == null) {
             try {
                 this.metaData = new MetaDataBaseTarget(getCatalogName(), getSchemaName(), this);
-            } catch (SQLException throwables) {
-                log.warn("DataBase Meta Specifics wasn't taken. ", throwables);
+            } catch (SQLException sqlException) {
+                log.warn("DataBase Meta Specifics wasn't taken. ", sqlException);
             }
         }
         return metaData;
     }
 
     public MetaColumn getMetaDataForColumn(Column<?, ?, ?> column) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         return getMetaData().select(tabMetaColumn).where(new WhereAnd()
-                .equal(tabMetaColumn.colTableName(), column.getEntityName())
-                .equal(tabMetaColumn.colColumnName(), column.getColumnName()))
+                        .equal(tabMetaColumn.colTableName(), column.getEntityName())
+                        .equal(tabMetaColumn.colColumnName(), column.getColumnName()))
                 .findOne();
     }
 
     public <E extends Entity> MetaTable getMetaDataForTable(E entity) {
-        if (entity == null) throw new EntityMandatory();
+        if (entity == null) throw new MandatoryEntity();
         return getMetaData().select(tabMetaTable)
                 .whereEqual(tabMetaTable.colTableName(), entity.getEntityName())
                 .findOne();
@@ -190,8 +208,6 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     public void setCatalogName(String catalogName) {
         this.catalogName = catalogName;
     }
-
-
 
 
 }

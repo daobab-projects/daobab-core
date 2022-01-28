@@ -5,22 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
 
+    private final List<TableAndType> tables = new ArrayList<>();
     private String columnName;
     private int dataType;
-
     private Class fieldClass;
     private String interfaceName;
     private String javaPackage;
     private String fieldName;
     private String finalFieldName;
-
     private boolean alreadyGenerated;
-
-    private List<TableAndType> tables = new ArrayList<>();
 
 
     public GenerateColumn() {
@@ -48,23 +45,18 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
             System.out.println("table " + tableRealName + " has no data");
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(getFinalFieldNameShortOrLong(tableCamelName))
-                .append("<")
-                .append(tableCamelName)
-                .append(">");
-        return sb.toString();
+        return getFinalFieldNameShortOrLong(tableCamelName) +
+                "<" +
+                tableCamelName +
+                ">";
     }
 
     public String getColumnInterfaceType(String tableRealName) {
 
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(getFinalFieldNameShortOrLong(tableRealName))
-                .append("<")
-                .append(tableRealName)
-                .append(">");
-        return sb.toString();
+        return getFinalFieldNameShortOrLong(tableRealName) +
+                "<" +
+                tableRealName +
+                ">";
     }
 
     public String getFinalFieldNameShortOrLong(String tableCamelName) {
@@ -91,10 +83,10 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         this.dataType = dataType;
     }
 
-    public void setDataType(String dataType) {
+    public void setDataType(String dataType, TypeConverter typeConverter) {
         if (dataType == null) return;
         this.dataType = Integer.parseInt(dataType);
-        setFieldClass(TypeConverter.convert(getDataType()));
+        setFieldClass(typeConverter.convert(TypeConverter.UNKNOWN_TABLE, this));
     }
 
     public Class getFieldClass() {
@@ -143,9 +135,8 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
     }
 
     public void setFinalFieldName(String finalFieldName) {
-//        this.finalFieldName = GenerateFormatter.toUpperCaseFirstCharacter(finalFieldName);
         this.finalFieldName = finalFieldName;
-        this.interfaceName = this.finalFieldName;
+        this.interfaceName = finalFieldName;
     }
 
     public GeneratedColumnInTable getColumnInTable(String tableName) {
@@ -156,9 +147,21 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         return this.computeIfAbsent(tableName, k -> new GeneratedColumnInTable());
     }
 
-    private class TableAndType {
-        private String table;
-        private String type;
+    public String getTableTypeDescription() {
+        if (tables.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        sb.append("    /**\n");
+        for (TableAndType tableAndType : tables) {
+            sb.append("     * ").append(tableAndType.table).append(": ").append(tableAndType.type).append("\n");
+        }
+        sb.append("     */\n");
+
+        return sb.toString();
+    }
+
+    private static class TableAndType {
+        private final String table;
+        private final String type;
 
         private TableAndType(String table, String type) {
             this.table = table;
@@ -166,15 +169,4 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         }
     }
 
-    public String getTableTypeDescription() {
-        if (tables.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        sb.append("    /**\n");
-        for (TableAndType tt : tables) {
-            sb.append("     * ").append(tt.table).append(": ").append(tt.type).append("\n");
-        }
-        sb.append("     */\n");
-
-        return sb.toString();
-    }
 }

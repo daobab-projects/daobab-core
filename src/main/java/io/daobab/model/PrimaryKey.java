@@ -1,21 +1,21 @@
 package io.daobab.model;
 
-import io.daobab.query.QueryDelete;
 import io.daobab.query.base.QueryWhisperer;
-import io.daobab.result.Entities;
 import io.daobab.statement.condition.SetFields;
 import io.daobab.statement.where.base.Where;
-import io.daobab.target.OpenedTransactionTarget;
-import io.daobab.target.QueryTarget;
+import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.DataBaseTarget;
+import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.DataBaseQueryDelete;
+import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
 import io.daobab.transaction.Propagation;
 
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes","unused"})
 public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> extends EntityRelation<E>, QueryWhisperer {
 
     Column<E, F, R> colID();
@@ -77,23 +77,23 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
         return target.select(entity).whereEqual(colID().transformTo(entity), getId()).findMany();
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings("unchecked")
     default <R1 extends EntityRelation<E1>, M extends Entity, T extends PrimaryKey<E1, F, R1>, E1 extends Entity> Entities<T> findRelatedManyByCross(QueryTarget target, M cross, T entityRV) {
         return target.select((T) entityRV.getEntity()).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findMany();
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings("unchecked")
     default <R1 extends EntityRelation<E1>, M extends Entity, T extends PrimaryKey<E1, F, R1>, E1 extends Entity> T findRelatedOneByCross(QueryTarget target, M cross, T entityRV) {
         return target.select((T) entityRV.getEntity()).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findOne();
     }
 
-    @SuppressWarnings({"unchecked","Duplicates"})
+    @SuppressWarnings({"unchecked", "Duplicates"})
     default <R1 extends EntityRelation<E1>, M extends Entity, T extends EntityMap & PrimaryKey<E1, F, R1>, E1 extends Entity> List<T> findRelatedManyByCross(QueryTarget target, M cross, Column<T, ?, ?>... columns) {
         T entityRV = columns[0].getInstance();
         return target.select(columns).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findManyAs(columns[0].getEntityClass());
     }
 
-    @SuppressWarnings({"unchecked","Duplicates"})
+    @SuppressWarnings({"unchecked", "Duplicates"})
     default <R1 extends EntityRelation<E1>, M extends Entity, T extends EntityMap & PrimaryKey<E1, F, R1>, E1 extends Entity> T findRelatedOneByCross(QueryTarget target, M cross, Column<T, ?, ?>... columns) {
         T entityRV = columns[0].getInstance();
         return target.select(columns).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findOneAs(columns[0].getEntityClass());
@@ -120,20 +120,20 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
 
     @SuppressWarnings("unchecked")
     default boolean delete(QueryTarget target) {
-        return new QueryDelete<>(target, (E) this).whereEqual(colID(), getId()).execute()==1;
+        return new DataBaseQueryDelete<>(target, (E) this).whereEqual(colID(), getId()).execute() == 1;
     }
 
     @SuppressWarnings("unchecked")
-    default boolean delete(OpenedTransactionTarget target, boolean transaction) {
-        return new QueryDelete<>(target, (E) this).whereEqual(colID(), getId()).execute(transaction)==1;
+    default boolean delete(OpenedTransactionDataBaseTarget target, boolean transaction) {
+        return new DataBaseQueryDelete<>(target, (E) this).whereEqual(colID(), getId()).execute(transaction) == 1;
     }
 
     @SuppressWarnings("unchecked")
-    default boolean delete(OpenedTransactionTarget target, Propagation propagation) {
-        return new QueryDelete<>(target, (E) this).whereEqual(colID(), getId()).execute(propagation)==1;
+    default boolean delete(OpenedTransactionDataBaseTarget target, Propagation propagation) {
+        return new DataBaseQueryDelete<>(target, (E) this).whereEqual(colID(), getId()).execute(propagation) == 1;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes","Duplicates"})
+    @SuppressWarnings({"unchecked", "rawtypes", "Duplicates"})
     default E update(QueryTarget target, Column<E, ?, ?>... columnsToUpdate) {
         if (this instanceof OptimisticConcurrencyForPrimaryKey) {
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
@@ -159,7 +159,7 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
         return (E) this;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes","Duplicates"})
+    @SuppressWarnings({"unchecked", "rawtypes", "Duplicates"})
     default E update(QueryTarget target, Propagation propagation, Column<E, ?, ?>... columnsToUpdate) {
         if (this instanceof OptimisticConcurrencyForPrimaryKey) {
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
@@ -186,32 +186,34 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
         return (E) this;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes","Duplicates"})
+    @SuppressWarnings({"unchecked", "rawtypes", "Duplicates"})
     default E update(QueryTarget target) {
         if (this instanceof OptimisticConcurrencyForPrimaryKey) {
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setInfoColumns((EntityRelation) this, columns().toArray(new TableColumn[columns().size()])))
+        target.update(SetFields.setInfoColumns((EntityRelation) this, target.getColumnsForTable(this).toArray(new TableColumn[0])))
                 .whereEqual(colID(), getId())
                 .execute();
         return (E) this;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes","Duplicates"})
-    default E update(OpenedTransactionTarget target, boolean transaction) {
+    @SuppressWarnings({"unchecked", "rawtypes", "Duplicates"})
+    default E update(OpenedTransactionDataBaseTarget target, boolean transaction) {
         if (this instanceof OptimisticConcurrencyForPrimaryKey) {
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setColumns((E) this, columns().toArray(new Column[columns().size()])))
+        target.update(SetFields.setColumns((E) this, target.getColumnsForTable(this).stream()
+                        .map(TableColumn::getColumn)
+                        .toArray(Column[]::new)))
                 .whereEqual(colID(), getId())
                 .execute(transaction);
         return (E) this;
     }
 
 
-    @SuppressWarnings({"unchecked","rawtypes","Duplicates"})
+    @SuppressWarnings({"unchecked", "rawtypes", "Duplicates"})
     default E update(QueryTarget target, boolean transaction, Column<E, ?, ?>... columnsToUpdate) {
         if (this instanceof OptimisticConcurrencyForPrimaryKey) {
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
@@ -249,10 +251,12 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
         return target.select((E) this).whereEqual(column, value).findOne();
     }
 
+    @SuppressWarnings("unchecked")
     default String getSqlUpdate(DataBaseTarget target) {
-        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) this.columns())).whereEqual(colID(), getId()) + ";";
+        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) target.getColumnsForTable(this))).whereEqual(colID(), getId()) + ";";
     }
 
+    @SuppressWarnings("unchecked")
     default String getSqlUpdate(DataBaseTarget target, Column<E, ?, ?>... columnsToUpdate) {
         return target.update(SetFields.setColumns((E) this, columnsToUpdate)).whereEqual(colID(), getId()).getSQLQuery(target) + ";";
     }

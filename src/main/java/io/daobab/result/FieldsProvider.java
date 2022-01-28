@@ -1,25 +1,28 @@
 package io.daobab.result;
 
-import io.daobab.error.NullConsumer;
 import io.daobab.error.NullFunction;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface FieldsProvider<F> {
 
     List<F> findMany();
 
-    Optional<F> findFirst();
+    default Optional<F> findFirst() {
+        List<F> elements = findMany();
+        return elements.isEmpty() ? Optional.empty() : Optional.of(elements.get(0));
+    }
 
-    long countAny();
+    default long countAny() {
+        return findMany().size();
+    }
 
     default boolean exists() {
         return findFirst().isPresent();
@@ -29,16 +32,11 @@ public interface FieldsProvider<F> {
         return findFirst().orElse(null);
     }
 
-    default void forEach(Consumer<? super F> consumer) {
-        if (consumer == null) throw new NullConsumer();
-        findMany().stream().forEach(consumer::accept);
-    }
-
     default FieldsProvider<F> filter(Predicate<? super F> predicate) {
         if (predicate == null) throw new NullFunction();
         List<F> rv = findMany()
                 .stream()
-                .filter(predicate::test)
+                .filter(predicate)
                 .collect(Collectors.toList());
         return new FieldsBuffer<>(rv);
     }
@@ -47,7 +45,7 @@ public interface FieldsProvider<F> {
         if (mapper == null) throw new NullFunction();
         return new FieldsBuffer<>(findMany()
                 .stream()
-                .map(mapper::apply)
+                .map(mapper)
                 .collect(Collectors.toList()));
     }
 

@@ -1,20 +1,18 @@
 package io.daobab.generator;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class GenerateTarget {
 
     private String schemaName;
     private String catalogName;
-
-    private List<GenerateTable> tableList = new LinkedList<>();
-
     private String javaPackage;
-    private boolean alreadyGenerated;
+
+    private List<GenerateTable> tableList = new ArrayList<>();
 
 
     public String toString() {
@@ -35,14 +33,6 @@ public class GenerateTarget {
 
     public void setJavaPackage(String javaPackage) {
         this.javaPackage = javaPackage;
-    }
-
-    public boolean isAlreadyGenerated() {
-        return alreadyGenerated;
-    }
-
-    public void setAlreadyGenerated(boolean alreadyGenerated) {
-        this.alreadyGenerated = alreadyGenerated;
     }
 
     public List<GenerateTable> getTableList() {
@@ -77,16 +67,14 @@ public class GenerateTarget {
 
 
     public String getTableImports() {
-        if (getTableList() == null || getTableList().isEmpty()) return "";
+        if (getTableList() == null) return "";
         StringBuilder sb = new StringBuilder();
-        for (GenerateTable gc : getTableList()) {
-            sb.append("import ")
-                    .append(gc.getJavaPackage());
-
-            sb.append(".").append(GenerateFormatter.toCamelCase(gc.getTableName()))
-                    .append(";")
-                    .append("\n");
-        }
+        getTableList().forEach(gc -> sb.append("import ")
+                .append(gc.getJavaPackage())
+                .append(".")
+                .append(GenerateFormatter.toCamelCase(gc.getTableName()))
+                .append(";")
+                .append("\n"));
         return sb.toString();
     }
 
@@ -99,7 +87,6 @@ public class GenerateTarget {
             GenerateTable gc = getTableList().get(i);
 
             sb.append("\t\t\t")
-
                     .append(gc.isView() ? "view" : "tab")
                     .append(GenerateFormatter.toCamelCase(gc.getTableName()));
             if (i < getTableList().size() - 1) sb.append(",");
@@ -112,9 +99,8 @@ public class GenerateTarget {
         if (getTableList() == null || getTableList().isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
         for (GenerateTable gc : getTableList()) {
-
-            sb.append(TableDescriptionGenerator.getTableDescription(gc));
-            sb.append("\t")
+            sb.append(TableDescriptionGenerator.getTableDescription(gc))
+                    .append("\t")
                     .append(GenerateFormatter.toCamelCase(gc.getTableName()))
                     .append(" ")
                     .append(gc.isView() ? "view" : "tab")
@@ -127,7 +113,6 @@ public class GenerateTarget {
         }
         return sb.toString();
     }
-
 
     public String getCatalogName() {
         return catalogName;

@@ -6,8 +6,7 @@ import java.util.Locale;
 
 public class JavaPackageResolver {
 
-    private JavaPackageResolver(){}
-
+    //all lowercase
     static final List<String> forbiddenNames = Arrays.asList("abstract", "assert", "boolean", "break", "byte", "case",
             "catch", "char", "class", "const", "continue", "default",
             "double", "do", "else", "enum", "extends", "false",
@@ -18,37 +17,43 @@ public class JavaPackageResolver {
             "switch", "synchronized", "this", "throw", "throws", "transient",
             "true", "try", "void", "volatile", "while",
 
+            //Daobab KeyWords
+            "sequencename", "idgeneratortype", "sqlupdate", "entity",
             "id", "entityrelationmap", "entitymap", "object", "class", "field",
-            "con", "nul", "aux", "lst", "prn", "eof", "inp", "out" //Windows forbidden
-            );
+            //Windows forbidden
+            "con", "nul", "aux", "lst", "prn", "eof", "inp", "out"
 
-    public static StringBuilder resolve(String jpackage,String catalog, String schema){
+    );
 
-        StringBuilder sb=new StringBuilder();
+    private JavaPackageResolver() {
+    }
+
+    public static StringBuilder resolve(String jpackage, String catalog, String schema) {
+
+        StringBuilder sb = new StringBuilder();
         sb.append(jpackage);
 
-        StringBuilder properCatalog=resolveCatalog(catalog);
-        StringBuilder properSchema=resolveSchema(schema);
+        StringBuilder properCatalog = resolveCatalog(catalog);
+        StringBuilder properSchema = resolveSchema(schema);
 
-        if (properCatalog.length()>0){
+        if (properCatalog.length() > 0) {
             sb.append(".").append(properCatalog);
         }
 
-        if (properSchema.length()>0){
+        if (properSchema.length() > 0) {
             sb.append(".").append(properSchema);
         }
-
 
 
         return sb;
     }
 
-    public static StringBuilder resolveCatalog(String catalog){
-        StringBuilder sb=new StringBuilder();
+    public static StringBuilder resolveCatalog(String catalog) {
+        StringBuilder sb = new StringBuilder();
         if (catalog != null && !catalog.trim().isEmpty() && !"%".equals(catalog)) {
-            boolean forbidden=forbiddenNames.contains(catalog.toLowerCase(Locale.ROOT));
+            boolean forbidden = forbiddenNames.contains(catalog.toLowerCase(Locale.ROOT));
             sb.append(catalog.toLowerCase(Locale.ROOT));
-            if (forbidden){
+            if (forbidden) {
                 sb.append("_catalog");
             }
         }
@@ -56,12 +61,12 @@ public class JavaPackageResolver {
         return sb;
     }
 
-    public static StringBuilder resolveSchema(String schema){
-        StringBuilder sb=new StringBuilder();
+    public static StringBuilder resolveSchema(String schema) {
+        StringBuilder sb = new StringBuilder();
         if (schema != null && !schema.trim().isEmpty() && !"%".equals(schema)) {
-            boolean forbidden=forbiddenNames.contains(schema.toLowerCase(Locale.ROOT));
+            boolean forbidden = forbiddenNames.contains(schema.toLowerCase(Locale.ROOT));
             sb.append(schema.toLowerCase(Locale.ROOT));
-            if (forbidden){
+            if (forbidden) {
                 sb.append("_schema");
             }
         }

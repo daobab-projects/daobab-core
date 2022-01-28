@@ -1,0 +1,43 @@
+package io.daobab.target.buffer.noheap.access.field;
+
+import io.daobab.model.Column;
+import io.daobab.model.Entity;
+import io.daobab.model.EntityRelation;
+import io.daobab.model.TableColumn;
+
+public class EmptyTableColumn extends TableColumn {
+    public EmptyTableColumn() {
+        super(new Column<Entity, Object, EntityRelation>() {
+            @Override
+            public String getFieldName() {
+                return null;
+            }
+
+            @Override
+            public Class<Object> getFieldClass() {
+                return null;
+            }
+
+            @Override
+            public Object getValue(EntityRelation entity) {
+                return null;
+            }
+
+            @Override
+            public void setValue(EntityRelation entity, Object value) {
+
+            }
+
+            @Override
+            public Entity getInstance() {
+                return null;
+            }
+
+            @Override
+            public String getColumnName() {
+                return null;
+            }
+        });
+
+    }
+}

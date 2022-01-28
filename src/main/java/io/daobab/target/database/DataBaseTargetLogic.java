@@ -3,14 +3,16 @@ package io.daobab.target.database;
 import io.daobab.error.*;
 import io.daobab.model.*;
 import io.daobab.parser.ParserNumber;
-import io.daobab.query.*;
-import io.daobab.query.base.Query;
 import io.daobab.query.base.QuerySpecialParameters;
-import io.daobab.result.Entities;
-import io.daobab.result.EntityList;
-import io.daobab.result.PlateBuffer;
-import io.daobab.target.QueryTarget;
-import io.daobab.target.meta.MetaData;
+import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.buffer.single.EntityList;
+import io.daobab.target.buffer.single.PlateBuffer;
+import io.daobab.target.database.connection.ConnectionGateway;
+import io.daobab.target.database.connection.QueryResolverTransmitter;
+import io.daobab.target.database.connection.RSReader;
+import io.daobab.target.database.meta.MetaData;
+import io.daobab.target.database.query.*;
+import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.OperationType;
 import io.daobab.target.statistic.StatisticCollectorProvider;
@@ -28,20 +30,24 @@ import java.util.function.BiFunction;
 import static java.lang.String.format;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, TransactionalTarget, StatisticCollectorProvider {
+public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarget, TransactionalTarget, StatisticCollectorProvider {
+
+    default OpenTransactionDataBaseTargetImpl beginTransaction() {
+        return TransactionalTarget.super.beginTransaction();
+    }
 
     String getDataBaseProductName();
 
-    default boolean isConnectedToDatabase() {
-        return true;
-    }
+
+    void setShowSql(boolean enable);
 
     DataSource getDataSource();
 
     MetaData getMetaData();
 
+    @Override
     AccessProtector getAccessProtector();
 
     default void closeConnection(Connection connection) {
@@ -79,12 +85,11 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         }
     }
 
-
     default Connection openConnection() {
         try {
             getLog().debug("Start getConnection");
             Connection connection = getDataSource().getConnection();
-            getLog().debug(format("Connection retrieved: %s",connection));
+            getLog().debug(format("Connection retrieved: %s", connection));
             return connection;
         } catch (SQLException e) {
             throw new DaobabSQLException("Error while retrieving connection from datasource", e);
@@ -95,7 +100,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
 
     default <F> F getNextId(Connection conn, String sequenceName, Class<F> fieldClazz) {
         if (sequenceName == null || sequenceName.isEmpty()) throw new NoSequenceException();
-        getLog().debug(format("Start getNextId (conn = %s, sequenceName =%s)",conn,sequenceName));
+        getLog().debug(format("Start getNextId (conn = %s, sequenceName =%s)", conn, sequenceName));
         PreparedStatement stmt = null;
         try {
             stmt = conn.prepareStatement("select " + sequenceName + ".nextval from dual");
@@ -115,7 +120,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
 
-    default <E extends Entity> int delete(QueryDelete<E> query, boolean transaction) {
+    default <E extends Entity> int delete(DataBaseQueryDelete<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.DELETE);
         if (query.getWhereWrapper() == null) {
             throw new MandatoryWhere();
@@ -143,7 +148,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
 
-    default <E extends Entity> int update(QueryUpdate<E> query, boolean transaction) {
+    default <E extends Entity> int update(DataBaseQueryUpdate<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.UPDATE);
         if (query.getWhereWrapper() == null) {
             throw new MandatoryWhere();
@@ -164,14 +169,14 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
             return rv;
         } catch (SQLException e) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
-                throw new DaobabSQLException(e);
+            throw new DaobabSQLException(e);
         } finally {
             finalConnectionClose(conn, transaction);
         }
     }
 
-    @SuppressWarnings({"java:S3740","unchecked","rawtypes"})
-    default <E extends Entity> E insert(QueryInsert<E> query, boolean transaction) {
+    @SuppressWarnings({"java:S3740", "unchecked", "rawtypes"})
+    default <E extends Entity> E insert(DataBaseQueryInsert<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.INSERT);
         Connection conn = null;
         PrimaryKey pk = null;
@@ -209,7 +214,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
             return query.getEntity();
         } catch (SQLException e) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
-                throw new DaobabSQLException(e);
+            throw new DaobabSQLException(e);
         } finally {
             finalConnectionClose(conn, transaction);
         }
@@ -239,7 +244,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
 
 
     @Override
-    default <E extends Entity, F> F readField(QueryField<E, F> query) {
+    default <E extends Entity, F> F readField(DataBaseQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (s, conn) -> {
             if (s.getFields() == null || s.getFields().isEmpty()) {
@@ -272,7 +277,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
     @Override
-    default <E extends Entity, F> List<F> readFieldList(QueryField<E, F> query) {
+    default <E extends Entity, F> List<F> readFieldList(DataBaseQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (s, conn) -> {
 
@@ -305,7 +310,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
     @Override
-    default <E extends Entity> Entities<E> readEntityList(QueryEntity<E> query) {
+    default <E extends Entity> Entities<E> readEntityList(DataBaseQueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (s, conn) -> {
@@ -342,7 +347,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
     @Override
-    default <E extends Entity> E readEntity(QueryEntity<E> query) {
+    default <E extends Entity> E readEntity(DataBaseQueryEntity<E> query) {
 
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
@@ -386,14 +391,14 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
             conn = getConnection();
             return function.apply(functionInput, conn);
         } finally {
-            if (!(this instanceof OpenTransactionDataBaseTarget)) {
+            if (!(this instanceof OpenTransactionDataBaseTargetImpl)) {
                 ConnectionGateway.closeConnectionIfOpened(conn);
             }
         }
     }
 
 
-    default Plate readPlate(QueryPlate query) {
+    default Plate readPlate(DataBaseQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (s, conn) -> {
             PreparedStatement stmt = null;
@@ -422,7 +427,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
     @Override
-    default PlateBuffer readPlateList(QueryPlate query) {
+    default PlateBuffer readPlateList(DataBaseQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         List<TableColumn> fields = query.getFields();
 
@@ -438,7 +443,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
             stmt = conn.prepareStatement(sqlQuery);
 
             ResultSet rs = stmt.executeQuery();
-            getLog().debug(format("readPlateList executed statement: %s",sqlQuery));
+            getLog().debug(format("readPlateList executed statement: %s", sqlQuery));
 
             while (rs.next()) {
                 rv.add(RSReader.readPlate(rs, fields));
@@ -456,10 +461,10 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         }
     }
 
-    default long count(Query<?, ?> query) {
+    default long count(DataBaseQueryBase<?, ?> query) {
         getLog().debug("Start count ");
-        Connection conn=null;
-        PreparedStatement stmt=null;
+        Connection conn = null;
+        PreparedStatement stmt = null;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         try {
             conn = this.getConnection();
@@ -477,7 +482,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
             return 0;
         } catch (SQLException e) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
-                throw new DaobabSQLException(e);
+            throw new DaobabSQLException(e);
         } finally {
             RSReader.closeStatement(stmt, query);
             this.closeConnection(conn);
@@ -506,17 +511,17 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         });
     }
 
-    default <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O outEmpty){
-        List<Column> columns=new ArrayList<>();
+    default <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O outEmpty) {
+        List<Column> columns = new ArrayList<>();
         columns.addAll(outEmpty.getColumns());
         getAccessProtector().removeViolatedColumns(columns, OperationType.READ);
-        String query= toCallProcedureSqlQuery(name,in);
+        String query = toCallProcedureSqlQuery(name, in);
 
         return doSthOnConnection(query, (s, conn) -> {
             PreparedStatement stmt = null;
-            String identifier=null;
+            String identifier = null;
             if (isStatisticCollectingEnabled()) {
-                identifier=getStatisticCollector().sendProcedure(name);
+                identifier = getStatisticCollector().sendProcedure(name);
             }
             try {
                 stmt = conn.prepareStatement(s);
@@ -525,13 +530,15 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
 
                 if (rs.next()) {
                     O plate = RSReader.readProcedure(rs, outEmpty);
-                    if (isStatisticCollectingEnabled()) getStatisticCollector().receivedProcedure(name,identifier,s, outEmpty.getColumns().size());
+                    if (isStatisticCollectingEnabled())
+                        getStatisticCollector().receivedProcedure(name, identifier, s, outEmpty.getColumns().size());
                     return plate;
                 }
-                if (isStatisticCollectingEnabled()) getStatisticCollector().receivedProcedure(name,identifier,query, 0);
+                if (isStatisticCollectingEnabled())
+                    getStatisticCollector().receivedProcedure(name, identifier, query, 0);
                 return null;
             } catch (SQLException e) {
-                if (isStatisticCollectingEnabled()) getStatisticCollector().errorProcedure(name,identifier,query, e);
+                if (isStatisticCollectingEnabled()) getStatisticCollector().errorProcedure(name, identifier, query, e);
                 throw new DaobabSQLException(e);
             } finally {
                 RSReader.closeStatement(stmt, this);

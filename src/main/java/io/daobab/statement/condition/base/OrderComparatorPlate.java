@@ -6,32 +6,34 @@ import io.daobab.parser.ParserNumber;
 
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * OrderBy comparator for cached entities
  *
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class OrderComparatorPlate implements Comparator<Plate> {
 
-    private LinkedList<OrderField> orderList;
+    private List<OrderField> orderList;
 
-    public OrderComparatorPlate(LinkedList<OrderField> order) {
+    public OrderComparatorPlate(List<OrderField> order) {
         setOrderList(order);
     }
+
 
     @Override
     public int compare(Plate o1, Plate o2) {
 
         if (o1 == null && o2 == null) return 0;
         if (o1 != null && o2 == null) return 1;
-        if (o1 == null && o2 != null) return -1;
+        if (o1 == null) return -1;
 
         for (OrderField<?, ?, ?> fo : getOrderList()) {
 
-            Object v1 = ((OrderField<?, ?, EntityRelation>) fo).getField().getValue((EntityRelation) o1);
-            Object v2 = ((OrderField<?, ?, EntityRelation>) fo).getField().getValue((EntityRelation) o2);
+            Object v1 = o1.getValue(((OrderField<?, ?, EntityRelation>) fo).getField());
+            Object v2 = o2.getValue(((OrderField<?, ?, EntityRelation>) fo).getField());
 
             int result = 0;
             if (v1 instanceof Number) {
@@ -60,11 +62,11 @@ public class OrderComparatorPlate implements Comparator<Plate> {
         return 0;
     }
 
-    public LinkedList<OrderField> getOrderList() {
+    public List<OrderField> getOrderList() {
         return orderList;
     }
 
-    public void setOrderList(LinkedList<OrderField> orderList) {
+    public void setOrderList(List<OrderField> orderList) {
         this.orderList = orderList;
     }
 

@@ -2,14 +2,14 @@ package io.daobab.generator;
 
 import io.daobab.model.Composite;
 import io.daobab.model.CompositeColumns;
+import io.daobab.model.TableColumn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class GenerateTable {
 
@@ -21,13 +21,12 @@ public class GenerateTable {
     private List<GenerateColumn> primaryKeys;
     private String compositeKeyName;
     private List<GenerateTable> inheritedSubCompositeKeys = new ArrayList<>();
-    private List<GenerateColumn> columnList = new LinkedList<>();
+    private List<GenerateColumn> columnList = new ArrayList<>();
 
     private String javaPackage;
     private boolean alreadyGenerated;
 
     private boolean view = false;
-
 
     public GenerateTable(String tableName, List<GenerateColumn> primaryKey, List<GenerateColumn> allColumns, GenerateColumn... columns) {
         setTableName(tableName);
@@ -90,6 +89,10 @@ public class GenerateTable {
         StringBuilder sb = new StringBuilder();
         for (GenerateColumn gc : getColumnList()) {
             if (gc.getFinalFieldName().equalsIgnoreCase(tableName)) continue;
+            //java.lang is always imported
+            if (gc.getPackage().startsWith("java.lang.") && gc.getPackage().lastIndexOf(".") == "java.lang.".lastIndexOf(".")) {
+                continue;
+            }
             sb.append("import ")
                     .append(gc.getPackage());
 
@@ -130,17 +133,6 @@ public class GenerateTable {
 
         List<GenerateColumn> anotherCompositesColumns = new ArrayList<>();
 
-//        for (int i = 0; i < getInheritedSubCompositeKeys().size(); i++) {
-//            GenerateTable gt = getInheritedSubCompositeKeys().get(i);
-//
-//            anotherCompositesColumns.addAll(gt.getPrimaryKeys());
-//            sb.append(" ");
-//            sb.append(gt.getCompositeKeyName());
-//            sb.append("<");
-//            sb.append(tableCamelName);
-//            sb.append(">,");
-//        }
-
         boolean atLeastOneColumnAdded = false;
         for (int i = 0; i < getPrimaryKeys().size(); i++) {
             GenerateColumn primKeyColumn = getPrimaryKeys().get(i);
@@ -162,10 +154,8 @@ public class GenerateTable {
             sb.append(",");
         }
 
-      //  if (getInheritedSubCompositeKeys().isEmpty()) {
-            sb.append(", " + Composite.class.getSimpleName());
-            sb.append("<" + tableCamelName + ">");
-      //  }
+        sb.append(", ").append(Composite.class.getSimpleName());
+        sb.append("<").append(tableCamelName).append(">");
 
         return sb.toString();
     }
@@ -211,7 +201,7 @@ public class GenerateTable {
 
         StringBuilder sb = new StringBuilder();
         sb.append("\t").append("\t").append("\t");
-        sb.append("new TableColumn(col");
+        sb.append("new ").append(TableColumn.class.getSimpleName()).append("(col");
         sb.append(gc.getInterfaceName());
         sb.append("())");
 
@@ -282,8 +272,7 @@ public class GenerateTable {
         if (getPrimaryKeys() == null) return "";
 
         StringBuilder sb = new StringBuilder();
-        sb.append("default " + CompositeColumns.class.getSimpleName() + "<" + compositeKeyName + "<E>>" + " composite" + compositeKeyName + "() {\n" +
-                "\treturn new " + CompositeColumns.class.getSimpleName() + "<>(\n");
+        sb.append("default ").append(CompositeColumns.class.getSimpleName()).append("<").append(compositeKeyName).append("<E>>").append(" composite").append(compositeKeyName).append("() {\n").append("\treturn new ").append(CompositeColumns.class.getSimpleName()).append("<>(\n");
 
         for (int i = 0; i < getPrimaryKeys().size(); i++) {
             sb.append(getTableColumn(getPrimaryKeys().get(i)));
@@ -405,6 +394,7 @@ public class GenerateTable {
             for (GenerateColumn tabcol : target) {
                 if (tabcol.getColumnName().equals(col.getColumnName())) {
                     contains = true;
+                    break;
                 }
             }
             if (!contains) {

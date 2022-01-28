@@ -246,7 +246,7 @@ public interface FunctionWhispererH2 {
         return new ColumnFunction<>(columnOrQuery, DictFunctionH2.COT, BigDecimal.class);
     }
 
-    default <E extends Entity,F, R extends EntityRelation> ColumnFunction<E, F, R, Long> count(ColumnOrQuery<E, F, R> columnOrQuery) {
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Long> count(ColumnOrQuery<E, F, R> columnOrQuery) {
         return new ColumnFunction<>(columnOrQuery, DictFunctionH2.COUNT, Long.class);
     }
 
@@ -602,7 +602,7 @@ public interface FunctionWhispererH2 {
 
     @SuppressWarnings("unchecked")
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> sub(ColumnOrQuery column) {
-        return new ManyArgumentsFunction<>(DictFunctionH2.SUB2 );
+        return new ManyArgumentsFunction<>(DictFunctionH2.SUB2);
     }
 
     @SuppressWarnings("unchecked")

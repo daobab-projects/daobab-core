@@ -3,12 +3,11 @@ package io.daobab.error;
 import io.daobab.model.Entity;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class AttemptToWriteIntoNullEntityException extends DaobabException {
 
     private static final long serialVersionUID = 1L;
-
 
     public AttemptToWriteIntoNullEntityException() {
         super("Attempt to write into null entity.");

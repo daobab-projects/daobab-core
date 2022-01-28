@@ -3,17 +3,23 @@ package io.daobab.statement.where;
 import io.daobab.statement.where.base.Where;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class WhereAnd extends Where<WhereAnd> {
-
-    public static final WhereAnd and() {
-        return new WhereAnd();
-    }
 
     // ------ Contructors
     public WhereAnd() {
         super();
+    }
+
+    public WhereAnd(Where<?>... whereAnds) {
+        for (Where<?> where : whereAnds) {
+            temp(where);
+        }
+    }
+
+    public static WhereAnd and() {
+        return new WhereAnd();
     }
 
     /**
@@ -22,7 +28,7 @@ public class WhereAnd extends Where<WhereAnd> {
      * @param val - value
      * @return WhereAND
      */
-    public final WhereAnd and(Where val) {
+    public final WhereAnd and(Where<?> val) {
         val.optimize();
         temp(val);
         return this;
@@ -35,13 +41,6 @@ public class WhereAnd extends Where<WhereAnd> {
     public WhereNot not() {
         return new WhereNot();
     }
-
-    public WhereAnd(Where... whereAnds) {
-        for (Where where : whereAnds) {
-            temp(where);
-        }
-    }
-
 
     @Override
     public String getRelationBetweenExpressions() {

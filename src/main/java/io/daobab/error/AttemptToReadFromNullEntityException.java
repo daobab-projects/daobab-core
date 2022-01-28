@@ -4,7 +4,7 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class AttemptToReadFromNullEntityException extends DaobabException {
 
@@ -19,7 +19,7 @@ public class AttemptToReadFromNullEntityException extends DaobabException {
         super("Attempt to read from entity which is null. Entity:" + clazz.getSimpleName() + " field " + field);
     }
 
-    public AttemptToReadFromNullEntityException(Column<?,?,?> column) {
+    public AttemptToReadFromNullEntityException(Column<?, ?, ?> column) {
         super("Attempt to read from an entity which is null. Entity:" + column.getEntityName() + " field " + column.getFieldName());
     }
 

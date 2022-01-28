@@ -5,23 +5,21 @@ import java.util.regex.Pattern;
 public class MatchLike implements WherePredicate<Object> {
 
     private final Object valueToCompare;
+    private Pattern pattern;
 
     public MatchLike(Object valueToCompare) {
         this.valueToCompare = valueToCompare;
+        if (valueToCompare != null) {
+            String regex = quotemeta(valueToCompare.toString());
+            regex = regex.replace("_", ".").replace("%", ".*?");
+            pattern = Pattern.compile(regex,
+                    Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+        }
     }
-
 
     public boolean test(Object valueFromEntityField) {
         if (valueToCompare == null || valueFromEntityField == null) return false;
-        return like(valueFromEntityField.toString(), valueToCompare.toString());
-    }
-
-    private boolean like(final String str, final String expr) {
-        String regex = quotemeta(expr);
-        regex = regex.replace("_", ".").replace("%", ".*?");
-        Pattern p = Pattern.compile(regex,
-                Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-        return p.matcher(str).matches();
+        return pattern.matcher(valueFromEntityField.toString()).matches();
     }
 
     private String quotemeta(String s) {

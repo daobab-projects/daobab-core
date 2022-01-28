@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import static io.daobab.generator.GenerateFormatter.toUpperCaseFirstCharacter;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class ColumnAnalysator {
 
@@ -24,22 +24,22 @@ public class ColumnAnalysator {
     static void compileNames(List<GenerateColumn> storage) {
         storage.stream()
                 .map(GenerateColumn::getColumnName).forEach(columnName -> {
-            List<GenerateColumn> list = storage
-                    .stream()
-                    .filter(r -> r.getFinalFieldName() == null && columnName != null && columnName.equals(r.getColumnName()))
-                    .collect(Collectors.toList());
-            if (list.size() == 1) {
-                list.get(0).setFinalFieldName(toUpperCaseFirstCharacter(list.get(0).getFieldName().replaceAll("\\s", "")));
-            } else {
-                list.stream()
-                        .map(GenerateColumn::getFieldClass)
-                        .forEach(c ->
-                                list.stream()
-                                        .filter(r -> r.getFieldClass().equals(c))
-                                        .forEach(rf -> rf.setFinalFieldName(toUpperCaseFirstCharacter(rf.getFieldName() + (c.equals(byte[].class) ? "TypeByteArray" : "Type" + c.getSimpleName())))));
+                    List<GenerateColumn> columnList = storage
+                            .stream()
+                            .filter(r -> r.getFinalFieldName() == null && columnName != null && columnName.equals(r.getColumnName()))
+                            .collect(Collectors.toList());
+                    if (columnList.size() == 1) {
+                        columnList.get(0).setFinalFieldName(toUpperCaseFirstCharacter(columnList.get(0).getFieldName().replaceAll("\\s", "")));
+                    } else {
+                        columnList.stream()
+                                .map(GenerateColumn::getFieldClass)
+                                .forEach(c ->
+                                        columnList.stream()
+                                                .filter(r -> r.getFieldClass().equals(c))
+                                                .forEach(rf -> rf.setFinalFieldName(toUpperCaseFirstCharacter(rf.getFieldName() + (c.equals(byte[].class) ? "TypeByteArray" : "Type" + c.getSimpleName())))));
 
-            }
-        });
+                    }
+                });
 
 
         Set<String> finalNames = storage.stream()
@@ -48,12 +48,12 @@ public class ColumnAnalysator {
                 .collect(Collectors.toSet());
 
         for (String finalName : finalNames) {
-            List<GenerateColumn> thesameColumnNames = storage.stream()
+            List<GenerateColumn> theSameColumnNames = storage.stream()
                     .filter(r -> r.getFinalFieldName().equalsIgnoreCase(finalName))
                     .collect(Collectors.toList());
-            if (thesameColumnNames.size() <= 1) continue;
+            if (theSameColumnNames.size() <= 1) continue;
             int counter = 0;
-            for (GenerateColumn c : thesameColumnNames) {
+            for (GenerateColumn c : theSameColumnNames) {
                 counter++;
                 c.setFinalFieldName(c.getFinalFieldName() + counter);
             }

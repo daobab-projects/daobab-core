@@ -28,7 +28,6 @@ public class SimpleDateFormatThreadSafe extends SimpleDateFormat {
     }
 
 
-
     public SimpleDateFormatThreadSafe(final String pattern) {
         super(pattern);
         localSimpleDateFormat = ThreadLocal.withInitial(() -> new SimpleDateFormat(pattern));

@@ -1,12 +1,12 @@
 package io.daobab.generator;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Replacer {
-    private List<ReplaceWrapper> repl = new LinkedList<>();
+    private final List<ReplaceWrapper> repl = new ArrayList<>();
 
     public Replacer add(String key, String value) {
         repl.add(new ReplaceWrapper(key, value));
@@ -26,7 +26,6 @@ public class Replacer {
             try {
                 temp = replaceAll(temp, rw.getKey(), rw.getValue());
             } catch (Exception e) {
-                System.out.printf("Error for " + rw.getKey() + " and " + rw.getValue());
                 e.printStackTrace();
             }
         }

@@ -16,14 +16,15 @@ import java.util.function.Predicate;
 
 import static io.daobab.statement.where.base.WhereBase.OR;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class GeneralWhereAndPlate<P extends Plate> implements WherePredicate<P> {
 
-    protected transient Logger log = LoggerFactory.getLogger(this.getClass());
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
 
     protected Where wrapperWhere;
 
-    protected List<Predicate<Object>> predicates = new LinkedList<>();
-    protected List<Column<Entity, Object, EntityRelation>> keys = new LinkedList<>();
+    protected List<Predicate<Object>> predicates = new ArrayList<>();
+    protected List<Column<Entity, Object, EntityRelation>> keys = new ArrayList<>();
 
     public GeneralWhereAndPlate(Where wrapperWhere) {
         this.wrapperWhere = wrapperWhere;
@@ -46,7 +47,14 @@ public class GeneralWhereAndPlate<P extends Plate> implements WherePredicate<P> 
 
         for (int i = 0; i < keys.size(); i++) {
 
-            Object valueFromEntity = projection.getValue(keys.get(i));
+            Column column = keys.get(i);
+
+            if (column == null) {
+                if (!predicates.get(i).test(projection)) return false;
+                continue;
+            }
+
+            Object valueFromEntity = projection.getValue(column);
 
             //if at least one record into AND clause if false, entity doesn't match
             if (!predicates.get(i).test(valueFromEntity)) return false;

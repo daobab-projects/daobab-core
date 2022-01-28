@@ -1,11 +1,16 @@
 package io.daobab.result;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
 public class ListProxy<T> implements List<T> {
+
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
 
     List<T> entities;
 

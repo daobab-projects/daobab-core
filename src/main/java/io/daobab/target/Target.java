@@ -8,15 +8,9 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface Target extends ILoggerBean, AccessProtectorProvider {
-
-    boolean isBuffer();
-
-    boolean isConnectedToDatabase();
-
-    OpenedTransactionTarget beginTransaction();
 
     List<Entity> getTables();
 
@@ -25,8 +19,6 @@ public interface Target extends ILoggerBean, AccessProtectorProvider {
     }
 
     boolean isTransactionActive();
-
-    boolean isLogQueriesEnabled();
 
 
 }

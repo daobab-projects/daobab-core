@@ -12,8 +12,7 @@ import io.daobab.result.remove.IndexString;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.where.base.Where;
 import io.daobab.statement.where.base.WhereBase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.daobab.target.buffer.single.EntityList;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -22,11 +21,13 @@ import static io.daobab.statement.where.base.WhereBase.*;
 
 public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<E> {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
-
-    private TreeMap<Number, FakePkEntity<Number, E>> valueMap = new TreeMap<>();
-    private transient Map<String, Index<E, ?>> indexRepository = new HashMap<>();
+    private final TreeMap<Number, FakePkEntity<Number, E>> valueMap = new TreeMap<>();
+    private final Map<String, Index<E, ?>> indexRepository = new HashMap<>();
     private boolean primaryKey = false;
+
+    protected EntitiesBufferIndexed() {
+        this(new ArrayList<>());
+    }
 
     protected EntitiesBufferIndexed(List<E> entities) {
         super(entities);
@@ -34,27 +35,21 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
         if (!entities.isEmpty()) {
             E entity = entities.get(0);
             setPrimaryKey(entity instanceof PrimaryKey);
-
         }
-        //setPrimaryKey(entities.isPrimaryKey());
-        init(entities);
-        // prepareIndexRepository();
     }
 
     private Optional<Index<E, ?>> getIndexFor(Column<E, ?, ?> column) {
         return indexRepository.entrySet().stream()
                 .filter(entry -> column.getColumnName().equals(entry.getKey()))
-                .findAny().map(Map.Entry::getValue);
+                .findAny()
+                .map(Map.Entry::getValue);
     }
 
-    public int size() {
-        return entities.size();
-    }
-
-    private List<E> finalFilter(List<E> entities, Query<E, ?> query, List<Integer> skipSteps) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private List<E> finalFilter(List<E> entities, Query<E, ?, ?> query, List<Integer> skipSteps) {
         int counter = 0;
 
-        List<E> rv = new LinkedList<>();
+        List<E> rv = new ArrayList<>();
         Where wrapper = query.getWhereWrapper();
         boolean useLimit = query.getOrderBy() == null && query.getLimit() != null;
         boolean useWhere = wrapper != null;
@@ -75,10 +70,8 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
             generalPredicate = new AlwaysTrue();
         }
 
-
         if (useLimit) {
             for (E entity : entities) {
-
                 if (generalPredicate.test(entity)) {
                     counter++;
                     if (counter < offset) {
@@ -88,17 +81,15 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
                     }
                     rv.add(entity);
                 }
-
             }
         } else {
             entities.stream().filter(generalPredicate).forEach(rv::add);
         }
-
         return rv;
     }
 
-    public List<E> filter(Query<E, ?> query) {
-
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public List<E> filter(Query<E, ?, ?> query) {
         Where wrapper = query.getWhereWrapper();
 
         //if indexRepository is empty, don't even use the index logic
@@ -107,7 +98,6 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
         }
 
         if (OR.equals(wrapper.getRelationBetweenExpressions())) {
-
             boolean allOr = true;
             for (int counter = 1; counter < wrapper.getCounter(); counter++) {
                 Column column = wrapper.getKeyForPointer(counter);
@@ -127,17 +117,13 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
 
         //if there is some result as a set of PK, we have to convert it to whole entities with eventual limit
         return finalFilter(resultWrapper.getEntities(), query, resultWrapper.getSkipSteps());
-
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private ResultEntitiesWithSkipStepsWrapper<E> filter(Where wrapper) {
-
         String relations = wrapper.getRelationBetweenExpressions();
-
         List<E> result = new LinkedList<>();
         List<Number> resultPk = new LinkedList<>();
-
-
         List<Integer> skipSteps = new LinkedList<>();
 
         for (int counter = 1; (counter < wrapper.getCounter()) && result.isEmpty(); counter++) {
@@ -147,6 +133,10 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
 
             Column column = wrapper.getKeyForPointer(counter);
 
+            if (column == null) {
+                continue;
+            }
+
             Optional<Index<E, Number>> indexOpt = getIndexFor(column);
             if (!indexOpt.isPresent()) {
                 continue;
@@ -155,7 +145,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
 
             Index<E, ?> index = indexOpt.get();
 
-            //if Where has a second Where inside...
+            //if Where has a second Where inside
             Where innerWhere = wrapper.getInnerWhere(counter);
             if (innerWhere != null) {
                 ResultEntitiesWithSkipStepsWrapper<E> pks = filter(innerWhere);
@@ -196,7 +186,6 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
                 }
             }
 //            result = NOT.equalsIgnoreCase(relations) ? index.filterNegative(operator, val) : index.filter(operator, val);
-
         }
 
         if (OR.equals(relations)) {
@@ -211,7 +200,6 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
         return new ResultEntitiesWithSkipStepsWrapper<>(result, skipSteps);
     }
 
-
     public Set<Number> getKeys() {
         return valueMap.keySet();
     }
@@ -220,16 +208,13 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
         return valueMap.values();
     }
 
-
     //TODO: move up
     public EntityList<E> calculateIndexes() {
-
         E entity = entities.get(0);
-
         List<TableColumn> columns = entity.columns();
         for (TableColumn ecol : columns) {
 
-            Column<E, ?, EntityRelation> col = ecol.getColumn();
+            Column<E, ?, EntityRelation> col = (Column<E, ?, EntityRelation>) ecol.getColumn();
             Index index;
             if (Number.class.isAssignableFrom(col.getFieldClass())) {
                 index = new IndexNumber<>(col, this);
@@ -245,30 +230,6 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
         return (EntityList<E>) this;
     }
 
-
-    public void init(List<E> entities) {
-
-        this.entities = entities;
-
-
-        //TODO: merge it
-//        if (isPrimaryKey()) {
-//            for (Iterator<E> it = entities.iterator(); it.hasNext(); ) {
-//                E entity = it.next();
-//                Number id = (Number) ((PrimaryKey) entity).getId();
-//                valueMap.put(id, new FakePkEntity(id, entity));
-//            }
-//        } else {
-//            Long counter = 1L;
-//            for (Iterator<E> it = entities.iterator(); it.hasNext(); ) {
-//                valueMap.put(counter, new FakePkEntity<>(counter, it.next()));
-//                counter++;
-//            }
-//        }
-
-    }
-
-
     public boolean isPrimaryKey() {
         return primaryKey;
     }
@@ -276,6 +237,5 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
     public void setPrimaryKey(boolean primaryKey) {
         this.primaryKey = primaryKey;
     }
-
 
 }

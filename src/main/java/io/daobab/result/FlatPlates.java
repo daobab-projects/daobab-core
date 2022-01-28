@@ -1,9 +1,7 @@
 package io.daobab.result;
 
 import io.daobab.clone.EntityDuplicator;
-import io.daobab.converter.JsonListHandler;
-import io.daobab.error.DaobabException;
-import io.daobab.model.EntityMap;
+import io.daobab.converter.JsonHandler;
 import io.daobab.model.FlatPlate;
 
 import java.io.Serializable;
@@ -12,9 +10,9 @@ import java.util.Collection;
 /**
  * FlatBuffer collection.
  *
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable, JsonListHandler, Cloneable {
+public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable, JsonHandler, Cloneable {
 
 
     private static final long serialVersionUID = 2291798166104201910L;
@@ -27,7 +25,7 @@ public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable,
         super(entities);
     }
 
-
+    @Override
     public String toJSON() {
         StringBuilder rv = new StringBuilder();
         rv.append("[");
@@ -36,10 +34,6 @@ public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable,
         int cnt = 0;
 
         for (FlatPlate val : this) {
-
-            if (!(val instanceof EntityMap)) {
-                throw new DaobabException("this method can be used for EntityMap implementations only");
-            }
 
             cnt++;
             boolean lastOne = cnt == size;

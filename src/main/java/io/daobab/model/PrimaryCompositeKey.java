@@ -1,21 +1,21 @@
 package io.daobab.model;
 
 import io.daobab.error.DaobabException;
-import io.daobab.query.QueryDelete;
 import io.daobab.query.base.QueryWhisperer;
 import io.daobab.statement.condition.SetFields;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
-import io.daobab.target.OpenedTransactionTarget;
-import io.daobab.target.QueryTarget;
 import io.daobab.target.database.DataBaseTarget;
+import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.DataBaseQueryDelete;
+import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
 import io.daobab.transaction.Propagation;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-@SuppressWarnings({"unchecked","rawtypes","UnusedReturnValue","unused"})
+@SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface PrimaryCompositeKey<E extends Entity, K extends Composite> extends EntityRelation<E>, Composite<E>, QueryWhisperer {
 
 
@@ -26,9 +26,8 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
             throw new DaobabException("Composite key cannot be null");
         }
         WhereAnd where = new WhereAnd();
-        for (TableColumn tcol : keyColumns()) {
-            Column col = tcol.getColumn();
-
+        for (TableColumn tCol : keyColumns()) {
+            Column col = tCol.getColumn();
             where.equal(col, col.getValue((EntityRelation) keyEntity));
         }
         return where;
@@ -50,15 +49,15 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default boolean delete(QueryTarget target) {
-        return new QueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute() == 1;
+        return new DataBaseQueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute() == 1;
     }
 
-    default boolean delete(OpenedTransactionTarget target, boolean transaction) {
-        return new QueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute(transaction) == 1;
+    default boolean delete(OpenedTransactionDataBaseTarget target, boolean transaction) {
+        return new DataBaseQueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute(transaction) == 1;
     }
 
-    default boolean delete(OpenedTransactionTarget target, Propagation propagation) {
-        return new QueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute(propagation) == 1;
+    default boolean delete(OpenedTransactionDataBaseTarget target, Propagation propagation) {
+        return new DataBaseQueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute(propagation) == 1;
     }
 
     default E update(QueryTarget target, Column<E, ?, ?>... columnsToUpdate) {
@@ -92,7 +91,6 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
 
-
             boolean occColumnUpdated = false;
             for (Column<E, ?, ?> c : columnsToUpdate) {
                 if (c.equalsColumn(occ.getOCCColumn())) {
@@ -113,7 +111,6 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
         return (E) this;
     }
 
-
     default E update(QueryTarget target) {
         if (this instanceof OptimisticConcurrencyForPrimaryKey) {
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
@@ -125,7 +122,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
         return (E) this;
     }
 
-    default E update(OpenedTransactionTarget target, boolean transaction) {
+    default E update(OpenedTransactionDataBaseTarget target, boolean transaction) {
         if (this instanceof OptimisticConcurrencyForPrimaryKey) {
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
@@ -164,7 +161,6 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
         return (E) this;
     }
 
-
     default E findById(QueryTarget target, K id) {
         return target.select((E) this).where(getKeyWhere(this)).findOne();
     }
@@ -174,7 +170,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default String getSqlUpdate(DataBaseTarget target) {
-        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) this.columns())).where(getKeyWhere(this)) + ";";
+        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) target.getColumnsForTable(this))).where(getKeyWhere(this)) + ";";
     }
 
     default String getSqlUpdate(DataBaseTarget target, Column<E, ?, ?>... columnsToUpdate) {

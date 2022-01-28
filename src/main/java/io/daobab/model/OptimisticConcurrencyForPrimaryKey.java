@@ -1,22 +1,22 @@
 package io.daobab.model;
 
 import io.daobab.error.DaobabException;
+import io.daobab.error.MandatoryTargetException;
 import io.daobab.error.NullEntityException;
-import io.daobab.error.TargetMandatoryException;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.statement.where.WhereAnd;
-import io.daobab.target.QueryTarget;
+import io.daobab.target.database.QueryTarget;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKey<E, ?, ?>, F, R extends EntityRelation> extends OptimisticConcurrencyIndicator<E>, ParserGeneral {
 
     @Override
     default E handleOCC(QueryTarget target, E entityToUpdate) {
-        if (target == null) throw new TargetMandatoryException();
+        if (target == null) throw new MandatoryTargetException();
         if (entityToUpdate == null) throw new NullEntityException();
         Object dbval = entityToUpdate.findRelatedOne(target, entityToUpdate.colID(), new WhereAnd().greater(getOCCColumn(), (R) entityToUpdate));
 
@@ -24,7 +24,7 @@ public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKe
 
         F cellval = entityToUpdate.findRelatedOne(target, getOCCColumn());
 
-        Object val = null;
+        Object val;
 
         if (getOCCColumn().getFieldClass().isAssignableFrom(BigDecimal.class)) {
             if (cellval == null) {

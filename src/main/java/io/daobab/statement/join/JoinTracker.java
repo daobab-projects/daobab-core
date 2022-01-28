@@ -13,8 +13,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings("rawtypes")
 public interface JoinTracker {
 
     static List<JoinWrapper> calculateRoute(List<Entity> bunch, Collection<String> sourcePoints, Set<String> destinations, List<JoinWrapper> alreadyDefinedJoins) {
@@ -56,11 +57,11 @@ public interface JoinTracker {
         if (dest != null) destinations.addAll(dest);
 
         alreadyDefinedJoins.stream()
-                .filter((jw)->jw.getWhere() != null && jw.getWhere().getAllDaoInWhereClause() != null)
-                .forEach((jw)->destinations.addAll(jw.getWhere().getAllDaoInWhereClause()));
+                .filter((jw) -> jw.getWhere() != null && jw.getWhere().getAllDaoInWhereClause() != null)
+                .forEach((jw) -> destinations.addAll(jw.getWhere().getAllDaoInWhereClause()));
 
         List<Vertex> nodes = bunch.stream().map(Vertex::new).collect(Collectors.toList());
-        List<Edge> edges = new LinkedList<>();
+        List<Edge> edges = new ArrayList<>();
 
         for (int i = 0; i < bunch.size(); i++) {
             Entity left = bunch.get(i);
@@ -79,7 +80,7 @@ public interface JoinTracker {
             }
         }
 
-        List<JoinWrapper> rv = new LinkedList<>();
+        List<JoinWrapper> rv = new ArrayList<>();
         Graph graph = new Graph(nodes, edges);
         DijkstraAlgorithm dijkstra = new DijkstraAlgorithm(graph);
 
@@ -87,7 +88,7 @@ public interface JoinTracker {
 
             for (Entity destinationPoint : getEntities(destinations, bunch)) {
                 dijkstra.execute(getByEntity(sourcePoint, nodes));
-                LinkedList<Vertex> path = dijkstra.getPath(getByEntity(destinationPoint, nodes));
+                List<Vertex> path = dijkstra.getPath(getByEntity(destinationPoint, nodes));
                 if (path == null) continue;
                 for (int i = 0; i < path.size(); i++) {
                     if (i < path.size() - 1) {
@@ -99,12 +100,8 @@ public interface JoinTracker {
             }
         }
 
-
-        if (alreadyDefinedJoins != null) {
-
-            for (JoinWrapper jw : alreadyDefinedJoins) {
-                if (!addedAlready(jw, rv)) rv.add(jw);
-            }
+        for (JoinWrapper jw : alreadyDefinedJoins) {
+            if (!addedAlready(jw, rv)) rv.add(jw);
         }
 
         return rv;
@@ -151,14 +148,14 @@ public interface JoinTracker {
         boolean leftIsPK = left instanceof PrimaryKey;
         boolean rightIsPK = right instanceof PrimaryKey;
 
-        boolean leftColIsPK = (leftIsPK && leftcolumn.getColumnName().equals(((PrimaryKey) left).colID().getColumnName()));
-        boolean rightColIsPK = (rightIsPK && rightcolumn.getColumnName().equals(((PrimaryKey) right).colID().getColumnName()));
+//        boolean leftColIsPK = (leftIsPK && leftcolumn.getColumnName().equals(((PrimaryKey) left).colID().getColumnName()));
+//        boolean rightColIsPK = (rightIsPK && rightcolumn.getColumnName().equals(((PrimaryKey) right).colID().getColumnName()));
 
         return leftcolumn;
     }
 
     static List<Entity> getEntities(Collection<String> names, List<Entity> allEntities) {
-        List<Entity> rv = new LinkedList<>();
+        List<Entity> rv = new ArrayList<>();
         if (allEntities == null || allEntities.isEmpty() || names == null || names.isEmpty()) return rv;
 
         for (String name : names) {

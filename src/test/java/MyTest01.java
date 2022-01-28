@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class MyTest01 {//implements MyTables{
 

@@ -7,34 +7,27 @@ import io.daobab.statement.join.JoinType;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
-import io.daobab.target.QueryTarget;
+import io.daobab.target.Target;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-@SuppressWarnings({"unchecked","rawtypes","UnusedReturnValue","unused"})
+@SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryJoin<Q extends Query> {
 
     List<JoinWrapper> getJoins();
 
     void setJoins(List<JoinWrapper> joins);
 
-    QueryTarget getTarget();
+    Target getTarget();
 
     String getEntityName();
 
-    /**
-     * Inner Join tables by their ForeignKey
-     *
-     * @param tablePK  - table with PrimaryKey
-     * @param tablesFK - tables with relagtion ForeignKey to tablePK
-     * @param <E>
-     * @param <R>
-     * @return
-     */
+    Q smartJoins();
+
     default <E extends Entity & PrimaryKey, R extends EntityRelation> Q joinByPk(E tablePK, R... tablesFK) {
         if (tablePK == null) throw new NullParameter("tablesFK");
         for (R pk : tablesFK) {
@@ -55,7 +48,7 @@ public interface QueryJoin<Q extends Query> {
 
 
     default <E extends Entity> Q joinByFlag2(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (!columns.isEmpty()) join(JoinType.INNER, joinedTable, columns);
@@ -63,7 +56,7 @@ public interface QueryJoin<Q extends Query> {
     }
 
     default <E extends Entity> Q joinByFlag2(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, Where where) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (!columns.isEmpty()) {
@@ -74,7 +67,7 @@ public interface QueryJoin<Q extends Query> {
 
 
     default <E extends Entity> Q joinByFlag3(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, boolean enableTFK3, Column<?, ?, ?> joinByColumn3) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (enableTFK3) columns.add(joinByColumn3);
@@ -83,7 +76,7 @@ public interface QueryJoin<Q extends Query> {
     }
 
     default <E extends Entity> Q joinByFlag3(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, boolean enableTFK3, Column<?, ?, ?> joinByColumn3, Where where) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (enableTFK3) columns.add(joinByColumn3);
@@ -95,7 +88,7 @@ public interface QueryJoin<Q extends Query> {
 
 
     default <E extends Entity> Q joinByFlag4(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, boolean enableTFK3, Column<?, ?, ?> joinByColumn3, boolean enableTFK4, Column<?, ?, ?> joinByColumn4) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (enableTFK3) columns.add(joinByColumn3);
@@ -105,7 +98,7 @@ public interface QueryJoin<Q extends Query> {
     }
 
     default <E extends Entity> Q joinByFlag4(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, boolean enableTFK3, Column<?, ?, ?> joinByColumn3, boolean enableTFK4, Column<?, ?, ?> joinByColumn4, Where where) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (enableTFK3) columns.add(joinByColumn3);
@@ -125,13 +118,13 @@ public interface QueryJoin<Q extends Query> {
         return joinRoute(JoinType.INNER, queryEntity, joinedTables);
     }
 
-    default <E extends Entity> Q join(E joinedTable, Column<?, ?, ?>one, Column<?, ?, ?>two) {
-        return join(JoinType.INNER, one,two,false);
+    default <E extends Entity> Q join(E joinedTable, Column<?, ?, ?> one, Column<?, ?, ?> two) {
+        return join(JoinType.INNER, one, two, false);
     }
 
 
-    default <E extends Entity> Q join(JoinType type, E joinedTable, Column<?, ?, ?>one, Column<?, ?, ?>two) {
-        return join(type, one,two,false);
+    default <E extends Entity> Q join(JoinType type, E joinedTable, Column<?, ?, ?> one, Column<?, ?, ?> two) {
+        return join(type, one, two, false);
     }
 
     default <E extends Entity> Q join(E joinedTable, Column<?, ?, ?>... joinByColumn) {
@@ -185,16 +178,6 @@ public interface QueryJoin<Q extends Query> {
         return joinWhere(JoinType.INNER, joinedTable, where);
     }
 
-
-    /**
-     * Inner Join tables by their ForeignKey
-     *
-     * @param tablePK  - table with PrimaryKey
-     * @param tablesFK - tables with relagtion ForeignKey to tablePK
-     * @param <E>
-     * @param <R>
-     * @return
-     */
     default <E extends Entity & PrimaryKey, R extends EntityRelation> Q joinByPk(JoinType type, E tablePK, R... tablesFK) {
         if (tablePK == null) throw new NullParameter("tablesFK");
         for (R pk : tablesFK) {
@@ -223,8 +206,8 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-    default <E extends Entity, F> Q join(JoinType type, Column<?, ?, ?> one, Column<?, ?, ?> two ,boolean mark) {
-            getJoins().add(new JoinWrapper(type, one,two,false));
+    default <E extends Entity, F> Q join(JoinType type, Column<?, ?, ?> one, Column<?, ?, ?> two, boolean mark) {
+        getJoins().add(new JoinWrapper(type, one, two, false));
         return (Q) this;
     }
 

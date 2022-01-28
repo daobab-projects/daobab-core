@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 
 import static io.daobab.statement.where.base.WhereBase.OR;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class GeneralWhereAnd<E> implements WherePredicate<E> {
 
     protected Logger log = LoggerFactory.getLogger(this.getClass());
@@ -22,8 +23,8 @@ public class GeneralWhereAnd<E> implements WherePredicate<E> {
     protected Where wrapperWhere;
     protected List<Integer> skipSteps;
 
-    protected List<Predicate<Object>> predicates = new LinkedList<>();
-    protected List<Column<Entity, Object, EntityRelation>> keys = new LinkedList<>();
+    protected List<Predicate<Object>> predicates = new ArrayList<>();
+    protected List<Column<Entity, Object, EntityRelation>> keys = new ArrayList<>();
 
     public GeneralWhereAnd(Where wrapperWhere) {
         this.wrapperWhere = wrapperWhere;
@@ -58,13 +59,19 @@ public class GeneralWhereAnd<E> implements WherePredicate<E> {
     }
 
     @Override
-    public boolean test(E entity2) {
-
-        EntityRelation entity = (EntityRelation) entity2;
+    public boolean test(E entity) {
 
         for (int i = 0; i < keys.size(); i++) {
 
-            Object valueFromEntity = keys.get(i).getValue(entity);
+            Column column = keys.get(i);
+
+            //if key is null, inner where is in use
+            if (column == null) {
+                if (!predicates.get(i).test(entity)) return false;
+                continue;
+            }
+
+            Object valueFromEntity = column.getValue((EntityRelation) entity);
 
             //if at least one record into AND clause if false, entity doesn't match
             if (!predicates.get(i).test(valueFromEntity)) return false;
@@ -80,7 +87,6 @@ public class GeneralWhereAnd<E> implements WherePredicate<E> {
         Object valueFromWrapper = wrapper.getValueForPointer(i);
 
         Operator relation = wrapper.getRelationForPointer(i);
-
 
         //if Where has a second Where inside...
         Where where = wrapper.getInnerWhere(i);

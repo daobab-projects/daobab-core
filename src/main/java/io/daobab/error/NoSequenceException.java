@@ -1,7 +1,7 @@
 package io.daobab.error;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class NoSequenceException extends DaobabException {
 
@@ -10,6 +10,5 @@ public class NoSequenceException extends DaobabException {
     public NoSequenceException() {
         super("Entity has no sequence.");
     }
-
 
 }

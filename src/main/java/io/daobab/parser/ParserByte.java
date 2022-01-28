@@ -6,14 +6,18 @@ import java.io.UnsupportedEncodingException;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public interface ParserByte {
+@SuppressWarnings("unused")
+public class ParserByte {
+
+    public ParserByte() {
+    }
 
     /**
      * Encrypt to base64
      */
-    static String toBase64bytes(byte[] from) {
+    public static String toBase64bytes(byte[] from) {
         if (from == null) return null;
         return Decoder.printBase64Binary(from);
     }
@@ -22,18 +26,18 @@ public interface ParserByte {
     /**
      * Decrypt from base64
      */
-    static byte[] toBytesFromBase64(String from) {
+    public static byte[] toBytesFromBase64(String from) {
         if (from == null) return new byte[]{};
         return Decoder.parseBase64Binary(from);
     }
 
 
-    static String toString(byte[] from) {
+    public static String toString(byte[] from) {
         return toString(from, "UTF-8");
     }
 
 
-    static String toString(byte[] from, String charset) {
+    public static String toString(byte[] from, String charset) {
         if (from == null) return null;
         try {
             return new String(from, charset);

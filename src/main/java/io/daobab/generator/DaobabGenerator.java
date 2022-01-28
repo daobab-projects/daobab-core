@@ -4,60 +4,58 @@ package io.daobab.generator;
 import io.daobab.parser.ParserString;
 import io.daobab.property.DaobabProperty;
 import io.daobab.property.PropertyReader;
-import io.daobab.target.database.ConnectionGateway;
 import io.daobab.target.database.DaobabDataBaseMetaData;
-import io.daobab.target.database.JdbcType;
+import io.daobab.target.database.connection.ConnectionGateway;
+import io.daobab.target.database.connection.JdbcType;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 import static io.daobab.generator.GenerateFormatter.decapitalize;
-import static io.daobab.generator.TypeConverter.getDbTypeName;
 import static java.lang.String.join;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings({"java:S106", "java:S1192", "java:S1144", "unused"})
 public class DaobabGenerator {
 
-    private String filePath;
-    private String javaPackage;
-    private boolean override = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_OVERRIDE, "true");
-
-    private boolean generateTypeScript = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TS, "false");
-    private boolean generateTables = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TABLES, "true");
-    private boolean generateViews = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_VIEWS, "true");
-    private boolean generateColumns = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_COLUMNS, "true");
-    private boolean generateTargets = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TARGETS, "true");
-    private boolean generateTargetInterfaces = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TARGET_INTERFACE, "true");
-
-    private boolean schemaIntoTableName = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_USE_SCHEMA_INTO_TABLE_NAME, "false");
-
-    private String[] schemas;
-    private String[] catalogues;
+    private final boolean generateTargets = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TARGETS, "true");
+    private final boolean generateTargetInterfaces = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TARGET_INTERFACE, "true");
     private final List<String> onlyAllowedTables = new ArrayList<>();
-
     int generatedColumnsCount = 0;
     int generatedTablesCount = 0;
     int generatedCompositesCount = 0;
     int generatedTargetsCount = 0;
+    private String filePath;
+    private String javaPackage;
+    private boolean override = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_OVERRIDE, "true");
+    private boolean generateTypeScript = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TS, "false");
+    private boolean generateTables = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TABLES, "true");
+    private boolean generateViews = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_VIEWS, "true");
+    private boolean generateColumns = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_COLUMNS, "true");
+    private boolean schemaIntoTableName = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_USE_SCHEMA_INTO_TABLE_NAME, "false");
+    private String[] schemas;
+    private String[] catalogues;
+
+    private final TypeConverter typeConverter = new TypeConverter();
 
 
-    public void setSchemaIntoTableName(boolean enable) {
-        schemaIntoTableName = enable;
+    public DaobabGenerator() {
     }
 
     public boolean isSchemaIntoTableName() {
         return schemaIntoTableName;
     }
 
-
-    public DaobabGenerator() {
+    public void setSchemaIntoTableName(boolean enable) {
+        schemaIntoTableName = enable;
     }
 
     public void reverseEngineering(String url, String user, String pass, Class<? extends Driver> driver) {
@@ -72,6 +70,8 @@ public class DaobabGenerator {
             long startTime = System.currentTimeMillis();
             connection = DriverManager.getConnection(url, user, pass);
 
+            validateAndJoinPathAndPackage();
+
             createTables(connection.getMetaData());
             summary(startTime);
 
@@ -82,11 +82,32 @@ public class DaobabGenerator {
         }
     }
 
+    private void validateAndJoinPathAndPackage() {
+        if (getPath() == null || getPath().trim().isEmpty()) {
+            throw new RuntimeException("Please set a path.");
+        }
+
+        if (getPackage() == null || getPackage().trim().isEmpty()) {
+            throw new RuntimeException("Please set a package.");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(getPath());
+        sb.append(File.separator);
+        for (String pck : getPackage().split("\\.")) {
+            sb.append(pck);
+            sb.append(File.separator);
+        }
+        setPath(sb.toString());
+    }
+
     public void reverseEngineering(DataSource ds) {
         Connection c = null;
         try {
             c = ds.getConnection();
             long startTime = System.currentTimeMillis();
+
+            validateAndJoinPathAndPackage();
 
             createTables(c.getMetaData());
             summary(startTime);
@@ -141,11 +162,11 @@ public class DaobabGenerator {
                 while (rsSch.next()) {
                     String sch = rsSch.getString("TABLE_SCHEM");
                     wasSchema = true;
-                    System.out.println("Catalog: " + cat + ", Schema:" + sch);
+                    System.out.printf("Catalog: %s, Schema: %s%n", cat, sch);
                 }
 
                 if (!wasSchema) {
-                    System.out.println("Catalog: " + cat + " (no schema)");
+                    System.out.printf("Catalog: %s (no schema)%n", cat);
                 }
             }
 
@@ -173,13 +194,13 @@ public class DaobabGenerator {
     }
 
     private void createTables(DatabaseMetaData metaData) {
-        List<String> catalogs = getCataloques(metaData);
+        List<String> catalogs = getCatalogues(metaData);
         for (String cat : catalogs) {
-            List<String> schemas = getSchemas(metaData, cat);
-            for (String schema : schemas) {
+            List<String> schemaNames = getSchemas(metaData, cat);
+            for (String schema : schemaNames) {
                 createTables(metaData, cat, schema);
             }
-            if (schemas.isEmpty()) {
+            if (schemaNames.isEmpty()) {
                 createTables(metaData, cat, "%");
             }
         }
@@ -187,86 +208,83 @@ public class DaobabGenerator {
 
 
     private List<GenerateTable> createTables(DatabaseMetaData meta, String catalog, String schema) {
-        Writter writter = new Writter();
+        Writer writer = new Writer();
 
-        List<GenerateColumn> allColumns = new LinkedList<>();
+        List<GenerateColumn> allColumns = new ArrayList<>();
         List<GenerateTable> allTables = getTablesFromDB(meta, catalog, schema, allColumns);
 
 
-        if (allTables == null || allTables.isEmpty()) {
+        if (allTables.isEmpty()) {
             System.out.println("Warning: " + "catalog:" + catalog + ", schema:" + schema + " - There is no possibility to read any information from this place.");
             return allTables;
         }
 
         //Najpierw przygotowujemy kolumny
-        allTables.forEach(t -> t.getColumnList().forEach(c -> prepareColumn(catalog, schema, c)));
+        allTables.forEach(table -> table.getColumnList().forEach(c -> prepareColumn(table.getTableName(), catalog, schema, c)));
 
         ColumnAnalysator.compileNames(allColumns);
 
         //pozniej z poprawionymi nazwami generujemy tabele
-        allTables.forEach(tbl -> writter.generateTable(catalog, schema, tbl, allTables, getPackage(), getPath(), isOverride(), isSchemaIntoTableName()));
+        allTables.forEach(tbl -> writer.generateTable(catalog, schema, tbl, allTables, getPackage(), getPath(), isOverride(), isSchemaIntoTableName()));
 
-        for (GenerateTable tbl : allTables) {
-            if (tbl.getPrimaryKeys() == null || tbl.getPrimaryKeys().size() <= 1) {
+        for (GenerateTable table : allTables) {
+            if (table.getPrimaryKeys() == null || table.getPrimaryKeys().size() <= 1) {
                 continue;
             }
             for (GenerateTable tblinner : allTables) {
-                if (tblinner.getTableName().equals(tbl.getTableName())) {
+                if (tblinner.getTableName().equals(table.getTableName())) {
                     continue;
                 }
-                if (tblinner.containsPrimaryKeyAllCollumns(tbl.getPrimaryKeys())) {
-                    tblinner.getInheritedSubCompositeKeys().add(tbl);
+                if (tblinner.containsPrimaryKeyAllCollumns(table.getPrimaryKeys())) {
+                    tblinner.getInheritedSubCompositeKeys().add(table);
                 }
             }
         }
 
         if (generateTables) {
-
-            allTables.stream().filter(t -> t.getCompositeKeyName() != null).forEach(t -> writter.generateCompositeKey(t, getPath(), isOverride()));
+            allTables.stream().filter(table -> table.getCompositeKeyName() != null).forEach(t -> writer.generateCompositeKey(t, getPath(), isOverride()));
         }
 
         //oraz kolumny
         if (generateColumns) {
-            allColumns.forEach(c -> writter.generateColumn(catalog, schema, c, getPath(), isOverride()));
+            allColumns.forEach(column -> writer.generateColumn(catalog, schema, column, getPath(), isOverride()));
         }
 
         //generujemy target
-        writter.generateTarget(catalog, schema, allTables, getPackage(), getPath(), isOverride());
+        writer.generateTarget(catalog, schema, allTables, getPackage(), getPath(), isOverride());
 
         //opcjonalnie generujemy typescript
         if (isGenerateTypeScript()) {
-            writter.createTypeScriptTables(catalog, schema, allTables, getPath(), isOverride());
+            writer.createTypeScriptTables(catalog, schema, allTables, getPath(), isOverride());
         }
 
-        generatedColumnsCount = generatedColumnsCount + writter.generatedColumnsCount;
-        generatedTablesCount = generatedTablesCount + writter.generatedTablesCount;
-        generatedCompositesCount = generatedCompositesCount + writter.generatedCompositesCount;
-        generatedTargetsCount = generatedTargetsCount + writter.generatedTargetsCount;
+        generatedColumnsCount = generatedColumnsCount + writer.generatedColumnsCount;
+        generatedTablesCount = generatedTablesCount + writer.generatedTablesCount;
+        generatedCompositesCount = generatedCompositesCount + writer.generatedCompositesCount;
+        generatedTargetsCount = generatedTargetsCount + writer.generatedTargetsCount;
         return allTables;
     }
 
 
-    private GenerateColumn prepareColumn(String catalog, String schema, GenerateColumn column) {
+    private GenerateColumn prepareColumn(String tableName, String catalog, String schema, GenerateColumn column) {
         if (column == null) return null;
         String interfaceName = GenerateFormatter.toCamelCase(column.getColumnName());
 
         column.setFieldName(decapitalize(interfaceName));
 
         if (column.getFieldClass() == null) {
-            column.setFieldClass(TypeConverter.convert(column.getDataType()));
+            column.setFieldClass(typeConverter.convert(tableName, column));
         }
         column.setInterfaceName(interfaceName);
 
-        StringBuilder javaPackage = JavaPackageResolver.resolve(getPackage(),catalog,schema);
-
-        javaPackage.append(".column");
-
-        column.setPackage(javaPackage.toString());
+        StringBuilder javaPackageName = JavaPackageResolver.resolve(getPackage(), catalog, schema);
+        javaPackageName.append(".column");
+        column.setPackage(javaPackageName.toString());
 
         return column;
     }
 
-
+    @SuppressWarnings("java:S112")
     public String getPath() {
         if (filePath == null || filePath.trim().isEmpty())
             throw new RuntimeException("Path must be provided. Daobab generator need to know, where to write generated files.");
@@ -278,6 +296,7 @@ public class DaobabGenerator {
         this.filePath = fileDirectoryPath;
     }
 
+    @SuppressWarnings("java:S112")
     public String getPackage() {
         if (javaPackage == null || javaPackage.trim().isEmpty()) {
             throw new RuntimeException("Java package must be provided.");
@@ -300,22 +319,22 @@ public class DaobabGenerator {
 
     private GenerateColumn getUniqueColumn(List<GenerateColumn> allColumns, String tableName, String columnName, int datatype, String size, String digits) {
         for (GenerateColumn g : allColumns) {
-            if (columnName.equalsIgnoreCase(g.getColumnName()) && TypeConverter.convert(datatype, ParserString.toInteger(size), ParserString.toInteger(digits)).equals(g.getFieldClass())) {
-                g.addTableUsage(tableName, getDbTypeName(datatype));
+            if (columnName.equalsIgnoreCase(g.getColumnName()) && typeConverter.convert(tableName, columnName, datatype, ParserString.toInteger(size), ParserString.toInteger(digits)).equals(g.getFieldClass())) {
+                g.addTableUsage(tableName, TypeConverter.getDataBaseTypeName(datatype));
                 return g;
             }
         }
         GenerateColumn rv = new GenerateColumn();
         rv.setColumnName(columnName);
         rv.setDataType(datatype);
-        rv.setFieldClass(TypeConverter.convert(datatype));
-        rv.addTableUsage(tableName, getDbTypeName(datatype));
+        rv.setFieldClass(typeConverter.convert(tableName, rv));
+        rv.addTableUsage(tableName, TypeConverter.getDataBaseTypeName(datatype));
         allColumns.add(rv);
         return rv;
     }
 
-    private List<String> getCataloques(DatabaseMetaData meta) {
-        List<String> rv = new LinkedList<>();
+    private List<String> getCatalogues(DatabaseMetaData meta) {
+        List<String> rv = new ArrayList<>();
         try {
             ResultSet rs = meta.getCatalogs();
             while (rs.next()) {
@@ -346,7 +365,7 @@ public class DaobabGenerator {
 
 
     private List<String> getSchemas(DatabaseMetaData meta, String catalog) {
-        List<String> rv = new LinkedList<>();
+        List<String> rv = new ArrayList<>();
         try {
             ResultSet rs = meta.getSchemas(catalog, "%");
             while (rs.next()) {
@@ -362,11 +381,12 @@ public class DaobabGenerator {
     }
 
 
+    @SuppressWarnings("java:S3776")
     private List<GenerateTable> getTablesFromDB(DatabaseMetaData meta, String catalog, String schema, List<GenerateColumn> allColumns) {
 
-        List<GenerateTable> tables = new LinkedList<>();
+        List<GenerateTable> tables = new ArrayList<>();
 
-        List<String> tableTypesOrdered = new LinkedList<>();
+        List<String> tableTypesOrdered = new ArrayList<>();
         if (isGenerateTables()) {
             tableTypesOrdered.add("TABLE");
         }
@@ -390,29 +410,29 @@ public class DaobabGenerator {
             }
 
 
-            for (GenerateTable gentable : tables) {
+            for (GenerateTable genTable : tables) {
 
                 List<String> primaryKeys = new ArrayList<>();
-                ResultSet pks = meta.getPrimaryKeys(catalog, schema, gentable.getTableName());
+                ResultSet pks = meta.getPrimaryKeys(catalog, schema, genTable.getTableName());
                 while (pks.next()) {
                     primaryKeys.add(pks.getString("COLUMN_NAME"));
                 }
 
-                String tablename = gentable.getTableName();
-                System.out.println("Proceeding " + (gentable.isView() ? "view: " : "table: ") + tablename + "...");
+                String tableName = genTable.getTableName();
+                System.out.println("Proceeding " + (genTable.isView() ? "view: " : "table: ") + tableName + "...");
 
-                ResultSet columns = meta.getColumns(catalog, schema, gentable.getTableName(), "%");
+                ResultSet columns = meta.getColumns(catalog, schema, genTable.getTableName(), "%");
                 while (columns.next()) {
-                    GenerateColumn col = getUniqueColumn(allColumns, tablename,
+                    GenerateColumn col = getUniqueColumn(allColumns, tableName,
                             columns.getString("COLUMN_NAME"),
                             columns.getInt("DATA_TYPE"),
                             columns.getString("COLUMN_SIZE"),
                             columns.getString("DECIMAL_DIGITS")
                     );
 
-                    GeneratedColumnInTable genColumnInTable = col.getColumnInTableOrCreate(tablename);
-                    String column_size = columns.getString("COLUMN_SIZE");
-                    if (column_size != null) genColumnInTable.setColumnSize(Integer.parseInt(column_size))
+                    GeneratedColumnInTable genColumnInTable = col.getColumnInTableOrCreate(tableName);
+                    String columnSize = columns.getString("COLUMN_SIZE");
+                    if (columnSize != null) genColumnInTable.setColumnSize(Integer.parseInt(columnSize))
                             .setDecimalDigits(columns.getString("DECIMAL_DIGITS"))
                             .setDataType(columns.getInt("DATA_TYPE"))
                             .setNullable(columns.getString("NULLABLE"))
@@ -421,13 +441,13 @@ public class DaobabGenerator {
                             .setIsAutoIncrement(columns.getString("IS_AUTOINCREMENT"));
 
                     if (primaryKeys.contains(col.getColumnName())) {
-                        gentable.addPrimaryKey(col);
+                        genTable.addPrimaryKey(col);
                         genColumnInTable.setPk(true);
                     }
-                    gentable.getColumnList().add(col);
+                    genTable.getColumnList().add(col);
                     //Printing results
 
-                    System.out.println("... column:" + col.getColumnName() + ", " + JdbcType.valueOf(col.getDataType()).toString() + getSizeInfo(Integer.parseInt(column_size)) + (genColumnInTable.isPk() ? ",PrimaryKey" : "") + ", class:" + col.getFieldClass().getSimpleName());
+                    System.out.println("... column:" + col.getColumnName() + ", " + JdbcType.valueOf(col.getDataType()).toString() + getSizeInfo(Integer.parseInt(columnSize == null ? "0" : columnSize)) + (genColumnInTable.isPk() ? ",PrimaryKey" : "") + ", class:" + col.getFieldClass().getSimpleName());
                 }
             }
             return tables;
@@ -435,7 +455,7 @@ public class DaobabGenerator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return Collections.emptyList();
     }
 
     private String getSizeInfo(int size) {
@@ -444,17 +464,17 @@ public class DaobabGenerator {
         return "(" + size + ")";
     }
 
-    private boolean isTableAllowedToGenerate(String tablename) {
-        if (tablename == null) return false;
+    private boolean isTableAllowedToGenerate(String tableName) {
+        if (tableName == null) return false;
         if (onlyAllowedTables.isEmpty()) return true;
-        return onlyAllowedTables.contains(tablename);
+        return onlyAllowedTables.contains(tableName);
     }
 
     public boolean isGenerateTypeScript() {
         return generateTypeScript;
     }
 
-    public DaobabGenerator allowTypeScriptGeneration(boolean generateTypeScript) {
+    public DaobabGenerator generateTypeScripts(boolean generateTypeScript) {
         this.generateTypeScript = generateTypeScript;
         return this;
     }
@@ -463,7 +483,7 @@ public class DaobabGenerator {
         return schemas;
     }
 
-    public DaobabGenerator allowOnlySchemas(String... schemas) {
+    public DaobabGenerator generateOnlyForSchemas(String... schemas) {
         this.schemas = schemas;
         return this;
     }
@@ -472,7 +492,7 @@ public class DaobabGenerator {
         return catalogues;
     }
 
-    public DaobabGenerator allowOnlyCatalogues(String... catalogues) {
+    public DaobabGenerator generateOnlyForCatalogues(String... catalogues) {
         this.catalogues = catalogues;
         return this;
     }
@@ -515,11 +535,11 @@ public class DaobabGenerator {
         System.out.println("Ordered tables: " + (onlyAllowedTables.isEmpty() ? "all available" : join(",", onlyAllowedTables)));
         System.out.println("---------------------------------------------------------");
         System.out.println("Java root package: " + getPackage());
-        System.out.println("Files saved into location: " + getPath());
+        System.out.println("Files saved into a location: " + getPath());
         System.out.println("Override files: " + toYesNo(isOverride()));
-        System.out.println("Order to generate tables: " + toYesNo(isGenerateTables()));
-        System.out.println("Order to generate views: " + toYesNo(isGenerateViews()));
-        System.out.println("Order to generate TypeScript classes: " + toYesNo(isGenerateTypeScript()));
+        System.out.println("Generating tables: " + toYesNo(isGenerateTables()));
+        System.out.println("Generating views: " + toYesNo(isGenerateViews()));
+        System.out.println("Generating TypeScript classes: " + toYesNo(isGenerateTypeScript()));
         System.out.println("---------------------------------------------------------");
         System.out.println("Generated targets: " + generatedTargetsCount);
         System.out.println("Generated tables: " + generatedTablesCount);
@@ -529,38 +549,49 @@ public class DaobabGenerator {
         System.out.println("---------------------------------------------------------");
     }
 
-    public void generateSingleColumn(String schema, String databaseColumnName, JdbcType jdbcType) {
-        generateSingleColumn(null, schema, databaseColumnName, null, jdbcType, null);
-    }
+//    public void generateSingleColumn(String schema, String databaseColumnName, JdbcType jdbcType) {
+//        generateSingleColumn(null, schema, databaseColumnName, null, jdbcType, null);
+//    }
 
-    public void generateSingleColumn(String schema, String databaseColumnName, JdbcType jdbcType, Class javaType) {
+    public void generateSingleColumn(String schema, String databaseColumnName, JdbcType jdbcType, Class<?> javaType) {
         generateSingleColumn(null, schema, databaseColumnName, null, jdbcType, javaType);
     }
 
-    public void generateSingleColumn(String catalog, String schema, String databaseColumnName, JdbcType jdbcType) {
-        generateSingleColumn(catalog, schema, databaseColumnName, null, jdbcType, null);
-    }
+//    public void generateSingleColumn(String catalog, String schema, String databaseColumnName, JdbcType jdbcType) {
+//        generateSingleColumn(catalog, schema, databaseColumnName, null, jdbcType, null);
+//    }
 
-    public void generateSingleColumn(String catalog, String schema, String databaseColumnName, String javaClassName, JdbcType jdbcType, Class javaType) {
+    public void generateSingleColumn(String catalog, String schema, String databaseColumnName, String javaClassName, JdbcType jdbcType, final Class<?> javaType) {
         GenerateColumn column = new GenerateColumn();
         column.setColumnName(databaseColumnName);
         column.setDataType(jdbcType.getType());
 
-        StringBuilder javaPackage = JavaPackageResolver.resolve(getPackage(),catalog,schema);
+        StringBuilder javaPackageName = JavaPackageResolver.resolve(getPackage(), catalog, schema);
 
-        javaPackage.append(".column");
+        javaPackageName.append(".column");
 
-        column.setPackage(javaPackage.toString());
+        column.setPackage(javaPackageName.toString());
         column.setFinalFieldName(javaClassName == null ? GenerateFormatter.toCamelCase(databaseColumnName) : javaClassName);
-        column.setFieldClass(javaType == null ? TypeConverter.convert(column.getDataType()) : javaType);
+        column.setFieldClass(javaType);
         column.setFieldName(decapitalize(column.getInterfaceName()));
-        Writter writter = new Writter();
-        writter.generateColumn(catalog, schema, column, getPath(), isOverride());
+        Writer writer = new Writer();
+        writer.generateColumn(catalog, schema, column, getPath(), isOverride());
     }
 
-    public void allowOnlyTables(String... onlyAllowedTables) {
+    public void generateOnlyTables(String... onlyAllowedTables) {
         if (onlyAllowedTables == null) return;
         this.onlyAllowedTables.addAll(Arrays.asList(onlyAllowedTables));
+    }
+
+
+    public DaobabGenerator setEnforcedTypeFor(final String tableName, final String columnName, final Class<?> enforcedType) {
+        typeConverter.setEnforcedTypeFor(tableName, columnName, enforcedType);
+        return this;
+    }
+
+    public DaobabGenerator setGeneralConversionFor(int jdbcType, final Class<?> enforcedType) {
+        typeConverter.setGeneralConversionFor(jdbcType, enforcedType);
+        return this;
     }
 
 

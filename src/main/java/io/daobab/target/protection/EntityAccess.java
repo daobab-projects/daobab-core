@@ -2,6 +2,7 @@ package io.daobab.target.protection;
 
 import io.daobab.model.Entity;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,9 +14,7 @@ public class EntityAccess {
     public EntityAccess(Entity entity, Access... accessRights) {
         setEntity(entity);
 
-        for (Access ar : accessRights) {
-            this.accessRights.add(ar);
-        }
+        this.accessRights.addAll(Arrays.asList(accessRights));
     }
 
     public Entity getEntity() {

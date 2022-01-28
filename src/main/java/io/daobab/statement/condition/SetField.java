@@ -1,31 +1,31 @@
 package io.daobab.statement.condition;
 
-import io.daobab.error.ColumnMandatory;
+import io.daobab.error.MandatoryColumn;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 
 public class SetField<E extends Entity> {
+    E entity;
     private Column<E, Object, ?> field;
     private Object value;
-    E entity;
 
     public <R extends EntityRelation> SetField(Column<E, Object, R> field, R related) {
         if (field == null) {
-            throw new ColumnMandatory();
+            throw new MandatoryColumn();
         }
         this.setField(field);
         this.setValue(related == null ? null : field.getValue(related));
-        this.entity = ((E) field.getInstance());
+        this.entity = field.getInstance();
     }
 
     public SetField(Column<E, Object, ?> field, Object value) {
         if (field == null) {
-            throw new ColumnMandatory();
+            throw new MandatoryColumn();
         }
         this.setField(field);
         this.setValue(value);
-        this.entity = ((E) field.getInstance());
+        this.entity = field.getInstance();
     }
 
     public Column<E, Object, ?> getField() {
