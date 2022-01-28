@@ -116,11 +116,7 @@ public class ImageExporter {
             int nul = rs.getInt("NULLABLE");
             if (nul == 3) {
                 column.setNullable(null);
-            } else if (nul == 0) {
-                column.setNullable(false);
-            } else {
-                column.setNullable(true);
-            }
+            } else column.setNullable(nul != 0);
 
             metaColumns.add(column);
         }

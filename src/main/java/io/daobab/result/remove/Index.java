@@ -16,9 +16,9 @@ import java.util.*;
  */
 public abstract class Index<E extends Entity, F> {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Column<E, ?, EntityRelation> indexedColumn;
+    private final Column<E, ?, EntityRelation> indexedColumn;
 
     protected List<E> nullValuesEntities = new LinkedList<>();
     protected TreeMap<F, List<E>> fieldEntitiesMap = new TreeMap<>();

@@ -16,7 +16,7 @@ public class SetField<E extends Entity> {
         }
         this.setField(field);
         this.setValue(related == null ? null : field.getValue(related));
-        this.entity = ((E) field.getInstance());
+        this.entity = field.getInstance();
     }
 
     public SetField(Column<E, Object, ?> field, Object value) {
@@ -25,7 +25,7 @@ public class SetField<E extends Entity> {
         }
         this.setField(field);
         this.setValue(value);
-        this.entity = ((E) field.getInstance());
+        this.entity = field.getInstance();
     }
 
     public Column<E, Object, ?> getField() {

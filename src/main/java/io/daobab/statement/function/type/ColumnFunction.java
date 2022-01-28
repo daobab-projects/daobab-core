@@ -21,7 +21,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
     private String columnName;
     private String fieldName;
     protected Class<C> columnClass;
-    private E thisEntity;
+    private final E thisEntity;
     public String identifier;
     private boolean noParameter = false;
 

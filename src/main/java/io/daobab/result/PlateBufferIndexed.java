@@ -12,6 +12,7 @@ import io.daobab.statement.where.base.WhereBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -21,11 +22,13 @@ public abstract class PlateBufferIndexed {
 
 
     protected List<Plate> plateList;
-    private transient Logger log = LoggerFactory.getLogger(this.getClass());
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
     private boolean primaryKey = false;
 
+    protected PlateBufferIndexed() {
+        this(new ArrayList<>());
+    }
     protected PlateBufferIndexed(List<Plate> entities) {
-
         if (!entities.isEmpty()) {
             Plate entity = entities.get(0);
             setPrimaryKey(entity instanceof PrimaryKey);

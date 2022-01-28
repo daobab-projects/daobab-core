@@ -67,7 +67,7 @@ public interface ParserNumber {
 
     static String toHexString(Number from) {
         if (from == null) return null;
-        return String.format("%X", from.toString());
+        return String.format("%X", from);
     }
 
     static BigDecimal toBigDecimal(Number from) {

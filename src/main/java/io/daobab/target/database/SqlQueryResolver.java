@@ -180,7 +180,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
                 sb.append(LINE_SEPARATOR);
                 sb.append("values (");
                 sb.append(LINE_SEPARATOR);
-                sb.append(values.toString());
+                sb.append(values);
                 sb.append(") ");
             }
 
@@ -712,7 +712,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
                             .append(o)
                             .append(APOSTROPHE);
                 }else{
-                    sb.append(o.toString());
+                    sb.append(o);
                 }
             }
             counter++;

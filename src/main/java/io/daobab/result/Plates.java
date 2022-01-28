@@ -42,7 +42,7 @@ public interface Plates extends Serializable, List<Plate>, Cloneable, JsonListHa
 
     <E extends Entity> Plates orderAndLimit(Query<E, ?> query);
 
-    public Plates limit(QueryPlate query);
+    Plates limit(QueryPlate query);
 
     default <F, R extends EntityRelation> List<F> getFieldList(Column<?, F, R> col) {
         return stream().map(entity -> col.getValueOf((R) entity)).collect(Collectors.toList());

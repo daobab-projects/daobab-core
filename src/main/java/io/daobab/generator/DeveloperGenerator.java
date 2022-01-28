@@ -12,7 +12,7 @@ import static io.daobab.generator.DaobabClassGeneratorTemplates.COLUMN_TEMPLATE;
 
 public class DeveloperGenerator {
 
-    private static Writter writter = new Writter();
+    private static final Writter writter = new Writter();
 
     public static void main(String[] sa) {
 //        String column=DeveloperGenerator.getColumnInterfaceFor("pl.trst.test","FIRST_NAME",JdbcType.VARCHAR);

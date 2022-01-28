@@ -32,19 +32,18 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     private static final long serialVersionUID = 2291798166104201910L;
     protected transient boolean needRefresh = false;
-    private boolean transactionActive = false;
-    private transient Logger log;
+    private final transient boolean transactionActive = false;
 
-    private StatisticCollector statistic;
+    private transient StatisticCollector statistic;
     private boolean statisticEnabled = false;
 
-    private AccessProtector accessProtector = new BasicAccessProtector();
+    private transient AccessProtector accessProtector = new BasicAccessProtector();
 
+    public PlateBuffer() {}
 
     public PlateBuffer(List<Plate> entities) {
         super(entities);
     }
-
 
     @Override
     public boolean isTransactionActive() {
@@ -56,12 +55,12 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         return false;
     }
 
-
     @Override
     public <T> T aroundTransaction(Supplier<T> t) {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E1 extends Entity> E1 readEntity(QueryEntity<E1> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
@@ -85,54 +84,56 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         List<Plate> plateList = filter(query);
         List<E> rrv = new ArrayList<>(plateList.size());
         for (int i = 0; i < plateList.size(); i++) {
-            rrv.add(i, (E) plateList.get(i).getEntity(query.getEntityClass()));
+            rrv.add(i, plateList.get(i).getEntity(query.getEntityClass()));
         }
 
         EntityList<E> rv = new EntityList<>(rrv, query.getEntityClass());
-
         rv.orderAndLimit(query);
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, rv.size());
         return rv;
     }
 
-
+    @SuppressWarnings({"unchecked","rawtypes"})
     private <E extends Entity, R extends EntityRelation> PlateBuffer resultPlateList(QueryPlate query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         PlateBuffer matched = new PlateBuffer(filter((Query<E, ?>) query));
-        List<Plate> frl = new LinkedList<>();
-
-        if (matched.isEmpty()) return new PlateBuffer(frl);
-        Plates el = matched.orderAndLimit((Query<E, ?>) query);
-
-
-        for (Plate e : el) {
-            Plate fr = new Plate(query.getFields());
-
-            for (TableColumn c : query.getFields()) {
-                Column<E, Object, R> col = (Column<E, Object, R>) c.getColumn();
-                fr.setValue(c, col.getValueOf((R) e));
-            }
-            frl.add(fr);
+        if (matched.isEmpty()){
+            if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
+            return new PlateBuffer();
         }
-        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, frl.size());
-        return new PlateBuffer(frl);
+
+        List<Plate> results = new ArrayList<>();
+        Plates elements = matched.orderAndLimit((Query<E, ?>) query);
+
+        for (Plate element : elements) {
+            Plate plate = new Plate(query.getFields());
+            for (TableColumn tableColumn : query.getFields()) {
+                plate.setValue(tableColumn, tableColumn.getColumn().getValueOf((R) element));
+            }
+            results.add(plate);
+        }
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
+        return new PlateBuffer(results);
     }
 
     private Plate readPlateFromBuffer(QueryPlate query) {
-        PlateBuffer proj = resultPlateList(query);
-        return proj.isEmpty() ? null : proj.get(0);
+        PlateBuffer plateBuffer = resultPlateList(query);
+        return plateBuffer.isEmpty() ? null : plateBuffer.get(0);
     }
 
+    @SuppressWarnings("unchecked")
     private <E extends Entity, R extends EntityRelation, F> List<F> resultFieldListFromBuffer(QueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         PlateBuffer matched = new PlateBuffer(filter(query));
-
-        if (matched.isEmpty()) return new LinkedList<>();
-        Plates el = matched.orderAndLimit(query);
-        Column<E, F, R> col = (Column<E, F, R>) query.getFields().get(0);
-        List<F> rv = el.stream().map(e -> col.getValueOf((R) e)).collect(Collectors.toList());
-        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, rv.size());
-        return rv;
+        if (matched.isEmpty()){
+            if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
+            return new ArrayList<>();
+        }
+        Plates elements = matched.orderAndLimit(query);
+        Column<E, F, R> firstColumn = query.getFields().get(0).getColumn();
+        List<F> results = elements.stream().map(e -> firstColumn.getValueOf((R) e)).collect(Collectors.toList());
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
+        return results;
 
     }
 
@@ -150,7 +151,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
             return null;
         }
 
-        Column<E, F, R> col = (Column<E, F, R>) query.getFields().get(0);
+        Column<E, F, R> col = (Column<E, F, R>) query.getFields().get(0).getColumn();
         F rv = col.getValueOf((R) el);
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
         return rv;

@@ -18,9 +18,9 @@ public interface DummyColumnTemplate {
     static <E extends Entity, F, R extends EntityRelation<E>> Column<E, F, R> createDummyColumn(E entity, Class<F> type, String name) {
         return new Column<E, F, R>() {
 
-            private E dummyEntity = entity;
-            private Class<F> dummyType = type;
-            private String dummyName = name;
+            private final E dummyEntity = entity;
+            private final Class<F> dummyType = type;
+            private final String dummyName = name;
 
             @Override
             public String getFieldName() {

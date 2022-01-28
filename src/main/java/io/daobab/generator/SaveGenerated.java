@@ -56,7 +56,7 @@ public interface SaveGenerated {
             System.out.println("File: " + p.getFileName() + " already exists and can't be overrided. If you want to override, setOverride(true) or simple delete file.");
             return;
         } else if (Files.exists(p) && override) {
-            System.out.println("Overriding file: " + p.toString() + ".");
+            System.out.println("Overriding file: " + p + ".");
         }
 
         try (BufferedWriter writer = Files.newBufferedWriter(p, charset)) {

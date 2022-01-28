@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 
 public class NumberMatchGT extends NumberMatchEQ {
 
-    private BitFieldInteger bt = new BitFieldInteger();
+    private final BitFieldInteger bt = new BitFieldInteger();
 
     public NumberMatchGT(Object valueToCompare) {
         super(valueToCompare);

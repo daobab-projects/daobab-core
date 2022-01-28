@@ -33,8 +33,8 @@ public class DaobabGenerator {
     private boolean generateTables = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TABLES, "true");
     private boolean generateViews = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_VIEWS, "true");
     private boolean generateColumns = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_COLUMNS, "true");
-    private boolean generateTargets = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TARGETS, "true");
-    private boolean generateTargetInterfaces = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TARGET_INTERFACE, "true");
+    private final boolean generateTargets = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TARGETS, "true");
+    private final boolean generateTargetInterfaces = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TARGET_INTERFACE, "true");
 
     private boolean schemaIntoTableName = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_USE_SCHEMA_INTO_TABLE_NAME, "false");
 

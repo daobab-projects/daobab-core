@@ -71,7 +71,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
     protected final void register(Entities<? extends Entity>... entities) {
         if (entities == null) return;
         for (Entities<? extends Entity> entity : entities) {
-            getStorage().put(entity.getEntityClazz(), entity);
+            getStorage().put(entity.getEntityClass(), entity);
         }
     }
 
@@ -199,7 +199,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
     public final void put(Entities<? extends Entity>... entities) {
         if (entities == null) return;
         for (Entities<? extends Entity> e : entities) {
-            getStorage().put(e.getEntityClazz(), e);
+            getStorage().put(e.getEntityClass(), e);
         }
     }
 

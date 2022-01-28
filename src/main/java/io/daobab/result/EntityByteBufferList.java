@@ -1,5 +1,6 @@
 package io.daobab.result;
 
+import io.daobab.error.TargetNotSupports;
 import io.daobab.model.Entity;
 
 import java.util.Collection;
@@ -30,9 +31,8 @@ public class EntityByteBufferList<E extends Entity> implements List<E> {
 
     @Override
     public boolean contains(Object o) {
-        return false;
+        throw new TargetNotSupports();
     }
-
 
     @Override
     public Iterator<E> iterator() {
@@ -64,47 +64,47 @@ public class EntityByteBufferList<E extends Entity> implements List<E> {
 
     @Override
     public <T> T[] toArray(T[] ts) {
-        return null;
+        throw new TargetNotSupports();
     }
 
     @Override
     public boolean add(E e) {
-        return false;
+        throw new TargetNotSupports();
     }
 
     @Override
     public boolean remove(Object o) {
-        return false;
+        throw new TargetNotSupports();
     }
 
     @Override
     public boolean containsAll(Collection<?> collection) {
-        return false;
+        throw new TargetNotSupports();
     }
 
     @Override
     public boolean addAll(Collection<? extends E> collection) {
-        return false;
+        throw new TargetNotSupports();
     }
 
     @Override
     public boolean addAll(int i, Collection<? extends E> collection) {
-        return false;
+        throw new TargetNotSupports();
     }
 
     @Override
     public boolean removeAll(Collection<?> collection) {
-        return false;
+        throw new TargetNotSupports();
     }
 
     @Override
     public boolean retainAll(Collection<?> collection) {
-        return false;
+        throw new TargetNotSupports();
     }
 
     @Override
     public void clear() {
-
+        throw new TargetNotSupports();
     }
 
     @Override
@@ -114,42 +114,42 @@ public class EntityByteBufferList<E extends Entity> implements List<E> {
 
     @Override
     public E set(int i, E e) {
-        return null;
+        throw new TargetNotSupports();
     }
 
     @Override
     public void add(int i, E e) {
-
+        throw new TargetNotSupports();
     }
 
     @Override
     public E remove(int i) {
-        return null;
+        throw new TargetNotSupports();
     }
 
     @Override
     public int indexOf(Object o) {
-        return 0;
+        throw new TargetNotSupports();
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        throw new TargetNotSupports();
     }
 
     @Override
     public ListIterator<E> listIterator() {
-        return null;
+        throw new TargetNotSupports();
     }
 
     @Override
     public ListIterator<E> listIterator(int i) {
-        return null;
+        throw new TargetNotSupports();
     }
 
     @Override
     public List<E> subList(int i, int i1) {
-        return null;
+        throw new TargetNotSupports();
     }
 
 

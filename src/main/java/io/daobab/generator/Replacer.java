@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Replacer {
-    private List<ReplaceWrapper> repl = new LinkedList<>();
+    private final List<ReplaceWrapper> repl = new LinkedList<>();
 
     public Replacer add(String key, String value) {
         repl.add(new ReplaceWrapper(key, value));

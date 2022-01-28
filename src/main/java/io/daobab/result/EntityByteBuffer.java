@@ -3,6 +3,7 @@ package io.daobab.result;
 import io.daobab.error.ByteBufferIOException;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.error.DaobabException;
+import io.daobab.error.TargetNotSupports;
 import io.daobab.model.*;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
@@ -23,7 +24,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
     public EntityByteBuffer(List<E> entities) {
         this(entities == null || entities.isEmpty() ? null : entities.get(0), entities == null ? 8 : entities.size());
         if (entities != null) {
-            entities.stream().forEach(this::add);
+            entities.forEach(this::add);
         }
     }
 
@@ -66,7 +67,6 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         pages.add(ByteBuffer.allocateDirect(totalEntitySpace << pageMaxCapacityBytes));
 
         totalBufferSize = pages.size() * (totalEntitySpace << pageMaxCapacityBytes);
-
     }
 
     public void remove(int position) {
@@ -89,7 +89,6 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
                 index.removeValue(col.getValueOf((EntityRelation) entityToRemove), position);
             }
         }
-
         totalBufferActiveElements.decrementAndGet();
     }
 
@@ -122,9 +121,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
                 index.addValue(value, entityLocation);
             }
         }
-
         mergeIfNecessary();
-
         return true;
     }
 
@@ -193,9 +190,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
         List<E> rv = new EntityByteBufferList<>(this, ids);
         return rv;
-
     }
-
 
     @Override
     public <E extends Entity> E readEntity(QueryEntity<E> query) {
@@ -205,13 +200,13 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         return (E) finalFilter(q).get(0);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public <E1 extends Entity> Entities<E1> readEntityList(QueryEntity<E1> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Query q = query;
-        List<E> list = (List<E>) finalFilter(q);
-        EntityList rv = new EntityList<>(list, (Class<E>)query.getEntityClass());
+        EntityList rv = new EntityList<>(finalFilter(q), query.getEntityClass());
         return rv;
     }
 
@@ -230,8 +225,6 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         long start = System.currentTimeMillis();
         List<F> list = finalFilterField(q);
         long stop = System.currentTimeMillis();
-        System.out.println("filter result: " + list.size() + " time: " + (stop - start));
-
         return list;
     }
 
@@ -249,9 +242,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
 
         List<TableColumn> col = query.getFields();
         List<TableColumn> col2 = new ArrayList<>(col.size());
-        for (TableColumn c : col) {
-            col2.add(c);
-        }
+        col2.addAll(col);
         PlateByteBufferList rv = new PlateByteBufferList(this, ids, col2);
         return new PlateBuffer(rv);
     }
@@ -324,12 +315,12 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
 
     @Override
     public <E extends Entity> String toSqlQuery(Query<E, ?> query) {
-        throw new DaobabException("This target does not produce sql query");
+        throw new TargetNotSupports();
     }
 
     @Override
     public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
-        throw new DaobabException("This target does not supports procedures.");
+        throw new TargetNotSupports();
     }
 
     @Override
@@ -344,7 +335,6 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         } catch (InstantiationException | IllegalAccessException e) {
             throw new DaobabEntityCreationException(this.entityClass, e);
         }
-
     }
 
     @Override

@@ -20,7 +20,7 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
 
     private boolean alreadyGenerated;
 
-    private List<TableAndType> tables = new ArrayList<>();
+    private final List<TableAndType> tables = new ArrayList<>();
 
 
     public GenerateColumn() {
@@ -157,8 +157,8 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
     }
 
     private class TableAndType {
-        private String table;
-        private String type;
+        private final String table;
+        private final String type;
 
         private TableAndType(String table, String type) {
             this.table = table;

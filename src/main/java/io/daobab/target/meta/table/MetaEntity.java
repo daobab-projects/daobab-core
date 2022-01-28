@@ -13,7 +13,7 @@ public class MetaEntity extends Table {
 
     List<TableColumn> columnList=new ArrayList<>();
 
-    private String tableName;
+    private final String tableName;
 
     public MetaEntity(String tableName){
         this.tableName=tableName;

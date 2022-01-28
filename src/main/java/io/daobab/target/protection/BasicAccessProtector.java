@@ -12,8 +12,8 @@ public class BasicAccessProtector implements AccessProtector {
     private DefaultAccessStrategy defaultAccessStrategy = DefaultAccessStrategy.ALLOW;
     private boolean enabled = false;
 
-    private Map<String, Set<Access>> entityRights = new HashMap<>();
-    private Map<Column, Set<Access>> columnRights = new HashMap<>();
+    private final Map<String, Set<Access>> entityRights = new HashMap<>();
+    private final Map<Column, Set<Access>> columnRights = new HashMap<>();
 
     @Override
     public AccessProtector setEntityAccess(Entity entity, Access... accessRights) {

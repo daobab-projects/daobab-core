@@ -25,7 +25,7 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
 
     Entities<E> calculateIndexes();
 
-    Class<E> getEntityClazz();
+    Class<E> getEntityClass();
 
     @Override
     default EntityByteBuffer<E> createByteBuffer() {

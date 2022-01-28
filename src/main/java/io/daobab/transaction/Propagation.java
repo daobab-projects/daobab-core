@@ -86,7 +86,7 @@ public enum Propagation {
             throw new TransactionNotAllowerForPropagationNever();
         }
 
-        throw new DaobabException("Unhandled transaction case: " + this.toString() + " and transaction opened:" + target.isTransactionActive());
+        throw new DaobabException("Unhandled transaction case: " + this + " and transaction opened:" + target.isTransactionActive());
 
     }
 

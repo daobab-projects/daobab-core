@@ -9,8 +9,8 @@ import java.nio.charset.StandardCharsets;
 public class BitStringMatchEQ extends MatchEQ {
     private final EntityByteBuffer bufferEntityPointer;
 
-    private String strValueToCompare;
-    private int strValueToCompareSize;
+    private final String strValueToCompare;
+    private final int strValueToCompareSize;
 
     public BitStringMatchEQ(Object valueToCompare, EntityByteBuffer bufferEntityPointer) {
         super(valueToCompare);

@@ -475,7 +475,7 @@ public abstract class Where<W extends Where> extends WhereBase {
     private <F> void temp(Field<?, F, ?> column, Operator operator) {
 
         if (!Operator.IS_NULL.equals(operator) && !Operator.NOT_NULL.equals(operator)) {
-            throw new DaobabException("Where clause without value is allowed only for SQLOperators " + Operator.IS_NULL.toString() + "," + Operator.NOT_NULL.toString());
+            throw new DaobabException("Where clause without value is allowed only for SQLOperators " + Operator.IS_NULL + "," + Operator.NOT_NULL);
         }
 
         if (column == null) throw new ColumnMandatory();

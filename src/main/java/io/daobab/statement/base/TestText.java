@@ -41,7 +41,7 @@ public interface TestText {
             }
             if (fshown) mg.append(lineSeparator);
             fshown = true;
-            mg.append(row.toString());
+            mg.append(row);
         }
         n(() -> {
             if (logger == null || logger.getLog() == null) {

@@ -18,9 +18,9 @@ import java.util.*;
 
 public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaData, MetaDataTables {
 
-    private DataBaseTarget source;
-    private HashMap<String, MetaTable> quickAccessMetaTable = new HashMap<>();
-    private HashMap<String, MetaColumn> quickAccessMetaColumn = new HashMap<>();
+    private final DataBaseTarget source;
+    private final HashMap<String, MetaTable> quickAccessMetaTable = new HashMap<>();
+    private final HashMap<String, MetaColumn> quickAccessMetaColumn = new HashMap<>();
 
     public MetaDataBaseTarget(String catalog, String schema, DataBaseTarget source) throws SQLException {
         if (schema == null) {

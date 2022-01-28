@@ -64,11 +64,8 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
     protected boolean bufferStatic = false;
     protected List<Integer> locations = new LinkedList<>();
     protected LinkedList<Integer> removed = new LinkedList<>();
-
     protected Map<Integer, HashMap<String, Object>> additionalParameters = new HashMap<>();
-
     private AccessProtector accessProtector = new BasicAccessProtector();
-
 
     protected boolean mayBeBitBuffered(Column col) {
         for (Class<?> cl : bitBufferedClasses) {
@@ -152,14 +149,12 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
             locations.add(thisLocation);
             return thisLocation;
         } else {
-
             int rm = removed.removeFirst();
             locations.add(rm);
             totalBufferActiveElements.decrementAndGet();
             return rm;
         }
     }
-
 
     public int size() {
         return totalBufferActiveElements.get();
@@ -265,16 +260,12 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
     @Override
     public Plates readPlateList(QueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
-        Query q = query;
-        List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), q);
+        List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
 
         List<TableColumn> col = query.getFields();
         List<TableColumn> col2 = new ArrayList<>(col.size());
-        for (TableColumn c : col) {
-            col2.add(c);
-        }
-        PlateByteBufferList rv = new PlateByteBufferList(this, ids, col2);
-        return new PlateBuffer(rv);
+        col2.addAll(col);
+        return new PlateBuffer(new PlateByteBufferList(this, ids, col2));
     }
 
     @Override
@@ -343,12 +334,11 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
         return false;
     }
 
-
+    @SuppressWarnings({"rawtypes","unchecked"})
     protected List<Integer> finalFilter(ResultBitBufferPositionWithSkipStepsWrapper rw, Query<?, ?> query) {
         int counter = 0;
         List<Integer> entitiesToHandle = rw == null ? null : rw.getEntityPointers();
         List<Integer> skipSteps = rw == null ? Collections.emptyList() : rw.getSkipSteps();
-
 
         List<Integer> rv = new ArrayList<>();
         Where wrapper = query.getWhereWrapper();
@@ -415,9 +405,9 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
         return rv;
     }
 
-    //Filters provided ids or all (if list is null) for provied wrapper
+    @SuppressWarnings({"rawtypes","unchecked"})
+    //Filters provides ids or all (if list is null) for provided wrapper
     protected ResultBitBufferPositionWithSkipStepsWrapper filterUsingIndexes(List<Integer> entitiesToHandle, Where wrapper) {
-
 
         //if indexRepository is empty, don't even use the index logic
         if (wrapper == null || isIndexRepositoryEmpty || !mayBeIndexed(wrapper)) {
@@ -425,7 +415,6 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
         }
 
         String relations = wrapper.getRelationBetweenExpressions();
-
 
         boolean[][] flags;
 
@@ -436,7 +425,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
         }
 
         List<Integer> skipSteps = new ArrayList<>();
-        int indexed_arguments = 0;
+        int indexedArguments = 0;
         int lowestSize = Integer.MAX_VALUE;
         Collection<Integer> lowestCollection = new ArrayList<>();
         for (int counter = 1; counter < wrapper.getCounter(); counter++) {
@@ -454,7 +443,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
                 } else {
                     int size = 0;
                     for (int in : pks.getEntityPointers()) {
-                        flags[indexed_arguments][in] = true;
+                        flags[indexedArguments][in] = true;
                         size++;
                     }
 
@@ -464,7 +453,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
                     }
 
                 }
-                indexed_arguments++;
+                indexedArguments++;
                 continue;
             }
 
@@ -484,7 +473,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
 
                     int size = 0;
                     for (int in : filtered) {
-                        flags[indexed_arguments][in] = true;
+                        flags[indexedArguments][in] = true;
                         size++;
                     }
                     if (lowestSize > size) {
@@ -503,12 +492,12 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
                 case NOT: {
                     Collection<Integer> filtered = index.filterNegative(operator, val);
                     for (int in : filtered) {
-                        flags[indexed_arguments][in] = true;
+                        flags[indexedArguments][in] = true;
                     }
                     break;
                 }
             }
-            indexed_arguments++;
+            indexedArguments++;
         }
 
         List<Integer> pointers = new ArrayList<>();
@@ -522,12 +511,12 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
             } else {
                 for (int p : lowestCollection) {
                     int o = 0;
-                    for (; o < indexed_arguments; o++) {
+                    for (; o < indexedArguments; o++) {
                         if (!flags[o][p]) {
                             break;
                         }
                     }
-                    if (o == indexed_arguments) {
+                    if (o == indexedArguments) {
                         pointers.add(p);
                     }
                 }
@@ -542,12 +531,12 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
             } else {
                 for (int p = 0; p < entitiesToHandle.size(); p++) {
                     int o = 0;
-                    for (; o < indexed_arguments; o++) {
+                    for (; o < indexedArguments; o++) {
                         if (!flags[o][entitiesToHandle.get(p)]) {
                             break;
                         }
                     }
-                    if (o == indexed_arguments) {
+                    if (o == indexedArguments) {
                         pointers.add(p);
                     }
                 }
@@ -556,11 +545,12 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
         return new ResultBitBufferPositionWithSkipStepsWrapper(pointers, skipSteps);
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     //If there is OR, indexes may be in in use ONLY if all where arguments have them.
     private boolean mayBeIndexed(Where wrapper) {
         if (OR.equals(wrapper.getRelationBetweenExpressions())) {
             for (int counter = 1; counter < wrapper.getCounter(); counter++) {
-                Where innerWhere = wrapper.getInnerWhere(counter);
+                Where<?> innerWhere = wrapper.getInnerWhere(counter);
                 if (innerWhere != null && !mayBeIndexed(innerWhere)) {
                     return false;
                 }
@@ -578,11 +568,12 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
     }
 
 
-    protected BitBufferIndexBase<?> determineIndex(TableColumn infocolumn) {
+    @SuppressWarnings({"rawtypes","unchecked"})
+    protected BitBufferIndexBase<E> determineIndex(TableColumn infocolumn) {
         Column column = infocolumn.getColumn();
         Class<?> clazz = column.getFieldClass();
         if (clazz.isAssignableFrom(String.class)) {
-            return new BitBufferIndexString<E>(column, this);
+            return new BitBufferIndexString<>(column, this);
         } else if (clazz.isAssignableFrom(Integer.class)) {
             if (infocolumn.isUnique()) {
                 return new BitBufferIndexUniqueNumber(column, this);
@@ -590,13 +581,12 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
                 return new BitBufferIndexInteger<>(column, this);
             }
         } else if (clazz.isAssignableFrom(Boolean.class)) {
-            return new BitBufferIndexBoolean<E>(column, this);
+            return new BitBufferIndexBoolean<>(column, this);
         } else if (clazz.isAssignableFrom(Comparable.class)) {
             return new BitBufferIndexComparable<>(column, this);
         }
         return null;
     }
-
 
     public List<ByteBuffer> getPages() {
         return pages;
@@ -610,12 +600,12 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
         this.bufferStatic = bufferStatic;
     }
 
-
     @Override
     public AccessProtector getAccessProtector() {
         return accessProtector;
     }
 
+    @Override
     public void setAccessProtector(AccessProtector accessProtector) {
         this.accessProtector = accessProtector;
     }

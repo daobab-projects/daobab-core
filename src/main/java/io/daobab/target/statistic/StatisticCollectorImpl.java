@@ -22,7 +22,7 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
     private int bufferSize = 500;
     private final String lineSep = System.getProperty("line.separator");
 
-    private boolean ignoreSuccessful = false;
+    private final boolean ignoreSuccessful = false;
     private long ignoreBelowMilliseconds = 0;
 
 
