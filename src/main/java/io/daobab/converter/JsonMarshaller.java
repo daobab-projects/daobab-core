@@ -17,10 +17,9 @@ public interface JsonMarshaller extends JsonHandler, Map<String, Object> {
 
         for (Entry<String,Object> entry : entrySet()) {
             cnt++;
-            boolean lastOne = cnt == size;
             rv.append("\"").append(entry.getKey()).append("\":");
             rv.append(toJSON(entry.getValue()));
-            if (!lastOne) rv.append(",");
+            if (cnt != size) rv.append(",");
         }
 
         rv.append("}");

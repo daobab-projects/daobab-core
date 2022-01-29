@@ -35,9 +35,6 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
             E entity = entities.get(0);
             setPrimaryKey(entity instanceof PrimaryKey);
         }
-        //setPrimaryKey(entities.isPrimaryKey());
-        init(entities);
-        // prepareIndexRepository();
     }
 
     private Optional<Index<E, ?>> getIndexFor(Column<E, ?, ?> column) {
@@ -46,9 +43,6 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
                 .findAny().map(Map.Entry::getValue);
     }
 
-    public int size() {
-        return entities.size();
-    }
 
     @SuppressWarnings({"unchecked","rawtypes"})
     private List<E> finalFilter(List<E> entities, Query<E, ?> query, List<Integer> skipSteps) {
@@ -229,10 +223,6 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
             }
         }
         return (EntityList<E>) this;
-    }
-
-    public void init(List<E> entities) {
-        this.entities = entities;
     }
 
     public boolean isPrimaryKey() {

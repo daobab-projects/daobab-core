@@ -14,7 +14,8 @@ public enum DictBitField {
     BT_DATE(new BitFieldDate()),
     BT_SQLDATE(new BitFieldSqlDate()),
     BT_TIMESTAMP(new BitFieldTimestamp()),
-    BT_BIGDECIMAL(new BitFieldBigDecimal());
+    BT_BIGDECIMAL(new BitFieldBigDecimal()),
+    BT_BIGINTEGER(new BitFieldBigInteger());
 
     private final BitField field;
 

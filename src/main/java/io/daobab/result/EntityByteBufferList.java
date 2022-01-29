@@ -56,7 +56,6 @@ public class EntityByteBufferList<E extends Entity> implements List<E> {
         };
     }
 
-
     @Override
     public Object[] toArray() {
         return new Object[0];
@@ -151,6 +150,5 @@ public class EntityByteBufferList<E extends Entity> implements List<E> {
     public List<E> subList(int i, int i1) {
         throw new TargetNotSupports();
     }
-
 
 }

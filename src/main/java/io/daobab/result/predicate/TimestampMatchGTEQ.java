@@ -5,7 +5,6 @@ import java.util.TimeZone;
 
 public class TimestampMatchGTEQ extends TimestampMatchEQ {
 
-
     public TimestampMatchGTEQ(Object valueToCompare) {
         super(valueToCompare);
     }
@@ -18,6 +17,5 @@ public class TimestampMatchGTEQ extends TimestampMatchEQ {
         Timestamp dateValueFromEntity = toTimeZone((Timestamp) valueFromEntityField, TimeZone.getDefault());
         return valueToCompare.equals(dateValueFromEntity) || valueToCompare.before(dateValueFromEntity);
     }
-
 
 }

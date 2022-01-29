@@ -21,7 +21,6 @@ public class BitFieldString extends BitField<String> {
             return;
         }
         byteBuffer.put(position, (byte) 0);
-
     }
 
     @Override

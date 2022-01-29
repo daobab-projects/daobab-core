@@ -108,7 +108,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
             return new PlateBuffer();
         }
 
-        List<Plate> results = new LinkedList<>();
+        List<Plate> results = new ArrayList<>();
 
         for (E entity : matched.orderAndLimit((Query<E, ?>) query)) {
             Plate plate = new Plate(query.getFields());
@@ -347,12 +347,9 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         }
 
         for (E val : this) {
-
             cnt++;
-            boolean lastOne = cnt == size;
-
             rv.append(((EntityMap) val).toJSON());
-            if (!lastOne) rv.append(",");
+            if (cnt != size) rv.append(",");
         }
 
         rv.append("]");
@@ -412,7 +409,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @Override
-    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+    public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
         throw new TargetNotSupports();
     }
 }

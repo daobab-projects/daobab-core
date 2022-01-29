@@ -13,6 +13,7 @@ import java.util.TreeMap;
 public class BitBufferIndexBoolean<E> extends BitBufferIndex<E, Boolean> {
 
 
+    @SuppressWarnings("rawtypes")
     public BitBufferIndexBoolean(Column<?, ?, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
         super(indexedColumn, buffer);
     }

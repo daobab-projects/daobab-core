@@ -32,6 +32,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         this(entity, 8);
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     public EntityByteBuffer(E entity, int capacity) {
         adjustForCapacity(capacity);//1 << pageMaxCapacityBytes;
         this.entityClass = (Class<E>) entity.getEntityClass();
@@ -69,6 +70,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         totalBufferSize = pages.size() * (totalEntitySpace << pageMaxCapacityBytes);
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     public void remove(int position) {
         E entityToRemove = get(position);
         int entityLocation = locations.get(position);
@@ -92,7 +94,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         totalBufferActiveElements.decrementAndGet();
     }
 
-    //    @Override
+    @SuppressWarnings({"rawtypes","unchecked"})
     public boolean add(E entity) {
         int entityLocation = getNextFreeLocation();
 
@@ -125,6 +127,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         return true;
     }
 
+    @Override
     public Plate getPlate(int i, Collection<TableColumn> chosenColumns) {
         Plate rv = new Plate();
 
@@ -150,6 +153,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         return rv;
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     public E get(int i) {
         try {
             E rv = entityClass.getDeclaredConstructor().newInstance();
@@ -160,8 +164,8 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
             int posEntity = rowAtPage * totalEntitySpace;
             int cnt = 0;
             ByteBuffer pageBuffer = pages.get(page);
-            for (TableColumn ecol : columns) {
-                Column col = ecol.getColumn();
+            for (TableColumn tableColumn : columns) {
+                Column col = tableColumn.getColumn();
                 Integer posCol = columnsPositionsQueue[cnt];
                 if (posCol == null) {
                     HashMap<String, Object> additionalValues = additionalParameters.get(entityLocation);
@@ -175,7 +179,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
                 try {
                     col.setValue((EntityRelation) rv, bitFieldOperations[cnt].readValue(pageBuffer, posEntity + posCol));
                 } catch (Exception e) {
-                    throw new ByteBufferIOException(ecol, e);
+                    throw new ByteBufferIOException(tableColumn, e);
                 }
                 cnt++;
             }
@@ -188,44 +192,38 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
 
     public List<E> finalFilter(Query<E, ?> query) {
         List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
-        List<E> rv = new EntityByteBufferList<>(this, ids);
-        return rv;
+        return new EntityByteBufferList<>(this, ids);
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     @Override
     public <E extends Entity> E readEntity(QueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        Query q = query;
-        return (E) finalFilter(q).get(0);
+        return (E) finalFilter((Query) query).get(0);
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes","unchecked"})
     @Override
     public <E1 extends Entity> Entities<E1> readEntityList(QueryEntity<E1> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        Query q = query;
-        EntityList rv = new EntityList<>(finalFilter(q), query.getEntityClass());
-        return rv;
+        return new EntityList<>(finalFilter((Query) query), query.getEntityClass());
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     @Override
     public <E extends Entity, F> F readField(QueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        QueryField q = query;
-        return (F) finalFilterField(q).get(0);
+        return (F) finalFilterField((QueryField) query).get(0);
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     @Override
     public <E extends Entity, F> List<F> readFieldList(QueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        QueryField q = query;
 
-        long start = System.currentTimeMillis();
-        List<F> list = finalFilterField(q);
-        long stop = System.currentTimeMillis();
-        return list;
+        return finalFilterField((QueryField) query);
     }
 
     @Override
@@ -237,8 +235,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
     @Override
     public Plates readPlateList(QueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
-        Query q = query;
-        List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), q);
+        List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
 
         List<TableColumn> col = query.getFields();
         List<TableColumn> col2 = new ArrayList<>(col.size());
@@ -319,7 +316,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
     }
 
     @Override
-    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
+    public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
         throw new TargetNotSupports();
     }
 
@@ -339,8 +336,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
 
     @Override
     public Optional<E> findFirst() {
-        E one = findOne();
-        return Optional.ofNullable(one);
+        return Optional.ofNullable(findOne());
     }
 
     @Override
