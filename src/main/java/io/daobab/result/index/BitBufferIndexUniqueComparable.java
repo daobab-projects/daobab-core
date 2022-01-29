@@ -45,7 +45,7 @@ public class BitBufferIndexUniqueComparable<E, F extends Comparable<F>> extends 
                 return valueIndex.values();
             }
             default:
-                return new LinkedList<>();
+                return new ArrayList<>();
         }
     }
 

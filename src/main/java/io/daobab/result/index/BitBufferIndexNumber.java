@@ -30,8 +30,7 @@ public class BitBufferIndexNumber<E, F extends Number> extends BitBufferIndex<E,
             }
             case GT: {
                 subManyMap = (valueIndex.isEmpty() || key.longValue() > valueIndex.lastKey().longValue()) ? new TreeMap<>() : valueIndex.subMap(key, false, valueIndex.lastKey(), true);
-                Collection<Integer> rrr = toOneList(subManyMap);
-                return rrr;
+                return toOneList(subManyMap);
             }
             case GTEQ: {
                 subManyMap = (valueIndex.isEmpty() || key.longValue() > valueIndex.lastKey().longValue()) ? new TreeMap<>() : valueIndex.subMap(key, true, valueIndex.lastKey(), true);
@@ -39,8 +38,7 @@ public class BitBufferIndexNumber<E, F extends Number> extends BitBufferIndex<E,
             }
             case LT: {
                 subManyMap = (valueIndex.isEmpty() || key.longValue() < valueIndex.firstKey().longValue()) ? new TreeMap<>() : valueIndex.subMap(valueIndex.firstKey(), true, key, false);
-                Collection<Integer> tst = toOneList(subManyMap);
-                return tst;
+                return toOneList(subManyMap);
             }
             case LTEQ: {
                 subManyMap = (valueIndex.isEmpty() || key.longValue() < valueIndex.firstKey().longValue()) ? new TreeMap<>() : valueIndex.subMap(valueIndex.firstKey(), true, key, true);

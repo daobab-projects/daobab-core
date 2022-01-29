@@ -30,8 +30,7 @@ public class BitBufferIndexComparable<E, F extends Comparable<F>> extends BitBuf
             }
             case GT: {
                 subManyMap = (valueIndex.isEmpty() || (key.compareTo(valueIndex.lastKey()) > 0)) ? new TreeMap<>() : valueIndex.subMap(key, false, valueIndex.lastKey(), true);
-                Collection<Integer> rrr = toOneList(subManyMap);
-                return rrr;
+                return toOneList(subManyMap);
             }
             case GTEQ: {
                 subManyMap = (valueIndex.isEmpty() || (key.compareTo(valueIndex.lastKey()) > 0)) ? new TreeMap<>() : valueIndex.subMap(key, true, valueIndex.lastKey(), true);
@@ -39,8 +38,7 @@ public class BitBufferIndexComparable<E, F extends Comparable<F>> extends BitBuf
             }
             case LT: {
                 subManyMap = (valueIndex.isEmpty() || (key.compareTo(valueIndex.lastKey()) < 0)) ? new TreeMap<>() : valueIndex.subMap(valueIndex.firstKey(), true, key, false);
-                Collection<Integer> tst = toOneList(subManyMap);
-                return tst;
+                return toOneList(subManyMap);
             }
             case LTEQ: {
                 subManyMap = (valueIndex.isEmpty() || (key.compareTo(valueIndex.lastKey()) < 0)) ? new TreeMap<>() : valueIndex.subMap(valueIndex.firstKey(), true, key, true);

@@ -28,11 +28,9 @@ public abstract class BitBufferUniqueIndex<E, F> implements BitBufferIndexBase<F
     protected BitBufferUniqueIndex(Column<?, ?, EntityRelation> indexedColumn, Map<F, Integer> fieldEntitiesMap, List<Integer> nullValuesEntities) {
         this.indexedColumn = indexedColumn;
         this.valueIndex.putAll(fieldEntitiesMap);
-
     }
 
-
-    public BitBufferUniqueIndex(Column<?, ?, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
+    protected BitBufferUniqueIndex(Column<?, ?, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
         this.indexedColumn = indexedColumn;
         this.indexedColumnPosition = buffer.getBufferPositionOfColumn(indexedColumn);
         this.indexedColumnOrder = buffer.getColumnIntoEntityPosition(indexedColumn);
@@ -41,13 +39,11 @@ public abstract class BitBufferUniqueIndex<E, F> implements BitBufferIndexBase<F
         double entitiesSize = buffer.size();
         efficiency = (indexSize / entitiesSize) * 100;
 
-
         if (indexSize == 1) {
             worthless = true;
         }
         log.info("Index created for column {}, Total elements: {} indexed size: {}. Index considered as {}", indexedColumn.getEntityName() + "." + indexedColumn.getColumnName(), buffer.size(), indexSize, worthless ? "worthless" : "useful");
     }
-
 
     private void init(BaseByteBuffer<E> elements) {
         for (int i = 0; i < elements.size(); i++) {
@@ -57,30 +53,29 @@ public abstract class BitBufferUniqueIndex<E, F> implements BitBufferIndexBase<F
     }
 
     public Collection<Integer> filter(Operator operator, F... keys) {
+        Set<Integer> results = new HashSet<>();
 
         if (Operator.IN.equals(operator)) {
             for (F key : keys) {
-                return filter(Operator.EQ, key);
+                results.addAll(filter(Operator.EQ, key));
             }
         } else if (Operator.NOT_IN.equals(operator)) {
             for (F key : keys) {
-                return filterNegative(Operator.EQ, key);
+                results.addAll(filterNegative(Operator.EQ, key));
             }
         }
 
-        return Collections.emptyList();
+        return results;
     }
-
-    public abstract Collection<Integer> filter(Operator operator, Object key);
-
 
     public Collection<Integer> filterNegative(Operator operator, Object key1) {
         F key = (F) key1;
-        NavigableMap<F, Integer> subManyMap;
+
         switch (operator) {
             case IN:
             case EQ: {
-                subManyMap = valueIndex;
+                NavigableMap<F, Integer> subManyMap=new TreeMap<>();
+                subManyMap.putAll(valueIndex);
                 subManyMap.remove(key);
                 return toOneList(subManyMap, nullValues);
             }
@@ -107,14 +102,6 @@ public abstract class BitBufferUniqueIndex<E, F> implements BitBufferIndexBase<F
         }
     }
 
-//    protected abstract BitBufferUniqueIndex<E, F> empty();
-
-    protected Collection<Integer> toOneList(Map<F, Integer> subManyMap) {
-
-        return subManyMap.values();
-
-    }
-
     protected Collection<Integer> toOneList(Map<F, Integer> subManyMap, List<Integer> nullValuesAsPK) {
 
         int joinedSizes = nullValuesAsPK.size();
@@ -135,20 +122,14 @@ public abstract class BitBufferUniqueIndex<E, F> implements BitBufferIndexBase<F
 
         if (subManyMap != null) {
             for (Map.Entry<F, Integer> entry : subManyMap.entrySet()) {
-//                for (Integer np : entry.getValue()) {
-//                    System.out.println("jest "+np+" dla "+entry.getKey());
                 rv.add(position++, entry.getValue());
-//                    position ++;
-//                }
             }
         }
         return rv;
     }
 
     public long count() {
-        long count = 0;
-        count = count + valueIndex.size();
-        return count;
+        return valueIndex.size();
     }
 
     public Column<?, ?, EntityRelation> getIndexedColumn() {
@@ -165,16 +146,7 @@ public abstract class BitBufferUniqueIndex<E, F> implements BitBufferIndexBase<F
             nullValues.add(pointer);
             return;
         }
-
-        Integer valueRelatedPositions = valueIndex.get(value);
-        if (valueRelatedPositions == null) {
-            List<Integer> positions = new ArrayList<>();
-            positions.add(pointer);
-            valueIndex.put(value, pointer);
-//        } else {
-//            valueRelatedPositions.add(pointer);
-            //throw an exception
-        }
+        valueIndex.putIfAbsent(value, pointer);
     }
 
     public boolean removeValue(F value, int pointer) {

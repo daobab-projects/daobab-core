@@ -24,7 +24,7 @@ public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
 
     private double efficiency = 0;
 
-    public BitBufferIndex(Column<?, ?, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
+    protected BitBufferIndex(Column<?, ?, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
         this.indexedColumn = indexedColumn;
         this.indexedColumnPosition = buffer.getBufferPositionOfColumn(indexedColumn);
         this.indexedColumnOrder = buffer.getColumnIntoEntityPosition(indexedColumn);
@@ -64,16 +64,13 @@ public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
         return toOneList(subManyMap);
     }
 
-    public abstract Collection<Integer> filter(Operator operator, Object key);
-
-
     public Collection<Integer> filterNegative(Operator operator, Object key1) {
         F key = (F) key1;
-        NavigableMap<F, Collection<Integer>> subManyMap;
         switch (operator) {
             case IN:
             case EQ: {
-                subManyMap = valueIndex;
+                NavigableMap<F, Collection<Integer>> subManyMap=new TreeMap<>();
+                subManyMap.putAll(valueIndex);
                 subManyMap.remove(key);
                 return toOneList(subManyMap, nullValues);
             }
@@ -101,13 +98,10 @@ public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
     }
 
     protected Collection<Integer> toOneList(Map<F, Collection<Integer>> subManyMap) {
-
         List<Integer> rv = new ArrayList<>();
         if (subManyMap != null) {
             for (Map.Entry<F, Collection<Integer>> entry : subManyMap.entrySet()) {
-                for (Integer np : entry.getValue()) {
-                    rv.add(np);
-                }
+                rv.addAll(entry.getValue());
             }
         }
         return rv;
@@ -115,16 +109,11 @@ public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
 
     protected Collection<Integer> toOneList(Map<F, Collection<Integer>> subManyMap, List<Integer> nullValuesAsPK) {
 
-        List<Integer> rv = new ArrayList<>();
-        for (Integer np : nullValuesAsPK) {
-            rv.add(np);
-        }
+        List<Integer> rv = new ArrayList<>(nullValuesAsPK);
 
         if (subManyMap != null) {
             for (Map.Entry<F, Collection<Integer>> entry : subManyMap.entrySet()) {
-                for (Integer np : entry.getValue()) {
-                    rv.add(np);
-                }
+                rv.addAll(entry.getValue());
             }
         }
         return rv;
