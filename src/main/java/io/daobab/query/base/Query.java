@@ -49,10 +49,7 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
     private Count _count;
     private Limit limit;
     private String identifier;
-
-
     private String sentQuery;
-
     private List<SetOperator> setOperatorList;
 
     public List<SetOperator> getSetOperatorList() {
@@ -65,7 +62,6 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
         }
         this.setOperatorList.add(union);
     }
-
 
     protected Query() {
     }
@@ -141,8 +137,6 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
         storage.registerIdentifiers(getEntityName());
         setIdentifierStorage(storage);
     }
-
-
 
     @Override
     public Where getWhereWrapper() {
@@ -239,7 +233,6 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
         return (Q) this;
     }
 
-
     public Count getCount() {
         return _count;
     }
@@ -255,7 +248,6 @@ public abstract class Query<E extends Entity, Q extends Query> implements QueryJ
     public void setTempLimit(Limit limit) {
         this.limit = limit;
     }
-
 
 
     public void handleException(String statement, Throwable t) {

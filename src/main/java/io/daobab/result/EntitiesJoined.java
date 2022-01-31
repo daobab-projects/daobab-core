@@ -24,10 +24,10 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
     private final MultiEntityTarget target;
     private final List<List<Plate>> rows;
 
-    public EntitiesJoined(MultiEntityTarget target, Entities<?> entities, Query<?, ?> query) {
+    public EntitiesJoined(MultiEntityTarget target, List<? extends ColumnsProvider> columnsProviders, Query<?, ?> query) {
         this.target = target;
-        rows = new ArrayList<>(entities.size());
-        entities.forEach(entity -> {
+        rows = new ArrayList<>(columnsProviders.size());
+        columnsProviders.forEach(entity -> {
             List<Plate> plates = new ArrayList<>();
             plates.add(new Plate(entity));
             rows.add(plates);
@@ -54,6 +54,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
         return plateList;
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     private void join(Query<?, ?> query) {
         List<JoinWrapper> joins = query.getJoins();
 

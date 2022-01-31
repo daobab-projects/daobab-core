@@ -160,7 +160,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends Entity> Plates orderAndLimit(Query<E, ?> query) {
+    public Plates orderAndLimit(Query<?, ?> query) {
         if (query == null) return this;
         PlateBuffer copy = new PlateBuffer(this);
         if (query.getOrderBy() != null) {
@@ -515,7 +515,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     @Override
     public <E extends Entity> String toSqlQuery(Query<E, ?> query) {
-        throw new DaobabException("This target does not produce sql query");
+        throw new DaobabException("This target does not produce a sql query");
     }
 
     @Override

@@ -40,7 +40,7 @@ public interface Plates extends Serializable, List<Plate>, Cloneable, JsonListHa
 
     Plates clone();
 
-    <E extends Entity> Plates orderAndLimit(Query<E, ?> query);
+    Plates orderAndLimit(Query<?, ?> query);
 
     Plates limit(QueryPlate query);
 

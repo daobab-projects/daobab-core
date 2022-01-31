@@ -2,3 +2,6 @@
 2. Introduced TargetNotSupports exception
 3. Put order in Plates
 4. Where Like in Entities and Plates
+5. Fixed predictions for inner where for in memory buffers
+6. Introduces SimpleMultiTarget
+7. Joins on Entities and Plates

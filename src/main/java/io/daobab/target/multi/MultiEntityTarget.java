@@ -2,15 +2,10 @@ package io.daobab.target.multi;
 
 import io.daobab.error.DaobabException;
 import io.daobab.error.TargetUntransactional;
-import io.daobab.model.Column;
-import io.daobab.model.Entity;
-import io.daobab.model.Plate;
-import io.daobab.model.ProcedureParameters;
+import io.daobab.model.*;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
-import io.daobab.result.Entities;
-import io.daobab.result.EntitiesJoined;
-import io.daobab.result.Plates;
+import io.daobab.result.*;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.OpenedTransactionTarget;
 import io.daobab.target.QueryTarget;
@@ -23,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
@@ -100,14 +96,30 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());
-        return cached.readEntityList(query);
+
+        if (query.getJoins().isEmpty()){
+            return cached.readEntityList(query);
+        }else{
+            Plates plates=makeJoinJob(query,cached);
+            List<E> entityList=plates.stream().map(p->p.getEntity(query.getEntityClass())).collect(Collectors.toList());
+            return new EntityList<>(entityList,query.getEntityClass());
+        }
     }
 
     public <E extends Entity> E readEntity(QueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());
-        return cached.readEntity(query);
+
+        if (query.getJoins().isEmpty()){
+            return cached.readEntity(query);
+        }else{
+            Plates plates=makeJoinJob(query,cached);
+            if (plates.isEmpty()){
+                return null;
+            }
+            return plates.get(0).getEntity(query.getEntityClass());
+        }
     }
 
     public Plate readPlate(QueryPlate query) {
@@ -145,24 +157,52 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         return handleTransactionalTarget((TransactionalTarget) cached, propagation, (target, transaction) -> target.update(query, transaction));
     }
 
+    @SuppressWarnings("unchecked")
     public <E extends Entity, F> List<F> readFieldList(QueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());
         if (query.getJoins().isEmpty()){
             return cached.readFieldList(query);
         }else{
-            EntitiesJoined entitiesJoined=new EntitiesJoined(this,cached,query);
-            List<Plate> plates=entitiesJoined.toPlates();
-            Column col=query.getFields().get(0).getColumn();
-            return (List<F>)plates.stream().map(p->p.getValue(col)).collect(Collectors.toList());
+            Column<?,?,?> col=query.getFields().get(0).getColumn();
+            return (List<F>)makeJoinJob(query,cached).stream().map(p->p.getValue(col)).collect(Collectors.toList());
         }
-
     }
 
     public Plates readPlateList(QueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         Entities<?> cached = getEntities(query.getEntityClass());
-        return cached.readPlateList(query);
+
+        if (query.getJoins().isEmpty()){
+            return cached.readPlateList(query);
+        }else{
+            return makeJoinJob(query,cached);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private PlateBuffer makeJoinJob(Query<?,?> query,List<? extends ColumnsProvider> entities){
+        EntitiesJoined entitiesJoined=new EntitiesJoined(this,entities,query);
+        List<Plate> plates=entitiesJoined.toPlates();
+        PlateBuffer plateBuffer=new PlateBuffer(plates);
+
+        PlateBuffer matched = new PlateBuffer(PlateBufferIndexed.finalFilter(plateBuffer,query));
+        if (matched.isEmpty()){
+            if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
+            return new PlateBuffer();
+        }
+
+        Plates elements = matched.orderAndLimit(query);
+        List<Plate> results = new ArrayList<>(elements.size());
+
+        for (Plate element : elements) {
+            Plate plate = new Plate(query.getFields());
+            for (TableColumn tableColumn : query.getFields()) {
+                plate.setValue(tableColumn, element.getValue(tableColumn.getColumn()));
+            }
+            results.add(plate);
+        }
+        return new PlateBuffer(results);
     }
 
     public <E extends Entity> int delete(QueryDelete<E> query, boolean transaction) {
@@ -187,7 +227,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
 
     @Override
     public <E extends Entity> String toSqlQuery(Query<E, ?> query) {
-        throw new DaobabException("This target does not produce sql query");
+        throw new DaobabException("This target does not produce a sql query");
     }
 
     @Override

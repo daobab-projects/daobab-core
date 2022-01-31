@@ -20,7 +20,6 @@ import java.util.function.Predicate;
 
 public abstract class PlateBufferIndexed {
 
-
     protected List<Plate> plateList;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     private boolean primaryKey = false;
@@ -36,12 +35,12 @@ public abstract class PlateBufferIndexed {
         plateList = entities;
     }
 
-
-    private <E extends Entity> List<Plate> finalFilter(List<Plate> entities, Query<E, ?> query) {
+    @SuppressWarnings({"rawtypes","unchecked"})
+    public static List<Plate> finalFilter(List<Plate> entities, Query<?, ?> query) {
         int counter = 0;
 
         List<Plate> rv = new LinkedList<>();
-        Where wrapper = query.getWhereWrapper();
+        Where<?> wrapper = query.getWhereWrapper();
         boolean useWhere = wrapper != null;
 
         boolean useLimit = query.getOrderBy() == null && query.getLimit() != null;
@@ -84,10 +83,7 @@ public abstract class PlateBufferIndexed {
     }
 
     public <E extends Entity> List<Plate> filter(Query<E, ?> query) {
-
-
         return finalFilter(plateList, query);
-
     }
 
     public boolean isPrimaryKey() {
