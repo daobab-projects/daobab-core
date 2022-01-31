@@ -165,4 +165,8 @@ public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
         return false;
     }
 
+    protected Comparator<Integer> getKeyComparator(){
+        return Integer::compareTo;
+    }
+
 }

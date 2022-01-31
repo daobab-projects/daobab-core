@@ -40,9 +40,9 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
     private Optional<Index<E, ?>> getIndexFor(Column<E, ?, ?> column) {
         return indexRepository.entrySet().stream()
                 .filter(entry -> column.getColumnName().equals(entry.getKey()))
-                .findAny().map(Map.Entry::getValue);
+                .findAny()
+                .map(Map.Entry::getValue);
     }
-
 
     @SuppressWarnings({"unchecked","rawtypes"})
     private List<E> finalFilter(List<E> entities, Query<E, ?> query, List<Integer> skipSteps) {
@@ -132,6 +132,10 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
 
             Column column = wrapper.getKeyForPointer(counter);
 
+            if (column==null){
+                continue;
+            }
+
             Optional<Index<E, Number>> indexOpt = getIndexFor(column);
             if (!indexOpt.isPresent()) {
                 continue;
@@ -140,7 +144,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
 
             Index<E, ?> index = indexOpt.get();
 
-            //if Where has a second Where inside...
+            //if Where has a second Where inside
             Where innerWhere = wrapper.getInnerWhere(counter);
             if (innerWhere != null) {
                 ResultEntitiesWithSkipStepsWrapper<E> pks = filter(innerWhere);

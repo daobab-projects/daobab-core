@@ -46,7 +46,14 @@ public class GeneralWhereAndPlate<P extends Plate> implements WherePredicate<P> 
 
         for (int i = 0; i < keys.size(); i++) {
 
-            Object valueFromEntity = projection.getValue(keys.get(i));
+            Column column=keys.get(i);
+
+            if (column==null){
+                if (!predicates.get(i).test(projection)) return false;
+                continue;
+            }
+
+            Object valueFromEntity = projection.getValue(column);
 
             //if at least one record into AND clause if false, entity doesn't match
             if (!predicates.get(i).test(valueFromEntity)) return false;

@@ -9,7 +9,8 @@ public interface Entity extends DaobabDto, ColumnsProvider {
 
     String getEntityName();
 
-//    <X> X getColumnParam(String key);
+
+    //    <X> X getColumnParam(String key);
 //
 //    <X> void setColumnParam(String key, X param);
 

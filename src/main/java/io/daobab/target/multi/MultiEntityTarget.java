@@ -2,12 +2,14 @@ package io.daobab.target.multi;
 
 import io.daobab.error.DaobabException;
 import io.daobab.error.TargetUntransactional;
+import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
 import io.daobab.model.ProcedureParameters;
 import io.daobab.query.*;
 import io.daobab.query.base.Query;
 import io.daobab.result.Entities;
+import io.daobab.result.EntitiesJoined;
 import io.daobab.result.Plates;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.OpenedTransactionTarget;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
@@ -75,7 +78,6 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         }
     }
 
-
     @Override
     public <E extends Entity> boolean isRegistered(Class<E> entityClass) {
         if (!isRegistered(entityClass)) {
@@ -84,22 +86,15 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         return storage.containsKey(entityClass);
     }
 
-
     @Override
     public <E extends Entity> Entities<E> getEntities(E entity) {
-        Entities<E> cached = (Entities<E>) getStorage().get(entity.getClass());
-
-        return cached;
+        return (Entities<E>) getStorage().get(entity.getClass());
     }
-
 
     @Override
     public <E extends Entity> Entities<E> getEntities(Class<E> entityClazz) {
-        Entities<E> cached = (Entities<E>) getStorage().get(entityClazz);
-
-        return cached;
+        return (Entities<E>) getStorage().get(entityClazz);
     }
-
 
     public <E extends Entity> Entities<E> readEntityList(QueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
@@ -107,7 +102,6 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         Entities<E> cached = getEntities(query.getEntityClass());
         return cached.readEntityList(query);
     }
-
 
     public <E extends Entity> E readEntity(QueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
@@ -122,7 +116,6 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         return cached.readPlate(query);
     }
 
-
     public <E extends Entity, F> F readField(QueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());
@@ -135,13 +128,11 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         return cached.insert(query, transaction);
     }
 
-
     public <E extends Entity> E insert(QueryInsert<E> query, Propagation propagation) {
         if (!(this instanceof TransactionalTarget)) throw new TargetUntransactional(this);
         Entities<E> cached = getEntities(query.getEntityClass());
         return handleTransactionalTarget((TransactionalTarget) cached, propagation, (target, transaction) -> target.insert(query, transaction));
     }
-
 
     public <E extends Entity> int update(QueryUpdate<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.UPDATE);
@@ -157,7 +148,15 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
     public <E extends Entity, F> List<F> readFieldList(QueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());
-        return cached.readFieldList(query);
+        if (query.getJoins().isEmpty()){
+            return cached.readFieldList(query);
+        }else{
+            EntitiesJoined entitiesJoined=new EntitiesJoined(this,cached,query);
+            List<Plate> plates=entitiesJoined.toPlates();
+            Column col=query.getFields().get(0).getColumn();
+            return (List<F>)plates.stream().map(p->p.getValue(col)).collect(Collectors.toList());
+        }
+
     }
 
     public Plates readPlateList(QueryPlate query) {
@@ -177,13 +176,10 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         return handleTransactionalTarget((TransactionalTarget) cached, propagation, (target, transaction) -> target.delete(query, transaction));
     }
 
-
     @Override
     public List<Entity> getTables() {
-        List<Entity> tables = new ArrayList<>();
-        return tables;
+        return new ArrayList<>();
     }
-
 
     public Map<Class<? extends Entity>, Entities<? extends Entity>> getStorage() {
         return storage;
@@ -202,7 +198,6 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
             getStorage().put(e.getEntityClass(), e);
         }
     }
-
 
     @Override
     public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {

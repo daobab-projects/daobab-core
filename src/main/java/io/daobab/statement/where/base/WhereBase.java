@@ -18,7 +18,6 @@ import java.util.*;
  */
 public abstract class WhereBase {
 
-
     protected static final String WRAPPER = "WRAPPER";
     protected static final String KEY = "key";
     protected static final String VALUE = "value";
@@ -36,10 +35,10 @@ public abstract class WhereBase {
     public boolean startsFromPK(){
         return optimisation_wage>0&&optimisation_wage<200;
     }
-    public static Where fromRemote(Target target, Map<String, Object> map) {
+    public static Where<?> fromRemote(Target target, Map<String, Object> map) {
         if (map == null || map.isEmpty()) return null; //TODO: Exception
 
-        Where rv;
+        Where<?> rv;
         String rel = (String) map.get(DictRemoteKey.REL_BETWEEN_EXPRESSIONS);
         if (AND.equals(rel)) {
             rv = new WhereAnd();
@@ -50,7 +49,6 @@ public abstract class WhereBase {
         } else {
             return null;//TODO: Exception
         }
-
 
         boolean endofconditions = false;
 
@@ -84,11 +82,8 @@ public abstract class WhereBase {
             }
 
             rv.setCounter(rv.getCounter() + 1);
-
         }
-
         return rv;
-
     }
 
     protected void put(String key, Object value) {
@@ -107,8 +102,8 @@ public abstract class WhereBase {
         return (Column<?, ?, ?>) getWhereMap().get(KEY + pointer);
     }
 
-    public Where getInnerWhere(int pointer) {
-        return (Where) getWhereMap().get(WRAPPER + pointer);
+    public Where<?> getInnerWhere(int pointer) {
+        return (Where<?>) getWhereMap().get(WRAPPER + pointer);
     }
 
     public Object getValueForPointer(int pointer) {
@@ -125,18 +120,14 @@ public abstract class WhereBase {
 
     public abstract String getRelationBetweenExpressions();
 
-    public <W extends WhereBase> W clone(W from, W to) {
+    public static <W extends WhereBase> W clone(W from, W to) {
         if (from == null || to == null) {
             return null;
         }
         to.setCounter(from.getCounter());
-
-        Map<String, Object> whereMap = new HashMap<>();
-        whereMap.putAll(from.getWhereMap());
-        to.setWhereMap(whereMap);
+        to.setWhereMap(new HashMap<>(from.getWhereMap()));
         return to;
     }
-
 
     public Map<String, Object> getWhereMap() {
         return whereMap;
@@ -156,7 +147,7 @@ public abstract class WhereBase {
             } else if (val instanceof Column) {
                 rv.put(key, Marschaller.marschallColumnToString((Column) val));
             } else if (val instanceof Where) {
-                rv.put(key, ((Where) val).toMap());
+                rv.put(key, ((Where<?>) val).toMap());
             } else {
                 rv.put(key, val);
             }
@@ -188,8 +179,7 @@ public abstract class WhereBase {
 
         SortedSet<Long> keys = new TreeSet<>(map.keySet());
         int counter = 1;
-        Map<String, Object> oldmap = new HashMap<>();
-        oldmap.putAll(getWhereMap());
+        Map<String, Object> oldmap = new HashMap<>(getWhereMap());
         getWhereMap().clear();
         for (Long key : keys) {
             for (Integer value:map.get(key)){
@@ -198,7 +188,7 @@ public abstract class WhereBase {
 
                 Object w = oldmap.get(WRAPPER + value);
                 if (w != null) {
-                    Where where = ((Where) w);
+                    Where<?> where = ((Where<?>) w);
                     where.optimize();
                     getWhereMap().put(WRAPPER + counter, where);
                 }
@@ -212,16 +202,43 @@ public abstract class WhereBase {
                 Object m = oldmap.get(MAY_BE_INDEXED_IN_BUFFER + value);
                 if (m != null) getWhereMap().put(MAY_BE_INDEXED_IN_BUFFER + counter, m);
 
-
                 counter++;
             }
-
         }
-
         optimisation_wage=Collections.min(map.keySet());
-
     }
 
+    public static <W extends Where>  Where<W> get(Where<W> where,int key){
 
+     where.getWhereMap().remove(WRAPPER+key);
+     where.getWhereMap().remove(KEY+key);
+     where.getWhereMap().remove(VALUE+key);
+     where.getWhereMap().remove(RELATION+key);
+     return where;
+    }
+    public <W extends Where> W add(Object wrapper,Object key,Object val,Object relation){
+
+        boolean increaseCounter=false;
+        if (key!=null){
+            getWhereMap().put(KEY+2,key);
+            increaseCounter=true;
+        }
+        if (val!=null){
+            getWhereMap().put(VALUE+2,val);
+            increaseCounter=true;
+        }
+        if (wrapper!=null){
+            getWhereMap().put(WRAPPER+2,wrapper);
+            increaseCounter=true;
+        }
+        if (relation!=null){
+            getWhereMap().put(RELATION+2,relation);
+            increaseCounter=true;
+        }
+        if (increaseCounter){
+            setCounter(getCounter()+1);
+        }
+        return (W)this;
+    }
 
 }

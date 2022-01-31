@@ -7,8 +7,12 @@ import io.daobab.query.base.Query;
 import io.daobab.target.QueryReceiver;
 import io.daobab.target.QueryTarget;
 import io.daobab.target.Target;
+import io.daobab.target.multi.AboveMultiEntityTarget;
+import io.daobab.target.multi.MultiEntityTarget;
+import io.daobab.target.multi.SimpleMulti;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -32,12 +36,6 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
         return new EntityByteBuffer<>(this);
     }
 
-    @Override
-    default void forEach(Consumer<? super E> consumer) {
-        if (consumer == null) throw new NullConsumer();
-        findMany().forEach(consumer);
-    }
-
     Entities<E> copy();
 
     Entities<E> clone();
@@ -47,5 +45,14 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
     void refreshImmediately();
 
     List<E> filter(Query<E, ?> query);
+
+    default MultiEntityTarget joinEntities(Entities<? extends Entity>... targets){
+        List<Entities<? extends Entity>> list=new ArrayList<>();
+        list.add(this);
+        for (Entities<? extends Entity> e:targets){
+            list.add(e);
+        }
+        return new SimpleMulti(list);
+    }
 
 }

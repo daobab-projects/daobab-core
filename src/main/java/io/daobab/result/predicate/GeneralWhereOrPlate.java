@@ -1,5 +1,6 @@
 package io.daobab.result.predicate;
 
+import io.daobab.model.Column;
 import io.daobab.model.Plate;
 import io.daobab.statement.where.base.Where;
 
@@ -14,7 +15,14 @@ public class GeneralWhereOrPlate<P extends Plate> extends GeneralWhereAndPlate<P
 
         for (int i = 0; i < keys.size(); i++) {
 
-            Object valueFromEntity = projection.getValue(keys.get(i));
+            Column column=keys.get(i);
+
+            if (column==null){
+                if (predicates.get(i).test(projection)) return true;
+                continue;
+            }
+
+            Object valueFromEntity = projection.getValue(column);
 
             //if at least one record into OR clause is true, entity is matched
             if (predicates.get(i).test(valueFromEntity)) return true;

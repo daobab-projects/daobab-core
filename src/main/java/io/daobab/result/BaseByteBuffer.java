@@ -427,7 +427,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements QueryTarge
 
             skipSteps.add(counter);
             //if Where has a second Where inside...
-            Where innerWhere = wrapper.getInnerWhere(counter);
+            Where<?> innerWhere = wrapper.getInnerWhere(counter);
             if (innerWhere != null) {
                 ResultBitBufferPositionWithSkipStepsWrapper pks = filterUsingIndexes(entitiesToHandle, innerWhere);
 

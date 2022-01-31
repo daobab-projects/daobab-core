@@ -21,12 +21,12 @@ import static io.daobab.statement.condition.Operator.*;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings({"unchecked","rawtypes"})
 public abstract class Where<W extends Where> extends WhereBase {
 
     public boolean isEmpty() {
         return this.getCounter() == 1;
     }
-
 
     public final W ifTrue(boolean enabled, UnaryOperator<W> condition) {
         if (enabled) {
@@ -42,14 +42,13 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W) this;
     }
 
-    public final <X> W ifElse(boolean enabled, X val, UnaryOperator<W> ifTrue, UnaryOperator<W> ifFalse) {
+    public final <X> W ifElse(boolean enabled, UnaryOperator<W> ifTrue, UnaryOperator<W> ifFalse) {
         if (enabled) {
             return ifTrue.apply((W) this);
         } else {
             return ifFalse.apply((W) this);
         }
     }
-
 
     public final <X> W ifTrue(Predicate<X> predicate, X val, UnaryOperator<W> condition) {
         if (predicate.test(val)) {
@@ -214,6 +213,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         tempColField(column, IN, val);
         return (W)this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W notInFields(Field<E, F, R> column, Collection<F> val) {
         tempColField(column, NOT_IN, val);
         return (W)this;
@@ -584,12 +584,6 @@ public abstract class Where<W extends Where> extends WhereBase {
         setCounter(getCounter() + 1);
     }
 
-
-//    protected <F, R extends EntityRelation> void temp(Field<?, F, R> column, Operator operator, InnerQueryField<?, ?> select) {
-//        if (column == null) throw new ColumnMandatory();
-//        putKeyMandatoryRelationValue(column, operator, select.innerResult());
-//    }
-
     private <F, R extends EntityRelation> void temp(Field<?, F, R> column, Operator operator, InnerQueryField<? extends R, F> select) {
         if (column == null) throw new ColumnMandatory();
         if (operator == null) throw new NullOperator();
@@ -599,11 +593,6 @@ public abstract class Where<W extends Where> extends WhereBase {
         put(RELATION + getCounter(), operator);
         setCounter(getCounter() + 1);
     }
-
-//    protected <F, R extends EntityRelation> void temp(Field<?, F, R> column, InnerQueryField<?, ?> select) {
-//        temp(column, Operator.EQ, select);
-//    }
-
 
     private void putKeyMandatoryRelationValue(Object key, Object relation, Object value) {
         if (relation == null) throw new NullOperator();

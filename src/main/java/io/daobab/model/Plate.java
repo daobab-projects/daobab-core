@@ -33,6 +33,13 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
             setValue(c, rowResults[i]);
         }
     }
+    public Plate(Entity entity) {
+        this.fields = entity.columns();
+        for (int i = 0; i < fields.size(); i++) {
+            TableColumn c = fields.get(i);
+            setValue(c,c.getColumn().getValue((EntityRelation)entity));
+        }
+    }
 
     public Plate(List<TableColumn> fields) {
         if (fields == null || fields.isEmpty()) {

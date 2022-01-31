@@ -14,45 +14,42 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings({"unchecked","rawtypes"})
 public class JoinWrapper<E extends Entity> {
 
     private JoinType type;
     private Column<?, ?, ?> byColumn;
     private Column<?, ?, ?> byColumn2;
     private E table;
-
     private Where where;
 
-    //TODO: kurcze czy te komulny nie powinny byc na odwrót?
-    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType join, Column<E, F, R> table, Column<E1, F, R> byColumn) {
-        setType(join);
-        setByColumn(byColumn);
-        setTable(table.getInstance());
+    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type, Column<E, F, R> leftColumn, Column<E1, F, R> rightColumn) {
+        setType(type);
+        setByColumn(rightColumn);
+        setTable(leftColumn.getInstance());
 
         WhereAnd wh = new WhereAnd();
-        wh.equal(table, byColumn);
+        wh.equal(leftColumn, rightColumn);
         setWhere(wh);
     }
 
-    public <E1 extends Entity, E2 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType join,Column<?, ?, ?> one, Column<?,?, ?> two, boolean mark) {
-        setType(join);
-        setByColumn(one);
-        setByColumn2(two);
-        setTable((E)one.getInstance());
+    public <E1 extends Entity, E2 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type,Column<?, ?, ?> leftColumn, Column<?,?, ?> rightColumn, boolean mark) {
+        setType(type);
+        setByColumn(leftColumn);
+        setByColumn2(rightColumn);
+        setTable((E)leftColumn.getInstance());
 
         WhereAnd wh = new WhereAnd();
         wh.equalColumn( (Column<?, F, ?>)byColumn, (Column<?, F, ?>)byColumn2);
         setWhere(wh);
     }
 
-
-    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType join, Column<E, F, R> table, Column<E1, F, R> byColumn, Where where) {
-        setType(join);
+    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type, Column<E, F, R> table, Column<E1, F, R> byColumn, Where where) {
+        setType(type);
         setByColumn(byColumn);
         setTable(table.getInstance());
         setWhere(where);
     }
-
 
     public JoinWrapper(JoinType join, E table, Where where) {
         setType(join);
@@ -60,10 +57,9 @@ public class JoinWrapper<E extends Entity> {
         setWhere(where);
     }
 
-
-    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType join, E table, Column<E1, F, R> byColumn) {
+    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type, E table, Column<E1, F, R> byColumn) {
         //TODO: NPE
-        setType(join);
+        setType(type);
         setByColumn(byColumn);
         setTable(table);
 
@@ -72,10 +68,9 @@ public class JoinWrapper<E extends Entity> {
         setWhere(wh);
     }
 
-
-    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType join, E table, Column<E1, F, R> byColumn, Where where) {
+    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type, E table, Column<E1, F, R> byColumn, Where where) {
         //TODO: NPE
-        setType(join);
+        setType(type);
         setByColumn(byColumn);
         setTable(table);
 
@@ -85,9 +80,9 @@ public class JoinWrapper<E extends Entity> {
         setWhere(wh);
     }
 
-    public JoinWrapper(JoinType join, Edge e) {
+    public JoinWrapper(JoinType type, Edge e) {
         //TODO: NPE
-        setType(join);
+        setType(type);
         setByColumn(e.getColumn());
         setTable((E) e.getToNode());
 
@@ -114,7 +109,6 @@ public class JoinWrapper<E extends Entity> {
     public void setByColumn2(Column<?, ?, ?> byColumn) {
         this.byColumn2 = byColumn;
     }
-
     public E getTable() {
         return table;
     }
@@ -122,8 +116,6 @@ public class JoinWrapper<E extends Entity> {
     public void setTable(E table) {
         this.table = table;
     }
-
-
 
     public Where getWhere() {
         return where;

@@ -35,6 +35,7 @@ public class ImageGenerator implements MetaDataTables {
                 .select(tabMetaSchema)
                 .where(and()
                         .ifTrue(catalog != null, w -> w.equal(tabMetaSchema.colCatalogName(), catalog)))
+                .findMany()
                 .forEach(schema -> generateTables(dataBaseMetaData, catalog, schema));
 
     }

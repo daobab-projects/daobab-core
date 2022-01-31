@@ -35,11 +35,6 @@ public interface EntitiesProvider<E extends Entity> {
         return findFirst().orElse(null);
     }
 
-    default void forEach(Consumer<? super E> consumer) {
-        if (consumer == null) throw new NullConsumer();
-        findMany().forEach(consumer);
-    }
-
     default <M> FieldsProvider<M> map(Function<? super E, M> mapper) {
         if (mapper == null) throw new NullFunction();
         Entities<E> res = findMany();
