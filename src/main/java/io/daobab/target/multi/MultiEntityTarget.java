@@ -122,16 +122,34 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         }
     }
 
+    @SuppressWarnings("java:S1168")
     public Plate readPlate(QueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         Entities<?> cached = getEntities(query.getEntityClass());
-        return cached.readPlate(query);
+        if (query.getJoins().isEmpty()){
+            return cached.readPlate(query);
+        }else{
+            Plates plates=makeJoinJob(query,cached);
+            if (plates.isEmpty()){
+                return null;
+            }
+            return plates.readPlate(query);
+        }
     }
 
     public <E extends Entity, F> F readField(QueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());
-        return cached.readField(query);
+        if (query.getJoins().isEmpty()){
+            return cached.readField(query);
+        }else{
+            Plates plates=makeJoinJob(query,cached);
+            if (plates.isEmpty()){
+                return null;
+            }
+            Column<?,?,?> col=query.getFields().get(0).getColumn();
+            return (F)plates.get(0).getValue(col);
+        }
     }
 
     public <E extends Entity> E insert(QueryInsert<E> query, boolean transaction) {
@@ -183,10 +201,8 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
     @SuppressWarnings("unchecked")
     private PlateBuffer makeJoinJob(Query<?,?> query,List<? extends ColumnsProvider> entities){
         EntitiesJoined entitiesJoined=new EntitiesJoined(this,entities,query);
-        List<Plate> plates=entitiesJoined.toPlates();
-        PlateBuffer plateBuffer=new PlateBuffer(plates);
 
-        PlateBuffer matched = new PlateBuffer(PlateBufferIndexed.finalFilter(plateBuffer,query));
+        PlateBuffer matched = new PlateBuffer(PlateBufferIndexed.finalFilter(entitiesJoined.toPlates(),query));
         if (matched.isEmpty()){
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return new PlateBuffer();
