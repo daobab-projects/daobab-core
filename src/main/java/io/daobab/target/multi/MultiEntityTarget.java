@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
@@ -76,17 +75,16 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
 
     @Override
     public <E extends Entity> boolean isRegistered(Class<E> entityClass) {
-        if (!isRegistered(entityClass)) {
-            throw new DaobabException(String.format("Entity %s is not registered into %s. Register entity or put related collection into.", entityClass.getName(), this.getClass().getName()));
-        }
         return storage.containsKey(entityClass);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> Entities<E> getEntities(E entity) {
         return (Entities<E>) getStorage().get(entity.getClass());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> Entities<E> getEntities(Class<E> entityClazz) {
         return (Entities<E>) getStorage().get(entityClazz);
@@ -137,6 +135,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, QueryT
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <E extends Entity, F> F readField(QueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());

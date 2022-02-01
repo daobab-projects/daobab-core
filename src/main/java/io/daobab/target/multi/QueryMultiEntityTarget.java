@@ -12,6 +12,7 @@ public class QueryMultiEntityTarget extends MultiEntityTarget implements QueryMu
 
     protected final Map<Class<? extends Entity>, QueryEntity<? extends Entity>> refreshQueries = new HashMap<>();
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> void refresh(Class<E> entityClazz) {
         try {

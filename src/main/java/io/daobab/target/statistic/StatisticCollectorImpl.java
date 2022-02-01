@@ -78,12 +78,12 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
     @Override
     public void error(Query<?, ?> query, Throwable result) {
         boolean daobabException = result instanceof DaobabException;
-        String couse="";
+        String cause="";
         if (daobabException) {
             DaobabException daobabException1 = (DaobabException) result;
-            couse = daobabException1.getStatusDesc();
+            cause = daobabException1.getStatusDesc();
         }else{
-            couse = result.getMessage();
+            cause = result.getMessage();
         }
         StatisticRecord statisticRecord = get(query.getIdentifier());
         if (statisticRecord == null) {
@@ -91,7 +91,7 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
             put(query.getIdentifier(), statisticRecord);
         }
         statisticRecord.setStatus(CallStatus.ERROR)
-                .setErrorDesc(couse);
+                .setErrorDesc(cause);
         long executionTime = getExecutionTime(statisticRecord);
         if (executionTime < ignoreBelowMilliseconds) {
             remove(query.getIdentifier());

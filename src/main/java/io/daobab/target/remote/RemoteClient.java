@@ -61,6 +61,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         return log;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> Entities<E> readEntityList(QueryEntity<E> query) {
         ResponseWrapper response = callEndpoint(query, false);
@@ -83,6 +84,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> E readEntity(QueryEntity<E> query) {
         ResponseWrapper response = callEndpoint(query, true);
@@ -99,6 +101,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity, F> F readField(QueryField<E, F> query) {
         ResponseWrapper response = callEndpoint(query, true);
@@ -108,6 +111,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         return (F) response.getContent();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity, F> List<F> readFieldList(QueryField<E, F> query) {
         ResponseWrapper response = callEndpoint(query, false);
@@ -117,6 +121,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         return (List<F>) response.getContent();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public PlateBuffer readPlateList(QueryPlate query) {
         ResponseWrapper response = callEndpoint(query, false);
@@ -136,9 +141,9 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         } catch (Exception e) {
             throw new RemoteReadingException(e);
         }
-
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Plate readPlate(QueryPlate query) {
         ResponseWrapper response = callEndpoint(query, true);
@@ -154,7 +159,6 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         }
     }
 
-
     @Override
     public <E extends Entity> int delete(QueryDelete<E> query, boolean transaction) {
         if (!transaction) throw new RemoteTargetCanNotHandleOpenedTransactionException();
@@ -168,7 +172,6 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
             throw new RemoteReadingException(e);
         }
     }
-
 
     @Override
     public <E extends Entity> int update(QueryUpdate<E> query, boolean transaction) {
@@ -184,7 +187,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         }
     }
 
-
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> E insert(QueryInsert<E> query, boolean transaction) {
         if (!transaction) throw new RemoteTargetCanNotHandleOpenedTransactionException();

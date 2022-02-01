@@ -183,7 +183,6 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
                 sb.append(values);
                 sb.append(") ");
             }
-
         }
 
         if (select) {
@@ -236,6 +235,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return false;
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     default <E extends Entity> String toSqlQuery(Query<E, ?> base, IdentifierStorage storage) {
         StringBuilder sb = new StringBuilder();
 
@@ -564,6 +564,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return sb;
     }
 
+    @SuppressWarnings("rawtypes")
     default StringBuilder countToExpression(Count count, String daoidentifier) {
         StringBuilder sb = new StringBuilder();
         if (count.getCounter() == 1) {
@@ -591,7 +592,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
                 if (field==null){
                     sb.append(daoidentifier);
                 }else if (field instanceof Column){
-                    sb.append(daoidentifier + DOT);
+                    sb.append(daoidentifier).append(DOT);
                     sb.append(((Column)field).getColumnName());
                 }else{
                     sb.append(field);
@@ -605,6 +606,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return sb;
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     default StringBuilder whereToExpression(Where where, IdentifierStorage storage) {
         StringBuilder sb = new StringBuilder();
         String databaseengine = getDataBaseProductName();
@@ -648,7 +650,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
                 sb.append(storage.getIdentifierForColumn((Column<?, ?, ?>) value));
             } else if (value instanceof Where) {
                 Where wr = (Where) value;
-                sb.append(SPACE_OPEN_BRACKET + whereToExpression(wr, storage) + CLOSED_BRACKET);
+                sb.append(SPACE_OPEN_BRACKET).append(whereToExpression(wr, storage)).append(CLOSED_BRACKET);
             } else if (value instanceof InnerSelectManyEntities) {
                 InnerSelectManyEntities<?> wr = (InnerSelectManyEntities<?>) value;
                 sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
@@ -679,6 +681,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return sb;
     }
 
+    @SuppressWarnings("rawtypes")
     default StringBuilder appendKey(IdentifierStorage storage, Column<Entity, Object, EntityRelation> keyFromWrapper, String databaseengine) {
         StringBuilder sb=new StringBuilder();
         if (keyFromWrapper instanceof ColumnFunction) {
@@ -690,6 +693,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return sb;
     }
 
+    @SuppressWarnings("rawtypes")
     default StringBuilder appendKey(IdentifierStorage storage, Column<Entity, Object, EntityRelation> keyFromWrapper, String databaseengine,Operator relation) {
         StringBuilder sb=appendKey(storage,keyFromWrapper,databaseengine);
         sb.append(relation);
@@ -738,7 +742,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
     }
 
 
-    @SuppressWarnings({"java:S1872", "java:S3740"})
+    @SuppressWarnings({"rawtypes","unchecked","java:S1872", "java:S3740"})
     default StringBuilder columnFunctionToExpression(ColumnFunction columnFunction, IdentifierStorage storage, boolean internalfunction) {
 
         if (columnFunction.getClass().getName().equals(CastColumnRelation.class.getName())) {
@@ -802,6 +806,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return sb;
     }
 
+    @SuppressWarnings("rawtypes")
     default <E extends Entity, F, R extends EntityRelation> StringBuilder toColumnFunctionQueryExpression(Column<E, F, R> column, String stringIdentifier, IdentifierStorage storage, String mode, Map<String,Object> params) {
         StringBuilder sb = new StringBuilder();
         sb.append(mode).append(OPEN_BRACKET);
@@ -911,6 +916,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return sb;
     }
 
+    @SuppressWarnings("rawtypes")
     default StringBuilder objectToSomeInFunctions(Object secondColumn,IdentifierStorage storage){
         StringBuilder sb=new StringBuilder();
         if (secondColumn!=null){
@@ -939,6 +945,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return sb;
     }
 
+    @SuppressWarnings("rawtypes")
     default <E extends Entity, F, R extends EntityRelation> StringBuilder toCastColumnRelationQueryExpression(Column<E, F, R> column, IdentifierStorage storage, String mode, CastType type) {
         StringBuilder sb = new StringBuilder();
         sb.append(mode).append(OPEN_BRACKET);
@@ -952,6 +959,7 @@ public interface SqlQueryResolver extends QueryConsumer, DataBaseTargetLogic {
         return sb;
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     default <E extends Entity, F, R extends EntityRelation> StringBuilder toManyArgumentsFunctionQueryExpression(Column<E, F, R> column, IdentifierStorage storage,  String mode) {
         StringBuilder sb = new StringBuilder();
         sb.append(mode).append(OPEN_BRACKET);

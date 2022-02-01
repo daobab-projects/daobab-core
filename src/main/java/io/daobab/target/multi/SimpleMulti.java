@@ -2,7 +2,6 @@ package io.daobab.target.multi;
 
 import io.daobab.model.Entity;
 import io.daobab.result.Entities;
-import io.daobab.target.Target;
 
 import java.util.List;
 

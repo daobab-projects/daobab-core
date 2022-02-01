@@ -28,7 +28,7 @@ public class Endpoint {
             boolean singleResult = (boolean) query.get(DictRemoteKey.SINGLE_RESULT);
 
             if (QueryEntity.class.getName().equals(queryclass)) {
-                QueryEntity q = new QueryEntity<>(exposedTarget, query);
+                QueryEntity<?> q = new QueryEntity<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.validateEntityAllowedFor(q.getEntityName(), OperationType.READ);
                     protector.removeViolatedInfoColumns3(q.getFields(), OperationType.READ);
@@ -36,7 +36,7 @@ public class Endpoint {
                 r.setContent(singleResult ? exposedTarget.readEntity(q) : exposedTarget.readEntityList(q));
 
             } else if (QueryField.class.getName().equals(queryclass)) {
-                QueryField q = new QueryField<>(exposedTarget, query);
+                QueryField<?,?> q = new QueryField<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.removeViolatedInfoColumns3(q.getFields(), OperationType.READ);
                 }

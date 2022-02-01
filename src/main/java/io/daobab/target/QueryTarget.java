@@ -54,6 +54,7 @@ public interface QueryTarget extends Target, QueryReceiver {
         return new QueryUpdate<>(this, sf);
     }
 
+    @SuppressWarnings("unchecked")
     default <E extends Entity> QueryUpdate<E> update(SetField... sets) {
         SetFields sfs = null;
 

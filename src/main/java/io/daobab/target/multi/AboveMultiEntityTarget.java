@@ -31,6 +31,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
 
     protected abstract QueryTarget getSourceTarget();
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> void refresh(Class<E> entityClazz) {
         try {
@@ -42,6 +43,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> Entities<E> getEntities(E entity) {
         Entities<E> cached = (Entities<E>) getStorage().get(entity.getClass());
@@ -60,7 +62,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return cached;
     }
 
-
+    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> Entities<E> getEntities(Class<E> entityClazz) {
         Entities<E> cached = (Entities<E>) getStorage().get(entityClazz);
@@ -79,6 +81,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return cached;
     }
 
+    @Override
     public <E extends Entity> E insert(QueryInsert<E> query, boolean transaction) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
@@ -87,6 +90,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return super.insert(query, transaction);
     }
 
+    @Override
     public <E extends Entity> E insert(QueryInsert<E> query, Propagation propagation) {
         if (!(this instanceof TransactionalTarget)) throw new TargetUntransactional(this);
         if (isPropagateModifications()) {
@@ -96,7 +100,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return super.insert(query, propagation);
     }
 
-
+    @Override
     public <E extends Entity> int update(QueryUpdate<E> query, boolean transaction) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
@@ -105,6 +109,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return super.update(query, transaction);
     }
 
+    @Override
     public <E extends Entity> int update(QueryUpdate<E> query, Propagation propagation) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
@@ -113,6 +118,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return super.update(query, propagation);
     }
 
+    @Override
     public <E extends Entity> int delete(QueryDelete<E> query, boolean transaction) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
@@ -121,6 +127,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return super.delete(query, transaction);
     }
 
+    @Override
     public <E extends Entity> int delete(QueryDelete<E> query, Propagation propagation) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
@@ -134,24 +141,6 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
         return getSourceTarget().getTables();
     }
-
-//    @Override
-//    public void refreshAll() {
-//        getStorage().keySet().forEach(this::refresh);
-//    }
-
-//    @Override
-//    public <E extends Entity> void setRefreshQuery(QueryEntity<E> refreshQuery) {
-//        if (refreshQuery == null) return;
-//        Class<E> entityClass = refreshQuery.getEntityClass();
-//        refreshQueries.put(entityClass, refreshQuery);
-//    }
-
-//    public <E extends Entity> void register(QueryEntity<E> refreshQuery) {
-//        if (refreshQuery == null) return;
-//        refreshQueries.put(refreshQuery.getEntityClass(), refreshQuery);
-//        getStorage().put(refreshQuery.getEntityClass(), refreshQuery.findMany());
-//    }
 
     public boolean isPropagateModifications() {
         return propagateModifications;

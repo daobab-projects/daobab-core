@@ -13,6 +13,7 @@ public class BasicAccessProtector implements AccessProtector {
     private boolean enabled = false;
 
     private final Map<String, Set<Access>> entityRights = new HashMap<>();
+    @SuppressWarnings("rawtypes")
     private final Map<Column, Set<Access>> columnRights = new HashMap<>();
 
     @Override
@@ -33,6 +34,7 @@ public class BasicAccessProtector implements AccessProtector {
         return this;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public AccessProtector setColumnAccess(Column column, Access... accessRights) {
         Set<Access> ar = new HashSet<>();
@@ -66,6 +68,7 @@ public class BasicAccessProtector implements AccessProtector {
         return this;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public AccessProtector setColumnAccess(Access accessRights, Column... columns) {
         if (accessRights == null || columns == null) return this;
@@ -105,6 +108,7 @@ public class BasicAccessProtector implements AccessProtector {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<Column> removeViolatedColumns(List<Column> src, OperationType operation) {
         if (!isEnabled()) return src;
@@ -140,6 +144,7 @@ public class BasicAccessProtector implements AccessProtector {
         return src;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void validateColumnAllowedFor(Column column, OperationType operation) {
         if (isEnabled() && !isColumnAllowedFor(column, operation)) {
@@ -158,6 +163,7 @@ public class BasicAccessProtector implements AccessProtector {
         return OperationType.isAllowed(operation, getDefaultStrategy(), entityRights.get(entityName));
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean isColumnAllowedFor(Column column, OperationType operation) {
         if (!isEnabled()) return true;
