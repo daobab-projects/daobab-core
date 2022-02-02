@@ -1,7 +1,7 @@
 package io.daobab.target.database;
 
-import io.daobab.result.Entities;
-import io.daobab.target.meta.table.*;
+import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.database.meta.table.*;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021

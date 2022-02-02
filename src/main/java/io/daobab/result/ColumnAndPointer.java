@@ -4,8 +4,8 @@ import io.daobab.model.Column;
 
 class ColumnAndPointer {
 
-    private Column column;
-    private int pointer;
+    private final Column column;
+    private final int pointer;
 
     public ColumnAndPointer(Column column,int pointer){
         this.column=column;

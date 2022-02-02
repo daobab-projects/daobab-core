@@ -10,10 +10,12 @@ import java.util.*;
 
 public class IndexBoolean<E extends Entity,F extends Boolean> extends Index<E,F>{
 
+    @SuppressWarnings("rawtypes")
     private IndexBoolean(Column<E, ?, EntityRelation> indexedColumn, Map<F, List<E>> oneToManySubMap, List<E> nullValuesAsPK) {
         super(indexedColumn,oneToManySubMap,nullValuesAsPK);
     }
 
+    @SuppressWarnings("rawtypes")
     public IndexBoolean(Column<E, ?, EntityRelation> indexedColumn, EntitiesBufferIndexed<E> buffer){
         super(indexedColumn,buffer);
     }

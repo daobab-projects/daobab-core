@@ -7,7 +7,7 @@ import io.daobab.statement.join.JoinType;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
-import io.daobab.target.QueryTarget;
+import io.daobab.target.Target;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,9 +22,11 @@ public interface QueryJoin<Q extends Query> {
 
     void setJoins(List<JoinWrapper> joins);
 
-    QueryTarget getTarget();
+    Target getTarget();
 
     String getEntityName();
+
+    Q smartJoins();
 
     /**
      * Inner Join tables by their ForeignKey

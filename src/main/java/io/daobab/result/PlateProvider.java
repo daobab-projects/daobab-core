@@ -2,6 +2,7 @@ package io.daobab.result;
 
 import io.daobab.error.NullFunction;
 import io.daobab.model.Plate;
+import io.daobab.target.buffer.single.Plates;
 
 import java.util.LinkedList;
 import java.util.List;

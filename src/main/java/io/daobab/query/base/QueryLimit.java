@@ -10,7 +10,6 @@ public interface QueryLimit<Q extends Query> {
 
     void setTempLimit(Limit limit);
 
-
     default Q setLimit(Limit limit) {
         setTempLimit(limit);
         return (Q) this;

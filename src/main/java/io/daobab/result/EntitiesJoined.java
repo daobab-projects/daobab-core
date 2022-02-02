@@ -8,7 +8,7 @@ import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
 import io.daobab.statement.where.base.WhereBase;
-import io.daobab.target.multi.MultiEntityTarget;
+import io.daobab.target.buffer.multi.MultiEntityTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
     private final MultiEntityTarget target;
     private final List<List<Plate>> rows;
 
-    public EntitiesJoined(MultiEntityTarget target, List<? extends ColumnsProvider> columnsProviders, Query<?, ?> query) {
+    public EntitiesJoined(MultiEntityTarget target, List<? extends ColumnsProvider> columnsProviders, Query<?,?,?> query) {
         this.target = target;
         rows = new ArrayList<>(columnsProviders.size());
         columnsProviders.forEach(entity -> {
@@ -55,7 +55,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
     }
 
     @SuppressWarnings({"rawtypes","unchecked"})
-    private void join(Query<?, ?> query) {
+    private void join(Query<?,?,?> query) {
         List<JoinWrapper> joins = query.getJoins();
 
         for (JoinWrapper join : joins) {

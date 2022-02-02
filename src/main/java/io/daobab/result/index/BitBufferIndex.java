@@ -2,7 +2,7 @@ package io.daobab.result.index;
 
 import io.daobab.model.Column;
 import io.daobab.model.EntityRelation;
-import io.daobab.result.BaseByteBuffer;
+import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
 import io.daobab.statement.condition.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

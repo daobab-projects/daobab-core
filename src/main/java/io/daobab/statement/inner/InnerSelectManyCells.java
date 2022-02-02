@@ -1,7 +1,7 @@
 package io.daobab.statement.inner;
 
 import io.daobab.model.Entity;
-import io.daobab.query.QueryField;
+import io.daobab.target.database.query.DataBaseQueryField;
 import io.daobab.query.base.QueryExpressionProvider;
 import io.daobab.result.FieldsProvider;
 
@@ -13,38 +13,32 @@ import java.util.Optional;
  */
 public class InnerSelectManyCells<E extends Entity, F> implements QueryExpressionProvider, FieldsProvider<F> {
 
-    private QueryField<E, F> select;
+    private DataBaseQueryField<E, F> select;
+    private List<F> bufferedResults = null;
 
-    private List<F> cachedResults = null;
-
-
-    public InnerSelectManyCells(QueryField<E, F> sel) {
-        setSelect(sel);
+    public InnerSelectManyCells(DataBaseQueryField<E, F> queryField) {
+        setSelect(queryField);
     }
 
-    public InnerSelectManyCells(List<F> res) {
-        cachedResults = res;
+    public InnerSelectManyCells(List<F> results) {
+        bufferedResults = results;
     }
 
-    public QueryField<E, F> getSelect() {
+    public DataBaseQueryField<E, F> getSelect() {
         return select;
     }
 
-    private void setSelect(QueryField<E, F> select) {
-        this.select = select;
+    private void setSelect(DataBaseQueryField<E, F> queryField) {
+        this.select = queryField;
     }
-
-
 
     @Override
     public List<F> findMany() {
-        if (cachedResults != null) {
-            return cachedResults;
+        if (bufferedResults != null) {
+            return bufferedResults;
         }
-        List<F> field = getSelect().findMany();
-        if (field != null) cachedResults = field;
-
-        return field;
+        bufferedResults = getSelect().findMany();
+        return bufferedResults;
     }
 
     @Override
@@ -53,16 +47,14 @@ public class InnerSelectManyCells<E extends Entity, F> implements QueryExpressio
         return many.isEmpty()?Optional.empty():Optional.of(many.get(0));
     }
 
-
-
     @Override
     public long countAny() {
-        return getSelect().countAny();
+        return findMany().size();
     }
 
     @Override
     public boolean isResultCached() {
-        return cachedResults != null;
+        return bufferedResults != null;
     }
 
 

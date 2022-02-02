@@ -26,7 +26,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
     private boolean noParameter = false;
 
     public Column<E, F, R> column;
-    public Query<E, ?> query;
+    public Query<E,?,?> query;
     public Column[] columns;
     public String mediator;
 
@@ -83,7 +83,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
             thisEntity = column.getInstance();
             this.column = column;
         } else {
-            Query<E, ?> query = (Query<E, ?>) col;
+            Query<E,?,?> query = (Query<E,?,?>) col;
             this.query = query;
             Column<E, F, R> column = (query.getFields().get(0)).getColumn();
             columnClass = (Class<C>) column.getFieldClass();
@@ -114,7 +114,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
             thisEntity = column.getInstance();
             this.column = column;
         } else {
-            Query<E, ?> query = (Query<E, ?>) col;
+            Query<E,?,?> query = (Query<E,?,?>) col;
             this.query = query;
             columnClass = functionClass;
             thisEntity = (E) dummy.getInstance();

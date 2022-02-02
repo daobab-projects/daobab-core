@@ -1,7 +1,9 @@
 package io.daobab.result;
 
-import io.daobab.query.QueryEntity;
+import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
+import io.daobab.target.buffer.query.BufferQueryEntity;
 import io.daobab.query.base.QueryWhisperer;
+import io.daobab.target.buffer.single.Entities;
 import io.daobab.test.dao.SakilaTables;
 import io.daobab.test.dao.table.Film;
 import io.daobab.test.generator.EntityBufferGenerator;
@@ -25,7 +27,7 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
     }
 
     @Test
-    public void test2() {
+    void test2() {
         EntityBufferGenerator generator = new EntityBufferGenerator();
         EntityByteBuffer<Film> buf = new EntityByteBuffer<>(tabFilm);
 
@@ -51,7 +53,7 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
         }
     }
     @Test
-    public void test() {
+    void test() {
         long start = 0;//System.currentTimeMillis();
         long stop = 0;
 
@@ -81,7 +83,7 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
 
 
         start = System.currentTimeMillis();
-        QueryEntity<Film> res = bbuf.select(tabFilm)
+        BufferQueryEntity<Film> res = bbuf.select(tabFilm)
                 .where(and().greater(tabFilm.colFilmId(), 1990000)
                         .less(tabFilm.colFilmId(), 1995000))
 //                .equal(tabFilm.colRating(),"very good"))

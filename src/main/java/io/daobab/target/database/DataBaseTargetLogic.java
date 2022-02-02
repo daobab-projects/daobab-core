@@ -3,14 +3,17 @@ package io.daobab.target.database;
 import io.daobab.error.*;
 import io.daobab.model.*;
 import io.daobab.parser.ParserNumber;
-import io.daobab.query.*;
 import io.daobab.query.base.Query;
 import io.daobab.query.base.QuerySpecialParameters;
-import io.daobab.result.Entities;
-import io.daobab.result.EntityList;
-import io.daobab.result.PlateBuffer;
-import io.daobab.target.QueryTarget;
-import io.daobab.target.meta.MetaData;
+import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.buffer.single.EntityList;
+import io.daobab.target.buffer.single.PlateBuffer;
+import io.daobab.target.database.connection.ConnectionGateway;
+import io.daobab.target.database.connection.QueryResolverTransmitter;
+import io.daobab.target.database.connection.RSReader;
+import io.daobab.target.database.query.*;
+import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
+import io.daobab.target.database.meta.MetaData;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.OperationType;
 import io.daobab.target.statistic.StatisticCollectorProvider;
@@ -30,8 +33,11 @@ import static java.lang.String.format;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, TransactionalTarget, StatisticCollectorProvider {
+public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarget, TransactionalTarget, StatisticCollectorProvider {
 
+    default OpenTransactionDataBaseTargetImpl beginTransaction(){
+        return TransactionalTarget.super.beginTransaction();
+    }
     String getDataBaseProductName();
 
     default boolean isConnectedToDatabase() {
@@ -79,7 +85,6 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         }
     }
 
-
     default Connection openConnection() {
         try {
             getLog().debug("Start getConnection");
@@ -115,7 +120,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
 
-    default <E extends Entity> int delete(QueryDelete<E> query, boolean transaction) {
+    default <E extends Entity> int delete(DataBaseQueryDelete<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.DELETE);
         if (query.getWhereWrapper() == null) {
             throw new MandatoryWhere();
@@ -143,7 +148,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
 
-    default <E extends Entity> int update(QueryUpdate<E> query, boolean transaction) {
+    default <E extends Entity> int update(DataBaseQueryUpdate<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.UPDATE);
         if (query.getWhereWrapper() == null) {
             throw new MandatoryWhere();
@@ -171,7 +176,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
     @SuppressWarnings({"java:S3740","unchecked","rawtypes"})
-    default <E extends Entity> E insert(QueryInsert<E> query, boolean transaction) {
+    default <E extends Entity> E insert(DataBaseQueryInsert<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.INSERT);
         Connection conn = null;
         PrimaryKey pk = null;
@@ -239,7 +244,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
 
 
     @Override
-    default <E extends Entity, F> F readField(QueryField<E, F> query) {
+    default <E extends Entity, F> F readField(DataBaseQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (s, conn) -> {
             if (s.getFields() == null || s.getFields().isEmpty()) {
@@ -272,7 +277,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
     @Override
-    default <E extends Entity, F> List<F> readFieldList(QueryField<E, F> query) {
+    default <E extends Entity, F> List<F> readFieldList(DataBaseQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (s, conn) -> {
 
@@ -305,7 +310,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
     @Override
-    default <E extends Entity> Entities<E> readEntityList(QueryEntity<E> query) {
+    default <E extends Entity> Entities<E> readEntityList(DataBaseQueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (s, conn) -> {
@@ -342,7 +347,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
     @Override
-    default <E extends Entity> E readEntity(QueryEntity<E> query) {
+    default <E extends Entity> E readEntity(DataBaseQueryEntity<E> query) {
 
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
@@ -386,14 +391,14 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
             conn = getConnection();
             return function.apply(functionInput, conn);
         } finally {
-            if (!(this instanceof OpenTransactionDataBaseTarget)) {
+            if (!(this instanceof OpenTransactionDataBaseTargetImpl)) {
                 ConnectionGateway.closeConnectionIfOpened(conn);
             }
         }
     }
 
 
-    default Plate readPlate(QueryPlate query) {
+    default Plate readPlate(DataBaseQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (s, conn) -> {
             PreparedStatement stmt = null;
@@ -422,7 +427,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
     }
 
     @Override
-    default PlateBuffer readPlateList(QueryPlate query) {
+    default PlateBuffer readPlateList(DataBaseQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         List<TableColumn> fields = query.getFields();
 
@@ -456,7 +461,7 @@ public interface DataBaseTargetLogic extends QueryConsumer, QueryTarget, Transac
         }
     }
 
-    default long count(Query<?, ?> query) {
+    default long count(DataBaseQueryBase<?,?> query) {
         getLog().debug("Start count ");
         Connection conn=null;
         PreparedStatement stmt=null;

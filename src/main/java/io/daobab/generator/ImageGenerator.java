@@ -3,13 +3,13 @@ package io.daobab.generator;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
-import io.daobab.result.Entities;
+import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.DaobabDataBaseMetaData;
-import io.daobab.target.meta.MetaDataTables;
-import io.daobab.target.meta.table.MetaCatalog;
-import io.daobab.target.meta.table.MetaColumn;
-import io.daobab.target.meta.table.MetaSchema;
-import io.daobab.target.meta.table.MetaTable;
+import io.daobab.target.database.meta.MetaDataTables;
+import io.daobab.target.database.meta.table.MetaCatalog;
+import io.daobab.target.database.meta.table.MetaColumn;
+import io.daobab.target.database.meta.table.MetaSchema;
+import io.daobab.target.database.meta.table.MetaTable;
 
 import java.util.List;
 

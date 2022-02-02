@@ -1,7 +1,7 @@
 package io.daobab.result.predicate;
 
-import io.daobab.result.BaseByteBuffer;
-import io.daobab.result.EntityByteBuffer;
+import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
+import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

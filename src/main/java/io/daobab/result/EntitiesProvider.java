@@ -1,13 +1,13 @@
 package io.daobab.result;
 
-import io.daobab.error.NullConsumer;
 import io.daobab.error.NullFunction;
 import io.daobab.model.Entity;
+import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
+import io.daobab.target.buffer.single.Entities;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**

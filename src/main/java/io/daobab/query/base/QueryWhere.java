@@ -1,7 +1,7 @@
 package io.daobab.query.base;
 
 import io.daobab.model.*;
-import io.daobab.result.Entities;
+import io.daobab.target.buffer.single.Entities;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.statement.where.WhereAnd;

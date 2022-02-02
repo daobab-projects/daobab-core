@@ -7,8 +7,7 @@ import io.daobab.model.Entity;
  */
 public interface QueryExpressionProvider<E extends Entity,Q extends Query>{
 
-
-    Query<E,Q> getSelect();
+    Query<E,?,Q> getSelect();
 
     boolean isResultCached();
 }

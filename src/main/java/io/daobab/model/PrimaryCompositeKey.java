@@ -1,13 +1,13 @@
 package io.daobab.model;
 
 import io.daobab.error.DaobabException;
-import io.daobab.query.QueryDelete;
+import io.daobab.target.database.query.DataBaseQueryDelete;
 import io.daobab.query.base.QueryWhisperer;
 import io.daobab.statement.condition.SetFields;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
-import io.daobab.target.OpenedTransactionTarget;
-import io.daobab.target.QueryTarget;
+import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
+import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.DataBaseTarget;
 import io.daobab.transaction.Propagation;
 
@@ -50,15 +50,15 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default boolean delete(QueryTarget target) {
-        return new QueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute() == 1;
+        return new DataBaseQueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute() == 1;
     }
 
-    default boolean delete(OpenedTransactionTarget target, boolean transaction) {
-        return new QueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute(transaction) == 1;
+    default boolean delete(OpenedTransactionDataBaseTarget target, boolean transaction) {
+        return new DataBaseQueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute(transaction) == 1;
     }
 
-    default boolean delete(OpenedTransactionTarget target, Propagation propagation) {
-        return new QueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute(propagation) == 1;
+    default boolean delete(OpenedTransactionDataBaseTarget target, Propagation propagation) {
+        return new DataBaseQueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute(propagation) == 1;
     }
 
     default E update(QueryTarget target, Column<E, ?, ?>... columnsToUpdate) {
@@ -125,7 +125,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
         return (E) this;
     }
 
-    default E update(OpenedTransactionTarget target, boolean transaction) {
+    default E update(OpenedTransactionDataBaseTarget target, boolean transaction) {
         if (this instanceof OptimisticConcurrencyForPrimaryKey) {
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);

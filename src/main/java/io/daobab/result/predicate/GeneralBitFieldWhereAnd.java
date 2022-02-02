@@ -4,7 +4,7 @@ import io.daobab.error.UnhandledOperator;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
-import io.daobab.result.BaseByteBuffer;
+import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.where.base.Where;
 import org.slf4j.Logger;

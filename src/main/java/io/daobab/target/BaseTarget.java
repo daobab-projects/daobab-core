@@ -3,8 +3,7 @@ package io.daobab.target;
 import io.daobab.error.DaobabException;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityAny;
-import io.daobab.result.Entities;
-import io.daobab.target.database.TransactionalTarget;
+import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.interceptor.DaobabInterceptor;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
@@ -13,8 +12,6 @@ import io.daobab.target.statistic.StatisticCollectorImpl;
 import io.daobab.target.statistic.StatisticCollectorProvider;
 import io.daobab.target.statistic.StatisticProvider;
 import io.daobab.target.statistic.table.StatisticRecord;
-import io.daobab.transaction.Propagation;
-import io.daobab.transaction.TransactionIndicator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
@@ -150,21 +146,6 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     }
 
 
-    public <Y, T extends TransactionalTarget> Y handleTransactionalTarget(T target, Propagation propagation, BiFunction<QueryReceiver, Boolean, Y> jobToDo) {
-        TransactionIndicator indicator = propagation.mayBeProceeded(target);
-        switch (indicator) {
-            case EXECUTE_WITHOUT: {
-                return jobToDo.apply(target.getSourceTarget(), false);
-            }
-            case START_NEW_JUST_FOR_IT: {
-                return target.wrapTransaction(t -> jobToDo.apply(t.getSourceTarget(), true));
-            }
-            case GO_AHEAD: {
-                return jobToDo.apply(target, true);
-            }
-        }
-        throw new DaobabException("Problem related to specific propagation and transaction");
-    }
 
 
     public StatisticCollector getStatisticCollector() {

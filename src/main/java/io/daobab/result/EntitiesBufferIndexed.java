@@ -12,6 +12,7 @@ import io.daobab.result.remove.IndexString;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.where.base.Where;
 import io.daobab.statement.where.base.WhereBase;
+import io.daobab.target.buffer.single.EntityList;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -45,7 +46,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
     }
 
     @SuppressWarnings({"unchecked","rawtypes"})
-    private List<E> finalFilter(List<E> entities, Query<E, ?> query, List<Integer> skipSteps) {
+    private List<E> finalFilter(List<E> entities, Query<E,?,?> query, List<Integer> skipSteps) {
         int counter = 0;
 
         List<E> rv = new LinkedList<>();
@@ -88,7 +89,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
     }
 
     @SuppressWarnings({"unchecked","rawtypes"})
-    public List<E> filter(Query<E, ?> query) {
+    public List<E> filter(Query<E,?,?> query) {
         Where wrapper = query.getWhereWrapper();
 
         //if indexRepository is empty, don't even use the index logic

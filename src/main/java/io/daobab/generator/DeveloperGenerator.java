@@ -1,7 +1,7 @@
 package io.daobab.generator;
 
 import io.daobab.model.Column;
-import io.daobab.target.database.JdbcType;
+import io.daobab.target.database.connection.JdbcType;
 
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;

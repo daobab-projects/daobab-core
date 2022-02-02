@@ -16,7 +16,6 @@ public interface Target extends ILoggerBean, AccessProtectorProvider {
 
     boolean isConnectedToDatabase();
 
-    OpenedTransactionTarget beginTransaction();
 
     List<Entity> getTables();
 

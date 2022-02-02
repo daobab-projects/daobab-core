@@ -1,6 +1,6 @@
 package io.daobab.result.predicate;
 
-import io.daobab.result.BaseByteBuffer;
+import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
 
 import java.util.function.Predicate;
 

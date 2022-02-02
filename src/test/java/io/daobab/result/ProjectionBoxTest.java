@@ -1,5 +1,6 @@
 package io.daobab.result;
 
+import io.daobab.target.buffer.single.Entities;
 import io.daobab.test.dao.SakilaTables;
 import io.daobab.test.dao.table.Film;
 import io.daobab.test.generator.EntityBufferGenerator;

@@ -11,11 +11,11 @@ public class SetOperator {
     public static final int INTERSECT = 4;
     public static final int MINUS = 5;
 
-    public Query<?, ?> getQuery() {
+    public Query<?,?,?> getQuery() {
         return query;
     }
 
-    public void setQuery(Query<?, ?> query) {
+    public void setQuery(Query<?,?,?> query) {
         this.query = query;
     }
 
@@ -27,10 +27,10 @@ public class SetOperator {
         this.type = type;
     }
 
-    private Query<?, ?> query;
+    private Query<?,?,?> query;
     private int type = UNION;
 
-    public SetOperator(int type, Query<?, ?> query) {
+    public SetOperator(int type, Query<?,?,?> query) {
         setType(type);
         setQuery(query);
     }

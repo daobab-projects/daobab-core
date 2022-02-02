@@ -1,7 +1,7 @@
 package io.daobab.test.generator;
 
-import io.daobab.result.Entities;
-import io.daobab.result.EntityList;
+import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.buffer.single.EntityList;
 import io.daobab.test.dao.table.Film;
 
 import java.math.BigDecimal;

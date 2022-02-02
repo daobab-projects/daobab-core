@@ -1,6 +1,6 @@
 package io.daobab.model;
 
-import io.daobab.target.QueryTarget;
+import io.daobab.target.database.QueryTarget;
 
 
 // OCC indicator for no PrimaryKey tables

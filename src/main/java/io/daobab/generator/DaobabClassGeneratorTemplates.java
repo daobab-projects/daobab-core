@@ -37,7 +37,7 @@ public interface DaobabClassGeneratorTemplates {
             "\n" +
             "import io.daobab.model.Entity;\n" +
             "import io.daobab.target.database.DataBaseTarget;\n" +
-            "import io.daobab.target.database.SqlQueryResolver;\n" +
+            "import io.daobab.target.database.connection.SqlQueryResolver;\n" +
             "\n" +
             "import javax.sql.DataSource;\n" +
             "import java.util.Arrays;\n" +

@@ -3,7 +3,7 @@ package io.daobab.statement.where.base;
 import io.daobab.error.*;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.*;
-import io.daobab.result.Entities;
+import io.daobab.target.buffer.single.Entities;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryField;

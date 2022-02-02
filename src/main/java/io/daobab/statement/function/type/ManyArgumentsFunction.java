@@ -4,7 +4,7 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.model.TableColumn;
-import io.daobab.query.QueryField;
+import io.daobab.target.database.query.DataBaseQueryField;
 import io.daobab.query.marker.ColumnOrQuery;
 
 import java.util.Arrays;
@@ -33,8 +33,8 @@ public class ManyArgumentsFunction<E extends Entity, F, R extends EntityRelation
             if (o instanceof Column){
                 return ((Column)o).getFieldClass();
             }
-            if (o instanceof QueryField){
-                List<TableColumn> columns=((QueryField<?,?>)o).getFields();
+            if (o instanceof DataBaseQueryField){
+                List<TableColumn> columns=((DataBaseQueryField<?,?>)o).getFields();
                 if (columns==null||columns.isEmpty()) continue;
                 return columns.get(0).getColumn().getFieldClass();
             }

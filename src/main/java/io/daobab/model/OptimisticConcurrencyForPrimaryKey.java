@@ -5,7 +5,7 @@ import io.daobab.error.NullEntityException;
 import io.daobab.error.TargetMandatoryException;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.statement.where.WhereAnd;
-import io.daobab.target.QueryTarget;
+import io.daobab.target.database.QueryTarget;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

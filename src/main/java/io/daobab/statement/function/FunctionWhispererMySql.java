@@ -4,7 +4,7 @@ import io.daobab.error.MandatoryFunctionParameter;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
-import io.daobab.query.QueryField;
+import io.daobab.target.database.query.DataBaseQueryField;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.statement.function.base.DatePeriod;
 import io.daobab.statement.function.base.FunctionKey;
@@ -73,7 +73,7 @@ public interface FunctionWhispererMySql {
         return new ManyArgumentsFunction<>(DictFunctionMySql.CONCAT_WS, separator, columns);
     }
 
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> field(F field, QueryField<?, F> query) {
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> field(F field, DataBaseQueryField<?, F> query) {
         if (query == null) throw new MandatoryFunctionParameter(DictFunctionMySql.FIELD);
         List<Object> objects = new ArrayList<>();
         objects.add(field);
