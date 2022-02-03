@@ -52,10 +52,4 @@ public class InnerSelectManyCells<E extends Entity, F> implements QueryExpressio
         return findMany().size();
     }
 
-    @Override
-    public boolean isResultCached() {
-        return bufferedResults != null;
-    }
-
-
 }

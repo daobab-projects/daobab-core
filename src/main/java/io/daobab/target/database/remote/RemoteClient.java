@@ -36,16 +36,6 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
     protected abstract ResponseWrapper callEndpoint(Query<? extends Entity,?, ?> query, boolean singleResult);
 
     @Override
-    public boolean isBuffer() {
-        return false;
-    }
-
-    @Override
-    public boolean isConnectedToDatabase() {
-        return false;
-    }
-
-    @Override
     public OpenTransactionDataBaseTargetImpl beginTransaction() {
         return null;
     }

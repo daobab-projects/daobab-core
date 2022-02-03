@@ -272,10 +272,6 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         return null;
     }
 
-    @Override
-    public boolean isConnectedToDatabase() {
-        return false;
-    }
 
     @Override
     public OpenedTransactionBufferTarget beginTransaction() {
@@ -287,13 +283,6 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     public List<Entity> getTables() {
         return new LinkedList<>();
     }
-
-
-    @Override
-    public boolean isBuffer() {
-        return true;
-    }
-
 
     @Override
     public Plates findMany() {

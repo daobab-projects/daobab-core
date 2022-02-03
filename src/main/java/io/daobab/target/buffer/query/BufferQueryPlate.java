@@ -5,21 +5,21 @@ import io.daobab.error.NullOrEmptyParameter;
 import io.daobab.error.TargetNoCacheNoEntityManagerException;
 import io.daobab.model.*;
 import io.daobab.query.base.*;
+import io.daobab.result.FieldsBuffer;
 import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
-import io.daobab.result.PlateProvider;
 import io.daobab.target.buffer.single.Plates;
 import io.daobab.statement.condition.Count;
 import io.daobab.target.buffer.BufferQueryTarget;
-import io.daobab.target.database.DataBaseTarget;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryPlate> implements QueryExpressionProvider<Entity, BufferQueryPlate>, PlateProvider, QueryJoin<BufferQueryPlate> {
+public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryPlate> implements FieldsProvider,  QueryJoin<BufferQueryPlate> {
 
     private boolean singleEntity = false;
 
@@ -107,20 +107,27 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
 
     public long countBy(Count cnt) {
         setTempCount(cnt);
-        if (getTarget().isBuffer()) {
-            if (cnt.countEntities()) {
-                return findMany().size();
-            } else {
-                //TODO: czy tu ma byc _unique??
-                return 0;////return new Long(resultFieldUniqueSetFromCache((ColumnDefinition<E, ?,?>)cnt.getFieldForPointer(1)).size());
-            }
-
+        if (cnt.countEntities()) {
+            return findMany().size();
+        } else {
+            //TODO: czy tu ma byc _unique??
+            return 0;////return new Long(resultFieldUniqueSetFromCache((ColumnDefinition<E, ?,?>)cnt.getFieldForPointer(1)).size());
         }
-        throw new TargetNoCacheNoEntityManagerException(getTarget());
+
     }
 
     public FieldsProvider<FlatPlate> flat() {
-        return map(Plate::toFlat);
+        return map2(Plate::toFlat);
+    }
+
+    private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
+        List<Plate> res = findMany();
+        if (mapper == null) return null;
+
+        List<M> rv = new LinkedList<>();
+        res.forEach(t -> rv.add(mapper.apply(t)));
+
+        return new FieldsBuffer<>(rv);
     }
 
     private BufferQueryPlate andColumn(Column<?, ?, ?> columndao) {
@@ -175,16 +182,6 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
             }
         }
         return rv;
-    }
-
-    @Override
-    public Query getSelect() {
-        return this;
-    }
-
-    @Override
-    public boolean isResultCached() {
-        return getTarget().isBuffer();
     }
 
     public boolean isSingleEntity() {

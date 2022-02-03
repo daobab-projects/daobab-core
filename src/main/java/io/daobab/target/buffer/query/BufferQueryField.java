@@ -11,24 +11,22 @@ import io.daobab.query.base.Query;
 import io.daobab.query.base.QueryJoin;
 import io.daobab.query.base.QueryType;
 import io.daobab.query.marker.ColumnOrQuery;
-import io.daobab.query.marker.ManyCellsProvider;
+import io.daobab.result.FieldsProvider;
 import io.daobab.statement.condition.Count;
 import io.daobab.statement.function.type.DummyColumnRelation;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.statement.inner.InnerSelectManyCells;
 import io.daobab.target.buffer.BufferQueryTarget;
-import io.daobab.target.database.DataBaseTarget;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 //TODO: czy count nie powinien byc ograniczony do jednego wejsciowego pola? I czy wogóle powinien tu byc
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryField<E, F>, ManyCellsProvider<F>, QueryJoin<BufferQueryField<E, F>>, ColumnOrQuery<E,F,EntityRelation> {
+public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryField<E, F>, FieldsProvider<F>, QueryJoin<BufferQueryField<E, F>>, ColumnOrQuery<E,F,EntityRelation> {
 
 
     @SuppressWarnings("unused")
@@ -68,17 +66,11 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
             //TODO: Decide what there: exception or null?
         }
 
-//        if (this.getTarget().isBuffer()) {
             return new InnerSelectManyCells<>(findMany());
-//        } else {
-//            return new InnerSelectManyCells<>(this);
-//        }
     }
 
     public long countBy(Count cnt) {
         setTempCount(cnt);
-        if (getTarget().isBuffer()) {
-
             if (cnt.countEntities()) {
                 return findMany().size();
             } else {
@@ -87,16 +79,8 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
                 return 0;
             }
 
-        }
-        throw new TargetNoCacheNoEntityManagerException(getTarget());
     }
 
-    /**
-     * Count all record
-     * Equivalent of count(*)
-     *
-     * @return
-     */
     @Override
     public long countAny() {
         return countBy(Count.field(getFields().get(0).getColumn()));
@@ -105,21 +89,6 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
     @Override
     public List<F> findMany() {
         return getTarget().readFieldList(modifyQuery(this));
-    }
-
-    @Override
-    public Optional<F> findFirst() {
-        return Optional.ofNullable(getTarget().readField(modifyQuery(this)));
-    }
-
-    @Override
-    public Query getSelect() {
-        return this;
-    }
-
-    @Override
-    public boolean isResultCached() {
-        return getTarget().isBuffer();
     }
 
     @Override

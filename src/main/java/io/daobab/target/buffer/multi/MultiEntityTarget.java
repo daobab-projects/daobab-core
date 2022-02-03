@@ -43,16 +43,6 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     }
 
     @Override
-    public boolean isBuffer() {
-        return true;
-    }
-
-    @Override
-    public boolean isConnectedToDatabase() {
-        return false;
-    }
-
-    @Override
     public boolean isLogQueriesEnabled() {
         return false;
     }

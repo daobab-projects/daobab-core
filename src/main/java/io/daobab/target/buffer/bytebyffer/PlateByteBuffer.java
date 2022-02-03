@@ -283,16 +283,6 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
     }
 
     @Override
-    public boolean isBuffer() {
-        return true;
-    }
-
-    @Override
-    public boolean isConnectedToDatabase() {
-        return false;
-    }
-
-    @Override
     public OpenedTransactionBufferTarget beginTransaction() {
         return null;
     }

@@ -1,13 +1,13 @@
 package io.daobab.query.base;
 
 import io.daobab.model.Entity;
+import io.daobab.target.database.query.DataBaseQueryBase;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public interface QueryExpressionProvider<E extends Entity,Q extends Query>{
+public interface QueryExpressionProvider<E extends Entity>{
 
-    Query<E,?,Q> getSelect();
+    DataBaseQueryBase<E,?> getSelect();
 
-    boolean isResultCached();
 }

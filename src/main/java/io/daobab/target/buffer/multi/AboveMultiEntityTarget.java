@@ -25,11 +25,6 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return getSourceTarget().isLogQueriesEnabled();
     }
 
-    @Override
-    public boolean isConnectedToDatabase() {
-        return false;
-    }
-
     protected abstract DataBaseTarget getSourceTarget();
 
     @SuppressWarnings("unchecked")

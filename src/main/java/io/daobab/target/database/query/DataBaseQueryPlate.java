@@ -2,24 +2,24 @@ package io.daobab.target.database.query;
 
 import io.daobab.error.ColumnMandatory;
 import io.daobab.error.NullOrEmptyParameter;
-import io.daobab.error.TargetNoCacheNoEntityManagerException;
 import io.daobab.model.*;
 import io.daobab.query.base.*;
+import io.daobab.result.FieldsBuffer;
 import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
-import io.daobab.result.PlateProvider;
 import io.daobab.target.buffer.single.Plates;
 import io.daobab.statement.condition.Count;
 import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.DataBaseTarget;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBaseQueryPlate> implements QueryExpressionProvider<Entity, DataBaseQueryPlate>, PlateProvider, QueryJoin<DataBaseQueryPlate> {
+public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBaseQueryPlate> implements QueryExpressionProvider<Entity>, FieldsProvider, QueryJoin<DataBaseQueryPlate> {
 
     private boolean singleEntity = false;
 
@@ -107,24 +107,23 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
 
     public long countBy(Count cnt) {
         setTempCount(cnt);
-        if (getTarget().isBuffer()) {
-            if (cnt.countEntities()) {
-                return findMany().size();
-            } else {
-                //TODO: czy tu ma byc _unique??
-                return 0;////return new Long(resultFieldUniqueSetFromCache((ColumnDefinition<E, ?,?>)cnt.getFieldForPointer(1)).size());
-            }
 
-        }
-        if (getTarget() instanceof DataBaseTarget) {
-            DataBaseTarget emprov = (DataBaseTarget) getTarget();
-            return emprov.count(this);
-        }
-        throw new TargetNoCacheNoEntityManagerException(getTarget());
+        DataBaseTarget emprov = (DataBaseTarget) getTarget();
+        return emprov.count(this);
     }
 
     public FieldsProvider<FlatPlate> flat() {
-        return map(Plate::toFlat);
+        return map2(Plate::toFlat);
+    }
+
+    private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
+        List<Plate> res = findMany();
+        if (mapper == null) return null;
+
+        List<M> rv = new LinkedList<>();
+        res.forEach(t -> rv.add(mapper.apply(t)));
+
+        return new FieldsBuffer<>(rv);
     }
 
     private DataBaseQueryPlate andColumn(Column<?, ?, ?> columndao) {
@@ -182,13 +181,8 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     }
 
     @Override
-    public Query getSelect() {
+    public DataBaseQueryPlate getSelect() {
         return this;
-    }
-
-    @Override
-    public boolean isResultCached() {
-        return getTarget().isBuffer();
     }
 
     public boolean isSingleEntity() {

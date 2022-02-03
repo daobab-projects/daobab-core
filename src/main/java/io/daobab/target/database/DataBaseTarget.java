@@ -137,11 +137,6 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
         this.dataBaseMinorVersion = dataBaseMinorVersion;
     }
 
-    @Override
-    public boolean isBuffer() {
-        return false;
-    }
-
     public <E extends Entity> int delete(DataBaseQueryDelete<E> query, Propagation propagation) {
         return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).delete(query, transaction));
     }

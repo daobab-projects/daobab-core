@@ -285,16 +285,6 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
     }
 
     @Override
-    public boolean isBuffer() {
-        return true;
-    }
-
-    @Override
-    public boolean isConnectedToDatabase() {
-        return false;
-    }
-
-    @Override
     public OpenedTransactionBufferTarget beginTransaction() {
         return null;
     }

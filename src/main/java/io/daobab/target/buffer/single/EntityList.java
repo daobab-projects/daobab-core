@@ -270,11 +270,6 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @Override
-    public boolean isConnectedToDatabase() {
-        return false;
-    }
-
-    @Override
     public OpenedTransactionBufferTarget beginTransaction() {
         throw new TargetNotSupports();
     }
@@ -282,11 +277,6 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     @Override
     public List<Entity> getTables() {
         return new LinkedList<>();
-    }
-
-    @Override
-    public boolean isBuffer() {
-        return true;
     }
 
     @Override

@@ -68,16 +68,12 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
 
     public long countBy(Count cnt) {
         setTempCount(cnt);
-        if (getTarget().isBuffer()) {
-            if (cnt.countEntities()) {
-                return findMany().size();
-            } else {
-                //TODO: czy tu ma byc _unique??
-                return 0;////return new Long(resultFieldUniqueSetFromCache((ColumnDefinition<E, ?,?>)cnt.getFieldForPointer(1)).size());
-            }
-
+        if (cnt.countEntities()) {
+            return findMany().size();
+        } else {
+            //TODO: czy tu ma byc _unique??
+            return 0;////return new Long(resultFieldUniqueSetFromCache((ColumnDefinition<E, ?,?>)cnt.getFieldForPointer(1)).size());
         }
-        throw new TargetNoCacheNoEntityManagerException(getTarget());
     }
 
 

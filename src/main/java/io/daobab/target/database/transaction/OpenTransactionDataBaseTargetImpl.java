@@ -154,17 +154,6 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
         return db.callProcedure(name,in,out);
     }
 
-
-    @Override
-    public boolean isBuffer() {
-        return db.isBuffer();
-    }
-
-    @Override
-    public boolean isConnectedToDatabase() {
-        return db.isConnectedToDatabase();
-    }
-
     @Override
     public DataSource getDataSource() {
         return db.getDataSource();

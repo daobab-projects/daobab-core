@@ -1,8 +1,8 @@
 package io.daobab.statement.inner;
 
 import io.daobab.model.Entity;
+import io.daobab.target.database.query.DataBaseQueryBase;
 import io.daobab.target.database.query.DataBaseQueryEntity;
-import io.daobab.query.base.Query;
 import io.daobab.query.base.QueryExpressionProvider;
 import io.daobab.target.buffer.single.Entities;
 
@@ -11,7 +11,7 @@ import io.daobab.target.buffer.single.Entities;
  */
 public class InnerSelectManyEntities<E extends Entity> implements QueryExpressionProvider {
 
-    private Query<E,?,?> select;
+    private DataBaseQueryBase<E,?> select;
 
     private Entities<E> cachedResults = null;
 
@@ -23,17 +23,12 @@ public class InnerSelectManyEntities<E extends Entity> implements QueryExpressio
         cachedResults = res;
     }
 
-    public Query<E,?,?> getSelect() {
+    public DataBaseQueryBase<E,?> getSelect() {
         return select;
     }
 
     private void setSelect(DataBaseQueryEntity<E> select) {
         this.select = select;
-    }
-
-    @Override
-    public boolean isResultCached() {
-        return cachedResults != null;
     }
 
 }

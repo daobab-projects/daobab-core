@@ -301,21 +301,6 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
     }
 
     @Override
-    public boolean isBuffer() {
-        return true;
-    }
-
-    @Override
-    public boolean isConnectedToDatabase() {
-        return false;
-    }
-//
-//    @Override
-//    public OpenedTransactionTarget beginTransaction() {
-//        return null;
-//    }
-
-    @Override
     public List<Entity> getTables() {
         return new ArrayList<>();
     }

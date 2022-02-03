@@ -17,13 +17,19 @@ public interface FieldsProvider<F> {
 
     List<F> findMany();
 
-    Optional<F> findFirst();
 
-    long countAny();
-
-    default boolean exists() {
-        return findFirst().isPresent();
+    default Optional<F> findFirst() {
+        List<F> elements=findMany();
+        return elements.isEmpty() ? Optional.empty() : Optional.of(elements.get(0));
     }
+
+    default long countAny() {
+        return findMany().size();
+    }
+
+//    default boolean exists() {
+//        return findFirst().isPresent();
+//    }
 
     default F findOne() {
         return findFirst().orElse(null);

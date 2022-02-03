@@ -3,12 +3,13 @@ package io.daobab.target.database.connection;
 import io.daobab.dict.DictDatabaseType;
 import io.daobab.error.SqlInjectionDetected;
 import io.daobab.model.*;
+import io.daobab.query.base.QueryExpressionProvider;
+import io.daobab.result.FieldsProvider;
 import io.daobab.target.database.query.DataBaseQueryBase;
 import io.daobab.target.database.query.DataBaseQueryDelete;
 import io.daobab.target.database.query.DataBaseQueryInsert;
 import io.daobab.target.database.query.DataBaseQueryUpdate;
 import io.daobab.query.base.QuerySpecialParameters;
-import io.daobab.query.marker.ManyCellsProvider;
 import io.daobab.result.EntitiesProvider;
 import io.daobab.statement.base.IdentifierStorage;
 import io.daobab.statement.condition.*;
@@ -625,16 +626,18 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             Column<Entity, Object, EntityRelation> keyFromWrapper = (Column<Entity, Object, EntityRelation>) where.getKeyForPointer(i);
 
             if (keyFromWrapper != null && value != null) {
-                if (value instanceof ManyCellsProvider) {
-                    ManyCellsProvider<?> wr = (ManyCellsProvider<?>) value;
-                    if (wr.isResultCached()){
-                        value = wr.findMany();
-                    }else{
-                        sb.append(appendKey(storage, keyFromWrapper, databaseengine,relation));
-                        sb.append(toSqlQuery((DataBaseQueryBase<?,?>)wr.getSelect()));
-                        continue;
-                    }
+                //check Query at first, since some object may implement many investigated here interfaces
+                if (value instanceof QueryExpressionProvider) {
+                    sb.append(appendKey(storage, keyFromWrapper, databaseengine,relation));
+                    QueryExpressionProvider<?> queryExpressionProvider=(QueryExpressionProvider<?>)value;
+                    sb.append(toSqlQuery((DataBaseQueryBase<? extends Entity, ?>) queryExpressionProvider.getSelect()));
+                    continue;
                 }
+                if (value instanceof FieldsProvider) {
+                    FieldsProvider fieldsProvider=(FieldsProvider)value;
+                    value = fieldsProvider.findMany();
+                }
+
                 if (value instanceof EntitiesProvider) {
                     EntitiesProvider<?> wr = (EntitiesProvider<?>) value;
                     value = wr.findMany().stream().map(e -> keyFromWrapper.getValueOf((EntityRelation) e)).collect(Collectors.toList());

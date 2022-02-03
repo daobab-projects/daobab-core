@@ -3,7 +3,6 @@ package io.daobab.result;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
@@ -22,14 +21,6 @@ public class FieldsBuffer<F> extends LinkedList<F> implements FieldsProvider<F> 
         return this;
     }
 
-    @Override
-    public Optional<F> findFirst() {
-        return (isEmpty()) ? Optional.empty() : Optional.of(get(0));
-    }
 
-    @Override
-    public long countAny() {
-        return size();
-    }
 
 }
