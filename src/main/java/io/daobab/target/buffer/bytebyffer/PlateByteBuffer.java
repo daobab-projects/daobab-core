@@ -289,7 +289,7 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
 
     @Override
     public List<Entity> getTables() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -302,8 +302,4 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
         return false;
     }
 
-    @Override
-    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
-        throw new DaobabException("This target does not supports procedures.");
-    }
 }

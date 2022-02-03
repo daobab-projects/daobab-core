@@ -291,7 +291,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
 
     @Override
     public List<Entity> getTables() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -304,10 +304,6 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         return false;
     }
 
-    @Override
-    public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
-        throw new TargetNotSupports();
-    }
 
     @Override
     public Class<E> getEntityClass() {

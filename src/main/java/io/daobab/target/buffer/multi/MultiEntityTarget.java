@@ -247,9 +247,5 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
         }
     }
 
-    @Override
-    public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
-        throw new DaobabException("This target does not supports procedures.");
-    }
 
 }

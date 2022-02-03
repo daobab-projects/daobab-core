@@ -42,5 +42,4 @@ public interface BufferQueryHandler extends Target, QueryHandler {
 
     <E extends Entity> E insert(BufferQueryInsert<E> query, Propagation propagation);
 
-    <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out);
 }

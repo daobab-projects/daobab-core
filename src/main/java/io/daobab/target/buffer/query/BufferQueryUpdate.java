@@ -30,6 +30,7 @@ public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E
         fromRemote(target, remote);
     }
 
+    @SuppressWarnings({"rawtypes","unchecked"})
     //This is for the whole object update
     public <E1 extends PrimaryKey<E, F, ?>, F> BufferQueryUpdate(BufferQueryTarget target, E1 entity) {
         if (target == null) throw new TargetMandatoryException();
@@ -58,6 +59,7 @@ public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E
         setEntity(entity);
     }
 
+    @SuppressWarnings("unchecked")
     public BufferQueryUpdate(BufferQueryTarget target, SetFields setFields) {
         if (setFields == null || setFields.getCounter() == 0) {
             throw new AtLeastOneColumnToUpdateIsRequired();
@@ -90,6 +92,7 @@ public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E
         return this;
     }
 
+    @SuppressWarnings("rawtypes")
     public <F, R extends EntityRelation> BufferQueryUpdate<E> set(Column<E, F, R> key, R value) {
         set(new SetFields().setValue(key, value));
         return this;

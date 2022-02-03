@@ -393,8 +393,4 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         this.accessProtector = accessProtector;
     }
 
-    @Override
-    public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
-        throw new TargetNotSupports();
-    }
 }

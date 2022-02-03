@@ -62,10 +62,6 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
 
     @Override
     public InnerSelectManyCells<E, F> innerResult() {
-        if (getFields() == null) {
-            //TODO: Decide what there: exception or null?
-        }
-
             return new InnerSelectManyCells<>(findMany());
     }
 

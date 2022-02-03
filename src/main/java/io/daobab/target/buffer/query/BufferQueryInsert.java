@@ -38,6 +38,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         fromRemote(target, remote);
     }
 
+    @SuppressWarnings("rawtypes")
     public BufferQueryInsert(BufferQueryTarget target, E entity) {
 
         init(target, entity);
@@ -127,7 +128,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         return getTarget().insert(this, Propagation.SUPPORTS);
     }
 
-
+    @SuppressWarnings("rawtypes")
     public <F, R extends EntityRelation> BufferQueryInsert<E> set(Column<E, F, R> key, R value) {
         set(new SetFields().setValue(key, value));
         return this;
@@ -182,6 +183,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         this.entity = entity;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void fromRemote(BufferQueryTarget target, Map<String, Object> rv) {
         super.fromRemote(target, rv);

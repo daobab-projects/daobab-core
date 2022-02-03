@@ -518,8 +518,4 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     }
 
 
-    @Override
-    public <Out extends ProcedureParameters, In extends ProcedureParameters> Out callProcedure(String name, In in, Out out) {
-        throw new DaobabException("This target does not supports procedures.");
-    }
 }
