@@ -15,11 +15,6 @@ public interface QueryGroupBy<Q extends Query> {
 
     Q groupBy(String alias);
 
-    default Q groupBy(Column<?, ?, ?>... columns) {
-        if (columns == null || columns.length == 0) return (Q) this;
-        getGroupBy().clear();
-        getGroupBy().addAll(Arrays.asList(columns));
-        return (Q) this;
-    }
+    Q groupBy(Column<?, ?, ?>... columns);
 
 }

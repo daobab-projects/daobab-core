@@ -7,6 +7,7 @@ import io.daobab.query.base.*;
 import io.daobab.result.FieldsBuffer;
 import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
+import io.daobab.result.PlateProvider;
 import io.daobab.target.buffer.single.Plates;
 import io.daobab.statement.condition.Count;
 import io.daobab.target.database.QueryTarget;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBaseQueryPlate> implements QueryExpressionProvider<Entity>, FieldsProvider, QueryJoin<DataBaseQueryPlate> {
+public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBaseQueryPlate> implements QueryExpressionProvider<Entity>, PlateProvider {
 
     private boolean singleEntity = false;
 
@@ -33,9 +34,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         }
         List<TableColumn> columns = new LinkedList<>();
         for (Entity e : entities) {
-            for (TableColumn ecol : e.columns()) {
-                columns.add(ecol);
-            }
+            columns.addAll(e.columns());
         }
 
         TableColumn fielddao = columns.get(0);

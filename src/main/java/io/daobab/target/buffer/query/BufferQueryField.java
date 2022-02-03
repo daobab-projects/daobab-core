@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryField<E, F>, FieldsProvider<F>, QueryJoin<BufferQueryField<E, F>>, ColumnOrQuery<E,F,EntityRelation> {
+public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryField<E, F>, FieldsProvider<F>, ColumnOrQuery<E,F,EntityRelation> {
 
 
     @SuppressWarnings("unused")

@@ -103,18 +103,19 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         return (Q) this;
     }
 
-
+    @Override
     public Q groupBy(String alias) {
         this._groupByAlias=alias;
         return (Q) this;
     }
 
-//    public Q groupBy(Column<?, ?, ?>... columns) {
-//        if (columns == null || columns.length == 0) return (Q) this;
-//        getGroupBy().clear();
-//        getGroupBy().addAll(Arrays.asList(columns));
-//        return (Q) this;
-//    }
+    @Override
+    public Q groupBy(Column<?, ?, ?>... columns) {
+        if (columns == null || columns.length == 0) return (Q) this;
+        getGroupBy().clear();
+        getGroupBy().addAll(Arrays.asList(columns));
+        return (Q) this;
+    }
 
     public List<Column<?,?,?>> getGroupBy() {
         return _groupBy;

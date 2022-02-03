@@ -28,6 +28,10 @@ public class InnerSelectManyCells<E extends Entity, F> implements QueryExpressio
         return select;
     }
 
+    public boolean isDatabaseQuery(){
+        return getSelect()!=null;
+    }
+
     private void setSelect(DataBaseQueryField<E, F> queryField) {
         this.select = queryField;
     }

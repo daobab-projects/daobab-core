@@ -626,11 +626,19 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             Column<Entity, Object, EntityRelation> keyFromWrapper = (Column<Entity, Object, EntityRelation>) where.getKeyForPointer(i);
 
             if (keyFromWrapper != null && value != null) {
-                //check Query at first, since some object may implement many investigated here interfaces
-                if (value instanceof QueryExpressionProvider) {
+
+                boolean isDBQuery;
+                if (value instanceof InnerSelectManyCells){
+                    InnerSelectManyCells inner=(InnerSelectManyCells)value;
+                    isDBQuery=inner.isDatabaseQuery();
+                }else{
+                    isDBQuery=(value instanceof QueryExpressionProvider);
+                }
+
+                if (isDBQuery) {
                     sb.append(appendKey(storage, keyFromWrapper, databaseengine,relation));
                     QueryExpressionProvider<?> queryExpressionProvider=(QueryExpressionProvider<?>)value;
-                    sb.append(toSqlQuery((DataBaseQueryBase<? extends Entity, ?>) queryExpressionProvider.getSelect()));
+                    sb.append(OPEN_BRACKET).append(toSqlQuery((DataBaseQueryBase<? extends Entity, ?>) queryExpressionProvider.getSelect())).append(CLOSED_BRACKET);
                     continue;
                 }
                 if (value instanceof FieldsProvider) {
