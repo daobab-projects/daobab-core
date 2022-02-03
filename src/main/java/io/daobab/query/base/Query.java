@@ -27,14 +27,10 @@ public interface Query<E extends Entity, T extends Target & QueryHandler,Q exten
     boolean isJoin();
     boolean isGroupBy();
 
-//    Q groupBy(String alias);
-//    Q groupBy(Column<?, ?, ?>... columns);
-
     List<Column<?,?,?>> getGroupBy();
     String getGroupByAlias();
 
     Where getWhereWrapper();
-
     void setWhereWrapper(Where whereWrapper);
 
     List<TableColumn> getFields();
@@ -50,44 +46,30 @@ public interface Query<E extends Entity, T extends Target & QueryHandler,Q exten
     Count getCount() ;
     Limit getLimit();
 
-//    void setTempLimit(Limit limit);
-//
-//    Q logQuery();
-
     boolean isLogQueryEnabled();
 
     Q distinct() ;
     
-//    Q smartJoins();
-
     String getEntityName();
-
-//    void setEntityName(String entityName);
 
     Class<E> getEntityClass();
 
-//    void setEntityClass(Class entityClass);
-
     Having getHavingWrapper();
-
-//    void setHavingWrapper(Having havingWrapper);
 
     List<JoinWrapper> getJoins();
 
     void setJoins(List<JoinWrapper> joins);
 
     Map<String, Object> toRemote(boolean singleResult);
-    
     void fromRemote(T target, Map<String, Object> rv);
 
-//    String geNativeQuery();
     String getIdentifier();
     Q setIdentifier(String identifier) ;
-    QueryType getQueryType();
-//    String toSqlQuery();
-    String getSentQuery();
 
+    QueryType getQueryType();
+
+    String getSentQuery();
     void setSentQuery(String sentQuery);
 
-    <E extends Entity> Q from(E entity);
+    <E1 extends Entity> Q from(E1 entity);
 }

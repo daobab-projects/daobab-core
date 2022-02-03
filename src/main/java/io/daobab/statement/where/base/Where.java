@@ -42,7 +42,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W) this;
     }
 
-    public final <X> W ifElse(boolean enabled, UnaryOperator<W> ifTrue, UnaryOperator<W> ifFalse) {
+    public final W ifElse(boolean enabled, UnaryOperator<W> ifTrue, UnaryOperator<W> ifFalse) {
         if (enabled) {
             return ifTrue.apply((W) this);
         } else {
@@ -241,26 +241,6 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W)this;
     }
 
-//    public final <F> WhereTest andColumns(Field<?, F, ?> column, Operator operator, Field<?, F, ?> column2) {
-//        temp(column, operator, column2);
-//        return this;
-//    }
-
-//    public final WhereTest and(Where val) {
-//        val.optimize();
-//        temp(val);
-//        return this;
-//    }
-
-
-//    public final <E extends Entity, F, R extends EntityRelation> WhereTest and(Field<E, F, R> column, Operator operator, InnerQueryEntity<? extends R> query) {
-//        temp(column, operator, query);
-//        return this;
-//    }
-
-
-
-
     public final <E extends Entity, F, R extends EntityRelation> W equal(Column<E, F, R> column,  InnerQueryEntity<? extends R> val) {
         temp(column, EQ, val);
         return (W)this;
@@ -357,33 +337,30 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W)this;
     }
 
-
-
-
-    public final <E extends Entity, F, R extends EntityRelation> W equalColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
+    public final <F> W equalColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
         temp(column, EQ, column2);
         return (W)this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W greaterColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
+    public final <F> W greaterColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
         temp(column, GT, column2);
         return (W)this;
     }
-    public final <E extends Entity, F, R extends EntityRelation> W greaterOrEqualColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
+    public final <F> W greaterOrEqualColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
         temp(column, GTEQ, column2);
         return (W)this;
     }
-    public final <E extends Entity, F, R extends EntityRelation> W lessColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
+    public final <F> W lessColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
         temp(column, LT, column2);
         return (W)this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W lessOrEqualColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
+    public final <F> W lessOrEqualColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
         temp(column, LTEQ, column2);
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W notEqualColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
+    public final <F> W notEqualColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
         temp(column, NOT_EQ, column2);
         return (W) this;
     }
@@ -510,9 +487,8 @@ public abstract class Where<W extends Where> extends WhereBase {
     private <K extends Composite> void temp(CompositeColumns<K> keys, Operator operator, K val) {
         WhereAnd whereAnd = new WhereAnd();
 
-        for (Object tcol : keys) {
-            Column col = ((TableColumn) tcol).getColumn();
-
+        for (TableColumn tcol : keys) {
+            Column col = tcol.getColumn();
             temp(col, operator, col.getValue((EntityRelation) val));
         }
         temp(whereAnd);
@@ -602,24 +578,6 @@ public abstract class Where<W extends Where> extends WhereBase {
         put(VALUE + getCounter(), value);
         setCounter(getCounter() + 1);
     }
-
-//    public <E extends Entity> Entities<E> optymalise(Entities<E> buffer) {
-//
-//        Entities<E> rv = buffer;
-//        for (int counter = 1; counter < getCounter(); counter++) {
-//            Field<?, ?, ?> column = (Field<?, ?, ?>) getWhereMap().get(KEY + getCounter());
-//            if (!Number.class.isAssignableFrom(column.getFieldClass())) return rv;
-//            Operator operator = (Operator) getWhereMap().get(RELATION + getCounter());
-//            Object value = getWhereMap().get(VALUE + getCounter());
-//            Index<Number,E> columnIndex = buffer.getIndexFor(column);
-//            if (columnIndex == null) return rv;
-//            //tutaj zwracam index ale jeszcze musze zawezic bufferedentities i wszystkie inne indexy do entity powiazanych z tym
-//            //columnIndex.filter((Field<E, Number, EntityRelation>) column, operator, (Number) value);
-//            //TODO: finish
-//        }
-//
-//        throw new Unfinished();
-//    }
 
     public Where clone() {
 

@@ -109,7 +109,6 @@ public class Writter implements DaobabClassGeneratorTemplates {
         generatedColumnsCount++;
     }
 
-
     void generateTable(String catalog, String schema, GenerateTable table, List<GenerateTable> allTables, String javaackage, String path, boolean override, boolean schemaIntoTable) {
         String tableName = table.getTableName();
         String tableNameCamel = GenerateFormatter.toCamelCase(table.getTableName());

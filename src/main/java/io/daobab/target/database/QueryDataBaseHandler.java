@@ -3,7 +3,6 @@ package io.daobab.target.database;
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
 import io.daobab.model.ProcedureParameters;
-import io.daobab.query.base.Query;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.Plates;
 import io.daobab.target.QueryHandler;

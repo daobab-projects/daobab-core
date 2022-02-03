@@ -1,7 +1,6 @@
 package io.daobab.target.buffer.multi;
 
-import io.daobab.error.DaobabException;
-import io.daobab.error.TargetUntransactional;
+import io.daobab.error.TargetNotSupports;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.result.*;
@@ -14,7 +13,6 @@ import io.daobab.target.buffer.single.EntityList;
 import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.buffer.single.Plates;
 import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
-import io.daobab.target.database.TransactionalTarget;
 import io.daobab.target.protection.OperationType;
 import io.daobab.transaction.Propagation;
 
@@ -153,10 +151,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     }
 
     public <E extends Entity> E insert(BufferQueryInsert<E> query, Propagation propagation) {
-        if (!(this instanceof TransactionalTarget)) throw new TargetUntransactional(this);
-        Entities<E> cached = getEntities(query.getEntityClass());
-        return null;
-//        return handleTransactionalTarget((TransactionalTarget) cached, propagation, (target, transaction) -> ((QueryMemoryReceiver)target).insert(query, transaction));
+        throw new TargetNotSupports();
     }
 
     public <E extends Entity> int update(BufferQueryUpdate<E> query, boolean transaction) {
@@ -166,9 +161,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     }
 
     public <E extends Entity> int update(BufferQueryUpdate<E> query, Propagation propagation) {
-        Entities<E> cached = getEntities(query.getEntityClass());
-        return 0;
-//        return handleTransactionalTarget((TransactionalTarget) cached, propagation, (target, transaction) -> ((QueryMemoryReceiver)target).update(query, transaction));
+        throw new TargetNotSupports();
     }
 
     @SuppressWarnings("unchecked")
@@ -224,9 +217,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     }
 
     public <E extends Entity> int delete(BufferQueryDelete<E> query, Propagation propagation) {
-        Entities<E> cached = getEntities(query.getEntityClass());
-        return 0;
-//        return handleTransactionalTarget((TransactionalTarget) cached, propagation, (target, transaction) -> ((QueryMemoryReceiver)target).delete(query, transaction));
+        throw new TargetNotSupports();
     }
 
     @Override
@@ -246,6 +237,5 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
             getStorage().put(e.getEntityClass(), e);
         }
     }
-
 
 }

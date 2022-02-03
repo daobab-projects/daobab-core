@@ -35,6 +35,8 @@ public abstract class WhereBase {
     public boolean startsFromPK(){
         return optimisation_wage>0&&optimisation_wage<200;
     }
+
+    @SuppressWarnings("unchecked")
     public static Where<?> fromRemote(Target target, Map<String, Object> map) {
         if (map == null || map.isEmpty()) return null; //TODO: Exception
 
@@ -62,7 +64,7 @@ public abstract class WhereBase {
                 endofconditions = true;
                 break;
             }
-            if (key != null && key instanceof Map) {
+            if (key instanceof Map) {
                 Column<?, ?, ?> keycolumn = Marschaller.fromRemote(target, (Map<String, Object>) key);
                 if (keycolumn == null) {
                     throw new ColumnMandatory();

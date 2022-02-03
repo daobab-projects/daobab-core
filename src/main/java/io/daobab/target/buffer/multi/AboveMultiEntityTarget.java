@@ -81,9 +81,8 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
     public <E extends Entity> E insert(DataBaseQueryInsert<E> query, boolean transaction) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-            getSourceTarget().insert(query, transaction);
+            return getSourceTarget().insert(query, transaction);
         }
-//        return super.insert(query, transaction);
         return null;
     }
 
@@ -92,9 +91,8 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         if (!(this instanceof TransactionalTarget)) throw new TargetUntransactional(this);
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-            handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).insert(query, transaction));
+            return handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).insert(query, transaction));
         }
-//        return super.insert(query, propagation);
         return null;
     }
 
@@ -102,9 +100,8 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
     public <E extends Entity> int update(DataBaseQueryUpdate<E> query, boolean transaction) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-            getSourceTarget().update(query, transaction);
+            return getSourceTarget().update(query, transaction);
         }
-//        return super.update(query, transaction);
         return 0;
     }
 
@@ -112,9 +109,8 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
     public <E extends Entity> int update(DataBaseQueryUpdate<E> query, Propagation propagation) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-            handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).update(query, transaction));
+            return handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).update(query, transaction));
         }
-//        return super.update(query, propagation);
         return 0;
     }
 
@@ -122,9 +118,8 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
     public <E extends Entity> int delete(DataBaseQueryDelete<E> query, boolean transaction) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-            getSourceTarget().delete(query, transaction);
+            return getSourceTarget().delete(query, transaction);
         }
-//        return super.delete(query, transaction);
         return 0;
     }
 
@@ -132,9 +127,8 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
     public <E extends Entity> int delete(DataBaseQueryDelete<E> query, Propagation propagation) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-            handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).delete(query, transaction));
+            return handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).delete(query, transaction));
         }
-//        return super.delete(query, propagation);
         return 0;
     }
 
