@@ -5,7 +5,6 @@ import io.daobab.model.ProcedureParameters;
 import io.daobab.target.database.query.DataBaseQueryDelete;
 import io.daobab.target.database.query.DataBaseQueryInsert;
 import io.daobab.target.database.query.DataBaseQueryUpdate;
-import io.daobab.query.base.Query;
 import io.daobab.query.base.QuerySpecialParameters;
 
 /**

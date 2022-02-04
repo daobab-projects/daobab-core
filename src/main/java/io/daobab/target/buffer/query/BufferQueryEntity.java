@@ -1,6 +1,5 @@
 package io.daobab.target.buffer.query;
 
-import io.daobab.error.TargetNoCacheNoEntityManagerException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
@@ -12,7 +11,6 @@ import io.daobab.statement.condition.Count;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.target.buffer.BufferQueryTarget;
-import io.daobab.target.database.DataBaseTarget;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -42,13 +40,6 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
         entity.columns().forEach(e -> getFields().add(e));
     }
 
-
-    public BufferQueryEntity(String nativeQuery, BufferQueryTarget target, E entity) {
-        this(target,entity);
-        this._nativeQuery = nativeQuery;
-    }
-
-
     public long countBy(Count cnt) {
         setTempCount(cnt);
         if (cnt.countEntities()) {
@@ -59,15 +50,12 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
         }
     }
 
-
     @Override
     public long countAny() {
         return countBy(Count.any());
     }
 
-
     //---- RESULT SECTION
-
 
     @Override
     public Entities<E> findMany() {

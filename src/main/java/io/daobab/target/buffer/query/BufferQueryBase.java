@@ -38,7 +38,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     public boolean _calcJoins = false;
     private boolean logQueryEnabled = false;
     protected Order orderBy;
-    protected String _nativeQuery;
     protected List<TableColumn> fields = new ArrayList<>();
     private List<JoinWrapper> joins = new ArrayList<>();
     private IdentifierStorage identifierStorage;
@@ -82,7 +81,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         to.limit = from.limit;
         to._unique = from._unique;
         to._calcJoins = from._calcJoins;
-        to._nativeQuery = from._nativeQuery;
         to.identifier = from.identifier;
        // to.logQueryConsumer = from.logQueryConsumer;
 
@@ -102,7 +100,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         if (active) return logic.apply((Q) this);
         return (Q) this;
     }
-
 
     public Q groupBy(String alias) {
         this._groupByAlias=alias;
@@ -126,7 +123,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         storage.registerIdentifiers(getEntityName());
         setIdentifierStorage(storage);
     }
-
 
     protected void init(BufferQueryTarget target, Entity entity) {
         if (target == null) throw new TargetMandatoryException();
@@ -157,28 +153,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     protected void setFields(List<TableColumn> fields) {
         this.fields = fields;
-    }
-
-    /**
-     * Get all DAO related withoutTransactionTo this statement
-     *
-     */
-    public Set<String> getAllEntitiesRelated() {
-        Set<String> rv = new HashSet<>();
-        if (getEntityName() != null) rv.add(getEntityName());
-        if (getWhereWrapper() != null) {
-            rv.addAll(getWhereWrapper().getAllDaoInWhereClause());
-        }
-
-        if (getFields() == null) return rv;
-
-        for (TableColumn df : getFields()) {
-            String ndao = df.getColumn().getEntityName();
-            if (ndao != null) {
-                rv.add(ndao);
-            }
-        }
-        return rv;
     }
 
     public IdentifierStorage getIdentifierStorage() {
@@ -396,10 +370,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         setIdentifierStorage(storage);
 
         setIdentifier((String) rv.get(DictRemoteKey.IDENTIFIER));
-    }
-
-    public String geNativeQuery() {
-        return _nativeQuery;
     }
 
      protected <Q1 extends Query>Q1 modifyQuery(Q1 query) {

@@ -4,7 +4,6 @@ import java.sql.Types;
 
 public enum JdbcType {
 
-
     BIT(Types.BIT),
     TINYINT(Types.TINYINT),
     SMALLINT(Types.SMALLINT),

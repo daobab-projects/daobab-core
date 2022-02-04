@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> implements Entities<E>, StatisticCollectorProvider, StatisticProvider {
 
     private static final long serialVersionUID = 2291798166104201910L;
-    protected transient boolean needRefresh = false;
     private final transient Class<E> entityClazz;
     private final boolean transactionActive = false;
     private transient StatisticCollector statistic;
@@ -52,6 +51,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     public EntityList(List<E> entities, Class<E> entityClass) { //clear();
         super(entities);
         this.entityClazz = entityClass;
+
     }
 
     public EntityList(Class<E> entityClass) {
@@ -302,11 +302,6 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     @Override
     public void refreshImmediately() {
         throw new TargetNotSupports();
-    }
-
-    @Override
-    public void markRefreshCache() {
-        needRefresh = true;
     }
 
     @Override

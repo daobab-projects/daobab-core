@@ -39,8 +39,6 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
 
     Entities<E> clone();
 
-    void markRefreshCache();
-
     void refreshImmediately();
 
     List<E> filter(Query<E,?,?> query);

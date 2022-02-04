@@ -1,14 +1,11 @@
 package io.daobab.target.buffer.query;
 
 import io.daobab.error.ColumnMandatory;
-import io.daobab.error.TargetNoCacheNoEntityManagerException;
 import io.daobab.model.Column;
 import io.daobab.model.Dual;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.model.dummy.DummyColumnTemplate;
-import io.daobab.query.base.Query;
-import io.daobab.query.base.QueryJoin;
 import io.daobab.query.base.QueryType;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.result.FieldsProvider;
@@ -21,13 +18,10 @@ import io.daobab.target.buffer.BufferQueryTarget;
 import java.util.List;
 import java.util.Map;
 
-//TODO: czy count nie powinien byc ograniczony do jednego wejsciowego pola? I czy wogóle powinien tu byc
-
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
 public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryField<E, F>, FieldsProvider<F>, ColumnOrQuery<E,F,EntityRelation> {
-
 
     @SuppressWarnings("unused")
     private BufferQueryField() {
@@ -41,12 +35,6 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
 
     public BufferQueryField(BufferQueryTarget target, Map<String, Object> remote) {
         fromRemote(target, remote);
-    }
-
-    @SuppressWarnings("unchecked")
-    public BufferQueryField(String nativeQuery, BufferQueryTarget target, Column<E, ?, ?> column) {
-        this(target,(Column<E, F, ?>)column);
-        this._nativeQuery = nativeQuery;
     }
 
     @SuppressWarnings("rawtypes")
@@ -74,7 +62,6 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
 //                return resultFieldUniqueSetFromCache((Column<E, F, ?>) cnt.getFieldForPointer(1)).size();
                 return 0;
             }
-
     }
 
     @Override

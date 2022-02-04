@@ -15,12 +15,13 @@ public class Having extends Where<Having> {
         super();
     }
 
-    public Having(Where where) {
+    public Having(Where<?> where) {
         super();
         having(where);
     }
 
-    public Having having(Where val) {
+
+    public Having having(Where<?> val) {
         temp(val);
         return this;
     }
@@ -30,6 +31,7 @@ public class Having extends Where<Having> {
     }
 
 
+    @SuppressWarnings("java:S1221")
     public final Having equal(String column, Object val) {
         tempHaving(new ColumnHaving<>(column),  EQ, val);
         return this;

@@ -48,11 +48,6 @@ public interface Plates extends Serializable, List<Plate>, Cloneable, JsonListHa
         return stream().map(entity -> col.getValueOf((R) entity)).collect(Collectors.toList());
     }
 
-    void markRefreshCache();
-
-    void refreshImmediatelly();
-
-
     <E extends Entity> List<Plate> filter(Query<E, ?,?> query);
 
 

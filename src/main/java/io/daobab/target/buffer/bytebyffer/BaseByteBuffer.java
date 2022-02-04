@@ -198,6 +198,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
         return bitFieldOperations[columnPositionIntoEntity].readValue(pages.get(page), fieldPosition);
     }
 
+    @SuppressWarnings("unchecked")
     protected BitField determineBitField(Column column) {
         if (column.getFieldClass().equals(java.sql.Date.class)) {
             return DictBitField.BT_SQLDATE.getField();
@@ -213,6 +214,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public Integer getColumnIntoEntityPosition(Column<?,?,?> column) {
         for (int i = 0; i < columns.size(); i++) {
             if (columns.get(i).getColumn().equalsColumn(column)) {
@@ -235,6 +237,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
         return bitFieldOperations[columnIntoEntityPosition].readValue(pages.get(page), (entityAtPagePointer * totalEntitySpace) + columnBufferRowPosition);
     }
 
+    @SuppressWarnings("unchecked")
     public <F> List<F> finalFilterField(BufferQueryField<?, F> query) {
         int columnIntoEntityPosition = getColumnIntoEntityPosition(query.getFields().get(0).getColumn());
         int columnBufferRowPosition = getBufferPositionOfColumn(query.getFields().get(0).getColumn());

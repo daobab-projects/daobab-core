@@ -2,7 +2,6 @@ package io.daobab.target.buffer.query;
 
 import io.daobab.error.ColumnMandatory;
 import io.daobab.error.NullOrEmptyParameter;
-import io.daobab.error.TargetNoCacheNoEntityManagerException;
 import io.daobab.model.*;
 import io.daobab.query.base.*;
 import io.daobab.result.FieldsBuffer;
@@ -33,9 +32,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         }
         List<TableColumn> columns = new LinkedList<>();
         for (Entity e : entities) {
-            for (TableColumn ecol : e.columns()) {
-                columns.add(ecol);
-            }
+            columns.addAll(e.columns());
         }
 
         TableColumn fielddao = columns.get(0);
@@ -62,10 +59,10 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
             getFields().add(getInfoColumn(columndaos[i]));
             entities.add(columndaos[i].getEntityName());
         }
-
         setSingleEntity(entities.size() == 1);
     }
 
+    @SuppressWarnings("rawtypes")
     public BufferQueryPlate(BufferQueryTarget target, List<? extends Column> columndaos) {
 
         Column<?, ?, ?> fielddao = columndaos.get(0);
@@ -80,24 +77,6 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         }
 
         setSingleEntity(entities.size() == 1);
-    }
-
-
-    public BufferQueryPlate(String nativeQuery, BufferQueryTarget target, Column<? extends Entity, ?, ?>[] columndaos) {
-
-        Column<?, ?, ?> fielddao = columndaos[0];
-        if (fielddao == null) throw new ColumnMandatory();
-        init(target, fielddao.getInstance());
-        andColumn(fielddao);
-
-        Set<String> entities = new HashSet<>();
-        for (int i = 1; i < columndaos.length; i++) {
-            getFields().add(getInfoColumn(columndaos[i]));
-            entities.add(columndaos[i].getEntityName());
-        }
-
-        setSingleEntity(entities.size() == 1);
-        this._nativeQuery = nativeQuery;
     }
 
     @Override
@@ -121,18 +100,19 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
 
     private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
         List<Plate> res = findMany();
-        if (mapper == null) return null;
-
         List<M> rv = new LinkedList<>();
+        if (mapper == null){
+            return new FieldsBuffer<>(rv);
+        }
+
         res.forEach(t -> rv.add(mapper.apply(t)));
 
         return new FieldsBuffer<>(rv);
     }
 
-    private BufferQueryPlate andColumn(Column<?, ?, ?> columndao) {
+    private void andColumn(Column<?, ?, ?> column) {
         if (getFields() == null) setFields(new LinkedList<>());
-        getFields().add(getInfoColumn(columndao));
-        return this;
+        getFields().add(getInfoColumn(column));
     }
 
     @Override

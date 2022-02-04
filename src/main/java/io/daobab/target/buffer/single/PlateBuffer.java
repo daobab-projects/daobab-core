@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 public class PlateBuffer extends PlateBufferIndexed implements Plates, StatisticCollectorProvider, StatisticProvider {
 
     private static final long serialVersionUID = 2291798166104201910L;
-    protected transient boolean needRefresh = false;
     private final transient boolean transactionActive = false;
 
     private transient StatisticCollector statistic;
@@ -160,7 +159,6 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         return rv;
     }
 
-    @SuppressWarnings("unchecked")
     public Plates orderAndLimit(Query<?,?,?> query) {
         if (query == null) return this;
         PlateBuffer copy = new PlateBuffer(this);
@@ -302,21 +300,6 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     @Override
     public long countAny() {
         return size();
-    }
-
-
-    @Override
-    public void refreshImmediatelly() {
-        // no action here
-
-    }
-
-
-    @Override
-    public void markRefreshCache() {
-        //if (isCached()==false) throw new DeveloperException("You can callDaobabServer this method for cached DAO's only. DAO '"+getEntityClassSimpleName()+"' is not cached.");
-//		getLog().info("DAO "+getEntityClassSimpleName()+" marked as refresh needed.");
-        needRefresh = true;
     }
 
     @Override

@@ -19,7 +19,7 @@ public interface RSReader {
     static Plate readPlate(ResultSet rs, List<TableColumn> col) throws SQLException {
         Plate plate = new Plate(col);
         for (int i = 0; i < col.size(); i++) {
-            putColumnValueAtPlate(rs, i + 1, plate, col.get(i));
+            putColumnValueInPlate(rs, i + 1, plate, col.get(i));
         }
         return plate;
     }
@@ -31,17 +31,9 @@ public interface RSReader {
         return out;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
-    static Plate putColumnValueAtPlate(ResultSet rs, int colNo, Plate e, TableColumn col) throws SQLException {
+    @SuppressWarnings("unchecked")
+    static void putColumnValueInPlate(ResultSet rs, int colNo, Plate e, TableColumn col) throws SQLException {
         e.setValue(col, rs.getObject(colNo, col.getColumn().getFieldClass()));
-        return e;
-    }
-
-    static <E extends Entity> E readTableRow(ResultSet rs, E e, List<Column<E, ?, ?>> col) {
-        for (int i = 0; i < col.size(); i++) {
-            putColumnValueIntoEntity(rs, i + 1, e, col.get(i));
-        }
-        return e;
     }
 
     @SuppressWarnings({"unchecked"})
@@ -62,7 +54,6 @@ public interface RSReader {
         Class<F> columnType = col.getFieldClass();
         col.setValue((R) e, readSingleColumn(rs, colNo, columnType));
     }
-
 
     static <F> F readColumnValue(ResultSet rs, int colNo, Class<F> valueClazz) throws SQLException {
         return rs.getObject(colNo, valueClazz);

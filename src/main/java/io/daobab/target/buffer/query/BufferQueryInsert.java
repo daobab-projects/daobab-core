@@ -73,9 +73,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         }
 
         for (TableColumn ec : entity.columns()) {
-
             Column c = ec.getColumn();
-
             Column<E, Object, EntityRelation> ce = (Column<E, Object, EntityRelation>) c;
 
             Object oo = ce.getValueOf((EntityRelation) entity);

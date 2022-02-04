@@ -95,7 +95,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W)this;
     }
 
-
+    @SuppressWarnings("java:S1221")
     public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column, F val) {
         temp(column, EQ, val);
         return (W)this;
@@ -122,7 +122,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W)this;
     }
 
-
+    @SuppressWarnings("java:S1221")
     public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column,  R val) {
         temp(column, EQ, val);
         return (W)this;
@@ -149,9 +149,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W)this;
     }
 
-
-
-
+    @SuppressWarnings("java:S1221")
     public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column,  Field<?, F, ?> val) {
         temp(column, EQ, val);
         return (W)this;
@@ -241,6 +239,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W)this;
     }
 
+    @SuppressWarnings("java:S1221")
     public final <E extends Entity, F, R extends EntityRelation> W equal(Column<E, F, R> column,  InnerQueryEntity<? extends R> val) {
         temp(column, EQ, val);
         return (W)this;
@@ -289,7 +288,7 @@ public abstract class Where<W extends Where> extends WhereBase {
     }
 
 
-
+    @SuppressWarnings("java:S1221")
     public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column,  InnerQueryField<? extends R, F> val) {
         temp(column, EQ, val);
         return (W)this;
@@ -365,7 +364,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W) this;
     }
 
-
+    @SuppressWarnings("java:S1221")
     public final <K extends Composite<?>> W equal(CompositeColumns key, K val) {
         temp(key, EQ, val);
         return (W) this;
@@ -609,12 +608,8 @@ public abstract class Where<W extends Where> extends WhereBase {
 
             Object r = getWhereMap().get(RELATION + counter);
             if (r != null) rv.put(RELATION + counter, r);
-
         }
-
         return rv;
-
     }
-
 
 }

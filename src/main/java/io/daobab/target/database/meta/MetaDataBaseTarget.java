@@ -154,8 +154,6 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
         return metaPrimaryKeys;
     }
 
-
-
     private List<MetaForeignKey> readForeignKeys(ResultSet rs) throws SQLException {
         List<MetaForeignKey> foreignKeyList = new LinkedList<>();
         while (rs.next()) {
@@ -210,6 +208,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
                 .findMany());
     }
 
+    @SuppressWarnings("rawtypes")
     public Optional<MetaColumn> getMetaColumn(Column column) {
         return Optional.ofNullable(quickAccessMetaColumn.get(column.getEntityName() + "." + column.getColumnName()));
     }

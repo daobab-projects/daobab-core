@@ -175,7 +175,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             }
             sb.append(") ");
 
-
             if (!select) {
                 sb.append(LINE_SEPARATOR);
                 sb.append("values (");

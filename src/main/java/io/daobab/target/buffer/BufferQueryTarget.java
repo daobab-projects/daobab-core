@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes","unused"})
 public interface BufferQueryTarget extends Target, BufferQueryHandler {
 
 
@@ -27,7 +27,7 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
     default <E extends Entity> boolean insertAll(Collection<E> entities) {
         OpenedTransactionBufferTarget transactionTarget = this.beginTransaction();
         for (E entity : entities) {
-            BufferQueryInsert<E> q = new BufferQueryInsert<E>(transactionTarget, entity);
+            BufferQueryInsert<E> q = new BufferQueryInsert<>(transactionTarget, entity);
             q.execute(false);
         }
         transactionTarget.commit();

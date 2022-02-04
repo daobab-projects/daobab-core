@@ -4,7 +4,6 @@ import io.daobab.error.DaobabException;
 import io.daobab.error.TargetMandatoryException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.target.database.query.DaobabQueryDelete;
 import io.daobab.query.base.QueryType;
 import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.transaction.Propagation;
@@ -16,7 +15,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E, BufferQueryDelete<E>> implements DaobabQueryDelete {
+public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E, BufferQueryDelete<E>> {
 
     private E entity;
 
