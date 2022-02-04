@@ -21,8 +21,6 @@ public interface QueryHaving<Q extends Query> {
 
     void setHavingWrapper(Having havingWrapper);
 
-
-
     default Q having(Having wrapper) {
         setHavingWrapper(wrapper);
         return (Q) this;
@@ -40,7 +38,7 @@ public interface QueryHaving<Q extends Query> {
 
 
     default <F extends Number, R extends EntityRelation> Q having(ColumnFunction<? extends Entity, F, R, F> col, InnerQueryField<? extends R, F> val) {
-//        setHavingWrapper(new Having().in(col, val));
+        setHavingWrapper(new Having().in(col, val));
         return (Q) this;
     }
 

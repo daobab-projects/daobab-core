@@ -208,6 +208,16 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
 
     @Override
     public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
-        return null;
+        throw new RemoteTargetCanNotHandleOpenedTransactionException();
+    }
+
+    @Override
+    public <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> query) {
+        throw new RemoteTargetCanNotHandleOpenedTransactionException();
+    }
+
+    @Override
+    public long count(DataBaseQueryBase<?, ?> query) {
+        throw new RemoteTargetCanNotHandleOpenedTransactionException();
     }
 }

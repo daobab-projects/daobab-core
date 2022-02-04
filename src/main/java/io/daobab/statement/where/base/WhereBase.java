@@ -1,6 +1,7 @@
 package io.daobab.statement.where.base;
 
 import io.daobab.error.ColumnMandatory;
+import io.daobab.error.DaobabException;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
@@ -16,6 +17,7 @@ import java.util.*;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings({"unchecked","rawtypes","unused","UnusedReturnValue"})
 public abstract class WhereBase {
 
     protected static final String WRAPPER = "WRAPPER";
@@ -29,11 +31,11 @@ public abstract class WhereBase {
     protected static final String DOT = ".";
     private Map<String, Object> whereMap = new HashMap<>();
     private int counter = 1;
-    private long optimisation_wage=0;
+    private long optimisationWage =0;
     protected static final String MAY_BE_INDEXED_IN_BUFFER = "index";
 
     public boolean startsFromPK(){
-        return optimisation_wage>0&&optimisation_wage<200;
+        return optimisationWage >0&& optimisationWage <200;
     }
 
     @SuppressWarnings("unchecked")
@@ -41,15 +43,15 @@ public abstract class WhereBase {
         if (map == null || map.isEmpty()) return null; //TODO: Exception
 
         Where<?> rv;
-        String rel = (String) map.get(DictRemoteKey.REL_BETWEEN_EXPRESSIONS);
-        if (AND.equals(rel)) {
+        String relation = (String) map.get(DictRemoteKey.REL_BETWEEN_EXPRESSIONS);
+        if (AND.equals(relation)) {
             rv = new WhereAnd();
-        } else if (OR.equals(rel)) {
+        } else if (OR.equals(relation)) {
             rv = new WhereOr();
-        } else if (NOT.equals(rel)) {
+        } else if (NOT.equals(relation)) {
             rv = new WhereNot();
         } else {
-            return null;//TODO: Exception
+            throw new DaobabException("Invalid relation: "+relation);
         }
 
         boolean endofconditions = false;
@@ -142,16 +144,16 @@ public abstract class WhereBase {
     public Map<String, Object> toMap() {
         Map<String, Object> rv = new HashMap<>();
         rv.put(DictRemoteKey.REL_BETWEEN_EXPRESSIONS, getRelationBetweenExpressions());
-        for (String key : whereMap.keySet()) {
-            Object val = whereMap.get(key);
+        for (Map.Entry<String,Object> entry : whereMap.entrySet()) {
+            Object val=entry.getValue();
             if (val instanceof Entity) {
-                rv.put(key, Marschaller.marschallEntity((Entity) val));
+                rv.put(entry.getKey(), Marschaller.marschallEntity((Entity) val));
             } else if (val instanceof Column) {
-                rv.put(key, Marschaller.marschallColumnToString((Column) val));
+                rv.put(entry.getKey(), Marschaller.marschallColumnToString((Column) val));
             } else if (val instanceof Where) {
-                rv.put(key, ((Where<?>) val).toMap());
+                rv.put(entry.getKey(), ((Where<?>) val).toMap());
             } else {
-                rv.put(key, val);
+                rv.put(entry.getKey(), val);
             }
         }
         return rv;
@@ -159,7 +161,7 @@ public abstract class WhereBase {
 
 
     public void optimize() {
-        if (optimisation_wage>0){
+        if (optimisationWage >0){
             return;
         }
         Map<Long, List<Integer>> map = new HashMap<>();
@@ -207,7 +209,7 @@ public abstract class WhereBase {
                 counter++;
             }
         }
-        optimisation_wage=Collections.min(map.keySet());
+        optimisationWage =Collections.min(map.keySet());
     }
 
     public static <W extends Where>  Where<W> get(Where<W> where,int key){

@@ -7,7 +7,7 @@ import io.daobab.statement.where.base.Where;
  */
 public class WhereNot extends Where<WhereNot> {
 
-    public static final WhereNot not() {
+    public static WhereNot not() {
         return new WhereNot();
     }
 
@@ -24,7 +24,7 @@ public class WhereNot extends Where<WhereNot> {
         return new WhereOr();
     }
 
-    public WhereNot or(Where where) {
+    public WhereNot or(Where<?> where) {
         where.optimize();
         temp(where);
         return this;

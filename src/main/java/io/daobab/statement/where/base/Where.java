@@ -21,7 +21,7 @@ import static io.daobab.statement.condition.Operator.*;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({"unchecked","rawtypes","unused","UnusedReturnValue"})
 public abstract class Where<W extends Where> extends WhereBase {
 
     public boolean isEmpty() {
@@ -430,7 +430,6 @@ public abstract class Where<W extends Where> extends WhereBase {
 
             @Override
             public void setValue(R entity, F value) {
-
             }
 
             @Override
@@ -455,7 +454,6 @@ public abstract class Where<W extends Where> extends WhereBase {
         }
 
         if (column == null) throw new ColumnMandatory();
-        if (operator == null) throw new NullOperator();
 
         put(KEY + getCounter(), column);
         put(RELATION + getCounter(), operator);
@@ -581,15 +579,15 @@ public abstract class Where<W extends Where> extends WhereBase {
     public Where clone() {
 
         Where rv;
-        String rel = (String) getWhereMap().get(DictRemoteKey.REL_BETWEEN_EXPRESSIONS);
-        if (AND.equals(rel)) {
+        String relation = (String) getWhereMap().get(DictRemoteKey.REL_BETWEEN_EXPRESSIONS);
+        if (AND.equals(relation)) {
             rv = new WhereAnd();
-        } else if (OR.equals(rel)) {
+        } else if (OR.equals(relation)) {
             rv = new WhereOr();
-        } else if (NOT.equals(rel)) {
+        } else if (NOT.equals(relation)) {
             rv = new WhereNot();
         } else {
-            return null;//TODO: Exception
+            throw new DaobabException("Invalid relation: "+relation);
         }
 
         for (int counter = 1; counter < getCounter(); counter++) {

@@ -41,28 +41,13 @@ public interface QueryWhere<Q extends Query> {
         return (Q) this;
     }
 
+    @SuppressWarnings("java:S1845")
     default Q whereOr(UnaryOperator<WhereOr> condition) {
         WhereOr or = new WhereOr();
         or = condition.apply(or);
         setWhereWrapper(or);
         return (Q) this;
     }
-
-
-//    default <F, R extends EntityRelation> Q where(Column<? extends Entity, F, R> col, InnerQueryField<? extends R, F> val) {
-//        setWhereWrapper(new WhereAND().in(col, val));
-//        return (Q) this;
-//    }
-
-//    default <E extends Entity, F, R extends EntityRelation> Q where(Column<E, F, R> column, F val) {
-//        setWhereWrapper(new WhereAND().equal(column, val));
-//        return (Q) this;
-//    }
-//
-//    default <E extends Entity, F, R extends EntityRelation> Q where(Column<E, F, R> column, R val) {
-//        setWhereWrapper(new WhereAND().equal(column, column.getValueOf(val)));
-//        return (Q) this;
-//    }
 
     default <E extends Entity, F, R extends EntityRelation> Q whereIfNotNull(Column<E, F, R> column, F val) {
         if (val != null) setWhereWrapper(new WhereAnd().equal(column, val));
@@ -182,16 +167,6 @@ public interface QueryWhere<Q extends Query> {
         return (Q) this;
     }
 
-//    default <F, R extends EntityRelation> Q where(Column<?, F, R> column, Operator operator, Entities<? extends R> val) {
-//        setWhereWrapper(new WhereAND().and(column, operator, val));
-//        return (Q) this;
-//    }
-
-//    default <F> Q where(Column<?, F, ?> column, Column<?, F, ?> column2) {
-//        setWhereWrapper(new WhereAND().equal(column, column2));
-//        return (Q) this;
-//    }
-
     default <F> Q whereEqual(Column<?, F, ?> column, Column<?, F, ?> column2) {
         setWhereWrapper(new WhereAnd().equal(column, column2));
         return (Q) this;
@@ -226,21 +201,6 @@ public interface QueryWhere<Q extends Query> {
         setWhereWrapper(new WhereAnd().between(column, valueFrom, valueTo));
         return (Q) this;
     }
-
-
-//    /**
-//     * @param column-   representation of table column or class field
-//     * @param operator- logical relation
-//     * @param column2-  representation of table column or class field
-//     * @param <F>       value type
-//     * @return WhereAND
-//     */
-//    default <F> Q whereColumns(Column<?, F, ?> column, Operator operator, Column<?, F, ?> column2) {
-//        setWhereWrapper(new WhereAND().and(column, operator, column2));
-//        return (Q) this;
-//    }
-
-
 
     default <E extends Entity, F, R extends EntityRelation> Q whereEqual(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         setWhereWrapper(new WhereAnd().equal(column, val));
@@ -331,7 +291,6 @@ public interface QueryWhere<Q extends Query> {
         setWhereWrapper(new WhereAnd().notLike(column, val));
         return (Q) this;
     }
-
 
     default <E extends Entity, F, R extends EntityRelation> Q whereIn(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().in(column, val));

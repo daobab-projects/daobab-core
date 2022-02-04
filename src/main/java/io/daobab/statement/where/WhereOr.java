@@ -7,7 +7,7 @@ import io.daobab.statement.where.base.Where;
  */
 public class WhereOr extends Where<WhereOr> {
 
-    public static final WhereOr or() {
+    public static WhereOr or() {
         return new WhereOr();
     }
 
@@ -16,13 +16,13 @@ public class WhereOr extends Where<WhereOr> {
         super();
     }
 
-    public WhereOr(Where... whereAnds) {
-        for (Where where : whereAnds) {
+    public WhereOr(Where<?>... whereAnds) {
+        for (Where<?> where : whereAnds) {
             temp(where);
         }
     }
 
-    public WhereOr or(Where where) {
+    public WhereOr or(Where<?> where) {
         where.optimize();
         temp(where);
         return this;

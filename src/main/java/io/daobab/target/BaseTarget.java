@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import static java.lang.String.format;
+
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
@@ -41,22 +43,14 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         return log;
     }
 
-
     protected Map<Entity, LinkedList<DaobabInterceptor>> getInterceptorsMap() {
         return interceptors;
     }
-
 
     public void addInterceptorForAllEntities(DaobabInterceptor interceptor) {
         addInterceptor(interceptor, entityAny);
     }
 
-    /**
-     * Add interceptor to single Entity
-     *
-     * @param interceptor
-     * @param entity
-     */
     private void addInterceptor(DaobabInterceptor interceptor, Entity entity) {
         if (entity == null)
             throw new DaobabException("You cannot add interceptor to null entity. If you want to add interceptor to any Entity into target, use addInterceptorForAllEntities(DaobabInterceptor interceptor) method.");
@@ -65,28 +59,27 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         LinkedList<DaobabInterceptor> interceptors_for_any_entity = getInterceptorsMap().get(entityAny);
 
         if (interceptors_for_any_entity.contains(interceptor) && !EntityAny.class.getName().equals(entity.getClass().getName()) ) {
-            getLog().warn("Interceptor " + interceptor.getClass().getName() + " is already added to any entity into target " + this.getClass().getName());
+            getLog().warn(format("Interceptor %s is already added to any entity into target %s"  , interceptor.getClass().getName(),this.getClass().getName()));
             return;
         }
 
-        boolean first_interceptor = false;
+        boolean firstInterceptor = false;
         if (interceptors == null) {
             interceptors = new LinkedList<>();
-            first_interceptor = true;
+            firstInterceptor = true;
         }
         if (interceptors.contains(interceptor)) {
-            getLog().warn("Interceptor " + interceptor.getClass().getName() + " is already added to target " + this.getClass().getName());
+            getLog().warn(format("Interceptor %s already added to a target %s",interceptor.getClass().getName(), this.getClass().getName()));
             return;
         }
 
         interceptors.add(interceptor);
-        getLog().info("Interceptor " + interceptor.getClass().getName() + " added succesfully to target " + this.getClass().getName());
+        getLog().info(format("Interceptor %s added successfully to a target %s", this.getClass().getName(),this.getClass().getName()));
 
-        if (first_interceptor) {
+        if (firstInterceptor) {
             getInterceptorsMap().put(entity, interceptors);
         }
     }
-
 
     public void addInterceptor(DaobabInterceptor interceptor, Entity... entities) {
         if (entities == null)
@@ -97,13 +90,12 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         }
     }
 
-
-    protected List<DaobabInterceptor> getInterceptorsForEntity(Entity entity) {
-        List<DaobabInterceptor> rv = getInterceptorsForEntity(entityAny);
-        if (rv == null) rv = new LinkedList<>();
-        rv.addAll(getInterceptorsForEntity(entity));
-        return rv;
-    }
+//    protected List<DaobabInterceptor> getInterceptorsForEntity(Entity entity) {
+//        List<DaobabInterceptor> rv = getInterceptorsForEntity(entityAny);
+//        if (rv == null) rv = new LinkedList<>();
+//        rv.addAll(getInterceptorsForEntity(entity));
+//        return rv;
+//    }
 
     protected boolean areInterceptorInUse() {
         return interceptors != null;
@@ -112,9 +104,9 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     private void handleInterceptorMethod(Entity entity, BiConsumer<Entity, DaobabInterceptor> consumer) {
         if (!areInterceptorInUse()) return;
         if (entity == null) return;
-        for (DaobabInterceptor interceptor : getInterceptorsForEntity(entity)) {
-            consumer.accept(entity, interceptor);
-        }
+//        for (DaobabInterceptor interceptor : getInterceptorsForEntity(entity)) {
+//            consumer.accept(entity, interceptor);
+//        }
     }
 
     protected void beforeInsert(Entity entity) {

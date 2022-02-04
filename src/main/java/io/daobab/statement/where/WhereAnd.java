@@ -7,7 +7,7 @@ import io.daobab.statement.where.base.Where;
  */
 public class WhereAnd extends Where<WhereAnd> {
 
-    public static final WhereAnd and() {
+    public static WhereAnd and() {
         return new WhereAnd();
     }
 
@@ -22,7 +22,7 @@ public class WhereAnd extends Where<WhereAnd> {
      * @param val - value
      * @return WhereAND
      */
-    public final WhereAnd and(Where val) {
+    public final WhereAnd and(Where<?> val) {
         val.optimize();
         temp(val);
         return this;
@@ -36,8 +36,8 @@ public class WhereAnd extends Where<WhereAnd> {
         return new WhereNot();
     }
 
-    public WhereAnd(Where... whereAnds) {
-        for (Where where : whereAnds) {
+    public WhereAnd(Where<?>... whereAnds) {
+        for (Where<?> where : whereAnds) {
             temp(where);
         }
     }
