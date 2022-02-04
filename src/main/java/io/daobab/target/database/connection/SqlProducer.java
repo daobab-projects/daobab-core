@@ -55,7 +55,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     default <E extends Entity> String toDeleteSqlQuery(DataBaseQueryDelete<E> base) {
 
         IdentifierStorage storage = base.getIdentifierStorage();
-        Target dbtarget = base.getTarget();
+        Target dataBaseTarget = base.getTarget();
         StringBuilder sb = new StringBuilder();
 
         if (toNative(base, sb)) {
@@ -107,19 +107,17 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
         String query = sb.toString();
-        if (dbtarget.isLogQueriesEnabled()||base.isLogQueryEnabled()) {
-            dbtarget.getLog().info(query);
+        if (dataBaseTarget.isLogQueriesEnabled()||base.isLogQueryEnabled()) {
+            dataBaseTarget.getLog().info(query);
         } else {
-            dbtarget.getLog().debug(query);
+            dataBaseTarget.getLog().debug(query);
         }
         return sb.toString();
     }
 
-
     default <E extends Entity> QuerySpecialParameters toInsertSqlQuery(DataBaseQueryInsert<E> base) {
 
         QuerySpecialParameters rv = new QuerySpecialParameters();
-
         StringBuilder sb = new StringBuilder();
 
         if (toNative(base, sb)) {
@@ -191,9 +189,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             sb.append(toSqlQuery((DataBaseQueryBase<?,?>)base.getSelectQuery()));
         }
 
-
         rv.setQuery(sb);
-
         return rv;
     }
 
@@ -256,7 +252,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             base.setJoins(JoinTracker.calculateJoins(getTables(), from, (base.getWhereWrapper() == null ? new HashSet<>() : base.getWhereWrapper().getAllDaoInWhereClause()), base.getJoins()));
         }
 
-
         boolean countInUse = base.getCount() != null;
 
         sb.append(LINE_SEPARATOR);
@@ -291,7 +286,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 }
             }
         }
-
 
         for (JoinWrapper<?> joinWrapper : base.getJoins()) {
             storage.getIdentifierForColumn(joinWrapper.getByColumn());
@@ -353,8 +347,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 sb.append(base.getGroupByAlias()).append(SPACE);
             }else{
                 for (Iterator<Column<?, ?, ?>> it = base.getGroupBy().iterator(); it.hasNext(); ) {
-                    Column<?, ?, ?> d = it.next();
-                    sb.append(storage.getIdentifierForColumn(d));
+                    sb.append(storage.getIdentifierForColumn(it.next()));
                     if (it.hasNext()) sb.append(COMMASPACE);
                 }
             }
@@ -486,10 +479,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 sb.append("?");
                 rv.getSpecialParameters().put(rv.getCounter(), value);
                 rv.setCounter(rv.getCounter() + 1);
-            } else if (value instanceof String){
-                sb.append(APOSTROPHE);
-                sb.append(valueStringToSQL(value));
-                sb.append(APOSTROPHE);
             }else{
                 sb.append(APOSTROPHE);
                 sb.append(valueStringToSQL(value));
@@ -589,7 +578,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 if (distinct) {
                     sb.append("distinct ");
                 }
-//                sb.append(field == null ? daoidentifier : (daoidentifier + DOT + field.getColumnName()));
 
                 if (field==null){
                     sb.append(daoidentifier);
@@ -951,9 +939,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 sb.append(secondColumn);
             }
             sb.append(SPACE);
-
         }
-
         return sb;
     }
 
@@ -998,7 +984,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         sb.append(CLOSED_BRACKET).append(SPACE);
         return sb;
     }
-
 
     default StringBuilder toDate(String databasetype, Date value) {
         if (value instanceof java.sql.Timestamp) {
@@ -1076,7 +1061,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         boolean valueIsDate = value instanceof Date;
         boolean valueIsNumeric = value instanceof Number;
 
-
         //TODO: mysle ze moze sie okazac ze nadmiarowo podaje apostrowy. sprawdz na okolicznosc warunku lub (||)
         if (!relation.isRelationCollectionBased() && !valueIsDate && !valueIsNumeric) {
             sb.append(APOSTROPHE);
@@ -1113,13 +1097,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     @Override
     //TODO: check null
     default String toCallProcedureSqlQuery(String procedureName, ProcedureParameters input){
-        StringBuilder sb = new StringBuilder();
-        sb.append("call ").append(procedureName).append(SPACE).append(OPEN_BRACKET);
-
-        sb.append(input.getValues().stream().map(o->toSQL(o,new StringBuilder()).toString()).collect(Collectors.joining(",")));
-        sb.append(CLOSED_BRACKET);
-
-        return sb.toString();
+        return "call " + procedureName + SPACE + OPEN_BRACKET +
+                input.getValues().stream().map(o -> toSQL(o, new StringBuilder()).toString()).collect(Collectors.joining(",")) +
+                CLOSED_BRACKET;
     }
 
 }

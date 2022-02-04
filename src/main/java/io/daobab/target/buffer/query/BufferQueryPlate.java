@@ -113,7 +113,6 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
             //TODO: czy tu ma byc _unique??
             return 0;////return new Long(resultFieldUniqueSetFromCache((ColumnDefinition<E, ?,?>)cnt.getFieldForPointer(1)).size());
         }
-
     }
 
     public FieldsProvider<FlatPlate> flat() {
@@ -137,7 +136,6 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Plates findMany() {
         return getTarget().readPlateList(modifyQuery(this));
     }
@@ -168,20 +166,6 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
 
     public Optional<FlatPlate> findFirstAsFlat() {
         return flat().findFirst();
-    }
-
-    public List<Entity> getRelatedEntities() {
-        List<Entity> rv = new LinkedList<>();
-        if (getFields() == null || getFields().isEmpty()) return rv;
-        for (TableColumn col : getFields()) {
-            for (Entity e : rv) {
-                if (e.getEntityName().equals(col.getColumn().getInstance().getEntityName())) {
-                    continue;
-                }
-                rv.add(col.getColumn().getInstance());
-            }
-        }
-        return rv;
     }
 
     public boolean isSingleEntity() {

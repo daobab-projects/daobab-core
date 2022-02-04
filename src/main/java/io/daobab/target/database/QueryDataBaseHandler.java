@@ -46,4 +46,6 @@ public interface QueryDataBaseHandler extends Target, QueryHandler {
     <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> query);
 
     <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out);
+
+    long count(DataBaseQueryBase<?,?> query);
 }

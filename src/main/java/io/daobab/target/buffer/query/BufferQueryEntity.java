@@ -49,23 +49,6 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
     }
 
 
-//    /**
-//     * Prepare Select to usage into Where clause as subselect
-//     *
-//     * @return
-//     */
-//    @Override
-//    public InnerSelectManyEntities<E> innerResult() {
-//
-//        if (this.getTarget().isBuffer()) {
-//            return new InnerSelectManyEntities<>(findMany());
-//        } else {
-//            return new InnerSelectManyEntities<>(this);
-//        }
-//    }
-
-
-
     public long countBy(Count cnt) {
         setTempCount(cnt);
         if (cnt.countEntities()) {

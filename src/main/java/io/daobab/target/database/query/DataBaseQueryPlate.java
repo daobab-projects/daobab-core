@@ -106,9 +106,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
 
     public long countBy(Count cnt) {
         setTempCount(cnt);
-
-        DataBaseTarget emprov = (DataBaseTarget) getTarget();
-        return emprov.count(this);
+        return getTarget().count(this);
     }
 
     public FieldsProvider<FlatPlate> flat() {

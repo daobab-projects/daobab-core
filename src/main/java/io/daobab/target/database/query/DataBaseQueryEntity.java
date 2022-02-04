@@ -64,16 +64,11 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
 //        }
 //    }
 
-
-
     public long countBy(Count cnt) {
         setTempCount(cnt);
-
-        DataBaseTarget emprov = (DataBaseTarget) getTarget();
-        return emprov.count(this);
+        return getTarget().count(this);
 
     }
-
 
     @Override
     public long countAny() {
@@ -82,7 +77,6 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
 
 
     //---- RESULT SECTION
-
 
     @Override
     public Entities<E> findMany() {
@@ -95,12 +89,9 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
     }
 
     @Override
-    public <E1 extends Entity, F, R extends EntityRelation> InnerQueryField<E1, F> limitToField(Column<E1, F, R> field) {
-        // TODO Auto-generated method stub
-        DataBaseQueryField<E1, F> sbdl = new DataBaseQueryField<>(getTarget(), field);
-        sbdl = sbdl.where(getWhereWrapper());//.setOrderBy(this.orderBy);
-
-        return sbdl;
+    public <E1 extends Entity, F, R extends EntityRelation> InnerQueryField<E1, F> limitToField(Column<E1, F, R> column) {
+        DataBaseQueryField<E1, F> dataBaseQueryField = new DataBaseQueryField<>(getTarget(), column);
+        return dataBaseQueryField.where(getWhereWrapper());
     }
 
     @Override

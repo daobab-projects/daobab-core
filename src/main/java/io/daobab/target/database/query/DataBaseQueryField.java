@@ -67,14 +67,11 @@ import java.util.Map;
         }
 
         return new InnerSelectManyCells<>(this);
-
     }
 
     public long countBy(Count cnt) {
         setTempCount(cnt);
-
-        DataBaseTarget emprov = (DataBaseTarget) getTarget();
-        return emprov.count(this);
+        return getTarget().count(this);
     }
 
     @Override
