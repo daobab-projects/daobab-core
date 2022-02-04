@@ -22,5 +22,4 @@ public class FieldsBuffer<F> extends LinkedList<F> implements FieldsProvider<F> 
     }
 
 
-
 }

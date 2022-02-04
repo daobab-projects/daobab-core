@@ -9,7 +9,7 @@ public class MandatoryFunctionParameter extends DaobabException {
 
 
     public MandatoryFunctionParameter(String mode) {
-        super("Function "+mode+" is missing a mandatory parameter.");
+        super("Function " + mode + " is missing a mandatory parameter.");
     }
 
 }

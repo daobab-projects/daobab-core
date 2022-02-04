@@ -54,7 +54,7 @@ public interface Marschaller {
         String field = (String) map.get(DictRemoteKey.FIELD);
 
         Entity pointedEntity = fromRemote(target, entity);
-        if (pointedEntity==null||pointedEntity.columns()==null) return null;
+        if (pointedEntity == null || pointedEntity.columns() == null) return null;
 
         for (TableColumn entitycol : pointedEntity.columns()) {
             if (entitycol.getColumn().getFieldName().equals(field)) return entitycol.getColumn();

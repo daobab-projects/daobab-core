@@ -6,9 +6,6 @@ import io.daobab.error.DaobabSQLException;
 import io.daobab.error.EntityMandatory;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.target.database.query.DataBaseQueryDelete;
-import io.daobab.target.database.query.DataBaseQueryInsert;
-import io.daobab.target.database.query.DataBaseQueryUpdate;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.QueryHandler;
@@ -17,6 +14,9 @@ import io.daobab.target.database.meta.MetaDataBaseTarget;
 import io.daobab.target.database.meta.MetaDataTables;
 import io.daobab.target.database.meta.table.MetaColumn;
 import io.daobab.target.database.meta.table.MetaTable;
+import io.daobab.target.database.query.DataBaseQueryDelete;
+import io.daobab.target.database.query.DataBaseQueryInsert;
+import io.daobab.target.database.query.DataBaseQueryUpdate;
 import io.daobab.transaction.Propagation;
 import io.daobab.transaction.TransactionIndicator;
 
@@ -31,11 +31,11 @@ import java.util.function.BiFunction;
  */
 public abstract class DataBaseTarget extends BaseTarget implements DataBaseTargetLogic, MetaDataTables {
 
-    private List<Entity> tables = null;
-    private DataSource dataSource;
     String dataBaseProductName;
     String dataBaseMajorVersion;
     String dataBaseMinorVersion;
+    private List<Entity> tables = null;
+    private DataSource dataSource;
     private MetaDataBaseTarget metaData;
     private String schemaName;
     private String catalogName;
@@ -77,11 +77,11 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
             UUID.randomUUID().toString(); //to init UUID
             this.dataSource = initDataSource();
 
-            doSthOnConnection("",(x,c)->{
+            doSthOnConnection("", (x, c) -> {
                 try {
                     setSchemaName(c.getSchema());
                     setCatalogName(c.getCatalog());
-                }catch(SQLException e){
+                } catch (SQLException e) {
                     throw new DaobabSQLException(e);
                 }
                 return null;
@@ -98,7 +98,7 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
 
             setDataBaseProductName(meta.getDatabaseProductName());
             setDataBaseMajorVersion(meta.getDatabaseMajorVersion());
-            setDataBaseMinorVersion(""+meta.getDatabaseMinorVersion());
+            setDataBaseMinorVersion("" + meta.getDatabaseMinorVersion());
 
 
         }
@@ -138,15 +138,15 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     }
 
     public <E extends Entity> int delete(DataBaseQueryDelete<E> query, Propagation propagation) {
-        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).delete(query, transaction));
+        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).delete(query, transaction));
     }
 
     public <E extends Entity> int update(DataBaseQueryUpdate<E> query, Propagation propagation) {
-        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).update(query, transaction));
+        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).update(query, transaction));
     }
 
     public <E extends Entity> E insert(DataBaseQueryInsert<E> query, Propagation propagation) {
-        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).insert(query, transaction));
+        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).insert(query, transaction));
     }
 
     public <Y, T extends TransactionalTarget> Y handleTransactionalTarget(T target, Propagation propagation, BiFunction<QueryHandler, Boolean, Y> jobToDo) {
@@ -188,8 +188,8 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     public MetaColumn getMetaDataForColumn(Column<?, ?, ?> column) {
         if (column == null) throw new ColumnMandatory();
         return getMetaData().select(tabMetaColumn).where(new WhereAnd()
-                .equal(tabMetaColumn.colTableName(), column.getEntityName())
-                .equal(tabMetaColumn.colColumnName(), column.getColumnName()))
+                        .equal(tabMetaColumn.colTableName(), column.getEntityName())
+                        .equal(tabMetaColumn.colColumnName(), column.getColumnName()))
                 .findOne();
     }
 
@@ -208,8 +208,6 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     public void setCatalogName(String catalogName) {
         this.catalogName = catalogName;
     }
-
-
 
 
 }

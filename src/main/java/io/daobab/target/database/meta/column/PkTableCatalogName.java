@@ -44,13 +44,15 @@ public interface PkTableCatalogName<E extends EntityMap> extends EntityRelationM
 
             @Override
             public String getValue(PkTableCatalogName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "PkTableCatalogName");
+                if (entity == null)
+                    throw new AttemptToReadFromNullEntityException(getEntityClass(), "PkTableCatalogName");
                 return entity.getPkCatalogName();
             }
 
             @Override
             public void setValue(PkTableCatalogName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PkTableCatalogName");
+                if (entity == null)
+                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PkTableCatalogName");
                 entity.setPkCatalogName(param);
             }
 

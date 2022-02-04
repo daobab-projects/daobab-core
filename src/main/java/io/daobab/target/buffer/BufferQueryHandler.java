@@ -2,11 +2,11 @@ package io.daobab.target.buffer;
 
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
-import io.daobab.target.buffer.single.Entities;
-import io.daobab.target.buffer.single.Plates;
 import io.daobab.target.QueryHandler;
 import io.daobab.target.Target;
 import io.daobab.target.buffer.query.*;
+import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.buffer.single.Plates;
 import io.daobab.transaction.Propagation;
 
 import java.util.List;

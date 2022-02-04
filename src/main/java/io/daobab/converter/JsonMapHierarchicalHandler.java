@@ -15,7 +15,7 @@ public interface JsonMapHierarchicalHandler extends JsonHandler, Map<String, Map
         int size = keySet().size();
         int cnt = 0;
 
-        for (Entry<String,Map<String,Object>> entry: entrySet()) {
+        for (Entry<String, Map<String, Object>> entry : entrySet()) {
             cnt++;
             boolean lastOne = cnt == size;
             rv.append("\"").append(entry.getKey()).append("\":");

@@ -69,8 +69,8 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
 
     default boolean equalsField(Field another) {
         return
-           getEntityName().equals(another.getEntityName())
-             && getEntityClass().equals(another.getEntityClass());
+                getEntityName().equals(another.getEntityName())
+                        && getEntityClass().equals(another.getEntityClass());
     }
 
 

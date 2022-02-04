@@ -8,8 +8,8 @@ public enum MetaRule {
     RESTRICT,
     SET_DEFAULT;
 
-    public static MetaRule ofString(String str){
-        if (str==null) return null;
+    public static MetaRule ofString(String str) {
+        if (str == null) return null;
         if (str.endsWith("NoAction")) return NO_ACTION;
         if (str.endsWith("KeyCascade")) return CASCADE;
         if (str.endsWith("KeySetNull")) return SET_NULL;

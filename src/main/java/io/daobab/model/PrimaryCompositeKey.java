@@ -1,21 +1,21 @@
 package io.daobab.model;
 
 import io.daobab.error.DaobabException;
-import io.daobab.target.database.query.DataBaseQueryDelete;
 import io.daobab.query.base.QueryWhisperer;
 import io.daobab.statement.condition.SetFields;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
-import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
-import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.DataBaseTarget;
+import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.DataBaseQueryDelete;
+import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
 import io.daobab.transaction.Propagation;
 
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes","UnusedReturnValue","unused"})
+@SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface PrimaryCompositeKey<E extends Entity, K extends Composite> extends EntityRelation<E>, Composite<E>, QueryWhisperer {
 
 

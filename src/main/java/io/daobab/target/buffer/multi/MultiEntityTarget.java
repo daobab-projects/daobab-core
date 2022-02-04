@@ -3,8 +3,8 @@ package io.daobab.target.buffer.multi;
 import io.daobab.error.TargetNotSupports;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
-import io.daobab.result.*;
-import io.daobab.target.*;
+import io.daobab.result.EntitiesJoined;
+import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.target.buffer.bytebyffer.PlateBufferIndexed;
 import io.daobab.target.buffer.query.*;
@@ -88,12 +88,12 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());
 
-        if (query.getJoins().isEmpty()){
+        if (query.getJoins().isEmpty()) {
             return cached.readEntityList(query);
-        }else{
-            Plates plates=makeJoinJob(query,cached);
-            List<E> entityList=plates.stream().map(p->p.getEntity(query.getEntityClass())).collect(Collectors.toList());
-            return new EntityList<>(entityList,query.getEntityClass());
+        } else {
+            Plates plates = makeJoinJob(query, cached);
+            List<E> entityList = plates.stream().map(p -> p.getEntity(query.getEntityClass())).collect(Collectors.toList());
+            return new EntityList<>(entityList, query.getEntityClass());
         }
     }
 
@@ -102,11 +102,11 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());
 
-        if (query.getJoins().isEmpty()){
+        if (query.getJoins().isEmpty()) {
             return cached.readEntity(query);
-        }else{
-            Plates plates=makeJoinJob(query,cached);
-            if (plates.isEmpty()){
+        } else {
+            Plates plates = makeJoinJob(query, cached);
+            if (plates.isEmpty()) {
                 return null;
             }
             return plates.get(0).getEntity(query.getEntityClass());
@@ -117,11 +117,11 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     public Plate readPlate(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         Entities<?> cached = getEntities(query.getEntityClass());
-        if (query.getJoins().isEmpty()){
+        if (query.getJoins().isEmpty()) {
             return cached.readPlate(query);
-        }else{
-            Plates plates=makeJoinJob(query,cached);
-            if (plates.isEmpty()){
+        } else {
+            Plates plates = makeJoinJob(query, cached);
+            if (plates.isEmpty()) {
                 return null;
             }
             return plates.readPlate(query);
@@ -132,15 +132,15 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     public <E extends Entity, F> F readField(BufferQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());
-        if (query.getJoins().isEmpty()){
+        if (query.getJoins().isEmpty()) {
             return cached.readField(query);
-        }else{
-            Plates plates=makeJoinJob(query,cached);
-            if (plates.isEmpty()){
+        } else {
+            Plates plates = makeJoinJob(query, cached);
+            if (plates.isEmpty()) {
                 return null;
             }
-            Column<?,?,?> col=query.getFields().get(0).getColumn();
-            return (F)plates.get(0).getValue(col);
+            Column<?, ?, ?> col = query.getFields().get(0).getColumn();
+            return (F) plates.get(0).getValue(col);
         }
     }
 
@@ -168,11 +168,11 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     public <E extends Entity, F> List<F> readFieldList(BufferQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Entities<E> cached = getEntities(query.getEntityClass());
-        if (query.getJoins().isEmpty()){
+        if (query.getJoins().isEmpty()) {
             return cached.readFieldList(query);
-        }else{
-            Column<?,?,?> col=query.getFields().get(0).getColumn();
-            return (List<F>)makeJoinJob(query,cached).stream().map(p->p.getValue(col)).collect(Collectors.toList());
+        } else {
+            Column<?, ?, ?> col = query.getFields().get(0).getColumn();
+            return (List<F>) makeJoinJob(query, cached).stream().map(p -> p.getValue(col)).collect(Collectors.toList());
         }
     }
 
@@ -180,19 +180,19 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         Entities<?> cached = getEntities(query.getEntityClass());
 
-        if (query.getJoins().isEmpty()){
+        if (query.getJoins().isEmpty()) {
             return cached.readPlateList(query);
-        }else{
-            return makeJoinJob(query,cached);
+        } else {
+            return makeJoinJob(query, cached);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private PlateBuffer makeJoinJob(Query<?,?,?> query, List<? extends ColumnsProvider> entities){
-        EntitiesJoined entitiesJoined=new EntitiesJoined(this,entities,query);
+    private PlateBuffer makeJoinJob(Query<?, ?, ?> query, List<? extends ColumnsProvider> entities) {
+        EntitiesJoined entitiesJoined = new EntitiesJoined(this, entities, query);
 
-        PlateBuffer matched = new PlateBuffer(PlateBufferIndexed.finalFilter(entitiesJoined.toPlates(),query));
-        if (matched.isEmpty()){
+        PlateBuffer matched = new PlateBuffer(PlateBufferIndexed.finalFilter(entitiesJoined.toPlates(), query));
+        if (matched.isEmpty()) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return new PlateBuffer();
         }

@@ -7,19 +7,19 @@ import io.daobab.query.base.Query;
 
 public class DummyColumnRelation<E extends Entity, F, R extends EntityRelation> extends ColumnFunction<E, F, R, F> {
 
-    private Query<?,?,?> query;
+    private Query<?, ?, ?> query;
 
-    public DummyColumnRelation(Query<?,?,?> query, Column<E, F, R> column) {
+    public DummyColumnRelation(Query<?, ?, ?> query, Column<E, F, R> column) {
         super(column, "INNER_QUERY", column.getFieldClass());
         setQuery(query);
         identifier = getColumnName();
     }
 
-    public void setQuery(Query<?,?,?> query) {
-        this.query = query;
+    public Query<?, ?, ?> getQuery() {
+        return query;
     }
 
-    public Query<?,?,?> getQuery() {
-        return query;
+    public void setQuery(Query<?, ?, ?> query) {
+        this.query = query;
     }
 }

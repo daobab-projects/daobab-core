@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class JoinWrapper<E extends Entity> {
 
     private JoinType type;
@@ -33,14 +33,14 @@ public class JoinWrapper<E extends Entity> {
         setWhere(wh);
     }
 
-    public <E1 extends Entity, E2 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type,Column<?, ?, ?> leftColumn, Column<?,?, ?> rightColumn, boolean mark) {
+    public <E1 extends Entity, E2 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type, Column<?, ?, ?> leftColumn, Column<?, ?, ?> rightColumn, boolean mark) {
         setType(type);
         setByColumn(leftColumn);
         setByColumn2(rightColumn);
-        setTable((E)leftColumn.getInstance());
+        setTable((E) leftColumn.getInstance());
 
         WhereAnd wh = new WhereAnd();
-        wh.equalColumn( (Column<?, F, ?>)byColumn, (Column<?, F, ?>)byColumn2);
+        wh.equalColumn((Column<?, F, ?>) byColumn, (Column<?, F, ?>) byColumn2);
         setWhere(wh);
     }
 
@@ -106,9 +106,11 @@ public class JoinWrapper<E extends Entity> {
     public void setByColumn(Column<?, ?, ?> byColumn) {
         this.byColumn = byColumn;
     }
+
     public void setByColumn2(Column<?, ?, ?> byColumn) {
         this.byColumn2 = byColumn;
     }
+
     public E getTable() {
         return table;
     }

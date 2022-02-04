@@ -4,8 +4,7 @@ import io.daobab.converter.JsonListHandler;
 import io.daobab.model.Entity;
 import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesProvider;
-import io.daobab.target.*;
-import io.daobab.target.buffer.BufferQueryHandler;
+import io.daobab.target.Target;
 import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
 import io.daobab.target.buffer.multi.MultiEntityTarget;
@@ -41,12 +40,12 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
 
     void refreshImmediately();
 
-    List<E> filter(Query<E,?,?> query);
+    List<E> filter(Query<E, ?, ?> query);
 
-    default MultiEntityTarget joinEntities(Entities<? extends Entity>... targets){
-        List<Entities<? extends Entity>> list=new ArrayList<>();
+    default MultiEntityTarget joinEntities(Entities<? extends Entity>... targets) {
+        List<Entities<? extends Entity>> list = new ArrayList<>();
         list.add(this);
-        for (Entities<? extends Entity> e:targets){
+        for (Entities<? extends Entity> e : targets) {
             list.add(e);
         }
         return new SimpleMulti(list);

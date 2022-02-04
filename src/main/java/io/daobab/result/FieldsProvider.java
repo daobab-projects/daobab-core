@@ -1,11 +1,9 @@
 package io.daobab.result;
 
-import io.daobab.error.NullConsumer;
 import io.daobab.error.NullFunction;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -19,7 +17,7 @@ public interface FieldsProvider<F> {
 
 
     default Optional<F> findFirst() {
-        List<F> elements=findMany();
+        List<F> elements = findMany();
         return elements.isEmpty() ? Optional.empty() : Optional.of(elements.get(0));
     }
 

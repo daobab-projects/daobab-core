@@ -85,11 +85,11 @@ public class Order {
         LinkedList<OrderField> rv = new LinkedList<>();
         for (int i = 1; i < getCounter(); i++) {
             Object field = getObjectForPointer(i);
-            if (!(field instanceof Column)){
+            if (!(field instanceof Column)) {
                 continue;
             }
             String orderkind = getOrderKindForPointer(i);
-            rv.add(new OrderField<>(((Column)field), orderkind));
+            rv.add(new OrderField<>(((Column) field), orderkind));
         }
         return rv;
     }

@@ -22,9 +22,7 @@ public class MetaForeignKey extends Table implements
         UpdateRule<MetaForeignKey>,
         DeleteRule<MetaForeignKey>,
         FkName<MetaForeignKey>,
-        PkName<MetaForeignKey>
-
-{
+        PkName<MetaForeignKey> {
 
     @Override
     public String getEntityName() {

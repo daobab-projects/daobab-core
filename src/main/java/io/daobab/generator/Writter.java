@@ -17,6 +17,28 @@ public class Writter implements DaobabClassGeneratorTemplates {
     int generatedCompositesCount = 0;
     int generatedTargetsCount = 0;
 
+    private static boolean isCompositeKeyNameWithSuffixFree(String tableNameWithSuffix, int counter, List<GenerateTable> allTables) {
+        for (GenerateTable generateTable : allTables) {
+            if (GenerateFormatter.toCamelCase(generateTable.getTableName()).equals(counter == 0 ? tableNameWithSuffix : tableNameWithSuffix + counter)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static String createCompositeKeyName(String tableName, List<GenerateTable> allTables) {
+        String suffix = "Key";
+        String tableNameWithKeySuffix = tableName + suffix;
+        int counter = 0;
+        while (!isCompositeKeyNameWithSuffixFree(tableNameWithKeySuffix, counter, allTables)) {
+            counter++;
+        }
+        if (counter == 0) {
+            return tableNameWithKeySuffix;
+        }
+        return tableNameWithKeySuffix + counter;
+    }
+
     void generateCompositeKey(GenerateTable table, String path, boolean override) {
 
         String tableNameCamel = GenerateFormatter.toCamelCase(table.getTableName());
@@ -33,14 +55,13 @@ public class Writter implements DaobabClassGeneratorTemplates {
         generatedCompositesCount++;
     }
 
-
     void generateTarget(String catalog, String schema, List<GenerateTable> tables, String javapackage, String path, boolean override) {
         GenerateTarget target = new GenerateTarget();
         target.setSchemaName(schema);
         target.setCatalogName(catalog);
         target.setTableList(tables);
 
-        StringBuilder javaPackage = JavaPackageResolver.resolve(javapackage,catalog,schema);
+        StringBuilder javaPackage = JavaPackageResolver.resolve(javapackage, catalog, schema);
         target.setJavaPackage(javaPackage.toString());
 
         Replacer replacer = new Replacer();
@@ -62,7 +83,6 @@ public class Writter implements DaobabClassGeneratorTemplates {
 
         saveGeneratedTo(replacer.replaceAll(TABLESINTERFACETEMP), path, catalog, schema, null, target.getTargetTablesInterfaceName(), FileType.JAVA, override);
     }
-
 
     void createTypeScriptTables(String catalog, String schema, List<GenerateTable> entities, String path, boolean override) {
         if (entities == null) return;
@@ -115,7 +135,7 @@ public class Writter implements DaobabClassGeneratorTemplates {
         boolean pkExist = table.getPrimaryKeys() != null;
         String compositeKeyName = createCompositeKeyName(tableNameCamel, allTables);
 
-        StringBuilder javaPackage = JavaPackageResolver.resolve(javaackage,catalog,schema);
+        StringBuilder javaPackage = JavaPackageResolver.resolve(javaackage, catalog, schema);
         javaPackage.append(table.isView() ? ".view" : ".table");
 
         table.setJavaPackage(javaPackage.toString());
@@ -163,28 +183,6 @@ public class Writter implements DaobabClassGeneratorTemplates {
         saveGeneratedTo(replacer.replaceAll(tabtemp), path, catalog, schema, (table.isView() ? "view" : "table"), tableNameCamel, FileType.JAVA, override);
         generatedTablesCount++;
 
-    }
-
-    private static boolean isCompositeKeyNameWithSuffixFree(String tableNameWithSuffix, int counter, List<GenerateTable> allTables) {
-        for (GenerateTable generateTable : allTables) {
-            if (GenerateFormatter.toCamelCase(generateTable.getTableName()).equals(counter == 0 ? tableNameWithSuffix : tableNameWithSuffix + counter)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    static String createCompositeKeyName(String tableName, List<GenerateTable> allTables) {
-        String suffix = "Key";
-        String tableNameWithKeySuffix = tableName + suffix;
-        int counter = 0;
-        while (!isCompositeKeyNameWithSuffixFree(tableNameWithKeySuffix, counter, allTables)) {
-            counter++;
-        }
-        if (counter == 0) {
-            return tableNameWithKeySuffix;
-        }
-        return tableNameWithKeySuffix + counter;
     }
 
 }

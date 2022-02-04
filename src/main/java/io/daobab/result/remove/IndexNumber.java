@@ -8,24 +8,24 @@ import io.daobab.statement.condition.Operator;
 
 import java.util.*;
 
-public class IndexNumber<E extends Entity, F extends Number> extends Index<E,F>{
+public class IndexNumber<E extends Entity, F extends Number> extends Index<E, F> {
 
 
     protected IndexNumber(Column<E, ?, EntityRelation> indexedColumn, Map<F, List<E>> oneToManySubMap, List<E> nullValuesAsPK) {
-        super(indexedColumn,oneToManySubMap,nullValuesAsPK);
+        super(indexedColumn, oneToManySubMap, nullValuesAsPK);
     }
 
-    public IndexNumber(Column<E, ?, EntityRelation> indexedColumn, EntitiesBufferIndexed<E> buffer){
-        super(indexedColumn,buffer);
+    public IndexNumber(Column<E, ?, EntityRelation> indexedColumn, EntitiesBufferIndexed<E> buffer) {
+        super(indexedColumn, buffer);
     }
 
     public List<E> filter(Operator operator, Object key1) {
-        F key=(F)key1;
+        F key = (F) key1;
         NavigableMap<F, List<E>> subManyMap;
         switch (operator) {
             case IN:
             case EQ: {
-                subManyMap=new TreeMap<>();
+                subManyMap = new TreeMap<>();
                 List<E> manyResults = fieldEntitiesMap.get(key);
                 if (manyResults != null && !manyResults.isEmpty()) {
                     subManyMap.put(key, manyResults);
@@ -60,12 +60,12 @@ public class IndexNumber<E extends Entity, F extends Number> extends Index<E,F>{
     }
 
     public List<Number> filterPk(Operator operator, Object key1) {
-        F key=(F)key1;
+        F key = (F) key1;
         NavigableMap<F, List<Number>> subManyMap;
         switch (operator) {
             case IN:
             case EQ: {
-                subManyMap=new TreeMap<>();
+                subManyMap = new TreeMap<>();
                 List<Number> manyResults = fieldPkMap.get(key);
                 if (manyResults != null && !manyResults.isEmpty()) {
                     subManyMap.put(key, manyResults);
@@ -99,12 +99,12 @@ public class IndexNumber<E extends Entity, F extends Number> extends Index<E,F>{
         }
     }
 
-    protected Index< E, F> empty() {
+    protected Index<E, F> empty() {
         return new IndexNumber<>(getIndexedColumn(), new TreeMap<>(), nullValuesEntities);
     }
 
     @Override
     protected Index<E, F> newInstance(Column<E, ?, EntityRelation> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E> nullValuesAsPK) {
-        return new IndexNumber<>(indexedColumn,oneToManyMap,nullValuesAsPK);
+        return new IndexNumber<>(indexedColumn, oneToManyMap, nullValuesAsPK);
     }
 }

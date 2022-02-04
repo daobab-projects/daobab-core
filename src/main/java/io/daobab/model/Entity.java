@@ -19,25 +19,25 @@ public interface Entity extends DaobabDto, ColumnsProvider {
         return this.getClass();
     }
 
-    default <T extends Target& QueryHandler> void beforeInsert(T target) {
+    default <T extends Target & QueryHandler> void beforeInsert(T target) {
     }
 
-    default <T extends Target& QueryHandler>void beforeUpdate(T target) {
+    default <T extends Target & QueryHandler> void beforeUpdate(T target) {
     }
 
-    default <T extends Target& QueryHandler>void beforeDelete(T target) {
+    default <T extends Target & QueryHandler> void beforeDelete(T target) {
     }
 
-    default <T extends Target& QueryHandler>void afterSelect(T target) {
+    default <T extends Target & QueryHandler> void afterSelect(T target) {
     }
 
-    default <T extends Target& QueryHandler>void afterInsert(T target) {
+    default <T extends Target & QueryHandler> void afterInsert(T target) {
     }
 
-    default <T extends Target& QueryHandler>void afterUpdate(T target) {
+    default <T extends Target & QueryHandler> void afterUpdate(T target) {
     }
 
-    default <T extends Target& QueryHandler>void afterDelete(T target) {
+    default <T extends Target & QueryHandler> void afterDelete(T target) {
     }
 
 

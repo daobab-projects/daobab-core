@@ -1145,6 +1145,7 @@ public interface FunctionWhispererOracle {
 
 
     //TODO: other scenarios
+
     /**
      * AVG returns average value of expr.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
@@ -1152,7 +1153,6 @@ public interface FunctionWhispererOracle {
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> avg(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.AVG);
     }
-
 
 
     /**
@@ -1164,12 +1164,13 @@ public interface FunctionWhispererOracle {
     }
 
     //TODO: other scenarios
+
     /**
      * CORR returns the coefficient of correlation of a set of number pairs. You can use it as an aggregate or analytic function.
-     *
+     * <p>
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, and returns that datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> corr(ColumnOrQuery<E, F, R> column,ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> corr(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.CORR);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -1179,7 +1180,7 @@ public interface FunctionWhispererOracle {
      * COVAR_POP returns the population covariance of a set of number pairs. You can use it as an aggregate or analytic function.
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, and returns that datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> covarPop(ColumnOrQuery<E, F, R> column,ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> covarPop(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.COVAR_POP);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -1189,13 +1190,14 @@ public interface FunctionWhispererOracle {
      * COVAR_SAMP returns the sample covariance of a set of number pairs. You can use it as an aggregate or analytic function.
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, and returns that datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> covarSamp(ColumnOrQuery<E, F, R> column,ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> covarSamp(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.COVAR_SAMP);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
     }
 
     //TODO: expand it
+
     /**
      * CUME_DIST calculates the cumulative distribution of a value in a group of values. The range of values returned by CUME_DIST is >0 to <=1. Tie values always evaluate to the same cumulative distribution value.
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle Database determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, makes the calculation, and returns NUMBER.
@@ -1206,7 +1208,7 @@ public interface FunctionWhispererOracle {
 
     /**
      * DENSE_RANK computes the rank of a row in an ordered group of rows and returns the rank as a NUMBER. The ranks are consecutive integers beginning with 1. The largest rank value is the number of unique values returned by the query. Rank values are not skipped in the event of ties. Rows with equal values for the ranking criteria receive the same rank. This function is useful for top-N and bottom-N reporting.
-     *
+     * <p>
      * This function accepts as arguments any numeric datatype and returns NUMBER.
      * As an aggregate function, DENSE_RANK calculates the dense rank of a hypothetical row identified by the arguments of the function with respect to a given sort specification. The arguments of the function must all evaluate to constant expressions within each aggregate group, because they identify a single row within each group. The constant argument expressions and the expressions in the order_by_clause of the aggregate match by position. Therefore, the number of arguments must be the same and types must be compatible.
      * As an analytic function, DENSE_RANK computes the rank of each row returned from a query with respect to the other rows, based on the values of the value_exprs in the order_by_clause.
@@ -1216,9 +1218,10 @@ public interface FunctionWhispererOracle {
     }
 
     //TODO: expand it
+
     /**
      * FIRST and LAST are very similar functions. Both are aggregate and analytic functions that operate on a set of values from a set of rows that rank as the FIRST or LAST with respect to a given sorting specification. If only one row ranks as FIRST or LAST, the aggregate operates on the set with only one element.
-     *
+     * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      * When you need a value from the first or last row of a sorted group, but the needed value is not the sort key, the FIRST and LAST functions eliminate the need for self-joins or views and enable better performance.
      * The aggregate_function is any one of the MIN, MAX, SUM, AVG, COUNT, VARIANCE, or STDDEV functions. It operates on values from the rows that rank either FIRST or LAST. If only one row ranks as FIRST or LAST, the aggregate operates on a singleton (nonaggregate) set.
@@ -1232,7 +1235,7 @@ public interface FunctionWhispererOracle {
 
     /**
      * GROUP_ID distinguishes duplicate groups resulting from a GROUP BY specification. It is useful in filtering out duplicate groupings from the query result. It returns an Oracle NUMBER to uniquely identify duplicate groups. This function is applicable only in a SELECT statement that contains a GROUP BY clause.
-     *
+     * <p>
      * If n duplicates exist for a particular grouping, then GROUP_ID returns numbers in the range 0 to n-1.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> groupId() {
@@ -1250,7 +1253,6 @@ public interface FunctionWhispererOracle {
     /**
      * GROUPING_ID returns a number corresponding to the GROUPING bit vector associated with a row. GROUPING_ID is applicable only in a SELECT statement that contains a GROUP BY extension, such as ROLLUP or CUBE, and a GROUPING function. In queries with many GROUP BY expressions, determining the GROUP BY level of a particular row requires many GROUPING functions, which leads to cumbersome SQL. GROUPING_ID is useful in these cases.
      * GROUPING_ID is functionally equivalent to taking the results of multiple GROUPING functions and concatenating them into a bit vector (a string of ones and zeros). By using GROUPING_ID you can avoid the need for multiple GROUPING functions and make row filtering conditions easier to express. Row filtering is easier with GROUPING_ID because the desired rows can be identified with a single condition of GROUPING_ID = n. The function is especially useful when storing multiple levels of aggregation in a single table.
-     *
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> groupingId(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.GROUPING_ID);
@@ -1287,6 +1289,7 @@ public interface FunctionWhispererOracle {
     }
 
     //TODO: exp
+
     /**
      * PERCENTILE_CONT is an inverse distribution function that assumes a continuous distribution model. It takes a percentile value and a sort specification, and returns an interpolated value that would fall into that percentile value with respect to the sort specification. Nulls are ignored in the calculation.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
@@ -1313,16 +1316,16 @@ public interface FunctionWhispererOracle {
     /**
      * RANK calculates the rank of a value in a group of values. The return type is NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> rank (ColumnOrQuery<E, F, R> column) {
-        return new ColumnFunction<>(column, DictFunctionOracle.RANK );
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> rank(ColumnOrQuery<E, F, R> column) {
+        return new ColumnFunction<>(column, DictFunctionOracle.RANK);
     }
 
     /**
      * VAR_POP returns the population variance of a set of numbers after discarding the nulls in this set. You can use it as both an aggregate and analytic function.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> varPop (ColumnOrQuery<E, F, R> column) {
-        return new ColumnFunction<>(column, DictFunctionOracle.VAR_POP );
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> varPop(ColumnOrQuery<E, F, R> column) {
+        return new ColumnFunction<>(column, DictFunctionOracle.VAR_POP);
     }
 
     /**
@@ -1335,7 +1338,7 @@ public interface FunctionWhispererOracle {
 
     /**
      * VARIANCE returns the variance of expr. You can use it as an aggregate or analytic function.
-     *
+     * <p>
      * Oracle Database calculates the variance of expr as follows:
      * 0 if the number of rows in expr = 1
      * VAR_SAMP if the number of rows in expr > 1
@@ -1345,7 +1348,6 @@ public interface FunctionWhispererOracle {
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> variance(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.VARIANCE);
     }
-
 
 
 }

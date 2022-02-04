@@ -24,22 +24,22 @@ public class ColumnAnalysator {
     static void compileNames(List<GenerateColumn> storage) {
         storage.stream()
                 .map(GenerateColumn::getColumnName).forEach(columnName -> {
-            List<GenerateColumn> list = storage
-                    .stream()
-                    .filter(r -> r.getFinalFieldName() == null && columnName != null && columnName.equals(r.getColumnName()))
-                    .collect(Collectors.toList());
-            if (list.size() == 1) {
-                list.get(0).setFinalFieldName(toUpperCaseFirstCharacter(list.get(0).getFieldName().replaceAll("\\s", "")));
-            } else {
-                list.stream()
-                        .map(GenerateColumn::getFieldClass)
-                        .forEach(c ->
-                                list.stream()
-                                        .filter(r -> r.getFieldClass().equals(c))
-                                        .forEach(rf -> rf.setFinalFieldName(toUpperCaseFirstCharacter(rf.getFieldName() + (c.equals(byte[].class) ? "TypeByteArray" : "Type" + c.getSimpleName())))));
+                    List<GenerateColumn> list = storage
+                            .stream()
+                            .filter(r -> r.getFinalFieldName() == null && columnName != null && columnName.equals(r.getColumnName()))
+                            .collect(Collectors.toList());
+                    if (list.size() == 1) {
+                        list.get(0).setFinalFieldName(toUpperCaseFirstCharacter(list.get(0).getFieldName().replaceAll("\\s", "")));
+                    } else {
+                        list.stream()
+                                .map(GenerateColumn::getFieldClass)
+                                .forEach(c ->
+                                        list.stream()
+                                                .filter(r -> r.getFieldClass().equals(c))
+                                                .forEach(rf -> rf.setFinalFieldName(toUpperCaseFirstCharacter(rf.getFieldName() + (c.equals(byte[].class) ? "TypeByteArray" : "Type" + c.getSimpleName())))));
 
-            }
-        });
+                    }
+                });
 
 
         Set<String> finalNames = storage.stream()

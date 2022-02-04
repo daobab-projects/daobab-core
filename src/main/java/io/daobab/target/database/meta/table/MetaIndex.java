@@ -21,9 +21,7 @@ public class MetaIndex extends Table implements
         Ascending<MetaIndex>,
         Cardinality<MetaIndex>,
         TableColumnName<MetaIndex>,
-        FilterCondition<MetaIndex>
-
-         {
+        FilterCondition<MetaIndex> {
 
     @Override
     public String getEntityName() {

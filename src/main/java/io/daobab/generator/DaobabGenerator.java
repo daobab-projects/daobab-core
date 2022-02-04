@@ -4,8 +4,8 @@ package io.daobab.generator;
 import io.daobab.parser.ParserString;
 import io.daobab.property.DaobabProperty;
 import io.daobab.property.PropertyReader;
-import io.daobab.target.database.connection.ConnectionGateway;
 import io.daobab.target.database.DaobabDataBaseMetaData;
+import io.daobab.target.database.connection.ConnectionGateway;
 import io.daobab.target.database.connection.JdbcType;
 
 import javax.sql.DataSource;
@@ -25,39 +25,34 @@ import static java.lang.String.join;
  */
 public class DaobabGenerator {
 
-    private String filePath;
-    private String javaPackage;
-    private boolean override = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_OVERRIDE, "true");
-
-    private boolean generateTypeScript = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TS, "false");
-    private boolean generateTables = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TABLES, "true");
-    private boolean generateViews = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_VIEWS, "true");
-    private boolean generateColumns = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_COLUMNS, "true");
     private final boolean generateTargets = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TARGETS, "true");
     private final boolean generateTargetInterfaces = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TARGET_INTERFACE, "true");
-
-    private boolean schemaIntoTableName = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_USE_SCHEMA_INTO_TABLE_NAME, "false");
-
-    private String[] schemas;
-    private String[] catalogues;
     private final List<String> onlyAllowedTables = new ArrayList<>();
-
     int generatedColumnsCount = 0;
     int generatedTablesCount = 0;
     int generatedCompositesCount = 0;
     int generatedTargetsCount = 0;
+    private String filePath;
+    private String javaPackage;
+    private boolean override = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_OVERRIDE, "true");
+    private boolean generateTypeScript = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TS, "false");
+    private boolean generateTables = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TABLES, "true");
+    private boolean generateViews = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_VIEWS, "true");
+    private boolean generateColumns = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_COLUMNS, "true");
+    private boolean schemaIntoTableName = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_USE_SCHEMA_INTO_TABLE_NAME, "false");
+    private String[] schemas;
+    private String[] catalogues;
 
 
-    public void setSchemaIntoTableName(boolean enable) {
-        schemaIntoTableName = enable;
+    public DaobabGenerator() {
     }
 
     public boolean isSchemaIntoTableName() {
         return schemaIntoTableName;
     }
 
-
-    public DaobabGenerator() {
+    public void setSchemaIntoTableName(boolean enable) {
+        schemaIntoTableName = enable;
     }
 
     public void reverseEngineering(String url, String user, String pass, Class<? extends Driver> driver) {
@@ -257,7 +252,7 @@ public class DaobabGenerator {
         }
         column.setInterfaceName(interfaceName);
 
-        StringBuilder javaPackage = JavaPackageResolver.resolve(getPackage(),catalog,schema);
+        StringBuilder javaPackage = JavaPackageResolver.resolve(getPackage(), catalog, schema);
 
         javaPackage.append(".column");
 
@@ -546,7 +541,7 @@ public class DaobabGenerator {
         column.setColumnName(databaseColumnName);
         column.setDataType(jdbcType.getType());
 
-        StringBuilder javaPackage = JavaPackageResolver.resolve(getPackage(),catalog,schema);
+        StringBuilder javaPackage = JavaPackageResolver.resolve(getPackage(), catalog, schema);
 
         javaPackage.append(".column");
 

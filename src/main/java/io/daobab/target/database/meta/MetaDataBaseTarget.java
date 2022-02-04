@@ -3,13 +3,13 @@ package io.daobab.target.database.meta;
 import io.daobab.generator.TypeConverter;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
+import io.daobab.target.buffer.multi.AboveMultiEntityTarget;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
 import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.database.connection.JdbcType;
 import io.daobab.target.database.meta.column.dict.MetaRule;
 import io.daobab.target.database.meta.table.*;
-import io.daobab.target.buffer.multi.AboveMultiEntityTarget;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -58,15 +58,15 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
             foreignKeys.addAll(readForeignKeys(databaseMetaData.getExportedKeys(catalog, schema, mt.getTableName())));
             primaryKeys.addAll(readPrimaryKeys(databaseMetaData.getPrimaryKeys(catalog, schema, mt.getTableName())));
-            indexes.addAll(readIndexes(databaseMetaData.getIndexInfo(catalog, schema, mt.getTableName(), false,false)));
+            indexes.addAll(readIndexes(databaseMetaData.getIndexInfo(catalog, schema, mt.getTableName(), false, false)));
 
             ResultSet rsColumn = databaseMetaData.getColumns(catalog, schema, mt.getTableName(), "%");
 
             int counter = 0;
             while (rsColumn.next()) {
                 MetaColumn mc = new MetaColumn();
-                String columnName=rsColumn.getString("COLUMN_NAME");
-                mc.setColumnName(columnName.contains(" ")?"`"+columnName+"`":columnName);
+                String columnName = rsColumn.getString("COLUMN_NAME");
+                mc.setColumnName(columnName.contains(" ") ? "`" + columnName + "`" : columnName);
 //            mc.setPrimaryKey(mc.getColumnName().equals(primaryKeyColumn));
                 mc.setColumnSize(rsColumn.getInt("COLUMN_SIZE"));
                 mc.setDecimalDigits(rsColumn.getInt("DECIMAL_DIGITS"));
@@ -92,9 +92,9 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
         put(new EntityList<>(tables, MetaTable.class),
                 new EntityList<>(columns, MetaColumn.class),
-                new EntityList<>(foreignKeys,MetaForeignKey.class),
-                new EntityList<>(primaryKeys,MetaPrimaryKey.class),
-                new EntityList<>(indexes,MetaIndex.class),
+                new EntityList<>(foreignKeys, MetaForeignKey.class),
+                new EntityList<>(primaryKeys, MetaPrimaryKey.class),
+                new EntityList<>(indexes, MetaIndex.class),
                 getTargetSchemas());
     }
 
@@ -187,7 +187,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
     @Override
     public Entities<MetaTable> getMetaTables() {
-        return new EntityList<>(new ArrayList<>(quickAccessMetaTable.values()),MetaTable.class);
+        return new EntityList<>(new ArrayList<>(quickAccessMetaTable.values()), MetaTable.class);
     }
 
     @Override
@@ -197,15 +197,15 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
     @Override
     public Entities<MetaColumn> getMetaColumns() {
-        return new EntityList<>(new ArrayList<>(quickAccessMetaColumn.values()),MetaColumn.class);
+        return new EntityList<>(new ArrayList<>(quickAccessMetaColumn.values()), MetaColumn.class);
     }
 
     @Override
     public MetaEntity getMetaEntityFor(MetaTable metaTable) {
         return new MetaEntity(metaTable.getTableName(),
                 select(tabMetaColumn)
-                .whereEqual(tabMetaColumn.colTableName(),metaTable)
-                .findMany());
+                        .whereEqual(tabMetaColumn.colTableName(), metaTable)
+                        .findMany());
     }
 
     @SuppressWarnings("rawtypes")
@@ -216,7 +216,6 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
     public Optional<MetaTable> getMetaTable(Entity entity) {
         return Optional.ofNullable(quickAccessMetaTable.get(entity.getEntityName()));
     }
-
 
 
 }

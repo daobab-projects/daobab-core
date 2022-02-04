@@ -21,17 +21,14 @@ import java.util.UUID;
  */
 public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecord> implements StatisticCollector, ParserGeneral {
 
-    private int bufferSize = 500;
     private final String lineSep = System.getProperty("line.separator");
-
     private final boolean ignoreSuccessful = false;
+    protected Logger log = LoggerFactory.getLogger(this.getClass().getName());
+    private int bufferSize = 500;
     private long ignoreBelowMilliseconds = 0;
 
-    protected Logger log = LoggerFactory.getLogger(this.getClass().getName());
-
-
     @Override
-    public void send(Query<?,?,?> query) {
+    public void send(Query<?, ?, ?> query) {
         if (ignoreSuccessful) {
             return;
         }
@@ -49,7 +46,7 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
     }
 
     @Override
-    public void received(Query<?,?,?> query, Integer result) {
+    public void received(Query<?, ?, ?> query, Integer result) {
         if (ignoreSuccessful) {
             return;
         }
@@ -76,13 +73,13 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
     }
 
     @Override
-    public void error(Query<?,?,?> query, Throwable result) {
+    public void error(Query<?, ?, ?> query, Throwable result) {
         boolean daobabException = result instanceof DaobabException;
-        String cause="";
+        String cause = "";
         if (daobabException) {
             DaobabException daobabException1 = (DaobabException) result;
             cause = daobabException1.getStatusDesc();
-        }else{
+        } else {
             cause = result.getMessage();
         }
         StatisticRecord statisticRecord = get(query.getIdentifier());
@@ -99,8 +96,8 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
         statisticRecord.setExecutionTime(executionTime);
     }
 
-    private long getExecutionTime(StatisticRecord statisticRecord){
-        if (statisticRecord==null||statisticRecord.getResponseDate()==null||statisticRecord.getRequestDate()==null){
+    private long getExecutionTime(StatisticRecord statisticRecord) {
+        if (statisticRecord == null || statisticRecord.getResponseDate() == null || statisticRecord.getRequestDate() == null) {
             return 0;
         }
         return statisticRecord.getResponseDate().getTime() - statisticRecord.getRequestDate().getTime();
@@ -113,7 +110,7 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
             return "";
         }
 
-        String identifier=generateIdentifier();
+        String identifier = generateIdentifier();
         StatisticRecord statisticRecord = new StatisticRecord(identifier)
                 .setId(identifier)
                 .setRequestDate(toCurrentTimestamp())
@@ -152,13 +149,13 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
     }
 
     @Override
-    public void errorProcedure(String procedureName, String identifier, String query,  Throwable result) {
+    public void errorProcedure(String procedureName, String identifier, String query, Throwable result) {
         boolean daobabException = result instanceof DaobabException;
-        String couse="";
+        String couse = "";
         if (daobabException) {
             DaobabException daobabException1 = (DaobabException) result;
             couse = daobabException1.getStatusDesc();
-        }else{
+        } else {
             couse = result.getMessage();
         }
         StatisticRecord statisticRecord = get(identifier);

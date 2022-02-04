@@ -5,7 +5,7 @@ import io.daobab.statement.condition.Limit;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes","UnusedReturnValue","unused"})
+@SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryLimit<Q extends Query> {
 
     void setTempLimit(Limit limit);

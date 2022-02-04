@@ -62,15 +62,15 @@ public class GeneralWhereAnd<E> implements WherePredicate<E> {
 
         for (int i = 0; i < keys.size(); i++) {
 
-            Column column=keys.get(i);
+            Column column = keys.get(i);
 
             //if key is null, inner where is in use
-            if (column==null){
+            if (column == null) {
                 if (!predicates.get(i).test(entity)) return false;
                 continue;
             }
 
-            Object valueFromEntity = column.getValue((EntityRelation)entity);
+            Object valueFromEntity = column.getValue((EntityRelation) entity);
 
             //if at least one record into AND clause if false, entity doesn't match
             if (!predicates.get(i).test(valueFromEntity)) return false;

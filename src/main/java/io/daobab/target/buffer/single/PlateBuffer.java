@@ -7,9 +7,9 @@ import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.statement.condition.Limit;
 import io.daobab.statement.condition.base.OrderComparatorPlate;
-import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.buffer.bytebyffer.PlateBufferIndexed;
 import io.daobab.target.buffer.query.*;
+import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
 import io.daobab.target.protection.OperationType;
@@ -40,7 +40,8 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     private transient AccessProtector accessProtector = new BasicAccessProtector();
 
-    public PlateBuffer() {}
+    public PlateBuffer() {
+    }
 
     public PlateBuffer(List<Plate> entities) {
         super(entities);
@@ -94,11 +95,11 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         return rv;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private <E extends Entity, R extends EntityRelation> PlateBuffer resultPlateList(BufferQueryPlate query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        PlateBuffer matched = new PlateBuffer(filter((Query<E,?,?>) query));
-        if (matched.isEmpty()){
+        PlateBuffer matched = new PlateBuffer(filter((Query<E, ?, ?>) query));
+        if (matched.isEmpty()) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return new PlateBuffer();
         }
@@ -126,7 +127,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     private <E extends Entity, R extends EntityRelation, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         PlateBuffer matched = new PlateBuffer(filter(query));
-        if (matched.isEmpty()){
+        if (matched.isEmpty()) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return new ArrayList<>();
         }
@@ -138,7 +139,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private <E extends Entity, R extends EntityRelation, F> F readFieldFromBuffer(Plates entities, BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         PlateBuffer matched = new PlateBuffer(entities.filter(query));
@@ -159,14 +160,14 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         return rv;
     }
 
-    public Plates orderAndLimit(Query<?,?,?> query) {
+    public Plates orderAndLimit(Query<?, ?, ?> query) {
         if (query == null) return this;
         PlateBuffer copy = new PlateBuffer(this);
         if (query.getOrderBy() != null) {
             OrderComparatorPlate comparator = new OrderComparatorPlate(query.getOrderBy().toOrderFieldList());
             copy.sort(comparator);
             return copy.limit(query);
-        }else{
+        } else {
             return limit(query);
         }
     }
@@ -178,20 +179,20 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
             Limit limit = query.getLimit();
             if (limit.getOffset() + limit.getLimit() < size()) {
                 return new PlateBuffer(subList(limit.getOffset(), limit.getOffset() + limit.getLimit()));
-            }else if (limit.getOffset()>0){
+            } else if (limit.getOffset() > 0) {
                 return new PlateBuffer(subList(limit.getOffset(), size()));
             }
         }
         return this;
     }
 
-    private <E extends Entity> Plates limit(Query<E,?,?> query) {
+    private <E extends Entity> Plates limit(Query<E, ?, ?> query) {
         if (query == null) return this;
         if (query.getLimit() != null) {
             Limit limit = query.getLimit();
             if (limit.getOffset() + limit.getLimit() < size()) {
                 return new PlateBuffer(subList(limit.getOffset(), limit.getOffset() + limit.getLimit()));
-            }else if (limit.getOffset()>0){
+            } else if (limit.getOffset() > 0) {
                 return new PlateBuffer(subList(limit.getOffset(), size()));
             }
         }

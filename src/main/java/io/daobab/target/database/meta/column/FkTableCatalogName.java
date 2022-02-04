@@ -44,13 +44,15 @@ public interface FkTableCatalogName<E extends EntityMap> extends EntityRelationM
 
             @Override
             public String getValue(FkTableCatalogName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "FkTableCatalogName");
+                if (entity == null)
+                    throw new AttemptToReadFromNullEntityException(getEntityClass(), "FkTableCatalogName");
                 return entity.getFkCatalogName();
             }
 
             @Override
             public void setValue(FkTableCatalogName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FkTableCatalogName");
+                if (entity == null)
+                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FkTableCatalogName");
                 entity.setFkCatalogName(param);
             }
 

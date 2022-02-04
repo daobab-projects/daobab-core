@@ -2,8 +2,8 @@ package io.daobab.result.index;
 
 import io.daobab.model.Column;
 import io.daobab.model.EntityRelation;
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
 import io.daobab.statement.condition.Operator;
+import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +14,10 @@ import java.util.*;
  */
 public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
 
-    protected TreeMap<F, Collection<Integer>> valueIndex = new TreeMap<>();
-    protected List<Integer> nullValues = new LinkedList<>();
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final Column<?, ?, EntityRelation> indexedColumn;
+    protected TreeMap<F, Collection<Integer>> valueIndex = new TreeMap<>();
+    protected List<Integer> nullValues = new LinkedList<>();
     private int indexedColumnPosition = 0;
     private int indexedColumnOrder = 0;
     private boolean worthless = false;
@@ -69,7 +69,7 @@ public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
         switch (operator) {
             case IN:
             case EQ: {
-                NavigableMap<F, Collection<Integer>> subManyMap=new TreeMap<>();
+                NavigableMap<F, Collection<Integer>> subManyMap = new TreeMap<>();
                 subManyMap.putAll(valueIndex);
                 subManyMap.remove(key);
                 return toOneList(subManyMap, nullValues);
@@ -165,7 +165,7 @@ public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
         return false;
     }
 
-    protected Comparator<Integer> getKeyComparator(){
+    protected Comparator<Integer> getKeyComparator() {
         return Integer::compareTo;
     }
 

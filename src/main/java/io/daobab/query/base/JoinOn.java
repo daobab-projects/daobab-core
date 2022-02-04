@@ -10,12 +10,13 @@ public class JoinOn<E1 extends Entity, E2 extends Entity, F> {
 
     private Column<E1, F, ?> left;
     private Column<E2, F, ?> right;
+
     public JoinOn(Column<E1, F, ?> left, Column<E2, F, ?> right) {
         setLeft(left);
         setRight(right);
     }
 
-    public static <E1 extends Entity, E2 extends Entity, F> JoinOn<E1,E2,F> ON(Column<E1, F, ?> left, Column<E2, F, ?> right) {
+    public static <E1 extends Entity, E2 extends Entity, F> JoinOn<E1, E2, F> ON(Column<E1, F, ?> left, Column<E2, F, ?> right) {
         return new JoinOn<>(left, right);
     }
 

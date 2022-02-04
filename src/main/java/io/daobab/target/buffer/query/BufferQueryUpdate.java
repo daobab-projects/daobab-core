@@ -30,7 +30,7 @@ public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E
         fromRemote(target, remote);
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     //This is for the whole object update
     public <E1 extends PrimaryKey<E, F, ?>, F> BufferQueryUpdate(BufferQueryTarget target, E1 entity) {
         if (target == null) throw new TargetMandatoryException();

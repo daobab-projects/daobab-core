@@ -1,16 +1,15 @@
 package io.daobab.target.buffer.bytebyffer;
 
-import io.daobab.error.DaobabException;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
+import io.daobab.result.bytebuffer.BitField;
+import io.daobab.result.index.BitBufferIndexBase;
+import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
 import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.buffer.single.Plates;
-import io.daobab.result.bytebuffer.BitField;
-import io.daobab.result.index.BitBufferIndexBase;
 import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
-import io.daobab.target.buffer.query.*;
 import io.daobab.target.protection.OperationType;
 import io.daobab.transaction.Propagation;
 
@@ -179,7 +178,7 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
         return rv;
     }
 
-    public List<Plate> finalFilter(Query<?,?,?> query) {
+    public List<Plate> finalFilter(Query<?, ?, ?> query) {
         List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
         List<Plate> rv = new PlateByteBufferList(this, ids, query.getFields());
         return rv;
@@ -198,10 +197,10 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
     public <E1 extends Entity> Entities<E1> readEntityList(BufferQueryEntity<E1> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        Query<E1,?,?> q = query;
+        Query<E1, ?, ?> q = query;
         List<Plate> list = finalFilter(q);
         return new EntityList<>((List<E1>) list.stream()
-                .map(p ->p.toEntity((Class<EntityMap>)query.getEntityClass(), query.getFields()))
+                .map(p -> p.toEntity((Class<EntityMap>) query.getEntityClass(), query.getFields()))
                 .collect(Collectors.toList()), query.getEntityClass());
     }
 

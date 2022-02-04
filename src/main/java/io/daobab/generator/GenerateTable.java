@@ -162,10 +162,10 @@ public class GenerateTable {
             sb.append(",");
         }
 
-      //  if (getInheritedSubCompositeKeys().isEmpty()) {
-            sb.append(", " + Composite.class.getSimpleName());
-            sb.append("<" + tableCamelName + ">");
-      //  }
+        //  if (getInheritedSubCompositeKeys().isEmpty()) {
+        sb.append(", " + Composite.class.getSimpleName());
+        sb.append("<" + tableCamelName + ">");
+        //  }
 
         return sb.toString();
     }

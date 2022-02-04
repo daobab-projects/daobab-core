@@ -1,16 +1,17 @@
 package io.daobab.query.base;
 
-import io.daobab.model.*;
+import io.daobab.model.Column;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes","UnusedReturnValue","unused"})
+@SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryGroupBy<Q extends Query> {
 
-    List<Column<?,?,?>> getGroupBy();
+    List<Column<?, ?, ?>> getGroupBy();
+
     String getGroupByAlias();
 
     Q groupBy(String alias);

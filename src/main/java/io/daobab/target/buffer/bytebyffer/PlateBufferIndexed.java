@@ -27,6 +27,7 @@ public abstract class PlateBufferIndexed {
     protected PlateBufferIndexed() {
         this(new ArrayList<>());
     }
+
     protected PlateBufferIndexed(List<Plate> entities) {
         if (!entities.isEmpty()) {
             Plate entity = entities.get(0);
@@ -35,8 +36,8 @@ public abstract class PlateBufferIndexed {
         plateList = entities;
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
-    public static List<Plate> finalFilter(List<Plate> entities, Query<?,?,?> query) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static List<Plate> finalFilter(List<Plate> entities, Query<?, ?, ?> query) {
         int counter = 0;
 
         List<Plate> rv = new LinkedList<>();
@@ -82,7 +83,7 @@ public abstract class PlateBufferIndexed {
         return rv;//new EntityList<>(rv);
     }
 
-    public <E extends Entity> List<Plate> filter(Query<E,?,?> query) {
+    public <E extends Entity> List<Plate> filter(Query<E, ?, ?> query) {
         return finalFilter(plateList, query);
     }
 

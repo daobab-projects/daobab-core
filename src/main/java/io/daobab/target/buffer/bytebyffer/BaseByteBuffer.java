@@ -5,8 +5,6 @@ import io.daobab.model.Entity;
 import io.daobab.model.Plate;
 import io.daobab.model.TableColumn;
 import io.daobab.query.base.Query;
-import io.daobab.target.buffer.single.PlateBuffer;
-import io.daobab.target.buffer.single.Plates;
 import io.daobab.result.ResultBitBufferPositionWithSkipStepsWrapper;
 import io.daobab.result.bytebuffer.BitField;
 import io.daobab.result.bytebuffer.DictBitField;
@@ -20,6 +18,8 @@ import io.daobab.statement.where.base.WhereBase;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.target.buffer.query.*;
+import io.daobab.target.buffer.single.PlateBuffer;
+import io.daobab.target.buffer.single.Plates;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
 import io.daobab.target.protection.OperationType;
@@ -215,7 +215,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
     }
 
     @SuppressWarnings("unchecked")
-    public Integer getColumnIntoEntityPosition(Column<?,?,?> column) {
+    public Integer getColumnIntoEntityPosition(Column<?, ?, ?> column) {
         for (int i = 0; i < columns.size(); i++) {
             if (columns.get(i).getColumn().equalsColumn(column)) {
                 return i;
@@ -224,7 +224,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
         return null;
     }
 
-    public Integer getBufferPositionOfColumn(Column<?,?,?> column) {
+    public Integer getBufferPositionOfColumn(Column<?, ?, ?> column) {
         Integer columnIntoEntityPosition = getColumnIntoEntityPosition(column);
 //        if (...)
         return columnsPositionsQueue[columnIntoEntityPosition];
@@ -318,8 +318,8 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
         return false;
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
-    protected List<Integer> finalFilter(ResultBitBufferPositionWithSkipStepsWrapper rw, Query<?,?,?> query) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected List<Integer> finalFilter(ResultBitBufferPositionWithSkipStepsWrapper rw, Query<?, ?, ?> query) {
         int counter = 0;
         List<Integer> entitiesToHandle = rw == null ? null : rw.getEntityPointers();
         List<Integer> skipSteps = rw == null ? Collections.emptyList() : rw.getSkipSteps();
@@ -389,7 +389,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
         return rv;
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     //Filters provides ids or all (if list is null) for provided wrapper
     protected ResultBitBufferPositionWithSkipStepsWrapper filterUsingIndexes(List<Integer> entitiesToHandle, Where wrapper) {
 
@@ -529,7 +529,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
         return new ResultBitBufferPositionWithSkipStepsWrapper(pointers, skipSteps);
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     //If there is OR, indexes may be in in use ONLY if all where arguments have them.
     private boolean mayBeIndexed(Where wrapper) {
         if (OR.equals(wrapper.getRelationBetweenExpressions())) {
@@ -552,7 +552,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
     }
 
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected BitBufferIndexBase<E> determineIndex(TableColumn infocolumn) {
         Column column = infocolumn.getColumn();
         Class<?> clazz = column.getFieldClass();

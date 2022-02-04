@@ -6,7 +6,6 @@ import io.daobab.parser.ParserNumber;
 
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,7 +21,7 @@ public class OrderComparator<E extends Entity> implements Comparator<E> {
         setOrderList(order);
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public int compare(E o1, E o2) {
 

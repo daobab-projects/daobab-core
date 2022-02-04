@@ -3,7 +3,10 @@ package io.daobab.target.buffer.remote;
 import io.daobab.error.RemoteDaobabException;
 import io.daobab.error.RemoteReadingException;
 import io.daobab.error.RemoteTargetCanNotHandleOpenedTransactionException;
-import io.daobab.model.*;
+import io.daobab.model.Entity;
+import io.daobab.model.EntityMap;
+import io.daobab.model.Plate;
+import io.daobab.model.ResponseWrapper;
 import io.daobab.query.base.Query;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.BufferQueryTarget;
@@ -33,7 +36,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
         return false;
     }
 
-    protected abstract ResponseWrapper callEndpoint(Query<? extends Entity,?, ?> query, boolean singleResult);
+    protected abstract ResponseWrapper callEndpoint(Query<? extends Entity, ?, ?> query, boolean singleResult);
 
     @Override
     public OpenedTransactionBufferTarget beginTransaction() {

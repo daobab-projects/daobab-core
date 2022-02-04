@@ -3,13 +3,14 @@ package io.daobab.target.buffer.query;
 import io.daobab.error.ColumnMandatory;
 import io.daobab.error.NullOrEmptyParameter;
 import io.daobab.model.*;
-import io.daobab.query.base.*;
+import io.daobab.query.base.QueryJoin;
+import io.daobab.query.base.QueryType;
 import io.daobab.result.FieldsBuffer;
 import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
-import io.daobab.target.buffer.single.Plates;
 import io.daobab.statement.condition.Count;
 import io.daobab.target.buffer.BufferQueryTarget;
+import io.daobab.target.buffer.single.Plates;
 
 import java.util.*;
 import java.util.function.Function;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryPlate> implements FieldsProvider,  QueryJoin<BufferQueryPlate> {
+public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryPlate> implements FieldsProvider, QueryJoin<BufferQueryPlate> {
 
     private boolean singleEntity = false;
 
@@ -101,7 +102,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
     private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
         List<Plate> res = findMany();
         List<M> rv = new LinkedList<>();
-        if (mapper == null){
+        if (mapper == null) {
             return new FieldsBuffer<>(rv);
         }
 
@@ -128,7 +129,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
     public <M extends EntityMap> List<M> findManyAs(Class<M> clazz) {
         return findMany()
                 .stream()
-                .map(p->p.toEntity(clazz, getFields()))
+                .map(p -> p.toEntity(clazz, getFields()))
                 .collect(Collectors.toList());
     }
 

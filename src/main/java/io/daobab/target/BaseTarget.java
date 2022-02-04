@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -58,8 +57,8 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         LinkedList<DaobabInterceptor> interceptors = getInterceptorsMap().get(entity);
         LinkedList<DaobabInterceptor> interceptors_for_any_entity = getInterceptorsMap().get(entityAny);
 
-        if (interceptors_for_any_entity.contains(interceptor) && !EntityAny.class.getName().equals(entity.getClass().getName()) ) {
-            getLog().warn(format("Interceptor %s is already added to any entity into target %s"  , interceptor.getClass().getName(),this.getClass().getName()));
+        if (interceptors_for_any_entity.contains(interceptor) && !EntityAny.class.getName().equals(entity.getClass().getName())) {
+            getLog().warn(format("Interceptor %s is already added to any entity into target %s", interceptor.getClass().getName(), this.getClass().getName()));
             return;
         }
 
@@ -69,12 +68,12 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
             firstInterceptor = true;
         }
         if (interceptors.contains(interceptor)) {
-            getLog().warn(format("Interceptor %s already added to a target %s",interceptor.getClass().getName(), this.getClass().getName()));
+            getLog().warn(format("Interceptor %s already added to a target %s", interceptor.getClass().getName(), this.getClass().getName()));
             return;
         }
 
         interceptors.add(interceptor);
-        getLog().info(format("Interceptor %s added successfully to a target %s", this.getClass().getName(),this.getClass().getName()));
+        getLog().info(format("Interceptor %s added successfully to a target %s", this.getClass().getName(), this.getClass().getName()));
 
         if (firstInterceptor) {
             getInterceptorsMap().put(entity, interceptors);
@@ -136,8 +135,6 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     public boolean isTransactionActive() {
         return false;
     }
-
-
 
 
     public StatisticCollector getStatisticCollector() {

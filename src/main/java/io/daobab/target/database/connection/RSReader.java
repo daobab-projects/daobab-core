@@ -25,7 +25,7 @@ public interface RSReader {
     }
 
     static <O extends ProcedureParameters> O readProcedure(ResultSet rs, O out) throws SQLException {
-        for (int i = 1; i < out.getColumns().size()+1; i++) { //starting from 1 not from 0
+        for (int i = 1; i < out.getColumns().size() + 1; i++) { //starting from 1 not from 0
             out.setValue(i, rs.getObject(i));
         }
         return out;
@@ -49,7 +49,7 @@ public interface RSReader {
         return new Timestamp(timestamp.getTime() - timeZone.getOffset(timestamp.getTime()));
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static <E extends Entity, F, R extends EntityRelation> void putColumnValueIntoEntity(ResultSet rs, int colNo, E e, Column<E, F, R> col) {
         Class<F> columnType = col.getFieldClass();
         col.setValue((R) e, readSingleColumn(rs, colNo, columnType));
@@ -63,7 +63,7 @@ public interface RSReader {
         return readSingleColumn(rs, colNo, col.getFieldClass());
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static <F> F readSingleColumn(ResultSet rs, int colNo, Class columnType) {
         try {
             if (Timestamp.class.equals(columnType)) {

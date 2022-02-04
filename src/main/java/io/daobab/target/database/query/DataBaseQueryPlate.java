@@ -3,15 +3,15 @@ package io.daobab.target.database.query;
 import io.daobab.error.ColumnMandatory;
 import io.daobab.error.NullOrEmptyParameter;
 import io.daobab.model.*;
-import io.daobab.query.base.*;
+import io.daobab.query.base.QueryExpressionProvider;
+import io.daobab.query.base.QueryType;
 import io.daobab.result.FieldsBuffer;
 import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
 import io.daobab.result.PlateProvider;
-import io.daobab.target.buffer.single.Plates;
 import io.daobab.statement.condition.Count;
+import io.daobab.target.buffer.single.Plates;
 import io.daobab.target.database.QueryTarget;
-import io.daobab.target.database.DataBaseTarget;
 
 import java.util.*;
 import java.util.function.Function;
@@ -115,9 +115,9 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
 
     private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
         List<Plate> res = findMany();
-        if (mapper == null) return null;
-
         List<M> rv = new LinkedList<>();
+        if (mapper == null) return new FieldsBuffer<>(rv);
+
         res.forEach(t -> rv.add(mapper.apply(t)));
 
         return new FieldsBuffer<>(rv);
@@ -143,7 +143,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     public <M extends EntityMap> List<M> findManyAs(Class<M> clazz) {
         return findMany()
                 .stream()
-                .map(p->p.toEntity(clazz, getFields()))
+                .map(p -> p.toEntity(clazz, getFields()))
                 .collect(Collectors.toList());
     }
 

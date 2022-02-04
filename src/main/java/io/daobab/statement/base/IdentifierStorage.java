@@ -47,7 +47,7 @@ public final class IdentifierStorage {
 
 
     public StringBuilder getIdentifierForColumn(Column<?, ?, ?> field) {
-        StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         if (field == null) return sb;
         if (field instanceof ColumnHaving) {
             sb.append(field.getColumnName());

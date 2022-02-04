@@ -6,9 +6,9 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 
 public class SetField<E extends Entity> {
+    E entity;
     private Column<E, Object, ?> field;
     private Object value;
-    E entity;
 
     public <R extends EntityRelation> SetField(Column<E, Object, R> field, R related) {
         if (field == null) {

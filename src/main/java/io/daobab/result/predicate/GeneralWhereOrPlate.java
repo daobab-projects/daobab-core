@@ -15,9 +15,9 @@ public class GeneralWhereOrPlate<P extends Plate> extends GeneralWhereAndPlate<P
 
         for (int i = 0; i < keys.size(); i++) {
 
-            Column column=keys.get(i);
+            Column column = keys.get(i);
 
-            if (column==null){
+            if (column == null) {
                 if (predicates.get(i).test(projection)) return true;
                 continue;
             }

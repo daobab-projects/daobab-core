@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"rawtypes","UnusedReturnValue","unused"})
+@SuppressWarnings({"rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryOrder<Q extends Query> {
 
     Q orderBy(Order orderBy);

@@ -14,32 +14,36 @@ import java.util.function.Supplier;
  */
 public interface StatisticCollector extends ILoggerBean {
 
-    default <T> List<T> wrapList(StatisticCollectorProvider statisticCollectorProvider,Query<?,?,?> query, Supplier<List<T>> supplier){
+    default <T> List<T> wrapList(StatisticCollectorProvider statisticCollectorProvider, Query<?, ?, ?> query, Supplier<List<T>> supplier) {
 
-        if (!statisticCollectorProvider.isStatisticCollectingEnabled()){
+        if (!statisticCollectorProvider.isStatisticCollectingEnabled()) {
             return supplier.get();
         }
 
         send(query);
         try {
             List<T> collection = supplier.get();
-            received(query,collection.size());
+            received(query, collection.size());
             return collection;
-        }catch (Exception e){
-            getLog().error("error:",e);
-            error(query,e);
+        } catch (Exception e) {
+            getLog().error("error:", e);
+            error(query, e);
             return new ArrayList<>();
         }
 
     }
 
-    void send(Query<?,?,?> query);
-    void received(Query<?,?,?> query, Integer result);
-    void error(Query<?,?,?> query, Throwable result);
+    void send(Query<?, ?, ?> query);
+
+    void received(Query<?, ?, ?> query, Integer result);
+
+    void error(Query<?, ?, ?> query, Throwable result);
 
     String sendProcedure(String procedureName);
+
     void receivedProcedure(String procedureName, String identifier, String query, Integer result);
-    void errorProcedure(String procedureName, String identifier, String query,  Throwable result);
+
+    void errorProcedure(String procedureName, String identifier, String query, Throwable result);
 
     Entities<StatisticRecord> getTarget();
 

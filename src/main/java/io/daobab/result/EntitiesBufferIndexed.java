@@ -25,7 +25,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
     private final Map<String, Index<E, ?>> indexRepository = new HashMap<>();
     private boolean primaryKey = false;
 
-    protected EntitiesBufferIndexed(){
+    protected EntitiesBufferIndexed() {
         this(new ArrayList<>());
     }
 
@@ -45,8 +45,8 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
                 .map(Map.Entry::getValue);
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
-    private List<E> finalFilter(List<E> entities, Query<E,?,?> query, List<Integer> skipSteps) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private List<E> finalFilter(List<E> entities, Query<E, ?, ?> query, List<Integer> skipSteps) {
         int counter = 0;
 
         List<E> rv = new LinkedList<>();
@@ -88,8 +88,8 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
         return rv;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
-    public List<E> filter(Query<E,?,?> query) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public List<E> filter(Query<E, ?, ?> query) {
         Where wrapper = query.getWhereWrapper();
 
         //if indexRepository is empty, don't even use the index logic
@@ -119,7 +119,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
         return finalFilter(resultWrapper.getEntities(), query, resultWrapper.getSkipSteps());
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private ResultEntitiesWithSkipStepsWrapper<E> filter(Where wrapper) {
         String relations = wrapper.getRelationBetweenExpressions();
         List<E> result = new LinkedList<>();
@@ -133,7 +133,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
 
             Column column = wrapper.getKeyForPointer(counter);
 
-            if (column==null){
+            if (column == null) {
                 continue;
             }
 
@@ -214,7 +214,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
         List<TableColumn> columns = entity.columns();
         for (TableColumn ecol : columns) {
 
-            Column<E, ?, EntityRelation> col = (Column<E, ?, EntityRelation>)ecol.getColumn();
+            Column<E, ?, EntityRelation> col = (Column<E, ?, EntityRelation>) ecol.getColumn();
             Index index;
             if (Number.class.isAssignableFrom(col.getFieldClass())) {
                 index = new IndexNumber<>(col, this);

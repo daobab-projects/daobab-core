@@ -50,7 +50,8 @@ public interface FilterCondition<E extends EntityMap> extends EntityRelationMap<
 
             @Override
             public void setValue(FilterCondition entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FilterCondition");
+                if (entity == null)
+                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FilterCondition");
                 entity.setFilterCondition(param);
             }
 

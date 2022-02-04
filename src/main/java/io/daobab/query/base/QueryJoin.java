@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes","UnusedReturnValue","unused"})
+@SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryJoin<Q extends Query> {
 
     List<JoinWrapper> getJoins();
@@ -127,13 +127,13 @@ public interface QueryJoin<Q extends Query> {
         return joinRoute(JoinType.INNER, queryEntity, joinedTables);
     }
 
-    default <E extends Entity> Q join(E joinedTable, Column<?, ?, ?>one, Column<?, ?, ?>two) {
-        return join(JoinType.INNER, one,two,false);
+    default <E extends Entity> Q join(E joinedTable, Column<?, ?, ?> one, Column<?, ?, ?> two) {
+        return join(JoinType.INNER, one, two, false);
     }
 
 
-    default <E extends Entity> Q join(JoinType type, E joinedTable, Column<?, ?, ?>one, Column<?, ?, ?>two) {
-        return join(type, one,two,false);
+    default <E extends Entity> Q join(JoinType type, E joinedTable, Column<?, ?, ?> one, Column<?, ?, ?> two) {
+        return join(type, one, two, false);
     }
 
     default <E extends Entity> Q join(E joinedTable, Column<?, ?, ?>... joinByColumn) {
@@ -225,8 +225,8 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-    default <E extends Entity, F> Q join(JoinType type, Column<?, ?, ?> one, Column<?, ?, ?> two ,boolean mark) {
-            getJoins().add(new JoinWrapper(type, one,two,false));
+    default <E extends Entity, F> Q join(JoinType type, Column<?, ?, ?> one, Column<?, ?, ?> two, boolean mark) {
+        getJoins().add(new JoinWrapper(type, one, two, false));
         return (Q) this;
     }
 

@@ -29,6 +29,7 @@ public interface EntityDuplicator {
         }
         return rv;
     }
+
     static List<Plate> clonePlateList(Collection<Plate> srcCollection) {
         int counter = 0;
         List<Plate> rv = new ArrayList<>(srcCollection.size());
@@ -52,20 +53,20 @@ public interface EntityDuplicator {
         }
 
         Plate finalClone = clone;
-        src.entrySet().forEach(entry->{
-            finalClone.put(entry.getKey(),cloneMap(entry.getValue()));
+        src.entrySet().forEach(entry -> {
+            finalClone.put(entry.getKey(), cloneMap(entry.getValue()));
         });
 
         return clone;
     }
 
-    static Map<String,Object> cloneMap(Map<String,Object> src){
-        Map<String,Object> rv=new HashMap<>();
-        src.entrySet().forEach(entry->{
+    static Map<String, Object> cloneMap(Map<String, Object> src) {
+        Map<String, Object> rv = new HashMap<>();
+        src.entrySet().forEach(entry -> {
 
-            String key=entry.getKey();
+            String key = entry.getKey();
             Object val = entry.getValue();
-            Class columnClass=val.getClass();
+            Class columnClass = val.getClass();
 //            if (val == null) continue;
             if (columnClass.equals(DictFieldType.CLASS_BIG_DECIMAL)) {
                 rv.put(key, new BigDecimal(val.toString()));

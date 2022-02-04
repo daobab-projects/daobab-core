@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryField<E, F>, FieldsProvider<F>, ColumnOrQuery<E,F,EntityRelation> {
+public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryField<E, F>, FieldsProvider<F>, ColumnOrQuery<E, F, EntityRelation> {
 
     @SuppressWarnings("unused")
     private BufferQueryField() {
@@ -42,7 +42,7 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
         return new DummyColumnRelation<>(this, DummyColumnTemplate.dummyColumn(asName));
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <F1> DummyColumnRelation<Dual, F1, EntityRelation> as(String asName, Class<F1> clazz) {
         return new DummyColumnRelation<>(this, DummyColumnTemplate.createDummyColumn(new Dual(), clazz, asName));
     }
@@ -50,18 +50,18 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
 
     @Override
     public InnerSelectManyCells<E, F> innerResult() {
-            return new InnerSelectManyCells<>(findMany());
+        return new InnerSelectManyCells<>(findMany());
     }
 
     public long countBy(Count cnt) {
         setTempCount(cnt);
-            if (cnt.countEntities()) {
-                return findMany().size();
-            } else {
-                //TODO: czy tu ma byc _unique??
+        if (cnt.countEntities()) {
+            return findMany().size();
+        } else {
+            //TODO: czy tu ma byc _unique??
 //                return resultFieldUniqueSetFromCache((Column<E, F, ?>) cnt.getFieldForPointer(1)).size();
-                return 0;
-            }
+            return 0;
+        }
     }
 
     @Override

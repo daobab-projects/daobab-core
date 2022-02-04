@@ -6,8 +6,8 @@ import io.daobab.target.database.query.DataBaseQueryBase;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public interface QueryExpressionProvider<E extends Entity>{
+public interface QueryExpressionProvider<E extends Entity> {
 
-    DataBaseQueryBase<E,?> getSelect();
+    DataBaseQueryBase<E, ?> getSelect();
 
 }

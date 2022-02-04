@@ -17,26 +17,22 @@ import java.util.*;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes","unused","UnusedReturnValue"})
+@SuppressWarnings({"unchecked", "rawtypes", "unused", "UnusedReturnValue"})
 public abstract class WhereBase {
 
+    public static final String AND = " and ";
+    public static final String OR = " or ";
+    public static final String NOT = " not ";
     protected static final String WRAPPER = "WRAPPER";
     protected static final String KEY = "key";
     protected static final String VALUE = "value";
     protected static final String RELATION = "relation";
     protected static final String ALREADY_PROCEEDED = "proc";
-    public static final String AND = " and ";
-    public static final String OR = " or ";
-    public static final String NOT = " not ";
     protected static final String DOT = ".";
+    protected static final String MAY_BE_INDEXED_IN_BUFFER = "index";
     private Map<String, Object> whereMap = new HashMap<>();
     private int counter = 1;
-    private long optimisationWage =0;
-    protected static final String MAY_BE_INDEXED_IN_BUFFER = "index";
-
-    public boolean startsFromPK(){
-        return optimisationWage >0&& optimisationWage <200;
-    }
+    private long optimisationWage = 0;
 
     @SuppressWarnings("unchecked")
     public static Where<?> fromRemote(Target target, Map<String, Object> map) {
@@ -51,12 +47,12 @@ public abstract class WhereBase {
         } else if (NOT.equals(relation)) {
             rv = new WhereNot();
         } else {
-            throw new DaobabException("Invalid relation: "+relation);
+            throw new DaobabException("Invalid relation: " + relation);
         }
 
         boolean endofconditions = false;
 
-        while (!endofconditions ) {
+        while (!endofconditions) {
             Object key = map.get(KEY + rv.getCounter());
             Object wrapper = map.get(WRAPPER + rv.getCounter());
             String operator = (String) map.get(RELATION + rv.getCounter());
@@ -78,7 +74,7 @@ public abstract class WhereBase {
             if (wrapper != null) {
                 rv.put(WRAPPER + rv.getCounter(), fromRemote(target, (Map<String, Object>) wrapper));
                 rv.put(VALUE + rv.getCounter(), fromRemote(target, (Map<String, Object>) wrapper));
-            } else if (val != null ) {
+            } else if (val != null) {
                 rv.put(VALUE + rv.getCounter(), val);
             }
             if (operator != null) {
@@ -88,6 +84,28 @@ public abstract class WhereBase {
             rv.setCounter(rv.getCounter() + 1);
         }
         return rv;
+    }
+
+    public static <W extends WhereBase> W clone(W from, W to) {
+        if (from == null || to == null) {
+            return null;
+        }
+        to.setCounter(from.getCounter());
+        to.setWhereMap(new HashMap<>(from.getWhereMap()));
+        return to;
+    }
+
+    public static <W extends Where> Where<W> get(Where<W> where, int key) {
+
+        where.getWhereMap().remove(WRAPPER + key);
+        where.getWhereMap().remove(KEY + key);
+        where.getWhereMap().remove(VALUE + key);
+        where.getWhereMap().remove(RELATION + key);
+        return where;
+    }
+
+    public boolean startsFromPK() {
+        return optimisationWage > 0 && optimisationWage < 200;
     }
 
     protected void put(String key, Object value) {
@@ -124,15 +142,6 @@ public abstract class WhereBase {
 
     public abstract String getRelationBetweenExpressions();
 
-    public static <W extends WhereBase> W clone(W from, W to) {
-        if (from == null || to == null) {
-            return null;
-        }
-        to.setCounter(from.getCounter());
-        to.setWhereMap(new HashMap<>(from.getWhereMap()));
-        return to;
-    }
-
     public Map<String, Object> getWhereMap() {
         return whereMap;
     }
@@ -144,8 +153,8 @@ public abstract class WhereBase {
     public Map<String, Object> toMap() {
         Map<String, Object> rv = new HashMap<>();
         rv.put(DictRemoteKey.REL_BETWEEN_EXPRESSIONS, getRelationBetweenExpressions());
-        for (Map.Entry<String,Object> entry : whereMap.entrySet()) {
-            Object val=entry.getValue();
+        for (Map.Entry<String, Object> entry : whereMap.entrySet()) {
+            Object val = entry.getValue();
             if (val instanceof Entity) {
                 rv.put(entry.getKey(), Marschaller.marschallEntity((Entity) val));
             } else if (val instanceof Column) {
@@ -159,9 +168,8 @@ public abstract class WhereBase {
         return rv;
     }
 
-
     public void optimize() {
-        if (optimisationWage >0){
+        if (optimisationWage > 0) {
             return;
         }
         Map<Long, List<Integer>> map = new HashMap<>();
@@ -169,15 +177,15 @@ public abstract class WhereBase {
             Column key = getKeyForPointer(i);
             //Object value = getValueForPointer(i);
             Operator rel = getRelationForPointer(i);
-            long optimalisationWeight=OptymalisationWeight.getColumnWeight(key) * OptymalisationWeight.getOperatorWeight(rel);
+            long optimalisationWeight = OptymalisationWeight.getColumnWeight(key) * OptymalisationWeight.getOperatorWeight(rel);
 
-            if (map.containsKey(optimalisationWeight)){
-                List<Integer> pointerList=map.get(optimalisationWeight);
+            if (map.containsKey(optimalisationWeight)) {
+                List<Integer> pointerList = map.get(optimalisationWeight);
                 pointerList.add(i);
-            }else{
-                List<Integer> pointerList=new LinkedList<>();
+            } else {
+                List<Integer> pointerList = new LinkedList<>();
                 pointerList.add(i);
-                map.put(optimalisationWeight,pointerList);
+                map.put(optimalisationWeight, pointerList);
             }
         }
 
@@ -186,7 +194,7 @@ public abstract class WhereBase {
         Map<String, Object> oldmap = new HashMap<>(getWhereMap());
         getWhereMap().clear();
         for (Long key : keys) {
-            for (Integer value:map.get(key)){
+            for (Integer value : map.get(key)) {
                 Object k = oldmap.get(KEY + value);
                 if (k != null) getWhereMap().put(KEY + counter, k);
 
@@ -209,40 +217,32 @@ public abstract class WhereBase {
                 counter++;
             }
         }
-        optimisationWage =Collections.min(map.keySet());
+        optimisationWage = Collections.min(map.keySet());
     }
 
-    public static <W extends Where>  Where<W> get(Where<W> where,int key){
+    public <W extends Where> W add(Object wrapper, Object key, Object val, Object relation) {
 
-     where.getWhereMap().remove(WRAPPER+key);
-     where.getWhereMap().remove(KEY+key);
-     where.getWhereMap().remove(VALUE+key);
-     where.getWhereMap().remove(RELATION+key);
-     return where;
-    }
-    public <W extends Where> W add(Object wrapper,Object key,Object val,Object relation){
-
-        boolean increaseCounter=false;
-        if (key!=null){
-            getWhereMap().put(KEY+2,key);
-            increaseCounter=true;
+        boolean increaseCounter = false;
+        if (key != null) {
+            getWhereMap().put(KEY + 2, key);
+            increaseCounter = true;
         }
-        if (val!=null){
-            getWhereMap().put(VALUE+2,val);
-            increaseCounter=true;
+        if (val != null) {
+            getWhereMap().put(VALUE + 2, val);
+            increaseCounter = true;
         }
-        if (wrapper!=null){
-            getWhereMap().put(WRAPPER+2,wrapper);
-            increaseCounter=true;
+        if (wrapper != null) {
+            getWhereMap().put(WRAPPER + 2, wrapper);
+            increaseCounter = true;
         }
-        if (relation!=null){
-            getWhereMap().put(RELATION+2,relation);
-            increaseCounter=true;
+        if (relation != null) {
+            getWhereMap().put(RELATION + 2, relation);
+            increaseCounter = true;
         }
-        if (increaseCounter){
-            setCounter(getCounter()+1);
+        if (increaseCounter) {
+            setCounter(getCounter() + 1);
         }
-        return (W)this;
+        return (W) this;
     }
 
 }

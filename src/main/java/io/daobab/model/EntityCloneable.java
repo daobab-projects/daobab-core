@@ -15,7 +15,7 @@ import java.util.Date;
  */
 public interface EntityCloneable<E extends Entity> extends Entity {
 
-    @SuppressWarnings({"java:S3740","unchecked","rawtypes"})
+    @SuppressWarnings({"java:S3740", "unchecked", "rawtypes"})
     default E clone() {
         if (columns().isEmpty()) {
             throw new DaobabException("Entity to clone need to have at least one column.");
@@ -34,7 +34,7 @@ public interface EntityCloneable<E extends Entity> extends Entity {
             Class<?> columnClass = col.getFieldClass();
 
             Object val = col.getThisValue();
-            if (val==null) continue;
+            if (val == null) continue;
             if (columnClass.equals(DictFieldType.CLASS_BIG_DECIMAL)) {
                 col.setValue((EntityRelation) clone, new BigDecimal(val.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_STRING)) {

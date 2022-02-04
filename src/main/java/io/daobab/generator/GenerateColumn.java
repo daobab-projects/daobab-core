@@ -9,18 +9,15 @@ import java.util.List;
  */
 public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
 
+    private final List<TableAndType> tables = new ArrayList<>();
     private String columnName;
     private int dataType;
-
     private Class fieldClass;
     private String interfaceName;
     private String javaPackage;
     private String fieldName;
     private String finalFieldName;
-
     private boolean alreadyGenerated;
-
-    private final List<TableAndType> tables = new ArrayList<>();
 
 
     public GenerateColumn() {
@@ -156,16 +153,6 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         return this.computeIfAbsent(tableName, k -> new GeneratedColumnInTable());
     }
 
-    private class TableAndType {
-        private final String table;
-        private final String type;
-
-        private TableAndType(String table, String type) {
-            this.table = table;
-            this.type = type;
-        }
-    }
-
     public String getTableTypeDescription() {
         if (tables.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
@@ -176,5 +163,15 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         sb.append("     */\n");
 
         return sb.toString();
+    }
+
+    private class TableAndType {
+        private final String table;
+        private final String type;
+
+        private TableAndType(String table, String type) {
+            this.table = table;
+            this.type = type;
+        }
     }
 }

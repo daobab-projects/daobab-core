@@ -5,10 +5,9 @@ import io.daobab.error.TransactionAlreadyOpened;
 import io.daobab.error.TransactionClosedException;
 import io.daobab.model.Entity;
 import io.daobab.model.ProcedureParameters;
-import io.daobab.query.base.Query;
 import io.daobab.query.base.QuerySpecialParameters;
-import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.BaseTarget;
+import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.database.DataBaseTargetLogic;
 import io.daobab.target.database.QueryDataBaseHandler;
 import io.daobab.target.database.TransactionalTarget;
@@ -145,13 +144,13 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     }
 
     @Override
-    public <E extends Entity> String toSqlQuery(DataBaseQueryBase<E,?> query) {
+    public <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> query) {
         return db.toSqlQuery(query);
     }
 
     @Override
     public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
-        return db.callProcedure(name,in,out);
+        return db.callProcedure(name, in, out);
     }
 
     @Override
@@ -159,8 +158,8 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
         return db.getDataSource();
     }
 
-//    @Override
-    public TransactionalTarget getSourceTarget(){
+    //    @Override
+    public TransactionalTarget getSourceTarget() {
         return db;
     }
 
@@ -190,7 +189,7 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
 
     @Override
     public String toCallProcedureSqlQuery(String procedureName, ProcedureParameters input) {
-        return db.toCallProcedureSqlQuery(procedureName,input);
+        return db.toCallProcedureSqlQuery(procedureName, input);
     }
 
 

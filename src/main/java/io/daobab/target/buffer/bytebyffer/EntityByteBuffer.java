@@ -2,18 +2,17 @@ package io.daobab.target.buffer.bytebyffer;
 
 import io.daobab.error.ByteBufferIOException;
 import io.daobab.error.DaobabEntityCreationException;
-import io.daobab.error.TargetNotSupports;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
-import io.daobab.result.*;
+import io.daobab.result.EntitiesProvider;
 import io.daobab.result.bytebuffer.BitField;
 import io.daobab.result.index.BitBufferIndexBase;
-import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
 import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.buffer.single.Plates;
+import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.protection.OperationType;
 import io.daobab.transaction.Propagation;
 
@@ -36,7 +35,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         this(entity, 8);
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public EntityByteBuffer(E entity, int capacity) {
         adjustForCapacity(capacity);//1 << pageMaxCapacityBytes;
         this.entityClass = (Class<E>) entity.getEntityClass();
@@ -74,7 +73,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         totalBufferSize = pages.size() * (totalEntitySpace << pageMaxCapacityBytes);
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void remove(int position) {
         E entityToRemove = get(position);
         int entityLocation = locations.get(position);
@@ -98,7 +97,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         totalBufferActiveElements.decrementAndGet();
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public boolean add(E entity) {
         int entityLocation = getNextFreeLocation();
 
@@ -157,7 +156,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         return rv;
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public E get(int i) {
         try {
             E rv = entityClass.getDeclaredConstructor().newInstance();
@@ -194,12 +193,12 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         return null;
     }
 
-    public List<E> finalFilter(Query<E,?,?> query) {
+    public List<E> finalFilter(Query<E, ?, ?> query) {
         List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
         return new EntityByteBufferList<>(this, ids);
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public <E extends Entity> E readEntity(BufferQueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
@@ -207,7 +206,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         return (E) finalFilter((Query) query).get(0);
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public <E1 extends Entity> Entities<E1> readEntityList(BufferQueryEntity<E1> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
@@ -215,14 +214,14 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         return new EntityList<>(finalFilter((Query) query), query.getEntityClass());
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public <E extends Entity, F> F readField(BufferQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         return (F) finalFilterField((BufferQueryField) query).get(0);
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public <E extends Entity, F> List<F> readFieldList(BufferQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);

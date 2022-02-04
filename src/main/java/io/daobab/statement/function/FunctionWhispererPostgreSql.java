@@ -16,7 +16,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-@SuppressWarnings({"rawtypes","unused"})
+@SuppressWarnings({"rawtypes", "unused"})
 public interface FunctionWhispererPostgreSql {
 
 
@@ -70,7 +70,6 @@ public interface FunctionWhispererPostgreSql {
     }
 
 
-
     /**
      * Converts a string to lower-case
      */
@@ -80,6 +79,7 @@ public interface FunctionWhispererPostgreSql {
 
     /**
      * Extracts a number of characters from a string (starting from left)
+     *
      * @param number
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> left(ColumnOrQuery<E, F, R> columnOrQuery, int number) {
@@ -259,30 +259,30 @@ public interface FunctionWhispererPostgreSql {
      * The specified number must be between -1 to 1, otherwise this function returns NULL.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> acos(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ACOS,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ACOS, BigDecimal.class);
     }
 
     /**
-     *The ASIN() function returns the arc sine of a number.
-     *
+     * The ASIN() function returns the arc sine of a number.
+     * <p>
      * The specified number must be between -1 to 1, otherwise this function returns NULL.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> asin(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ASIN,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ASIN, BigDecimal.class);
     }
 
     /**
      * The ATAN() function returns the arc tangent of one or two numbers.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> atan(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ATAN,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ATAN, BigDecimal.class);
     }
 
     /**
      *
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> atan(ColumnOrQuery<E, F, R> columnOrQuery, ColumnOrQuery<E, F, R> columnOrQuery2) {
-        ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ATAN,BigDecimal.class);
+        ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ATAN, BigDecimal.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, columnOrQuery2);
         return rv;
     }
@@ -291,85 +291,86 @@ public interface FunctionWhispererPostgreSql {
      * The ATAN() function returns the arc tangent of one or two numbers.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> atan2(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ATAN2,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ATAN2, BigDecimal.class);
     }
 
     /**
      * The ATAN2() function returns the arc tangent of two numbers.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> atan2(ColumnOrQuery<E, F, R> columnOrQuery, ColumnOrQuery<E, F, R> columnOrQuery2) {
-        ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ATAN2,BigDecimal.class);
+        ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.ATAN2, BigDecimal.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, columnOrQuery2);
         return rv;
     }
 
     /**
      * The AVG() function returns the average value of an expression.
-     *
+     * <p>
      * Note: NULL values are ignored.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> avg(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.AVG,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.AVG, BigDecimal.class);
     }
 
     /**
      * The CEIL() function returns the smallest integer value that is bigger than or equal to a number.
-     *
+     * <p>
      * Note: This function is equal to the CEILING() function.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> ceil(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.CEIL,Integer.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.CEIL, Integer.class);
     }
 
     /**
-     *The CEILING() function returns the smallest integer value that is bigger than or equal to a number.
-     *
+     * The CEILING() function returns the smallest integer value that is bigger than or equal to a number.
+     * <p>
      * Note: This function is equal to the CEIL() function.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> ceiling(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.CEILING,Integer.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.CEILING, Integer.class);
     }
 
     /**
-     *The COS() function returns the cosine of a number.
+     * The COS() function returns the cosine of a number.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> cos(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.COS,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.COS, BigDecimal.class);
     }
 
     /**
-     *The COT() function returns the cotangent of a number.
+     * The COT() function returns the cotangent of a number.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> cot(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.COT,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.COT, BigDecimal.class);
     }
 
     //    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> count(ColumnOrQuery<E, F, R> columnOrQuery) {
 //        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.COUNT);
 //    }
+
     /**
-     *The DEGREES() function converts a value in radians to degrees.
-     *
+     * The DEGREES() function converts a value in radians to degrees.
+     * <p>
      * Note: See also the RADIANS() and PI() functions.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> degrees(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.DEGREES,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.DEGREES, BigDecimal.class);
     }
 
     /**
-     *The EXP() function returns e raised to the power of the specified number.
-     *
+     * The EXP() function returns e raised to the power of the specified number.
+     * <p>
      * The constant e (2.718281...), is the base of natural logarithms.
-     *
+     * <p>
      * Tip: Also look at the LOG() and LN() functions.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> exp(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.EXP,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.EXP, BigDecimal.class);
     }
 
     /**
-     *The FLOOR() function returns the largest integer value that is smaller than or equal to a number.
-     *
+     * The FLOOR() function returns the largest integer value that is smaller than or equal to a number.
+     * <p>
      * Note: Also look at the ROUND(), CEIL(), CEILING(), TRUNCATE(), and DIV functions.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> floor(ColumnOrQuery<E, F, R> columnOrQuery) {
@@ -378,7 +379,7 @@ public interface FunctionWhispererPostgreSql {
 
     /**
      * The GREATEST() function returns the greatest value of the list of arguments.
-     *
+     * <p>
      * Note: See also the LEAST() function.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> greatest(ColumnOrQuery<?, ?, ?>... columns) {
@@ -386,8 +387,8 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The LEAST() function returns the smallest value of the list of arguments.
-     *
+     * The LEAST() function returns the smallest value of the list of arguments.
+     * <p>
      * Note: See also the GREATEST() function.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> least(ColumnOrQuery<?, F, ?>... columns) {
@@ -396,18 +397,18 @@ public interface FunctionWhispererPostgreSql {
 
 
     /**
-     *The LOG() function returns the natural logarithm of a specified number, or the logarithm of the number to the specified base.
-     *
+     * The LOG() function returns the natural logarithm of a specified number, or the logarithm of the number to the specified base.
+     * <p>
      * Note: See also the LN() and EXP() functions.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> log(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.LOG,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.LOG, BigDecimal.class);
     }
 
 
     /**
-     *The MAX() function returns the maximum value in a set of values.
-     *
+     * The MAX() function returns the maximum value in a set of values.
+     * <p>
      * Note: See also the MIN() function.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> max(ColumnOrQuery<E, F, R> columnOrQuery) {
@@ -415,8 +416,8 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The MIN() function returns the minimum value in a set of values.
-     *
+     * The MIN() function returns the minimum value in a set of values.
+     * <p>
      * Note: See also the MAX() function.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> min(ColumnOrQuery<E, F, R> columnOrQuery) {
@@ -424,37 +425,38 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The MOD() function returns the remainder of a number divided by another number.
+     * The MOD() function returns the remainder of a number divided by another number.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> mod(ColumnOrQuery<E, F, R> columnOrQuery,ColumnOrQuery<E, F, R> columnOrQuery2) {
-        ColumnFunction<E,F,R,BigDecimal>rv= new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.MOD);
-        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL,new FunctionKey(" MOD "));
-        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2,columnOrQuery2);
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> mod(ColumnOrQuery<E, F, R> columnOrQuery, ColumnOrQuery<E, F, R> columnOrQuery2) {
+        ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.MOD);
+        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, new FunctionKey(" MOD "));
+        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2, columnOrQuery2);
         return rv;
     }
 
     /**
-     *The MOD() function returns the remainder of a number divided by another number.
+     * The MOD() function returns the remainder of a number divided by another number.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> mod(ColumnOrQuery<E, F, R> columnOrQuery,Number number) {
-        ColumnFunction<E,F,R,BigDecimal>rv= new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.MOD);
-        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL,new FunctionKey(" MOD "));
-        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2,number);
-        return rv;
-    }
-    /**
-     *The MOD() function returns the remainder of a number divided by another number.
-     */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> mod(Number number,ColumnOrQuery<E, F, R> columnOrQuery2) {
-        ColumnFunction<E,F,R,BigDecimal>rv= new ColumnFunction<>(columnOrQuery2, DictFunctionPostgreSql.MOD);
-        rv.setMandatoryKeyValue(ColumnFunction.BEFORE_COL,new FunctionKey(" MOD "));
-        rv.setMandatoryKeyValue(ColumnFunction.BEFORE_COL2,columnOrQuery2);
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> mod(ColumnOrQuery<E, F, R> columnOrQuery, Number number) {
+        ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.MOD);
+        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, new FunctionKey(" MOD "));
+        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2, number);
         return rv;
     }
 
     /**
-     *The PI() function returns the value of PI.
-     *
+     * The MOD() function returns the remainder of a number divided by another number.
+     */
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> mod(Number number, ColumnOrQuery<E, F, R> columnOrQuery2) {
+        ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(columnOrQuery2, DictFunctionPostgreSql.MOD);
+        rv.setMandatoryKeyValue(ColumnFunction.BEFORE_COL, new FunctionKey(" MOD "));
+        rv.setMandatoryKeyValue(ColumnFunction.BEFORE_COL2, columnOrQuery2);
+        return rv;
+    }
+
+    /**
+     * The PI() function returns the value of PI.
+     * <p>
      * Note: See also the DEGREES() and RADIANS() functions.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> pi() {
@@ -462,30 +464,30 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The POW() function returns the value of a number raised to the power of another number.
-     *
+     * The POW() function returns the value of a number raised to the power of another number.
+     * <p>
      * Note: This function is equal to the POWER() function.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> pow(ColumnOrQuery<E, F, R> columnOrQuery,ColumnOrQuery<E, F, R> columnOrQuery2) {
-        ColumnFunction<E,F,R,BigDecimal>rv= new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.POW);
-        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL,columnOrQuery2);
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> pow(ColumnOrQuery<E, F, R> columnOrQuery, ColumnOrQuery<E, F, R> columnOrQuery2) {
+        ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.POW);
+        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, columnOrQuery2);
         return rv;
     }
 
     /**
-     *The POWER() function returns the value of a number raised to the power of another number.
-     *
+     * The POWER() function returns the value of a number raised to the power of another number.
+     * <p>
      * Note: This function is equal to the POW() function.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> power(ColumnOrQuery<E, F, R> columnOrQuery,ColumnOrQuery<E, F, R> columnOrQuery2) {
-        ColumnFunction<E,F,R,BigDecimal>rv= new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.POWER);
-        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL,columnOrQuery2);
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> power(ColumnOrQuery<E, F, R> columnOrQuery, ColumnOrQuery<E, F, R> columnOrQuery2) {
+        ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.POWER);
+        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, columnOrQuery2);
         return rv;
     }
 
     /**
-     *The RADIANS() function converts a degree value into radians.
-     *
+     * The RADIANS() function converts a degree value into radians.
+     * <p>
      * Note: See also the DEGREES() and PI() functions.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> radians(ColumnOrQuery<E, F, R> columnOrQuery) {
@@ -493,8 +495,8 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The ROUND() function rounds a number to a specified number of decimal places.
-     *
+     * The ROUND() function rounds a number to a specified number of decimal places.
+     * <p>
      * Note: See also the FLOOR(), CEIL(), CEILING(), and TRUNCATE() functions.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> round(ColumnOrQuery<E, F, R> columnOrQuery) {
@@ -502,8 +504,8 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The ROUND() function rounds a number to a specified number of decimal places.
-     *
+     * The ROUND() function rounds a number to a specified number of decimal places.
+     * <p>
      * Note: See also the FLOOR(), CEIL(), CEILING(), and TRUNCATE() functions.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> round(ColumnOrQuery<E, F, R> columnOrQuery, Integer decimals) {
@@ -514,41 +516,41 @@ public interface FunctionWhispererPostgreSql {
 
 
     /**
-     *The SIN() function returns the sine of a number.
+     * The SIN() function returns the sine of a number.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> sin(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.SIN,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.SIN, BigDecimal.class);
     }
 
     /**
      * The SQRT() function returns the square root of a number.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> sqrt(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.SQRT,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.SQRT, BigDecimal.class);
     }
 
     /**
-     *The SUM() function calculates the sum of a set of values.
-     *
+     * The SUM() function calculates the sum of a set of values.
+     * <p>
      * Note: NULL values are ignored.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> sum(ColumnOrQuery<?, F, ?>... columns) {
-        return new ManyArgumentsFunction<>(DictFunctionPostgreSql.SUM,BigDecimal.class,  "+", columns);
+        return new ManyArgumentsFunction<>(DictFunctionPostgreSql.SUM, BigDecimal.class, "+", columns);
     }
 
     /**
-     *The TAN() function returns the tangent of a number.
+     * The TAN() function returns the tangent of a number.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> tan(ColumnOrQuery<E, F, R> columnOrQuery) {
-        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.TAN,BigDecimal.class);
+        return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.TAN, BigDecimal.class);
     }
 
 
     /**
-     *The CURRENT_DATE() function returns the current date.
-     *
+     * The CURRENT_DATE() function returns the current date.
+     * <p>
      * Note: The date is returned as "YYYY-MM-DD" (string) or as YYYYMMDD (numeric).
-     *
+     * <p>
      * Note: This function equals the CURDATE() function.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Date> curretDate() {
@@ -556,10 +558,10 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The CURRENT_DATE() function returns the current date.
-     *
+     * The CURRENT_DATE() function returns the current date.
+     * <p>
      * Note: The date is returned as "YYYY-MM-DD" (string) or as YYYYMMDD (numeric).
-     *
+     * <p>
      * Note: This function equals the CURDATE() function.
      */
     default <C extends Date, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> curretDate(Class<C> dateClass) {
@@ -567,10 +569,10 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The CURRENT_TIME() function returns the current time.
-     *
+     * The CURRENT_TIME() function returns the current time.
+     * <p>
      * Note: The time is returned as "HH-MM-SS" (string) or as HHMMSS.uuuuuu (numeric).
-     *
+     * <p>
      * Note: This function equals the CURTIME() function.
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Time> currentTime() {
@@ -578,10 +580,10 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The CURRENT_TIME() function returns the current time.
-     *
+     * The CURRENT_TIME() function returns the current time.
+     * <p>
      * Note: The time is returned as "HH-MM-SS" (string) or as HHMMSS.uuuuuu (numeric).
-     *
+     * <p>
      * Note: This function equals the CURTIME() function.
      */
     default <C extends Date, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> currentTime(Class<C> dateClass) {
@@ -589,8 +591,8 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The CURRENT_TIMESTAMP() function returns the current date and time.
-     *
+     * The CURRENT_TIMESTAMP() function returns the current date and time.
+     * <p>
      * Note: The date and time is returned as "YYYY-MM-DD HH-MM-SS" (string) or as YYYYMMDDHHMMSS.uuuuuu (numeric).
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> currentTimestamp() {
@@ -598,8 +600,8 @@ public interface FunctionWhispererPostgreSql {
     }
 
     /**
-     *The CURRENT_TIMESTAMP() function returns the current date and time.
-     *
+     * The CURRENT_TIMESTAMP() function returns the current date and time.
+     * <p>
      * Note: The date and time is returned as "YYYY-MM-DD HH-MM-SS" (string) or as YYYYMMDDHHMMSS.uuuuuu (numeric).
      */
     default <C extends Date, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> currentTimestamp(Class<C> dateClass) {
@@ -607,23 +609,22 @@ public interface FunctionWhispererPostgreSql {
     }
 
 
-
     /**
-     *The LOCALTIME() function returns the current date and time.
-     *
+     * The LOCALTIME() function returns the current date and time.
+     * <p>
      * Note: The date and time is returned as "YYYY-MM-DD HH-MM-SS" (string) or as YYYYMMDDHHMMSS.uuuuuu (numeric).
      */
-    default < E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Time> localTime() {
-        return new NoParamFunction<>(DictFunctionPostgreSql.LOCALTIME,Time.class);
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Time> localTime() {
+        return new NoParamFunction<>(DictFunctionPostgreSql.LOCALTIME, Time.class);
     }
 
     /**
-     *The LOCALTIMESTAMP() function returns the current date and time.
-     *
+     * The LOCALTIMESTAMP() function returns the current date and time.
+     * <p>
      * Note: The date and time is returned as "YYYY-MM-DD HH-MM-SS" (string) or as YYYYMMDDHHMMSS.uuuuuu (numeric).
      */
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> localTimestamp() {
-        return new NoParamFunction<>(DictFunctionPostgreSql.LOCALTIMESTAMP,Timestamp.class);
+        return new NoParamFunction<>(DictFunctionPostgreSql.LOCALTIMESTAMP, Timestamp.class);
     }
 
 
@@ -666,16 +667,16 @@ public interface FunctionWhispererPostgreSql {
 //    }
 
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> interval(ColumnOrQuery<E, F, R> columnOrQuery, Number value, DatePeriod addUnit) {
-        ColumnFunction<E,F,R,Timestamp> rv= new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.INTERVAL,Timestamp.class);
-        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL,value);
-        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2,addUnit);
+        ColumnFunction<E, F, R, Timestamp> rv = new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.INTERVAL, Timestamp.class);
+        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, value);
+        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2, addUnit);
         return rv;
     }
 
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> interval(Number value, DatePeriod addUnit) {
-        NoParamFunction<E,F,R,Timestamp> rv= new NoParamFunction<>(DictFunctionPostgreSql.INTERVAL,Timestamp.class);
-        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL,value);
-        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2,addUnit);
+        NoParamFunction<E, F, R, Timestamp> rv = new NoParamFunction<>(DictFunctionPostgreSql.INTERVAL, Timestamp.class);
+        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, value);
+        rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2, addUnit);
         return rv;
     }
 

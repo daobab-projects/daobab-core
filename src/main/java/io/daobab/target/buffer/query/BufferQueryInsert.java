@@ -28,7 +28,8 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
     private String pkColumnName;
     private boolean pkResolved = false;
     private E entity;
-    private Query<?, ?,?> selectQuery;
+    private Query<?, ?, ?> selectQuery;
+
     @SuppressWarnings("unused")
     private BufferQueryInsert() {
     }
@@ -88,7 +89,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         set(sd);
     }
 
-    public BufferQueryInsert<E> select(Query<?, ?,?> query) {
+    public BufferQueryInsert<E> select(Query<?, ?, ?> query) {
         if (query == null) {
             throw new QueryMandatory();
         }
@@ -225,11 +226,11 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
     }
 
 
-    public Query<?, ?,?> getSelectQuery() {
+    public Query<?, ?, ?> getSelectQuery() {
         return selectQuery;
     }
 
-    public void setSelectQuery(Query<?, ?,?> selectQuery) {
+    public void setSelectQuery(Query<?, ?, ?> selectQuery) {
         this.selectQuery = selectQuery;
     }
 

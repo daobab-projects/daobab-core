@@ -7,13 +7,19 @@ import io.daobab.statement.where.base.Where;
  */
 public class WhereAnd extends Where<WhereAnd> {
 
-    public static WhereAnd and() {
-        return new WhereAnd();
-    }
-
     // ------ Contructors
     public WhereAnd() {
         super();
+    }
+
+    public WhereAnd(Where<?>... whereAnds) {
+        for (Where<?> where : whereAnds) {
+            temp(where);
+        }
+    }
+
+    public static WhereAnd and() {
+        return new WhereAnd();
     }
 
     /**
@@ -35,13 +41,6 @@ public class WhereAnd extends Where<WhereAnd> {
     public WhereNot not() {
         return new WhereNot();
     }
-
-    public WhereAnd(Where<?>... whereAnds) {
-        for (Where<?> where : whereAnds) {
-            temp(where);
-        }
-    }
-
 
     @Override
     public String getRelationBetweenExpressions() {

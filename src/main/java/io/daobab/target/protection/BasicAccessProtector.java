@@ -9,12 +9,11 @@ import java.util.*;
 
 public class BasicAccessProtector implements AccessProtector {
 
-    private DefaultAccessStrategy defaultAccessStrategy = DefaultAccessStrategy.ALLOW;
-    private boolean enabled = false;
-
     private final Map<String, Set<Access>> entityRights = new HashMap<>();
     @SuppressWarnings("rawtypes")
     private final Map<Column, Set<Access>> columnRights = new HashMap<>();
+    private DefaultAccessStrategy defaultAccessStrategy = DefaultAccessStrategy.ALLOW;
+    private boolean enabled = false;
 
     @Override
     public AccessProtector setEntityAccess(Entity entity, Access... accessRights) {

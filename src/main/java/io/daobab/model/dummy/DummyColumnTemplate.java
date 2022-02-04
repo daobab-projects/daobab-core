@@ -10,7 +10,8 @@ public interface DummyColumnTemplate {
     static Column<Dual, String, EntityRelation> dummyColumn(String name) {
         return createDummyColumn(new Dual(), String.class, name);
     }
-    static <F> Column<Dual, F, EntityRelation> dummyColumn(String name,Class<F> clazz) {
+
+    static <F> Column<Dual, F, EntityRelation> dummyColumn(String name, Class<F> clazz) {
         return createDummyColumn(new Dual(), clazz, name);
     }
 

@@ -15,7 +15,7 @@ public interface JsonMarshaller extends JsonHandler, Map<String, Object> {
         int size = keySet().size();
         int cnt = 0;
 
-        for (Entry<String,Object> entry : entrySet()) {
+        for (Entry<String, Object> entry : entrySet()) {
             cnt++;
             rv.append("\"").append(entry.getKey()).append("\":");
             rv.append(toJSON(entry.getValue()));

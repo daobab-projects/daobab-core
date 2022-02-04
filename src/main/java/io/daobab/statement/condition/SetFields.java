@@ -34,10 +34,6 @@ public class SetFields {
         return s;
     }
 
-    public int size() {
-        return counter - 1;
-    }
-
     public static final <F, R extends EntityRelation> SetFields setColumns(R related, Column<?, F, R>... fields) {
         SetFields s = new SetFields();
         for (Column<?, F, R> field : fields) {
@@ -59,6 +55,10 @@ public class SetFields {
             s.setValue(cc, (R) related);
         }
         return s;
+    }
+
+    public int size() {
+        return counter - 1;
     }
 
     public SetFields setCurrentDate(Column<?, Date, ?> field) {

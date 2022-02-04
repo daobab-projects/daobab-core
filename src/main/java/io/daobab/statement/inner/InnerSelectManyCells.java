@@ -1,9 +1,9 @@
 package io.daobab.statement.inner;
 
 import io.daobab.model.Entity;
-import io.daobab.target.database.query.DataBaseQueryField;
 import io.daobab.query.base.QueryExpressionProvider;
 import io.daobab.result.FieldsProvider;
+import io.daobab.target.database.query.DataBaseQueryField;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +28,12 @@ public class InnerSelectManyCells<E extends Entity, F> implements QueryExpressio
         return select;
     }
 
-    public boolean isDatabaseQuery(){
-        return getSelect()!=null;
-    }
-
     private void setSelect(DataBaseQueryField<E, F> queryField) {
         this.select = queryField;
+    }
+
+    public boolean isDatabaseQuery() {
+        return getSelect() != null;
     }
 
     @Override
@@ -47,8 +47,8 @@ public class InnerSelectManyCells<E extends Entity, F> implements QueryExpressio
 
     @Override
     public Optional<F> findFirst() {
-        List<F> many=findMany();
-        return many.isEmpty()?Optional.empty():Optional.of(many.get(0));
+        List<F> many = findMany();
+        return many.isEmpty() ? Optional.empty() : Optional.of(many.get(0));
     }
 
     @Override

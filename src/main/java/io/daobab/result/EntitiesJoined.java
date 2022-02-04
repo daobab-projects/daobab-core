@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 
 public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
     private final MultiEntityTarget target;
     private final List<List<Plate>> rows;
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public EntitiesJoined(MultiEntityTarget target, List<? extends ColumnsProvider> columnsProviders, Query<?,?,?> query) {
+    public EntitiesJoined(MultiEntityTarget target, List<? extends ColumnsProvider> columnsProviders, Query<?, ?, ?> query) {
         this.target = target;
         rows = new ArrayList<>(columnsProviders.size());
         columnsProviders.forEach(entity -> {
@@ -32,7 +32,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
             plates.add(new Plate(entity));
             rows.add(plates);
         });
-        if (!rows.isEmpty()){
+        if (!rows.isEmpty()) {
             join(query);
         }
     }
@@ -54,8 +54,8 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
         return plateList;
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
-    private void join(Query<?,?,?> query) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void join(Query<?, ?, ?> query) {
         List<JoinWrapper> joins = query.getJoins();
 
         for (JoinWrapper join : joins) {
@@ -68,12 +68,12 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
                     .orElseThrow(() -> new DaobabException(String.format("Invalid operation during join: Entity %s has no column named %s", joinedTable.getEntityName(), byColumn.getColumnName())));
 
             ColumnAndPointer thisColumn = getThisColumn(byColumn);
-            if (thisColumn==null){
+            if (thisColumn == null) {
                 continue;
             }
 
             Where composedWhere;
-            composedWhere=new WhereAnd().inFields(joinedTableColumn, getThisValuesOfColumn(thisColumn));
+            composedWhere = new WhereAnd().inFields(joinedTableColumn, getThisValuesOfColumn(thisColumn));
 
 //            switch (join.getType()){
 //                default:
@@ -90,11 +90,11 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
 
             //If there is inner where in join, will be on second key for sure
-            Object key=join.getWhere().getWhereMap().get(KEY+2);
-            Object val=join.getWhere().getWhereMap().get(VALUE+2);
-            Object wrapper=join.getWhere().getWhereMap().get(WRAPPER+2);
-            Object relation=join.getWhere().getWhereMap().get(RELATION+2);
-            composedWhere.add(wrapper,key,val,relation);
+            Object key = join.getWhere().getWhereMap().get(KEY + 2);
+            Object val = join.getWhere().getWhereMap().get(VALUE + 2);
+            Object wrapper = join.getWhere().getWhereMap().get(WRAPPER + 2);
+            Object relation = join.getWhere().getWhereMap().get(RELATION + 2);
+            composedWhere.add(wrapper, key, val, relation);
 
             Map<Object, List<Plate>> plateMap = target.select(joinedTable.columns()
                             .stream()
@@ -111,7 +111,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
             for (List<Plate> row : rows) {
                 Plate keyLeft = row.get(thisColumn.getPointer());
                 Object value = keyLeft.getValue(thisColumn.getColumn());
-                if (value==null){
+                if (value == null) {
                     continue;
                 }
                 List<Plate> right = plateMap.get(value);

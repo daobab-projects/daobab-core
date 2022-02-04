@@ -16,7 +16,7 @@ public class Count {
     private int counter = 1;
 
     public static Count any() {
-       return new Count();
+        return new Count();
     }
 
     public static Count field(Column<?, ?, ?> col) {

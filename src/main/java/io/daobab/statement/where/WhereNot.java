@@ -7,13 +7,13 @@ import io.daobab.statement.where.base.Where;
  */
 public class WhereNot extends Where<WhereNot> {
 
-    public static WhereNot not() {
-        return new WhereNot();
-    }
-
     // ------ Contructors
     public WhereNot() {
         super();
+    }
+
+    public static WhereNot not() {
+        return new WhereNot();
     }
 
     public WhereAnd and() {

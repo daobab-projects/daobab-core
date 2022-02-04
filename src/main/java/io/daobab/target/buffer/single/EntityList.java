@@ -9,8 +9,8 @@ import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesBufferIndexed;
 import io.daobab.statement.condition.Limit;
 import io.daobab.statement.condition.base.OrderComparator;
-import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.buffer.query.*;
+import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
 import io.daobab.target.protection.OperationType;
@@ -55,7 +55,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     public EntityList(Class<E> entityClass) {
-        this(new ArrayList<>(),entityClass);
+        this(new ArrayList<>(), entityClass);
     }
 
     @Override
@@ -79,8 +79,8 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        EntityList<E> results= new EntityList<>(filter((Query<E,?,?>) query), (Class<E>)query.getEntityClass());
-        results.orderAndLimit((Query<E,?,?>) query);
+        EntityList<E> results = new EntityList<>(filter((Query<E, ?, ?>) query), (Class<E>) query.getEntityClass());
+        results.orderAndLimit((Query<E, ?, ?>) query);
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
         return (E1) results.get(0);
     }
@@ -91,26 +91,26 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        EntityList<E> rv = new EntityList<>(filter((Query<E,?,?>) query), (Class<E>)query.getEntityClass());
-        rv.orderAndLimit((Query<E,?,?>) query);
+        EntityList<E> rv = new EntityList<>(filter((Query<E, ?, ?>) query), (Class<E>) query.getEntityClass());
+        rv.orderAndLimit((Query<E, ?, ?>) query);
         Entities<E1> rt = (Entities<E1>) rv;
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, rv.size());
         return rt;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private <R extends EntityRelation> PlateBuffer resultPlates(BufferQueryPlate query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        EntityList<E> matched = new EntityList<>(filter((Query<E,?,?>) query), (Class<E>)query.getEntityClass());
+        EntityList<E> matched = new EntityList<>(filter((Query<E, ?, ?>) query), (Class<E>) query.getEntityClass());
 
-        if (matched.isEmpty()){
+        if (matched.isEmpty()) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return new PlateBuffer();
         }
 
         List<Plate> results = new ArrayList<>();
 
-        for (E entity : matched.orderAndLimit((Query<E,?,?>) query)) {
+        for (E entity : matched.orderAndLimit((Query<E, ?, ?>) query)) {
             Plate plate = new Plate(query.getFields());
             for (TableColumn tableColumn : query.getFields()) {
                 plate.setValue(tableColumn, tableColumn.getColumn().getValueOf((R) entity));
@@ -127,11 +127,11 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         return proj.isEmpty() ? null : proj.get(0);
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private <R extends EntityRelation, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         EntityList<E> matched = new EntityList<>(filter(query), query.getEntityClass());
-        if (matched.isEmpty()){
+        if (matched.isEmpty()) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return new ArrayList<>();
         }
@@ -142,7 +142,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         return results;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private <R extends EntityRelation, F> F readFieldFromBuffer(Entities<E> entities, BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         EntityList<E> matched = new EntityList<>(entities.filter(query), query.getEntityClass());
@@ -164,7 +164,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @SuppressWarnings("unchecked")
-    public Entities<E> orderAndLimit(Query<E,?,?> query) {
+    public Entities<E> orderAndLimit(Query<E, ?, ?> query) {
         if (query == null) return this;
         if (query.getOrderBy() != null) {
             EntityList<E> copy = new EntityList<>(this, this.entityClazz);
@@ -172,17 +172,17 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
             OrderComparator<E> comparator = new OrderComparator(query.getOrderBy().toOrderFieldList());
             copy.sort(comparator);
             return copy.limit(query);
-        }else{
+        } else {
             return limit(query);
         }
     }
 
-    public Entities<E> limit(Query<E,?,?> query) {
+    public Entities<E> limit(Query<E, ?, ?> query) {
         if (query != null && query.getLimit() != null) {
             Limit limit = query.getLimit();
             if (limit.getOffset() + limit.getLimit() < size()) {
                 return new EntityList<>(subList(limit.getOffset(), limit.getOffset() + limit.getLimit()), this.entityClazz);
-            }else if (limit.getOffset()>0){
+            } else if (limit.getOffset() > 0) {
                 return new EntityList<>(subList(limit.getOffset(), size()), this.entityClazz);
             }
         }
@@ -195,7 +195,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         F result = readFieldFromBuffer(this, (BufferQueryField<E, F>) query);
-        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, result==null?0:1);
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, result == null ? 0 : 1);
         return result;
     }
 

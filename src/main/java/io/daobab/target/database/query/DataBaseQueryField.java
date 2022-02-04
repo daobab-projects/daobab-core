@@ -1,7 +1,6 @@
 package io.daobab.target.database.query;
 
 import io.daobab.error.ColumnMandatory;
-import io.daobab.error.TargetNoCacheNoEntityManagerException;
 import io.daobab.model.Column;
 import io.daobab.model.Dual;
 import io.daobab.model.Entity;
@@ -16,17 +15,14 @@ import io.daobab.statement.function.type.DummyColumnRelation;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.statement.inner.InnerSelectManyCells;
 import io.daobab.target.database.QueryTarget;
-import io.daobab.target.database.DataBaseTarget;
 
 import java.util.List;
 import java.util.Map;
 
-//TODO: czy count nie powinien byc ograniczony do jednego wejsciowego pola? I czy wogóle powinien tu byc
-
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-    public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQueryBase<E, DataBaseQueryField<E, F>> implements InnerQueryField<E, F>, QueryExpressionProvider<E>, FieldsProvider<F>, ColumnOrQuery<E,F,EntityRelation> {
+public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQueryBase<E, DataBaseQueryField<E, F>> implements InnerQueryField<E, F>, QueryExpressionProvider<E>, FieldsProvider<F>, ColumnOrQuery<E, F, EntityRelation> {
 
 
     @SuppressWarnings("unused")
@@ -45,7 +41,7 @@ import java.util.Map;
 
     @SuppressWarnings("unchecked")
     public DataBaseQueryField(String nativeQuery, QueryTarget target, Column<E, ?, ?> column) {
-        this(target,(Column<E, F, ?>)column);
+        this(target, (Column<E, F, ?>) column);
         this._nativeQuery = nativeQuery;
     }
 
@@ -54,7 +50,7 @@ import java.util.Map;
         return new DummyColumnRelation<>(this, DummyColumnTemplate.dummyColumn(asName));
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <F1> DummyColumnRelation<Dual, F1, EntityRelation> as(String asName, Class<F1> clazz) {
         return new DummyColumnRelation<>(this, DummyColumnTemplate.createDummyColumn(new Dual(), clazz, asName));
     }
@@ -62,10 +58,6 @@ import java.util.Map;
 
     @Override
     public InnerSelectManyCells<E, F> innerResult() {
-        if (getFields() == null) {
-            //TODO: Decide what there: exception or null?
-        }
-
         return new InnerSelectManyCells<>(this);
     }
 

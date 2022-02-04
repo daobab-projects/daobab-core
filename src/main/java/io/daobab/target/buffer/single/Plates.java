@@ -5,9 +5,9 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.model.Plate;
-import io.daobab.target.buffer.query.BufferQueryPlate;
 import io.daobab.query.base.Query;
 import io.daobab.target.buffer.BufferQueryTarget;
+import io.daobab.target.buffer.query.BufferQueryPlate;
 
 import java.io.Serializable;
 import java.util.*;
@@ -40,7 +40,7 @@ public interface Plates extends Serializable, List<Plate>, Cloneable, JsonListHa
 
     Plates clone();
 
-    Plates orderAndLimit(Query<?,?,?> query);
+    Plates orderAndLimit(Query<?, ?, ?> query);
 
     Plates limit(BufferQueryPlate query);
 
@@ -48,7 +48,7 @@ public interface Plates extends Serializable, List<Plate>, Cloneable, JsonListHa
         return stream().map(entity -> col.getValueOf((R) entity)).collect(Collectors.toList());
     }
 
-    <E extends Entity> List<Plate> filter(Query<E, ?,?> query);
+    <E extends Entity> List<Plate> filter(Query<E, ?, ?> query);
 
 
     default Plates filterBySize(int from, int to) {

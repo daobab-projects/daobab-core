@@ -29,17 +29,17 @@ import java.util.function.UnaryOperator;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes"})
-public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQueryBase> implements Query<E, QueryTarget,Q>, QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, QueryGroupBy<Q>, RemoteQuery<Q>, ILoggerBean {
+@SuppressWarnings({"unchecked", "rawtypes"})
+public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQueryBase> implements Query<E, QueryTarget, Q>, QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, QueryGroupBy<Q>, RemoteQuery<Q>, ILoggerBean {
 
     public List<Column<?, ?, ?>> _groupBy = new LinkedList<>();
     public String _groupByAlias = null;
     public boolean _unique = false;
     public boolean _calcJoins = false;
-    private boolean logQueryEnabled = false;
     protected Order orderBy;
     protected String _nativeQuery;
     protected List<TableColumn> fields = new ArrayList<>();
+    private boolean logQueryEnabled = false;
     private List<JoinWrapper> joins = new ArrayList<>();
     private IdentifierStorage identifierStorage;
     private QueryTarget target;
@@ -52,17 +52,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     private String identifier;
     private String sentQuery;
     private List<SetOperator> setOperatorList;
-
-    public List<SetOperator> getSetOperatorList() {
-        return setOperatorList;
-    }
-
-    public void addSetOperator(SetOperator union) {
-        if (setOperatorList == null) {
-            setOperatorList = new LinkedList<>();
-        }
-        this.setOperatorList.add(union);
-    }
 
     protected DataBaseQueryBase() {
     }
@@ -84,11 +73,21 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         to._calcJoins = from._calcJoins;
         to._nativeQuery = from._nativeQuery;
         to.identifier = from.identifier;
-       // to.logQueryConsumer = from.logQueryConsumer;
+        // to.logQueryConsumer = from.logQueryConsumer;
 
         return (RV) to;
     }
 
+    public List<SetOperator> getSetOperatorList() {
+        return setOperatorList;
+    }
+
+    public void addSetOperator(SetOperator union) {
+        if (setOperatorList == null) {
+            setOperatorList = new LinkedList<>();
+        }
+        this.setOperatorList.add(union);
+    }
 
     public Q doIfElse(boolean active, UnaryOperator<Q> logicIf, UnaryOperator<Q> logicElse) {
         if (active) {
@@ -105,7 +104,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
     @Override
     public Q groupBy(String alias) {
-        this._groupByAlias=alias;
+        this._groupByAlias = alias;
         return (Q) this;
     }
 
@@ -117,7 +116,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         return (Q) this;
     }
 
-    public List<Column<?,?,?>> getGroupBy() {
+    public List<Column<?, ?, ?>> getGroupBy() {
         return _groupBy;
     }
 
@@ -164,7 +163,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
     /**
      * Get all DAO related withoutTransactionTo this statement
-     *
      */
     public Set<String> getAllEntitiesRelated() {
         Set<String> rv = new HashSet<>();
@@ -263,11 +261,11 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
 
     public Q logQuery() {
-        logQueryEnabled=true;
+        logQueryEnabled = true;
         return (Q) this;
     }
 
-    public boolean isLogQueryEnabled(){
+    public boolean isLogQueryEnabled() {
         return logQueryEnabled;
     }
 
@@ -293,7 +291,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     }
 
     public boolean isGroupBy() {
-        return !_groupBy.isEmpty()&&getGroupByAlias()!=null;
+        return !_groupBy.isEmpty() && getGroupByAlias() != null;
     }
 
     public Q smartJoins() {
@@ -380,10 +378,10 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
         Entity ent = Marschaller.fromRemote(target, (String) remoteEntityName);
 
-        if (ent!= null) setEntityClass(ent.getEntityClass());
+        if (ent != null) setEntityClass(ent.getEntityClass());
         setEntityName((String) remoteEntityName);
 
-        if (unique!= null) _unique = "true".equals(unique);
+        if (unique != null) _unique = "true".equals(unique);
 
 
         if (where != null) {
@@ -405,7 +403,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         return _nativeQuery;
     }
 
-     protected <Q1 extends Query>Q1 modifyQuery(Q1 query) {
+    protected <Q1 extends Query> Q1 modifyQuery(Q1 query) {
         query.setIdentifier(UUID.randomUUID().toString());
         if (query.getEntityClass() == null) return query;
 
@@ -421,7 +419,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
                         }
                     }
                 }
-                return (Q1)emb.enhanceQuery((Q)query);
+                return (Q1) emb.enhanceQuery((Q) query);
             } catch (Exception e) {
                 throw new DaobabEntityCreationException(query.getEntityClass(), e);
             }
@@ -476,13 +474,13 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         this.sentQuery = sentQuery;
     }
 
-    public <E extends Entity> Q from(E entity){
+    public <E extends Entity> Q from(E entity) {
         if (entity == null) throw new NullEntityException();
         setEntityName(entity.getEntityName());
         setEntityClass(entity.getEntityClass());
         IdentifierStorage storage = new IdentifierStorage();
         setIdentifierStorage(storage);
         getIdentifierStorage().registerIdentifiers(getEntityName());
-        return (Q)this;
+        return (Q) this;
     }
 }

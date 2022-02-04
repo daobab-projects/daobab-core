@@ -21,15 +21,15 @@ public interface SaveGenerated {
 
         sbfol.append(fpath).append(File.separator);
 
-        StringBuilder properCatalog=JavaPackageResolver.resolveCatalog(catalog);
-        StringBuilder properSchema=JavaPackageResolver.resolveSchema(schema);
+        StringBuilder properCatalog = JavaPackageResolver.resolveCatalog(catalog);
+        StringBuilder properSchema = JavaPackageResolver.resolveSchema(schema);
 
-        if (properCatalog.length()>0){
+        if (properCatalog.length() > 0) {
             sbfol.append(properCatalog);
             sbfol.append(File.separator);
         }
 
-        if (properSchema.length()>0){
+        if (properSchema.length() > 0) {
             sbfol.append(properSchema);
             sbfol.append(File.separator);
         }

@@ -9,7 +9,7 @@ public class MatchLike implements WherePredicate<Object> {
 
     public MatchLike(Object valueToCompare) {
         this.valueToCompare = valueToCompare;
-        if (valueToCompare != null){
+        if (valueToCompare != null) {
             String regex = quotemeta(valueToCompare.toString());
             regex = regex.replace("_", ".").replace("%", ".*?");
             pattern = Pattern.compile(regex,

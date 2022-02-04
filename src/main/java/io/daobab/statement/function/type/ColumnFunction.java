@@ -16,22 +16,6 @@ import java.util.Map;
  */
 public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> implements Column<E, C, R> {
 
-    private Map<String, Object> functionMap = new HashMap<>();
-    private String mode;
-    private String columnName;
-    private String fieldName;
-    protected Class<C> columnClass;
-    private final E thisEntity;
-    public String identifier;
-    private boolean noParameter = false;
-
-    public Column<E, F, R> column;
-    public Query<E,?,?> query;
-    public Column[] columns;
-    public String mediator;
-
-    protected static Column dummy = DummyColumnTemplate.dummyColumn("dummy");
-
     public static String KEY_VALUES = "VALUES";
     public static String BEFORE_COL3 = "BEFORE_COL3";
     public static String BEFORE_COL2 = "BEFORE_COL2";
@@ -41,6 +25,19 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
     public static String AFTER_COL3 = "AFTER_COL3";
     public static String AFTER_COL4 = "AFTER_COL4";
     public static String KEY_ARGUMENT = "ARGUMENT";
+    protected static Column dummy = DummyColumnTemplate.dummyColumn("dummy");
+    private final E thisEntity;
+    public String identifier;
+    public Column<E, F, R> column;
+    public Query<E, ?, ?> query;
+    public Column[] columns;
+    public String mediator;
+    protected Class<C> columnClass;
+    private Map<String, Object> functionMap = new HashMap<>();
+    private String mode;
+    private String columnName;
+    private String fieldName;
+    private boolean noParameter = false;
 
 
     public ColumnFunction(String mode, Class<C> functionClass) {
@@ -83,7 +80,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
             thisEntity = column.getInstance();
             this.column = column;
         } else {
-            Query<E,?,?> query = (Query<E,?,?>) col;
+            Query<E, ?, ?> query = (Query<E, ?, ?>) col;
             this.query = query;
             Column<E, F, R> column = (query.getFields().get(0)).getColumn();
             columnClass = (Class<C>) column.getFieldClass();
@@ -114,7 +111,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
             thisEntity = column.getInstance();
             this.column = column;
         } else {
-            Query<E,?,?> query = (Query<E,?,?>) col;
+            Query<E, ?, ?> query = (Query<E, ?, ?>) col;
             this.query = query;
             columnClass = functionClass;
             thisEntity = (E) dummy.getInstance();

@@ -19,10 +19,6 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
     public Plate() {
     }
 
-    public List<TableColumn> columns() {
-        return fields;
-    }
-
     public Plate(List<TableColumn> fields, Object[] rowResults) {
         if (fields == null || fields.isEmpty()) {
             throw new ColumnMandatory();
@@ -33,11 +29,12 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
             setValue(c, rowResults[i]);
         }
     }
+
     public Plate(ColumnsProvider entity) {
         this.fields = entity.columns();
         for (int i = 0; i < fields.size(); i++) {
             TableColumn c = fields.get(i);
-            setValue(c,c.getColumn().getValue((EntityRelation)entity));
+            setValue(c, c.getColumn().getValue((EntityRelation) entity));
         }
     }
 
@@ -47,6 +44,10 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
         }
         this.fields = fields;
         fields.forEach(c -> setValue(c, null));
+    }
+
+    public List<TableColumn> columns() {
+        return fields;
     }
 
     public <F> F getValue(Column<?, F, ?> df) {
@@ -60,18 +61,19 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
         if (df == null) return defaultValue;
         Map<String, Object> entityMap = get(df.getEntityName());
         if (entityMap == null) return defaultValue;
-        F rv= (F) entityMap.get(df.getFieldName());
-        if (rv==null){
+        F rv = (F) entityMap.get(df.getFieldName());
+        if (rv == null) {
             return defaultValue;
         }
         return rv;
     }
+
     public <F> F getValueOrElse(Column<?, F, ?> df, Class<F> clazz, F defaultValue) {
         if (df == null) return defaultValue;
         Map<String, Object> entityMap = get(df.getEntityName());
         if (entityMap == null) return defaultValue;
-        F rv= clazz.cast(entityMap.get(df.getFieldName()));
-        if (rv==null){
+        F rv = clazz.cast(entityMap.get(df.getFieldName()));
+        if (rv == null) {
             return defaultValue;
         }
         return rv;
@@ -110,6 +112,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
         }
         return null;
     }
+
     public <F> F getValueOrElse(String fieldName, F defaultValue) {
         if (fieldName == null) return defaultValue;
         for (String entitykey : this.keySet()) {
@@ -136,9 +139,10 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
 
         return rv;
     }
+
     public <E extends Entity> E getEntity(E entity) {
         if (entity == null) throw new NullParameter("entity");
-        return (E)getEntity(entity.getClass());
+        return (E) getEntity(entity.getClass());
     }
 
 

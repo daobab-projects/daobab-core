@@ -28,7 +28,8 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
     private String pkColumnName;
     private boolean pkResolved = false;
     private E entity;
-    private Query<?,?,?> selectQuery;
+    private Query<?, ?, ?> selectQuery;
+
     @SuppressWarnings("unused")
     private DataBaseQueryInsert() {
     }
@@ -89,7 +90,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         set(sd);
     }
 
-    public DataBaseQueryInsert<E> select(Query<?,?,?> query) {
+    public DataBaseQueryInsert<E> select(Query<?, ?, ?> query) {
         if (query == null) {
             throw new QueryMandatory();
         }
@@ -225,11 +226,11 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
     }
 
 
-    public Query<?,?,?> getSelectQuery() {
+    public Query<?, ?, ?> getSelectQuery() {
         return selectQuery;
     }
 
-    public void setSelectQuery(Query<?,?,?> selectQuery) {
+    public void setSelectQuery(Query<?, ?, ?> selectQuery) {
         this.selectQuery = selectQuery;
     }
 

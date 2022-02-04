@@ -1,7 +1,7 @@
 package io.daobab.result.predicate;
 
-import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
 import io.daobab.result.bytebuffer.BitFieldInteger;
+import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
 
 import java.nio.ByteBuffer;
 

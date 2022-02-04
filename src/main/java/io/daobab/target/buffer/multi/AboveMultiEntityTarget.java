@@ -2,14 +2,14 @@ package io.daobab.target.buffer.multi;
 
 import io.daobab.error.*;
 import io.daobab.model.Entity;
-import io.daobab.target.database.query.DataBaseQueryDelete;
-import io.daobab.target.database.query.DataBaseQueryInsert;
-import io.daobab.target.database.query.DataBaseQueryUpdate;
-import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.QueryHandler;
+import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.database.QueryDataBaseHandler;
 import io.daobab.target.database.TransactionalTarget;
+import io.daobab.target.database.query.DataBaseQueryDelete;
+import io.daobab.target.database.query.DataBaseQueryInsert;
+import io.daobab.target.database.query.DataBaseQueryUpdate;
 import io.daobab.transaction.Propagation;
 import io.daobab.transaction.TransactionIndicator;
 
@@ -77,7 +77,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return cached;
     }
 
-//    @Override
+    //    @Override
     public <E extends Entity> E insert(DataBaseQueryInsert<E> query, boolean transaction) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
@@ -86,17 +86,17 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return null;
     }
 
-//    @Override
+    //    @Override
     public <E extends Entity> E insert(DataBaseQueryInsert<E> query, Propagation propagation) {
         if (!(this instanceof TransactionalTarget)) throw new TargetUntransactional(this);
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-            return handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).insert(query, transaction));
+            return handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).insert(query, transaction));
         }
         return null;
     }
 
-//    @Override
+    //    @Override
     public <E extends Entity> int update(DataBaseQueryUpdate<E> query, boolean transaction) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
@@ -105,16 +105,16 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return 0;
     }
 
-//    @Override
+    //    @Override
     public <E extends Entity> int update(DataBaseQueryUpdate<E> query, Propagation propagation) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-            return handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).update(query, transaction));
+            return handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).update(query, transaction));
         }
         return 0;
     }
 
-//    @Override
+    //    @Override
     public <E extends Entity> int delete(DataBaseQueryDelete<E> query, boolean transaction) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
@@ -123,11 +123,11 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         return 0;
     }
 
-//    @Override
+    //    @Override
     public <E extends Entity> int delete(DataBaseQueryDelete<E> query, Propagation propagation) {
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-            return handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler)target).delete(query, transaction));
+            return handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).delete(query, transaction));
         }
         return 0;
     }

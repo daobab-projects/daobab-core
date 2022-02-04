@@ -68,58 +68,6 @@ public class DeveloperGenerator {
         return sb.toString();
     }
 
-//    private static String generateTable(GenerateTable table, String packagename) {
-//
-//        Replacer replacer = new Replacer();
-//
-//        String tableName = table.getTableName();
-//        String tableNameCamel = GenerateFormatter.toCamelCase(table.getTableName());
-//        String compositeKeyName = DaobabGenerator.createCompositeKeyName(tableNameCamel, Arrays.asList(table));
-//        boolean pkExist = table.getPrimaryKeys() != null;
-//
-//        StringBuilder sb = new StringBuilder();
-//        sb.append(packagename);
-//        if (table.getSchemaName() != null && !table.getSchemaName().trim().isEmpty()) {
-//            sb.append(".").append(table.getSchemaName().trim().toLowerCase());
-//        }
-//
-//        sb.append(table.isView() ? ".view" : ".table");
-//
-//        table.setJavaPackage(sb.toString());
-//
-//        replacer.add(GenKeys.PK_IMPORT, pkExist ? "import " + PrimaryKey.class.getName() + ";" : "");
-//        if (pkExist) {
-//            if (table.getPrimaryKeys().size() == 1) {
-//                replacer.add(GenKeys.PK_TYPE_IMPORT, "import " + table.getPrimaryKeys().get(0).getFieldClass().getName() + ";\n");
-//            } else {
-//                //todo multikey
-//                replacer.add(GenKeys.PK_TYPE_IMPORT, "import " + table.getPrimaryKeys().get(0).getFieldClass().getName() + ";\n");
-//            }
-//        }
-//
-//        replacer.add(GenKeys.COLUMN_IMPORTS, table.getColumnImport(tableNameCamel));
-//        replacer.add(GenKeys.COLUMN_INTERFACES, table.getColumnInterfaces(compositeKeyName, tableNameCamel));
-//        replacer.add(GenKeys.TABLE_NAME, tableName);
-//        replacer.add(GenKeys.TABLE_CAMEL_NAME, tableNameCamel);
-//        replacer.add(GenKeys.COLUMN_METHODS, table.getColumnMethods());
-//        replacer.add(GenKeys.PK_ID_METHOD, pkExist ? table.getPkIdMethod() : "");
-//        replacer.add(GenKeys.TABLE_PACKAGE, table.getJavaPackage());
-//        if (pkExist) {
-//            if (table.getPrimaryKeys().size() == 1) {
-//                replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + tableNameCamel + "," + table.getPrimaryKeys().get(0).getFieldClass().getSimpleName() + "," + table.getPrimaryKeys().get(0).getFinalFieldNameShortOrLong(tableNameCamel) + ">");
-//            } else {
-//                replacer.add(GenKeys.PK_INTERFACE, PrimaryCompositeKey.class.getSimpleName() + "<" + tableNameCamel + "," + table.getPrimaryKeys().get(0).getFieldClass().getSimpleName() + "," + table.getPrimaryKeys().get(0).getFinalFieldNameShortOrLong(tableNameCamel) + ">");
-//            }
-//        } else {
-//            replacer.add(GenKeys.PK_INTERFACE, "");
-//        }
-//
-//        table.setAlreadyGenerated(true);
-//
-//        return replacer.replaceAll(DaobabGenerator.tabtemp);
-//
-//    }
-
     private static GenerateColumn toGc(Column column) {
         GenerateColumn rv = new GenerateColumn(column.getColumnName(), column.getFieldClass());
         rv.setFieldName(column.getFieldName());

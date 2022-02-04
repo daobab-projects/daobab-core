@@ -58,17 +58,17 @@ public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E
         this.entity = entity;
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
-    public BufferQueryEntity<E> toSelect(){
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public BufferQueryEntity<E> toSelect() {
         BufferQueryEntity<E> query;
-       if (getEntity()==null){
-           if (getFields().isEmpty()){
-               throw new DaobabException("You cannot convert delete query to select query without entity or column provided.");
-           }
-           query = new BufferQueryEntity<>(getTarget(), getFields().get(0).getColumn());
-       }else{
-           query= new BufferQueryEntity<>(getTarget(),getEntity());
-       }
+        if (getEntity() == null) {
+            if (getFields().isEmpty()) {
+                throw new DaobabException("You cannot convert delete query to select query without entity or column provided.");
+            }
+            query = new BufferQueryEntity<>(getTarget(), getFields().get(0).getColumn());
+        } else {
+            query = new BufferQueryEntity<>(getTarget(), getEntity());
+        }
 
         query.setWhereWrapper(getWhereWrapper());
         query.setJoins(getJoins());

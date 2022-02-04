@@ -6,7 +6,8 @@ public class Decoder {
     private static final byte[] decodeMap = initDecodeMap();
     private static final char[] encodeMap = initEncodeMap();
 
-    private Decoder(){}
+    private Decoder() {
+    }
 
     private static char[] initEncodeMap() {
         char[] map = new char[64];

@@ -2,8 +2,8 @@ package io.daobab.target.buffer.multi;
 
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.model.Entity;
-import io.daobab.target.database.query.DataBaseQueryEntity;
 import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.database.query.DataBaseQueryEntity;
 
 import java.util.HashMap;
 import java.util.Map;

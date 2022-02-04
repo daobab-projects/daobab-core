@@ -3,13 +3,13 @@ package io.daobab.statement.where.base;
 import io.daobab.error.*;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.*;
-import io.daobab.target.buffer.single.Entities;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.WhereNot;
 import io.daobab.statement.where.WhereOr;
+import io.daobab.target.buffer.single.Entities;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -21,7 +21,7 @@ import static io.daobab.statement.condition.Operator.*;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes","unused","UnusedReturnValue"})
+@SuppressWarnings({"unchecked", "rawtypes", "unused", "UnusedReturnValue"})
 public abstract class Where<W extends Where> extends WhereBase {
 
     public boolean isEmpty() {
@@ -81,277 +81,299 @@ public abstract class Where<W extends Where> extends WhereBase {
 
     public final <E extends Entity, F, R extends EntityRelation> W ifNotNull(Field<E, F, R> column, Operator operator, F val) {
         if (val != null) temp(column, operator, val);
-        return (W)this;
+        return (W) this;
     }
-
 
 
     public final <F> W isNull(Field<?, F, ?> column) {
         temp(column, IS_NULL);
-        return (W)this;
+        return (W) this;
     }
+
     public final <F> W notNull(Field<?, F, ?> column) {
         temp(column, NOT_NULL);
-        return (W)this;
+        return (W) this;
     }
 
     @SuppressWarnings("java:S1221")
     public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column, F val) {
         temp(column, EQ, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W greater(Field<E, F, R> column, F val) {
         temp(column, GT, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W greaterOrEqual(Field<E, F, R> column, F val) {
         temp(column, GTEQ, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W less(Field<E, F, R> column, F val) {
         temp(column, LT, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W lessOrEqual(Field<E, F, R> column, F val) {
         temp(column, LTEQ, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W notEqual(Field<E, F, R> column, F val) {
         temp(column, NOT_EQ, val);
-        return (W)this;
+        return (W) this;
     }
 
     @SuppressWarnings("java:S1221")
-    public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column,  R val) {
+    public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column, R val) {
         temp(column, EQ, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W greater(Field<E, F, R> column, R val) {
         temp(column, GT, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W greaterOrEqual(Field<E, F, R> column, R val) {
         temp(column, GTEQ, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W less(Field<E, F, R> column, R val) {
         temp(column, LT, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W lessOrEqual(Field<E, F, R> column, R val) {
         temp(column, LTEQ, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W notEqual(Field<E, F, R> column, R val) {
         temp(column, NOT_EQ, val);
-        return (W)this;
+        return (W) this;
     }
 
     @SuppressWarnings("java:S1221")
-    public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column,  Field<?, F, ?> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column, Field<?, F, ?> val) {
         temp(column, EQ, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W greater(Field<E, F, R> column, Field<?, F, ?> val) {
         temp(column, GT, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W greaterOrEqual(Field<E, F, R> column, Field<?, F, ?> val) {
         temp(column, GTEQ, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W less(Field<E, F, R> column, Field<?, F, ?> val) {
         temp(column, LT, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W lessOrEqual(Field<E, F, R> column, Field<?, F, ?> val) {
         temp(column, LTEQ, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W notEqual(Field<E, F, R> column, Field<?, F, ?> val) {
         temp(column, NOT_EQ, val);
-        return (W)this;
+        return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W like(Field<E, F, R> column,  F val) {
+    public final <E extends Entity, F, R extends EntityRelation> W like(Field<E, F, R> column, F val) {
         temp(column, LIKE, val);
-        return (W)this;
+        return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W notLike(Field<E, F, R> column,  F val) {
+    public final <E extends Entity, F, R extends EntityRelation> W notLike(Field<E, F, R> column, F val) {
         temp(column, NOT_LIKE, val);
-        return (W)this;
+        return (W) this;
     }
 
 
     public final <E extends Entity, F, R extends EntityRelation> W in(Field<E, F, R> column, F... val) {
         temp(column, IN, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W notIn(Field<E, F, R> column, F... val) {
         temp(column, NOT_IN, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W in(Field<E, F, R> column, R... val) {
         temp(column, IN, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W notIn(Field<E, F, R> column, R... val) {
         temp(column, NOT_IN, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W inFields(Field<E, F, R> column, Collection<F> val) {
         tempColField(column, IN, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W notInFields(Field<E, F, R> column, Collection<F> val) {
         tempColField(column, NOT_IN, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W in(Field<E, F, R> column, Entities<? extends R> val) {
         temp(column, IN, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W notIn(Field<E, F, R> column, Entities<? extends R> val) {
         temp(column, NOT_IN, val);
-        return (W)this;
+        return (W) this;
     }
 
 
     public final <F> W between(Field<?, F, ?> column, F valueFrom, F valueTo) {
         tempBetween(column, valueFrom, valueTo);
-        return (W)this;
+        return (W) this;
     }
 
 
     public final <F, R extends EntityRelation> W between(Field<?, F, R> column, R valueFrom, R valueTo) {
         tempBetween(column, valueFrom, valueTo);
-        return (W)this;
+        return (W) this;
     }
 
     @SuppressWarnings("java:S1221")
-    public final <E extends Entity, F, R extends EntityRelation> W equal(Column<E, F, R> column,  InnerQueryEntity<? extends R> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W equal(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         temp(column, EQ, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W greater(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         temp(column, GT, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W greaterOrEqual(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         temp(column, GTEQ, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W less(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         temp(column, LT, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W lessOrEqual(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         temp(column, LTEQ, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W notEqual(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         temp(column, NOT_EQ, val);
-        return (W)this;
+        return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W like(Column<E, F, R> column,  InnerQueryEntity<? extends R> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W like(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         temp(column, LIKE, val);
-        return (W)this;
+        return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W notLike(Column<E, F, R> column,  InnerQueryEntity<? extends R> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W notLike(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         temp(column, NOT_LIKE, val);
-        return (W)this;
+        return (W) this;
     }
 
 
     public final <E extends Entity, F, R extends EntityRelation> W in(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         temp(column, IN, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W notIn(Column<E, F, R> column, InnerQueryEntity<? extends R> val) {
         temp(column, NOT_IN, val);
-        return (W)this;
+        return (W) this;
     }
 
 
     @SuppressWarnings("java:S1221")
-    public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column,  InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         temp(column, EQ, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W greater(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         temp(column, GT, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W greaterOrEqual(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         temp(column, GTEQ, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W less(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         temp(column, LT, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W lessOrEqual(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         temp(column, LTEQ, val);
-        return (W)this;
+        return (W) this;
     }
+
     public final <E extends Entity, F, R extends EntityRelation> W notEqual(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         temp(column, NOT_EQ, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W like(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         temp(column, LIKE, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W notLike(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         temp(column, NOT_LIKE, val);
-        return (W)this;
+        return (W) this;
     }
 
 
     public final <E extends Entity, F, R extends EntityRelation> W in(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         temp(column, IN, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <E extends Entity, F, R extends EntityRelation> W notIn(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
         temp(column, NOT_IN, val);
-        return (W)this;
+        return (W) this;
     }
 
     public final <F> W equalColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
         temp(column, EQ, column2);
-        return (W)this;
+        return (W) this;
     }
 
     public final <F> W greaterColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
         temp(column, GT, column2);
-        return (W)this;
+        return (W) this;
     }
+
     public final <F> W greaterOrEqualColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
         temp(column, GTEQ, column2);
-        return (W)this;
+        return (W) this;
     }
+
     public final <F> W lessColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
         temp(column, LT, column2);
-        return (W)this;
+        return (W) this;
     }
 
     public final <F> W lessOrEqualColumn(Column<?, F, ?> column, Column<?, F, ?> column2) {
@@ -462,7 +484,7 @@ public abstract class Where<W extends Where> extends WhereBase {
 
     private <E extends Entity, F, R extends EntityRelation> void temp(Field<E, F, R> column, Operator operator, R val) {
         if (column == null) throw new ColumnMandatory();
-        if (val instanceof Number){
+        if (val instanceof Number) {
             put(MAY_BE_INDEXED_IN_BUFFER + getCounter(), Boolean.TRUE);
         }
         putKeyMandatoryRelationValue(column, operator, column.getValueOf(val));
@@ -587,7 +609,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         } else if (NOT.equals(relation)) {
             rv = new WhereNot();
         } else {
-            throw new DaobabException("Invalid relation: "+relation);
+            throw new DaobabException("Invalid relation: " + relation);
         }
 
         for (int counter = 1; counter < getCounter(); counter++) {

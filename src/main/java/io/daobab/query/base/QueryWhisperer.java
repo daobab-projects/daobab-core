@@ -11,7 +11,7 @@ import io.daobab.statement.where.WhereNot;
 import io.daobab.statement.where.WhereOr;
 import io.daobab.statement.where.base.Where;
 
-@SuppressWarnings({"unchecked","rawtypes","UnusedReturnValue","unused"})
+@SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryWhisperer {
 
     default WhereAnd and() {

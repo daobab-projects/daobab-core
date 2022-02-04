@@ -46,10 +46,6 @@ public enum JdbcType {
     UNKNOWN(9999);
 
 
-    public int getType() {
-        return type;
-    }
-
     int type;
 
     JdbcType(int type) {
@@ -143,5 +139,9 @@ public enum JdbcType {
             default:
                 return UNKNOWN;
         }
+    }
+
+    public int getType() {
+        return type;
     }
 }

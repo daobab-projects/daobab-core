@@ -2,9 +2,9 @@ package io.daobab.result.index;
 
 import io.daobab.model.Column;
 import io.daobab.model.EntityRelation;
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
 import io.daobab.result.predicate.MatchLike;
 import io.daobab.statement.condition.Operator;
+import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
 
 import java.util.Collection;
 import java.util.Map;
@@ -30,15 +30,15 @@ public class BitBufferIndexString<E> extends BitBufferIndex<E, String> {
                 return toOneList(subManyMap);
             }
             case LIKE: {
-                String keyLike=(String)key1;
+                String keyLike = (String) key1;
                 subManyMap = new TreeMap<>();
-                if (keyLike==null){
+                if (keyLike == null) {
                     return toOneList(subManyMap);
                 }
 
-                MatchLike matchLike=new MatchLike(keyLike);
-                for (Map.Entry<String,Collection<Integer>> entry:valueIndex.entrySet()){
-                    if (matchLike.test(entry.getKey())){
+                MatchLike matchLike = new MatchLike(keyLike);
+                for (Map.Entry<String, Collection<Integer>> entry : valueIndex.entrySet()) {
+                    if (matchLike.test(entry.getKey())) {
                         subManyMap.put(entry.getKey(), entry.getValue());
                     }
                 }
@@ -46,15 +46,15 @@ public class BitBufferIndexString<E> extends BitBufferIndex<E, String> {
             }
 
             case NOT_LIKE: {
-                String keyLike=(String)key1;
+                String keyLike = (String) key1;
                 subManyMap = new TreeMap<>();
-                if (keyLike==null){
+                if (keyLike == null) {
                     return toOneList(subManyMap);
                 }
 
-                MatchLike matchLike=new MatchLike(keyLike);
-                for (Map.Entry<String,Collection<Integer>> entry:valueIndex.entrySet()){
-                    if (!matchLike.test(entry.getKey())){
+                MatchLike matchLike = new MatchLike(keyLike);
+                for (Map.Entry<String, Collection<Integer>> entry : valueIndex.entrySet()) {
+                    if (!matchLike.test(entry.getKey())) {
                         subManyMap.put(entry.getKey(), entry.getValue());
                     }
                 }

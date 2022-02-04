@@ -4,13 +4,13 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.query.base.QueryType;
-import io.daobab.target.buffer.single.Entities;
 import io.daobab.result.EntitiesProvider;
-import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
 import io.daobab.statement.condition.Count;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.target.buffer.BufferQueryTarget;
+import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
+import io.daobab.target.buffer.single.Entities;
 
 import java.util.ArrayList;
 import java.util.Map;

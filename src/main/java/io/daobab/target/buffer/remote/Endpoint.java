@@ -3,7 +3,6 @@ package io.daobab.target.buffer.remote;
 import io.daobab.error.DaobabException;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.ResponseWrapper;
-
 import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.protection.AccessProtector;
@@ -37,7 +36,7 @@ public class Endpoint {
                 r.setContent(singleResult ? exposedTarget.readEntity(q) : exposedTarget.readEntityList(q));
 
             } else if (BufferQueryField.class.getName().equals(queryclass)) {
-                BufferQueryField<?,?> q = new BufferQueryField<>(exposedTarget, query);
+                BufferQueryField<?, ?> q = new BufferQueryField<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.removeViolatedInfoColumns3(q.getFields(), OperationType.READ);
                 }

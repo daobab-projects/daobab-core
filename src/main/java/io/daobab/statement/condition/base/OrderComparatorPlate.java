@@ -6,7 +6,6 @@ import io.daobab.parser.ParserNumber;
 
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -14,7 +13,7 @@ import java.util.List;
  *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class OrderComparatorPlate implements Comparator<Plate> {
 
     private List<OrderField> orderList;

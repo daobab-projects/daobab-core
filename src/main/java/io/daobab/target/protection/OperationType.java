@@ -23,37 +23,37 @@ public enum OperationType {
 
         switch (operation) {
             case READ: {
-                if (rights.contains(Access.NO_READ)){
+                if (rights.contains(Access.NO_READ)) {
                     return false;
                 }
-                if (rights.contains(Access.FULL) || rights.contains(Access.READ)){
+                if (rights.contains(Access.FULL) || rights.contains(Access.READ)) {
                     return true;
                 }
                 break;
             }
             case INSERT: {
-                if (rights.contains(Access.NO_INSERT)){
+                if (rights.contains(Access.NO_INSERT)) {
                     return false;
                 }
-                if (rights.contains(Access.FULL) || rights.contains(Access.WRITE)){
+                if (rights.contains(Access.FULL) || rights.contains(Access.WRITE)) {
                     return true;
                 }
                 break;
             }
             case UPDATE: {
-                if (rights.contains(Access.NO_UPDATE)){
+                if (rights.contains(Access.NO_UPDATE)) {
                     return false;
                 }
-                if (rights.contains(Access.FULL) || rights.contains(Access.WRITE)){
+                if (rights.contains(Access.FULL) || rights.contains(Access.WRITE)) {
                     return true;
                 }
                 break;
             }
             case DELETE: {
-                if (rights.contains(Access.NO_DELETE)){
+                if (rights.contains(Access.NO_DELETE)) {
                     return false;
                 }
-                if (rights.contains(Access.FULL) || rights.contains(Access.WRITE)){
+                if (rights.contains(Access.FULL) || rights.contains(Access.WRITE)) {
                     return true;
                 }
                 break;

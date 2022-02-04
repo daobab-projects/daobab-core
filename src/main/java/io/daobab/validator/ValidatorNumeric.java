@@ -14,7 +14,7 @@ public interface ValidatorNumeric {
         String s = str.trim();
         for (int i = 0; i < s.length(); i++) {
             // If we find a non-digit character we return false.
-            if (!Character.isDigit(s.charAt(i)) && (s.charAt(i) != '.') && (s.charAt(i) != '-') )
+            if (!Character.isDigit(s.charAt(i)) && (s.charAt(i) != '.') && (s.charAt(i) != '-'))
                 return false;
         }
         return true;

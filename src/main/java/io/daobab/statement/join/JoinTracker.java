@@ -56,8 +56,8 @@ public interface JoinTracker {
         if (dest != null) destinations.addAll(dest);
 
         alreadyDefinedJoins.stream()
-                .filter((jw)->jw.getWhere() != null && jw.getWhere().getAllDaoInWhereClause() != null)
-                .forEach((jw)->destinations.addAll(jw.getWhere().getAllDaoInWhereClause()));
+                .filter((jw) -> jw.getWhere() != null && jw.getWhere().getAllDaoInWhereClause() != null)
+                .forEach((jw) -> destinations.addAll(jw.getWhere().getAllDaoInWhereClause()));
 
         List<Vertex> nodes = bunch.stream().map(Vertex::new).collect(Collectors.toList());
         List<Edge> edges = new LinkedList<>();

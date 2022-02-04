@@ -3,18 +3,18 @@ package io.daobab.target.buffer;
 import io.daobab.error.ColumnMandatory;
 import io.daobab.error.DaobabException;
 import io.daobab.model.*;
-import io.daobab.target.buffer.single.Entities;
 import io.daobab.statement.condition.SetField;
 import io.daobab.statement.condition.SetFields;
-import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.Target;
 import io.daobab.target.buffer.query.*;
+import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings({"rawtypes","unused"})
+@SuppressWarnings({"rawtypes", "unused"})
 public interface BufferQueryTarget extends Target, BufferQueryHandler {
 
 

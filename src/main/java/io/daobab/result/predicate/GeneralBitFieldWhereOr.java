@@ -1,7 +1,7 @@
 package io.daobab.result.predicate;
 
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
 import io.daobab.statement.where.base.Where;
+import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
 
 import java.util.List;
 

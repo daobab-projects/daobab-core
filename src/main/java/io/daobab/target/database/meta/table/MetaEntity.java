@@ -11,23 +11,24 @@ import java.util.List;
 
 public class MetaEntity extends Table {
 
-    List<TableColumn> columnList=new ArrayList<>();
-
     private final String tableName;
+    List<TableColumn> columnList = new ArrayList<>();
 
-    public MetaEntity(String tableName){
-        this.tableName=tableName;
-    }
-    public MetaEntity(String tableName,List<MetaColumn> columns){
-        this.tableName=tableName;
-        columns.forEach(c->columnList.add(toColumn(this,c)));
+    public MetaEntity(String tableName) {
+        this.tableName = tableName;
     }
 
-    public void addColumn(TableColumn tc){
+    public MetaEntity(String tableName, List<MetaColumn> columns) {
+        this.tableName = tableName;
+        columns.forEach(c -> columnList.add(toColumn(this, c)));
+    }
+
+    public void addColumn(TableColumn tc) {
         columnList.add(tc);
     }
-    public TableColumn addColumn(MetaColumn mc){
-        TableColumn tc=toColumn(this,mc);
+
+    public TableColumn addColumn(MetaColumn mc) {
+        TableColumn tc = toColumn(this, mc);
         return tc;
     }
 
@@ -41,9 +42,9 @@ public class MetaEntity extends Table {
         return tableName;
     }
 
-    public Column<?,?,?> getColumnByName(String name){
-        for (TableColumn tableColumn:columns()){
-            if (tableColumn.getColumn().getColumnName().equals(name)){
+    public Column<?, ?, ?> getColumnByName(String name) {
+        for (TableColumn tableColumn : columns()) {
+            if (tableColumn.getColumn().getColumnName().equals(name)) {
                 return tableColumn.getColumn();
             }
         }
@@ -51,8 +52,8 @@ public class MetaEntity extends Table {
     }
 
 
-    public TableColumn toColumn(MetaEntity entity,MetaColumn c){
-        TableColumn rv= new TableColumn(new Column<MetaEntity, Object, EntityRelation>() {
+    public TableColumn toColumn(MetaEntity entity, MetaColumn c) {
+        return new TableColumn(new Column<MetaEntity, Object, EntityRelation>() {
             @Override
             public String getColumnName() {
                 return c.getColumnName();
@@ -65,8 +66,8 @@ public class MetaEntity extends Table {
 
             @Override
             public Class<Object> getFieldClass() {
-                Class<?> c1=c.getFieldClass();
-                return (Class<Object>)c1;
+                Class<?> c1 = c.getFieldClass();
+                return (Class<Object>) c1;
             }
 
             @Override
@@ -85,7 +86,6 @@ public class MetaEntity extends Table {
             }
         });
 
-        return rv;
     }
 
 }

@@ -36,7 +36,7 @@ public class Endpoint {
                 r.setContent(singleResult ? exposedTarget.readEntity(q) : exposedTarget.readEntityList(q));
 
             } else if (DataBaseQueryField.class.getName().equals(queryclass)) {
-                DataBaseQueryField<?,?> q = new DataBaseQueryField<>(exposedTarget, query);
+                DataBaseQueryField<?, ?> q = new DataBaseQueryField<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.removeViolatedInfoColumns3(q.getFields(), OperationType.READ);
                 }

@@ -1,12 +1,12 @@
 package io.daobab.query.base;
 
 import io.daobab.model.*;
-import io.daobab.target.buffer.single.Entities;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryField;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.WhereOr;
 import io.daobab.statement.where.base.Where;
+import io.daobab.target.buffer.single.Entities;
 
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -15,13 +15,12 @@ import java.util.function.UnaryOperator;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked","rawtypes","UnusedReturnValue","unused"})
+@SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryWhere<Q extends Query> {
-
-    void setWhereWrapper(Where whereWrapper);
 
     Where getWhereWrapper();
 
+    void setWhereWrapper(Where whereWrapper);
 
     default Q where(Where wrapper) {
         setWhereWrapper(wrapper);
@@ -143,6 +142,7 @@ public interface QueryWhere<Q extends Query> {
         setWhereWrapper(new WhereAnd().inFields(column, val));
         return (Q) this;
     }
+
     default <E extends Entity, F, R extends EntityRelation> Q whereIn(Column<E, F, R> column, Entities<? extends R> val) {
         setWhereWrapper(new WhereAnd().in(column, val));
         return (Q) this;
@@ -152,6 +152,7 @@ public interface QueryWhere<Q extends Query> {
         setWhereWrapper(new WhereAnd().notInFields(column, val));
         return (Q) this;
     }
+
     default <E extends Entity, F, R extends EntityRelation> Q whereNotIn(Column<E, F, R> column, Entities<? extends R> val) {
         setWhereWrapper(new WhereAnd().notIn(column, val));
         return (Q) this;
