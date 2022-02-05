@@ -54,6 +54,17 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     }
 
     @SafeVarargs
+    protected final void register(boolean lazy, Class<? extends Entity>... entityClazz) {
+        register(entityClazz);
+        if (!lazy) {
+            for (Class<? extends Entity> clazz : entityClazz) {
+                getEntities(clazz);
+            }
+        }
+
+    }
+
+    @SafeVarargs
     protected final void register(Class<? extends Entity>... entityClazz) {
         if (entityClazz == null) return;
         for (Class<? extends Entity> entity : entityClazz) {

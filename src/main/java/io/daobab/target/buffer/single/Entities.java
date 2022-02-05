@@ -8,7 +8,7 @@ import io.daobab.target.Target;
 import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
 import io.daobab.target.buffer.multi.MultiEntityTarget;
-import io.daobab.target.buffer.multi.SimpleMulti;
+import io.daobab.target.buffer.multi.SimpleMultiTarget;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
         for (Entities<? extends Entity> e : targets) {
             list.add(e);
         }
-        return new SimpleMulti(list);
+        return new SimpleMultiTarget(list);
     }
 
 }

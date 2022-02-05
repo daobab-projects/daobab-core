@@ -5,9 +5,12 @@ import io.daobab.target.buffer.single.Entities;
 
 import java.util.List;
 
-public class SimpleMulti extends MultiEntityTarget {
+public class SimpleMultiTarget extends MultiEntityTarget {
 
-    public SimpleMulti(List<Entities<? extends Entity>> entitiesList) {
+    public SimpleMultiTarget() {
+    }
+
+    public SimpleMultiTarget(List<Entities<? extends Entity>> entitiesList) {
         for (Entities<?> e : entitiesList) {
             register(e);
         }

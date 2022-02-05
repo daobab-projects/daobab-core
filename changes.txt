@@ -5,3 +5,5 @@
 5. Fixed predictions for inner where for in memory buffers
 6. Introduces SimpleMultiTarget
 7. Joins on Entities and Plates
+8. Introduced SimpleMultiTarget
+9. Introduced TargetDuplicator

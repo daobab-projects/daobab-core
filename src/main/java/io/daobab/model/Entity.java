@@ -10,11 +10,6 @@ public interface Entity extends ColumnsProvider {
 
     String getEntityName();
 
-
-    //    <X> X getColumnParam(String key);
-//
-//    <X> void setColumnParam(String key, X param);
-
     default Class<? extends Entity> getEntityClass() {
         return this.getClass();
     }
