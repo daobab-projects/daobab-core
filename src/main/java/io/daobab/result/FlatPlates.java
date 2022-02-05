@@ -27,7 +27,7 @@ public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable,
         super(entities);
     }
 
-
+    @Override
     public String toJSON() {
         StringBuilder rv = new StringBuilder();
         rv.append("[");
@@ -36,10 +36,6 @@ public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable,
         int cnt = 0;
 
         for (FlatPlate val : this) {
-
-            if (!(val instanceof EntityMap)) {
-                throw new DaobabException("this method can be used for EntityMap implementations only");
-            }
 
             cnt++;
             boolean lastOne = cnt == size;

@@ -20,6 +20,7 @@ import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.buffer.single.Plates;
+import io.daobab.target.buffer.util.MemoryUsageMonitor;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
 import io.daobab.target.protection.OperationType;
@@ -34,7 +35,7 @@ import java.util.function.Predicate;
 
 import static io.daobab.statement.where.base.WhereBase.*;
 
-public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQueryTarget {
+public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQueryTarget, MemoryUsageMonitor {
 
     protected static List<Class> bitBufferedClasses = Arrays.asList(
             String.class,
@@ -94,6 +95,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
         return (pages.size() > pageMaxCapacityBytes);
     }
 
+    @Override
     public long getBufferMemoryUsage() {
         long usage = 0;
         for (ByteBuffer bb : pages) {

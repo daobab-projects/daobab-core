@@ -178,7 +178,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return new DataBaseQueryPlate(nativeQuery, this, col);
     }
 
-    default <E extends Entity> IdGeneratorSupplier getPrimaryKeyGenerator(E entity) {
+    default <E extends Entity> DataBaseIdGeneratorSupplier getPrimaryKeyGenerator(E entity) {
         throw new DaobabException("Provide a getPrimaryKeyGenerator() method into " + this.getClass().getName());
     }
 

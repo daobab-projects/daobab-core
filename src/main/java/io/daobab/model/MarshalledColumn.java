@@ -3,15 +3,15 @@ package io.daobab.model;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public class MarschalledColumn {
+public class MarshalledColumn {
 
     private String entityClass;
     private String columnClass;
 
-    public MarschalledColumn() {
+    public MarshalledColumn() {
     }
 
-    public MarschalledColumn(Column<?, ?, ?> col) {
+    public MarshalledColumn(Column<?, ?, ?> col) {
         setEntityClass(col.getEntityClass().getSimpleName());
         setColumnClass(col.getFieldClass().getSimpleName());
     }

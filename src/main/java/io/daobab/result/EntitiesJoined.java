@@ -9,8 +9,6 @@ import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
 import io.daobab.statement.where.base.WhereBase;
 import io.daobab.target.buffer.multi.MultiEntityTarget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,109 +19,118 @@ import java.util.stream.Collectors;
 public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
     private final MultiEntityTarget target;
-    private final List<List<Plate>> rows;
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
+    private final List<Plate> rows;
+    private Plate rootPlate =new Plate();
 
-    public EntitiesJoined(MultiEntityTarget target, List<? extends ColumnsProvider> columnsProviders, Query<?, ?, ?> query) {
+    public EntitiesJoined(MultiEntityTarget target, List<? extends Entity> columnsProviders, Query<?, ?, ?> query) {
         this.target = target;
         rows = new ArrayList<>(columnsProviders.size());
-        columnsProviders.forEach(entity -> {
-            List<Plate> plates = new ArrayList<>();
-            plates.add(new Plate(entity));
-            rows.add(plates);
-        });
+        columnsProviders.forEach(entity ->rows.add(new Plate(entity)));
         if (!rows.isEmpty()) {
+            rootPlate =rows.get(0);
             join(query);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Plate> toPlates() {
-
-        List<Plate> plateList = new ArrayList<>(rows.size());
-
-        for (List<Plate> columnsProviders : rows) {
-            Plate plate = new Plate();
-            for (Plate columnsProvider : columnsProviders) {
-                for (TableColumn column : columnsProvider.columns()) {
-                    plate.setValue(column.getColumn(), columnsProvider.getValue(column.getColumn()));
-                }
-            }
-            plateList.add(plate);
-        }
-        return plateList;
+    public List<Plate> results() {
+        return rows;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked","java:S3776","java:S135"})
     private void join(Query<?, ?, ?> query) {
         List<JoinWrapper> joins = query.getJoins();
 
         for (JoinWrapper join : joins) {
-            Entity joinedTable = join.getTable();
+            Entity rightTable = join.getTable();
+            rootPlate.joinPlate(new Plate(rightTable));
             Column byColumn = join.getByColumn();
-            Column joinedTableColumn = joinedTable.columns().stream()
-                    .map(TableColumn::getColumn)
-                    .filter(col -> col.getColumnName().equals(byColumn.getColumnName()))
-                    .findAny()
-                    .orElseThrow(() -> new DaobabException(String.format("Invalid operation during join: Entity %s has no column named %s", joinedTable.getEntityName(), byColumn.getColumnName())));
 
-            ColumnAndPointer thisColumn = getThisColumn(byColumn);
-            if (thisColumn == null) {
+            Optional<Column> leftColumn = getColumnIfExists(rootPlate, byColumn);
+            if (!leftColumn.isPresent()) {
                 continue;
             }
 
-            Where composedWhere;
-            composedWhere = new WhereAnd().inFields(joinedTableColumn, getThisValuesOfColumn(thisColumn));
+            Column joinedTableColumn = rightTable.columns().stream()
+                    .map(TableColumn::getColumn)
+                    .filter(col -> col.getColumnName().equals(byColumn.getColumnName()))
+                    .findAny()
+                    .orElseThrow(() -> new DaobabException(String.format("Invalid operation during join: Entity %s has no column named %s", rightTable.getEntityName(), byColumn.getColumnName())));
 
-//            switch (join.getType()){
-//                default:
-//                case INNER:
-//                    where2=new WhereAnd().inFields(joinedTableColumn, getThisValuesOfColumn(thisColumn));
-//                    break;
-//                case OUTER:
-//                    where2=new WhereAnd().notInFields(joinedTableColumn, getThisValuesOfColumn(thisColumn));
-//                    break;
-//                case LEFT_JOIN:
-//                    where2=new WhereAnd().notInFields(joinedTableColumn, getThisValuesOfColumn(thisColumn));
-//                    break;
-//            }
+            List<Object> columnValues=getThisValuesOfColumn(leftColumn.get());
+            Where composedWhereInner = new WhereAnd().inFields(joinedTableColumn, columnValues);
+            Where composedWhereRight = new WhereAnd().notInFields(joinedTableColumn, columnValues);
 
+            boolean joinAllNotCommonFromLeft=false;
+            boolean joinAllNotCommonFromRight=false;
+            boolean joinCommons=false;
 
-            //If there is inner where in join, will be on second key for sure
-            Object key = join.getWhere().getWhereMap().get(KEY + 2);
-            Object val = join.getWhere().getWhereMap().get(VALUE + 2);
-            Object wrapper = join.getWhere().getWhereMap().get(WRAPPER + 2);
-            Object relation = join.getWhere().getWhereMap().get(RELATION + 2);
-            composedWhere.add(wrapper, key, val, relation);
+            switch (join.getType()){
+                default:
+                case INNER:
+                    joinCommons=true;
+                    break;
+                case OUTER:
+                    joinAllNotCommonFromLeft=true;
+                    joinAllNotCommonFromRight=true;
+                    break;
+                case LEFT_JOIN:
+                    joinCommons=true;
+                    joinAllNotCommonFromLeft=true;
+                    break;
+                case RIGHT_JOIN:
+                    joinCommons=true;
+                    joinAllNotCommonFromRight=true;
+                    break;
+            }
 
-            Map<Object, List<Plate>> plateMap = target.select(joinedTable.columns()
-                            .stream()
-                            .map(TableColumn::getColumn)
-                            .toArray(Column[]::new))
-                    .where(composedWhere)
-                    .findMany().stream()
+            Map<String,Object> joinWhereMap=join.getWhere().getWhereMap();
+            //If there is an inner where in join, will be on second key for sure
+            Object key = joinWhereMap.get(KEY + 2);
+            Object val = joinWhereMap.get(VALUE + 2);
+            Object wrapper = joinWhereMap.get(WRAPPER + 2);
+            Object relation = joinWhereMap.get(RELATION + 2);
+            composedWhereInner.add(wrapper, key, val, relation);
+            composedWhereRight.add(wrapper, key, val, relation);
+            Column[] rightColumns=rightTable.columns()
+                    .stream()
+                    .map(TableColumn::getColumn)
+                    .toArray(Column[]::new);
+
+            Map<Object, List<Plate>> rightMap = target.select(rightColumns)
+                    .where(composedWhereInner)
+                    .findMany()
+                    .stream()
                     .collect(Collectors
                             .groupingBy(e -> e.getValue(joinedTableColumn)));
 
+            List<Plate> joinedRowList = new ArrayList<>();
 
-            List<List<Plate>> joinedRowList = new ArrayList<>();
-
-            for (List<Plate> row : rows) {
-                Plate keyLeft = row.get(thisColumn.getPointer());
-                Object value = keyLeft.getValue(thisColumn.getColumn());
-                if (value == null) {
+            for (Plate leftRow : rows) {
+                Object leftValue = leftRow.getValue(leftColumn.get());
+                if (leftValue == null) {
                     continue;
                 }
-                List<Plate> right = plateMap.get(value);
 
-                if (right == null) {
+                List<Plate> rightRelatedRecords = rightMap.get(leftValue);
+                if (rightRelatedRecords == null || rightRelatedRecords.isEmpty()) {
+                    if (joinAllNotCommonFromLeft){
+                        joinedRowList.add(leftRow);
+                    }
                     continue;
                 }
-                for (Plate rPlate : right) {
-                    List<Plate> newRow = new ArrayList<>(row);
-                    newRow.add(rPlate);
-                    joinedRowList.add(newRow);
+                if (joinCommons){
+                    for (Plate rPlate : rightRelatedRecords) {
+                        Plate newRow = new Plate(leftRow);
+                        newRow.joinPlate(rPlate);
+                        joinedRowList.add(newRow);
+                    }
                 }
+            }
+
+            if (joinAllNotCommonFromRight){
+                joinedRowList.addAll(target.select(rightColumns)
+                        .where(composedWhereRight)
+                        .findMany());
             }
 
             rows.clear();
@@ -131,28 +138,16 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
         }
     }
 
-    private List<Object> getThisValuesOfColumn(ColumnAndPointer columnAndPointer) {
+    @SuppressWarnings({"rawtypes","unchecked"})
+    private List<Object> getThisValuesOfColumn(Column column) {
         return rows.stream()
-                .map(list -> list.get(columnAndPointer.getPointer()))
-                .map(Plate.class::cast)
-                .map(p -> p.getValue(columnAndPointer.getColumn()))
+                .map(p -> p.getValue(column))
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-    private ColumnAndPointer getThisColumn(Column byColumn) {
-        List<Plate> thisEntity = rows.get(0);
-        int counter = 0;
-        for (Plate provider : thisEntity) {
-            Optional<Column> optionalColumn = getColumnIfExists(provider, byColumn);
-            if (optionalColumn.isPresent()) {
-                return new ColumnAndPointer(optionalColumn.get(), counter);
-            }
-            counter++;
-        }
-        return null;
-    }
 
+    @SuppressWarnings("rawtypes")
     private Optional<Column> getColumnIfExists(ColumnsProvider provider, Column byColumn) {
         return provider.columns().stream()
                 .map(TableColumn::getColumn)

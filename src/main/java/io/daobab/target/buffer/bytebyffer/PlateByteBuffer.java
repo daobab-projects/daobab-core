@@ -22,7 +22,7 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
     public PlateByteBuffer(List<Plate> entities) {
         this(entities == null || entities.isEmpty() ? null : entities.get(0), entities == null ? 8 : entities.size());
         if (entities != null) {
-            entities.stream().forEach(this::add);
+            entities.forEach(this::add);
         }
     }
 

@@ -27,8 +27,8 @@ public interface Marschaller {
         return rv;
     }
 
-    static MarschalledColumn marschallColumn(TableColumn column) {
-        MarschalledColumn rv = new MarschalledColumn();
+    static MarshalledColumn marschallColumn(TableColumn column) {
+        MarshalledColumn rv = new MarshalledColumn();
         rv.setColumnClass(column.getColumn().getFieldName());
         rv.setEntityClass(column.getColumn().getEntityClass().getSimpleName());
         return rv;
@@ -76,8 +76,8 @@ public interface Marschaller {
 
     }
 
-    static MarschalledEntity marschallEntity(Entity entity) {
-        MarschalledEntity rv = new MarschalledEntity();
+    static MarshalledEntity marschallEntity(Entity entity) {
+        MarshalledEntity rv = new MarshalledEntity();
         rv.setEntityClass(entity.getClass().getSimpleName());
         return rv;
     }

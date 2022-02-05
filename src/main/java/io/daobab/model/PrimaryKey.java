@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes","unused"})
 public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> extends EntityRelation<E>, QueryWhisperer {
 
     Column<E, F, R> colID();
@@ -77,12 +77,12 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
         return target.select(entity).whereEqual(colID().transformTo(entity), getId()).findMany();
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     default <R1 extends EntityRelation<E1>, M extends Entity, T extends PrimaryKey<E1, F, R1>, E1 extends Entity> Entities<T> findRelatedManyByCross(QueryTarget target, M cross, T entityRV) {
         return target.select((T) entityRV.getEntity()).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findMany();
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     default <R1 extends EntityRelation<E1>, M extends Entity, T extends PrimaryKey<E1, F, R1>, E1 extends Entity> T findRelatedOneByCross(QueryTarget target, M cross, T entityRV) {
         return target.select((T) entityRV.getEntity()).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findOne();
     }
@@ -192,7 +192,7 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setInfoColumns((EntityRelation) this, columns().toArray(new TableColumn[columns().size()])))
+        target.update(SetFields.setInfoColumns((EntityRelation) this, columns().toArray(new TableColumn[0])))
                 .whereEqual(colID(), getId())
                 .execute();
         return (E) this;
@@ -204,7 +204,9 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setColumns((E) this, columns().toArray(new Column[columns().size()])))
+        target.update(SetFields.setColumns((E) this, columns().stream()
+                        .map(TableColumn::getColumn)
+                        .toArray(Column[]::new)))
                 .whereEqual(colID(), getId())
                 .execute(transaction);
         return (E) this;
@@ -249,10 +251,12 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
         return target.select((E) this).whereEqual(column, value).findOne();
     }
 
+    @SuppressWarnings("unchecked")
     default String getSqlUpdate(DataBaseTarget target) {
         return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) this.columns())).whereEqual(colID(), getId()) + ";";
     }
 
+    @SuppressWarnings("unchecked")
     default String getSqlUpdate(DataBaseTarget target, Column<E, ?, ?>... columnsToUpdate) {
         return target.update(SetFields.setColumns((E) this, columnsToUpdate)).whereEqual(colID(), getId()).getSQLQuery(target) + ";";
     }

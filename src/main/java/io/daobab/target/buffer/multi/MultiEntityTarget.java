@@ -188,10 +188,10 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     }
 
     @SuppressWarnings("unchecked")
-    private PlateBuffer makeJoinJob(Query<?, ?, ?> query, List<? extends ColumnsProvider> entities) {
+    private PlateBuffer makeJoinJob(Query<?, ?, ?> query, List<? extends Entity> entities) {
         EntitiesJoined entitiesJoined = new EntitiesJoined(this, entities, query);
 
-        PlateBuffer matched = new PlateBuffer(PlateBufferIndexed.finalFilter(entitiesJoined.toPlates(), query));
+        PlateBuffer matched = new PlateBuffer(PlateBufferIndexed.finalFilter(entitiesJoined.results(), query));
         if (matched.isEmpty()) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return new PlateBuffer();

@@ -3,14 +3,14 @@ package io.daobab.model;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public class MarschalledEntity {
+public class MarshalledEntity {
 
     private String entityClass;
 
-    public MarschalledEntity() {
+    public MarshalledEntity() {
     }
 
-    public MarschalledEntity(Column<?, ?, ?> col) {
+    public MarshalledEntity(Column<?, ?, ?> col) {
         setEntityClass(col.getEntityClass().getName());
     }
 

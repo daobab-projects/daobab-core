@@ -6,7 +6,7 @@ import io.daobab.target.Target;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public interface Entity extends DaobabDto, ColumnsProvider {
+public interface Entity extends ColumnsProvider {
 
     String getEntityName();
 

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings("unused")
 public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryPlate> implements FieldsProvider, QueryJoin<BufferQueryPlate> {
 
     private boolean singleEntity = false;

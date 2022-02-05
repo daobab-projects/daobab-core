@@ -13,6 +13,7 @@ import java.util.function.Function;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings("unused")
 public interface EntitiesProvider<E extends Entity> {
 
     Class<E> getEntityClass();

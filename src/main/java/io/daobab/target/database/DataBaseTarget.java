@@ -178,8 +178,8 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
         if (metaData == null) {
             try {
                 this.metaData = new MetaDataBaseTarget(getCatalogName(), getSchemaName(), this);
-            } catch (SQLException throwables) {
-                log.warn("DataBase Meta Specifics wasn't taken. ", throwables);
+            } catch (SQLException sqlException) {
+                log.warn("DataBase Meta Specifics wasn't taken. ", sqlException);
             }
         }
         return metaData;

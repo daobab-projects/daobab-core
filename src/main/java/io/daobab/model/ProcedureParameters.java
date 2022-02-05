@@ -73,6 +73,7 @@ public class ProcedureParameters {
         plate.setValue(columns.get(position - 1), value);
     }
 
+    @SuppressWarnings("rawtypes")
     protected <E extends Entity, F, R extends EntityRelation> void specifyValue(int position, Column<E, F, R> column) {
         if (position > (length + 1))
             throw new DaobabException("position greater than allowed value which is " + length);
