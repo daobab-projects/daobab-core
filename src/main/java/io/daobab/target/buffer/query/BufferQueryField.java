@@ -11,8 +11,8 @@ import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.result.FieldsProvider;
 import io.daobab.statement.condition.Count;
 import io.daobab.statement.function.type.DummyColumnRelation;
-import io.daobab.statement.inner.InnerQueryField;
-import io.daobab.statement.inner.InnerSelectManyCells;
+import io.daobab.statement.inner.InnerQueryFieldsProvider;
+import io.daobab.statement.inner.InnerQueryFields;
 import io.daobab.target.buffer.BufferQueryTarget;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryField<E, F>, FieldsProvider<F>, ColumnOrQuery<E, F, EntityRelation> {
+public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryFieldsProvider<E, F>, FieldsProvider<F>, ColumnOrQuery<E, F, EntityRelation> {
 
     @SuppressWarnings("unused")
     private BufferQueryField() {
@@ -49,8 +49,8 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
 
 
     @Override
-    public InnerSelectManyCells<E, F> innerResult() {
-        return new InnerSelectManyCells<>(findMany());
+    public InnerQueryFields<E, F> innerResult() {
+        return new InnerQueryFields<>(findMany());
     }
 
     public long countBy(Count cnt) {

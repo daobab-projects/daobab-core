@@ -1,6 +1,5 @@
 package io.daobab.target.buffer.multi;
 
-import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.model.Entity;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.query.DataBaseQueryEntity;
@@ -15,12 +14,8 @@ public class QueryMultiEntityTarget extends MultiEntityTarget implements QueryMu
     @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> void refresh(Class<E> entityClazz) {
-        try {
-            Entities<E> cached = (Entities<E>) refreshQueries.get(entityClazz).findMany();
-            getStorage().put(entityClazz, cached);
-        } catch (Exception e) {
-            throw new DaobabEntityCreationException(entityClazz, e);
-        }
+        Entities<E> entities = (Entities<E>) refreshQueries.get(entityClazz).findMany();
+        getStorage().put(entityClazz, entities);
     }
 
     public <E extends Entity> void register(DataBaseQueryEntity<E> refreshQuery) {

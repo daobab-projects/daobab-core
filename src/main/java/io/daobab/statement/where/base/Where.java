@@ -5,7 +5,7 @@ import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.*;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.inner.InnerQueryEntity;
-import io.daobab.statement.inner.InnerQueryField;
+import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.WhereNot;
 import io.daobab.statement.where.WhereOr;
@@ -305,53 +305,53 @@ public abstract class Where<W extends Where> extends WhereBase {
 
 
     @SuppressWarnings("java:S1221")
-    public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W equal(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         temp(column, EQ, val);
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W greater(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W greater(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         temp(column, GT, val);
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W greaterOrEqual(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W greaterOrEqual(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         temp(column, GTEQ, val);
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W less(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W less(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         temp(column, LT, val);
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W lessOrEqual(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W lessOrEqual(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         temp(column, LTEQ, val);
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W notEqual(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W notEqual(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         temp(column, NOT_EQ, val);
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W like(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W like(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         temp(column, LIKE, val);
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W notLike(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W notLike(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         temp(column, NOT_LIKE, val);
         return (W) this;
     }
 
 
-    public final <E extends Entity, F, R extends EntityRelation> W in(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W in(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         temp(column, IN, val);
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends EntityRelation> W notIn(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    public final <E extends Entity, F, R extends EntityRelation> W notIn(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         temp(column, NOT_IN, val);
         return (W) this;
     }
@@ -579,7 +579,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         setCounter(getCounter() + 1);
     }
 
-    private <F, R extends EntityRelation> void temp(Field<?, F, R> column, Operator operator, InnerQueryField<? extends R, F> select) {
+    private <F, R extends EntityRelation> void temp(Field<?, F, R> column, Operator operator, InnerQueryFieldsProvider<? extends R, F> select) {
         if (column == null) throw new ColumnMandatory();
         if (operator == null) throw new NullOperator();
         if (select == null) throw new InnerQueryMandatory();

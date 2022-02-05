@@ -6,7 +6,7 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.statement.condition.Having;
 import io.daobab.statement.function.type.ColumnFunction;
-import io.daobab.statement.inner.InnerQueryField;
+import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.WhereOr;
 
@@ -37,7 +37,7 @@ public interface QueryHaving<Q extends Query> {
     }
 
 
-    default <F extends Number, R extends EntityRelation> Q having(ColumnFunction<? extends Entity, F, R, F> col, InnerQueryField<? extends R, F> val) {
+    default <F extends Number, R extends EntityRelation> Q having(ColumnFunction<? extends Entity, F, R, F> col, InnerQueryFieldsProvider<? extends R, F> val) {
         setHavingWrapper(new Having().in(col, val));
         return (Q) this;
     }
@@ -239,32 +239,32 @@ public interface QueryHaving<Q extends Query> {
     }
 
 
-    default <F extends Number, R extends EntityRelation> Q havingEqual(Column<?, ?, ?> column, InnerQueryField val) {
+    default <F extends Number, R extends EntityRelation> Q havingEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().equal(column, val)));
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingGreater(Column<?, ?, ?> column, InnerQueryField val) {
+    default <F extends Number, R extends EntityRelation> Q havingGreater(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().greater(column, val)));
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingGreaterOrEqual(Column<?, ?, ?> column, InnerQueryField val) {
+    default <F extends Number, R extends EntityRelation> Q havingGreaterOrEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().greaterOrEqual(column, val)));
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingLess(Column<?, ?, ?> column, InnerQueryField val) {
+    default <F extends Number, R extends EntityRelation> Q havingLess(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().less(column, val)));
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingLessOrEqual(Column<?, ?, ?> column, InnerQueryField val) {
+    default <F extends Number, R extends EntityRelation> Q havingLessOrEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().lessOrEqual(column, val)));
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingNotEqual(Column<?, ?, ?> column, InnerQueryField val) {
+    default <F extends Number, R extends EntityRelation> Q havingNotEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().notEqual(column, val)));
         return (Q) this;
     }

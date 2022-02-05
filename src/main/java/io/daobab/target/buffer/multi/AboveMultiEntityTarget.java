@@ -42,39 +42,39 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
     @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> Entities<E> getEntities(E entity) {
-        Entities<E> cached = (Entities<E>) getStorage().get(entity.getClass());
-        if (cached == null) {
+        Entities<E> entities = (Entities<E>) getStorage().get(entity.getClass());
+        if (entities == null) {
             if (!getStorage().containsKey(entity.getClass())) {
                 throw new EntityNotRegisteredIntoBuffer(entity.getClass(), this.getClass());
             }
             try {
                 if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-                cached = getSourceTarget().findAll(entity);
+                entities = getSourceTarget().findAll(entity);
             } catch (Exception e) {
                 throw new DaobabEntityCreationException(entity.getClass(), e);
             }
-            getStorage().put(entity.getClass(), cached);
+            getStorage().put(entity.getClass(), entities);
         }
-        return cached;
+        return entities;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> Entities<E> getEntities(Class<E> entityClazz) {
-        Entities<E> cached = (Entities<E>) getStorage().get(entityClazz);
-        if (cached == null) {
+        Entities<E> entities = (Entities<E>) getStorage().get(entityClazz);
+        if (entities == null) {
             if (!getStorage().containsKey(entityClazz)) {
                 throw new EntityNotRegisteredIntoBuffer(entityClazz, this.getClass());
             }
             try {
                 if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
-                cached = getSourceTarget().findAll(entityClazz.getDeclaredConstructor().newInstance());
+                entities = getSourceTarget().findAll(entityClazz.getDeclaredConstructor().newInstance());
             } catch (Exception e) {
                 throw new DaobabEntityCreationException(entityClazz, e);
             }
-            getStorage().put(entityClazz, cached);
+            getStorage().put(entityClazz, entities);
         }
-        return cached;
+        return entities;
     }
 
     //    @Override

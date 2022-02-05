@@ -178,7 +178,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     }
 
     @Override
-    public DataBaseQueryPlate getSelect() {
+    public DataBaseQueryPlate getInnerQuery() {
         return this;
     }
 

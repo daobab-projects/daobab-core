@@ -9,31 +9,33 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * Contains inner query or fields collection.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public class InnerSelectManyCells<E extends Entity, F> implements QueryExpressionProvider, FieldsProvider<F> {
+public class InnerQueryFields<E extends Entity, F> implements QueryExpressionProvider<E>, FieldsProvider<F> {
 
-    private DataBaseQueryField<E, F> select;
+    private DataBaseQueryField<E, F> innerQuery;
     private List<F> bufferedResults = null;
 
-    public InnerSelectManyCells(DataBaseQueryField<E, F> queryField) {
-        setSelect(queryField);
+    public InnerQueryFields(DataBaseQueryField<E, F> queryField) {
+        setInnerQuery(queryField);
     }
 
-    public InnerSelectManyCells(List<F> results) {
+    public InnerQueryFields(List<F> results) {
         bufferedResults = results;
     }
 
-    public DataBaseQueryField<E, F> getSelect() {
-        return select;
+    public DataBaseQueryField<E, F> getInnerQuery() {
+        return innerQuery;
     }
 
-    private void setSelect(DataBaseQueryField<E, F> queryField) {
-        this.select = queryField;
+    private void setInnerQuery(DataBaseQueryField<E, F> queryField) {
+        this.innerQuery = queryField;
     }
 
     public boolean isDatabaseQuery() {
-        return getSelect() != null;
+        return getInnerQuery() != null;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class InnerSelectManyCells<E extends Entity, F> implements QueryExpressio
         if (bufferedResults != null) {
             return bufferedResults;
         }
-        bufferedResults = getSelect().findMany();
+        bufferedResults = getInnerQuery().findMany();
         return bufferedResults;
     }
 

@@ -2,7 +2,7 @@ package io.daobab.query.base;
 
 import io.daobab.model.*;
 import io.daobab.statement.inner.InnerQueryEntity;
-import io.daobab.statement.inner.InnerQueryField;
+import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.WhereOr;
 import io.daobab.statement.where.base.Where;
@@ -253,52 +253,52 @@ public interface QueryWhere<Q extends Query> {
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereEqual(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereEqual(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().equal(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereGreater(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereGreater(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().greater(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereGreaterOrEqual(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereGreaterOrEqual(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().greaterOrEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereLess(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereLess(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().less(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereLessOrEqual(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereLessOrEqual(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().lessOrEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereNotEqual(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereNotEqual(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().notEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereLike(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereLike(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().like(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereNotLike(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereNotLike(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().notLike(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereIn(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereIn(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().in(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereNotIn(Field<E, F, R> column, InnerQueryField<? extends R, F> val) {
+    default <E extends Entity, F, R extends EntityRelation> Q whereNotIn(Field<E, F, R> column, InnerQueryFieldsProvider<? extends R, F> val) {
         setWhereWrapper(new WhereAnd().notIn(column, val));
         return (Q) this;
     }

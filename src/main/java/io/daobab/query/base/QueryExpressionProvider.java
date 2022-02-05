@@ -8,6 +8,6 @@ import io.daobab.target.database.query.DataBaseQueryBase;
  */
 public interface QueryExpressionProvider<E extends Entity> {
 
-    DataBaseQueryBase<E, ?> getSelect();
+    DataBaseQueryBase<E, ?> getInnerQuery();
 
 }

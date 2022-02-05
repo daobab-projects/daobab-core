@@ -7,7 +7,7 @@ import io.daobab.query.base.QueryType;
 import io.daobab.result.EntitiesProvider;
 import io.daobab.statement.condition.Count;
 import io.daobab.statement.inner.InnerQueryEntity;
-import io.daobab.statement.inner.InnerQueryField;
+import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.QueryTarget;
@@ -71,7 +71,7 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
     }
 
     @Override
-    public <E1 extends Entity, F, R extends EntityRelation> InnerQueryField<E1, F> limitToField(Column<E1, F, R> column) {
+    public <E1 extends Entity, F, R extends EntityRelation> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> column) {
         DataBaseQueryField<E1, F> dataBaseQueryField = new DataBaseQueryField<>(getTarget(), column);
         return dataBaseQueryField.where(getWhereWrapper());
     }

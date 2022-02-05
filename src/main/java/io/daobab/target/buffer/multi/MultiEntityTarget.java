@@ -1,7 +1,10 @@
 package io.daobab.target.buffer.multi;
 
 import io.daobab.error.TargetNotSupports;
-import io.daobab.model.*;
+import io.daobab.model.Column;
+import io.daobab.model.Entity;
+import io.daobab.model.Plate;
+import io.daobab.model.TableColumn;
 import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesJoined;
 import io.daobab.target.BaseTarget;
@@ -86,68 +89,92 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     public <E extends Entity> Entities<E> readEntityList(BufferQueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        Entities<E> cached = getEntities(query.getEntityClass());
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
+        Entities<E> entities = getEntities(query.getEntityClass());
 
+        Entities<E> results;
         if (query.getJoins().isEmpty()) {
-            return cached.readEntityList(query);
+            results = entities.readEntityList(query);
         } else {
-            Plates plates = makeJoinJob(query, cached);
+            Plates plates = makeJoinJob(query, entities);
             List<E> entityList = plates.stream().map(p -> p.getEntity(query.getEntityClass())).collect(Collectors.toList());
-            return new EntityList<>(entityList, query.getEntityClass());
+            results = new EntityList<>(entityList, query.getEntityClass());
         }
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
+        return results;
     }
 
     public <E extends Entity> E readEntity(BufferQueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        Entities<E> cached = getEntities(query.getEntityClass());
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
+        Entities<E> entities = getEntities(query.getEntityClass());
 
+        E result;
         if (query.getJoins().isEmpty()) {
-            return cached.readEntity(query);
+            result = entities.readEntity(query);
         } else {
-            Plates plates = makeJoinJob(query, cached);
+            Plates plates = makeJoinJob(query, entities);
             if (plates.isEmpty()) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
                 return null;
             }
-            return plates.get(0).getEntity(query.getEntityClass());
+            result = plates.get(0).getEntity(query.getEntityClass());
         }
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, result == null ? 0 : 1);
+        return result;
     }
 
     @SuppressWarnings("java:S1168")
     public Plate readPlate(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
-        Entities<?> cached = getEntities(query.getEntityClass());
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
+        Entities<?> entities = getEntities(query.getEntityClass());
+
+        Plate results;
         if (query.getJoins().isEmpty()) {
-            return cached.readPlate(query);
+            results = entities.readPlate(query);
         } else {
-            Plates plates = makeJoinJob(query, cached);
+            Plates plates = makeJoinJob(query, entities);
             if (plates.isEmpty()) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
                 return null;
             }
-            return plates.readPlate(query);
+            results = plates.readPlate(query);
         }
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results == null ? 0 : 1);
+        return results;
     }
 
     @SuppressWarnings("unchecked")
     public <E extends Entity, F> F readField(BufferQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        Entities<E> cached = getEntities(query.getEntityClass());
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
+        Entities<E> entities = getEntities(query.getEntityClass());
+
+        F result;
         if (query.getJoins().isEmpty()) {
-            return cached.readField(query);
+            result = entities.readField(query);
         } else {
-            Plates plates = makeJoinJob(query, cached);
+            Plates plates = makeJoinJob(query, entities);
             if (plates.isEmpty()) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
                 return null;
             }
             Column<?, ?, ?> col = query.getFields().get(0).getColumn();
-            return (F) plates.get(0).getValue(col);
+            result = (F) plates.get(0).getValue(col);
         }
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, result == null ? 0 : 1);
+        return result;
     }
 
     public <E extends Entity> E insert(BufferQueryInsert<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.INSERT);
-        Entities<E> cached = getEntities(query.getEntityClass());
-        return cached.insert(query, transaction);
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
+        Entities<E> entities = getEntities(query.getEntityClass());
+        E result = entities.insert(query, transaction);
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, result == null ? 0 : 1);
+        return result;
     }
 
     public <E extends Entity> E insert(BufferQueryInsert<E> query, Propagation propagation) {
@@ -156,8 +183,11 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
 
     public <E extends Entity> int update(BufferQueryUpdate<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.UPDATE);
-        Entities<E> cached = getEntities(query.getEntityClass());
-        return cached.update(query, transaction);
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
+        Entities<E> entities = getEntities(query.getEntityClass());
+        int result = entities.update(query, transaction);
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, result);
+        return result;
     }
 
     public <E extends Entity> int update(BufferQueryUpdate<E> query, Propagation propagation) {
@@ -167,24 +197,33 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     @SuppressWarnings("unchecked")
     public <E extends Entity, F> List<F> readFieldList(BufferQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        Entities<E> cached = getEntities(query.getEntityClass());
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
+        Entities<E> entities = getEntities(query.getEntityClass());
+
+        List<F> results;
         if (query.getJoins().isEmpty()) {
-            return cached.readFieldList(query);
+            results = entities.readFieldList(query);
         } else {
             Column<?, ?, ?> col = query.getFields().get(0).getColumn();
-            return (List<F>) makeJoinJob(query, cached).stream().map(p -> p.getValue(col)).collect(Collectors.toList());
+            results = (List<F>) makeJoinJob(query, entities).stream().map(p -> p.getValue(col)).collect(Collectors.toList());
         }
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
+        return results;
     }
 
     public Plates readPlateList(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
-        Entities<?> cached = getEntities(query.getEntityClass());
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
+        Entities<?> entities = getEntities(query.getEntityClass());
 
+        Plates results;
         if (query.getJoins().isEmpty()) {
-            return cached.readPlateList(query);
+            results = entities.readPlateList(query);
         } else {
-            return makeJoinJob(query, cached);
+            results = makeJoinJob(query, entities);
         }
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
+        return results;
     }
 
     @SuppressWarnings("unchecked")
@@ -212,8 +251,11 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
 
     public <E extends Entity> int delete(BufferQueryDelete<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.DELETE);
-        Entities<E> cached = getEntities(query.getEntityClass());
-        return cached.delete(query, transaction);
+        if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
+        Entities<E> entities = getEntities(query.getEntityClass());
+        int result = entities.delete(query, transaction);
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, result);
+        return result;
     }
 
     public <E extends Entity> int delete(BufferQueryDelete<E> query, Propagation propagation) {

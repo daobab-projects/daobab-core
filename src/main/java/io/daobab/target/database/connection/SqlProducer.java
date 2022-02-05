@@ -15,8 +15,7 @@ import io.daobab.statement.function.type.CastColumnRelation;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.function.type.DummyColumnRelation;
 import io.daobab.statement.function.type.ManyArgumentsFunction;
-import io.daobab.statement.inner.InnerSelectManyCells;
-import io.daobab.statement.inner.InnerSelectManyEntities;
+import io.daobab.statement.inner.InnerQueryFields;
 import io.daobab.statement.join.JoinTracker;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.base.Where;
@@ -615,8 +614,8 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             if (keyFromWrapper != null && value != null) {
 
                 boolean isDBQuery;
-                if (value instanceof InnerSelectManyCells) {
-                    InnerSelectManyCells inner = (InnerSelectManyCells) value;
+                if (value instanceof InnerQueryFields) {
+                    InnerQueryFields inner = (InnerQueryFields) value;
                     isDBQuery = inner.isDatabaseQuery();
                 } else {
                     isDBQuery = (value instanceof QueryExpressionProvider);
@@ -625,7 +624,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 if (isDBQuery) {
                     sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
                     QueryExpressionProvider<?> queryExpressionProvider = (QueryExpressionProvider<?>) value;
-                    sb.append(OPEN_BRACKET).append(toSqlQuery((DataBaseQueryBase<? extends Entity, ?>) queryExpressionProvider.getSelect())).append(CLOSED_BRACKET);
+                    sb.append(OPEN_BRACKET).append(toSqlQuery((DataBaseQueryBase<? extends Entity, ?>) queryExpressionProvider.getInnerQuery())).append(CLOSED_BRACKET);
                     continue;
                 }
                 if (value instanceof FieldsProvider) {
@@ -650,11 +649,11 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             } else if (value instanceof Where) {
                 Where wr = (Where) value;
                 sb.append(SPACE_OPEN_BRACKET).append(whereToExpression(wr, storage)).append(CLOSED_BRACKET);
-            } else if (value instanceof InnerSelectManyEntities) {
-                InnerSelectManyEntities<?> wr = (InnerSelectManyEntities<?>) value;
-                sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
-            } else if (value instanceof InnerSelectManyCells) {
-                InnerSelectManyCells wr = (InnerSelectManyCells) value;
+//            } else if (value instanceof InnerSelectManyEntities) {
+//                InnerSelectManyEntities<?> wr = (InnerSelectManyEntities<?>) value;
+//                sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
+            } else if (value instanceof InnerQueryFields) {
+                InnerQueryFields wr = (InnerQueryFields) value;
                 sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation))
                         .append(toInnerQueryExpression(storage, this, wr));
             } else if (value instanceof Collection || relation.isRelationCollectionBased()) {
@@ -728,11 +727,11 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         return sb;
     }
 
-    default <E extends Entity, F> StringBuilder toInnerQueryExpression(IdentifierStorage storage, Target target, InnerSelectManyCells<E, F> innerQuery) {
-        if (innerQuery.getSelect() != null && target.getClass().getName().equals(innerQuery.getSelect().getTarget().getClass().getName())) {
+    default <E extends Entity, F> StringBuilder toInnerQueryExpression(IdentifierStorage storage, Target target, InnerQueryFields<E, F> innerQuery) {
+        if (innerQuery.getInnerQuery() != null && target.getClass().getName().equals(innerQuery.getInnerQuery().getTarget().getClass().getName())) {
             StringBuilder sb = new StringBuilder();
             sb.append(OPEN_BRACKET)
-                    .append(toSqlQuery(innerQuery.getSelect(), storage))
+                    .append(toSqlQuery(innerQuery.getInnerQuery(), storage))
                     .append(CLOSED_BRACKET);
             return sb;
         } else {
