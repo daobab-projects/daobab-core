@@ -12,8 +12,8 @@ import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.result.FieldsProvider;
 import io.daobab.statement.condition.Count;
 import io.daobab.statement.function.type.DummyColumnRelation;
-import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.statement.inner.InnerQueryFields;
+import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.database.QueryTarget;
 
 import java.util.List;
@@ -61,8 +61,9 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
         return new InnerQueryFields<>(this);
     }
 
-    public long countBy(Count cnt) {
-        setTempCount(cnt);
+    @Override
+    public long countAny() {
+        setTempCount(Count.field(getFields().get(0).getColumn()));
         return getTarget().count(this);
     }
 

@@ -75,7 +75,7 @@ public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E
         query.setLimit(getLimit());
         query.orderBy(getOrderBy());
         query.having(getHavingWrapper());
-        query.countBy(getCount());
+        query._count = getCount();
         query._groupBy = (getGroupBy());
         return query;
     }

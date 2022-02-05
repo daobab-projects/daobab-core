@@ -46,7 +46,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     private Class<E> entityClass;
     private Where whereWrapper;
     private Having havingWrapper;
-    private Count _count;
+    protected Count _count;
     private Limit limit;
     private String identifier;
     private String sentQuery;

@@ -15,6 +15,7 @@ import java.util.List;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings("unused")
 public interface ParserString {
 
     static BigDecimal toBigDecimal(String from) {

@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings("unused")
 public interface ParserByte {
 
     /**

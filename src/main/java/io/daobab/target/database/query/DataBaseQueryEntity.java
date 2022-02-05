@@ -46,15 +46,10 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         this._nativeQuery = nativeQuery;
     }
 
-    public long countBy(Count cnt) {
-        setTempCount(cnt);
-        return getTarget().count(this);
-
-    }
-
     @Override
     public long countAny() {
-        return countBy(Count.any());
+        setTempCount(Count.any());
+        return getTarget().count(this);
     }
 
 

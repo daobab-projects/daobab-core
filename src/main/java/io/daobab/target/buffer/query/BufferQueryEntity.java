@@ -5,7 +5,6 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.query.base.QueryType;
 import io.daobab.result.EntitiesProvider;
-import io.daobab.statement.condition.Count;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.buffer.BufferQueryTarget;
@@ -40,19 +39,9 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
         entity.columns().forEach(e -> getFields().add(e));
     }
 
-    public long countBy(Count cnt) {
-        setTempCount(cnt);
-        if (cnt.countEntities()) {
-            return findMany().size();
-        } else {
-            //TODO: czy tu ma byc _unique??
-            return 0;////return new Long(resultFieldUniqueSetFromCache((ColumnDefinition<E, ?,?>)cnt.getFieldForPointer(1)).size());
-        }
-    }
-
     @Override
     public long countAny() {
-        return countBy(Count.any());
+        return findMany().size();
     }
 
     //---- RESULT SECTION

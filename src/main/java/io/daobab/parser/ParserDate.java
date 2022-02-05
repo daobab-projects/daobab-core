@@ -12,8 +12,8 @@ import java.util.GregorianCalendar;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings("unused")
 public interface ParserDate {
-
 
     static Date toDateFromGreg(XMLGregorianCalendar from) {
         if (from == null) return null;

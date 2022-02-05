@@ -8,7 +8,6 @@ import io.daobab.query.base.QueryType;
 import io.daobab.result.FieldsBuffer;
 import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
-import io.daobab.statement.condition.Count;
 import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.target.buffer.single.Plates;
 
@@ -83,17 +82,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
 
     @Override
     public long countAny() {
-        return countBy(Count.any());
-    }
-
-    public long countBy(Count cnt) {
-        setTempCount(cnt);
-        if (cnt.countEntities()) {
-            return findMany().size();
-        } else {
-            //TODO: czy tu ma byc _unique??
-            return 0;////return new Long(resultFieldUniqueSetFromCache((ColumnDefinition<E, ?,?>)cnt.getFieldForPointer(1)).size());
-        }
+        return findMany().size();
     }
 
     public FieldsProvider<FlatPlate> flat() {

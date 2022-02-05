@@ -101,13 +101,10 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
 
     @Override
     public long countAny() {
-        return countBy(Count.any());
-    }
-
-    public long countBy(Count cnt) {
-        setTempCount(cnt);
+        setTempCount(Count.any());
         return getTarget().count(this);
     }
+
 
     public FieldsProvider<FlatPlate> flat() {
         return map2(Plate::toFlat);

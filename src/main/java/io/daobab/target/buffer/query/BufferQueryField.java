@@ -9,14 +9,14 @@ import io.daobab.model.dummy.DummyColumnTemplate;
 import io.daobab.query.base.QueryType;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.result.FieldsProvider;
-import io.daobab.statement.condition.Count;
 import io.daobab.statement.function.type.DummyColumnRelation;
-import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.statement.inner.InnerQueryFields;
+import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.buffer.BufferQueryTarget;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
@@ -53,20 +53,11 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
         return new InnerQueryFields<>(findMany());
     }
 
-    public long countBy(Count cnt) {
-        setTempCount(cnt);
-        if (cnt.countEntities()) {
-            return findMany().size();
-        } else {
-            //TODO: czy tu ma byc _unique??
-//                return resultFieldUniqueSetFromCache((Column<E, F, ?>) cnt.getFieldForPointer(1)).size();
-            return 0;
-        }
-    }
-
     @Override
     public long countAny() {
-        return countBy(Count.field(getFields().get(0).getColumn()));
+        return findMany().stream().map(e -> getFields().get(0).getColumn().getValueOf((EntityRelation) e))
+                .filter(Objects::nonNull)
+                .count();
     }
 
     @Override
