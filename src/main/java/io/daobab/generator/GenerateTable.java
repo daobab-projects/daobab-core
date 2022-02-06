@@ -28,7 +28,6 @@ public class GenerateTable {
 
     private boolean view = false;
 
-
     public GenerateTable(String tableName, List<GenerateColumn> primaryKey, List<GenerateColumn> allColumns, GenerateColumn... columns) {
         setTableName(tableName);
         if (primaryKey != null) setPrimaryKeys(primaryKey);
@@ -162,10 +161,8 @@ public class GenerateTable {
             sb.append(",");
         }
 
-        //  if (getInheritedSubCompositeKeys().isEmpty()) {
-        sb.append(", " + Composite.class.getSimpleName());
-        sb.append("<" + tableCamelName + ">");
-        //  }
+        sb.append(", ").append(Composite.class.getSimpleName());
+        sb.append("<").append(tableCamelName).append(">");
 
         return sb.toString();
     }
@@ -282,8 +279,7 @@ public class GenerateTable {
         if (getPrimaryKeys() == null) return "";
 
         StringBuilder sb = new StringBuilder();
-        sb.append("default " + CompositeColumns.class.getSimpleName() + "<" + compositeKeyName + "<E>>" + " composite" + compositeKeyName + "() {\n" +
-                "\treturn new " + CompositeColumns.class.getSimpleName() + "<>(\n");
+        sb.append("default ").append(CompositeColumns.class.getSimpleName()).append("<").append(compositeKeyName).append("<E>>").append(" composite").append(compositeKeyName).append("() {\n").append("\treturn new ").append(CompositeColumns.class.getSimpleName()).append("<>(\n");
 
         for (int i = 0; i < getPrimaryKeys().size(); i++) {
             sb.append(getTableColumn(getPrimaryKeys().get(i)));
@@ -405,6 +401,7 @@ public class GenerateTable {
             for (GenerateColumn tabcol : target) {
                 if (tabcol.getColumnName().equals(col.getColumnName())) {
                     contains = true;
+                    break;
                 }
             }
             if (!contains) {

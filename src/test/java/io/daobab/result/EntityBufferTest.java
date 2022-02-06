@@ -1,8 +1,8 @@
 package io.daobab.result;
 
-import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
-import io.daobab.target.buffer.query.BufferQueryEntity;
 import io.daobab.query.base.QueryWhisperer;
+import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.query.BufferQueryEntity;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.test.dao.SakilaTables;
 import io.daobab.test.dao.table.Film;
@@ -29,7 +29,7 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
     @Test
     void test2() {
         EntityBufferGenerator generator = new EntityBufferGenerator();
-        EntityByteBuffer<Film> buf = new EntityByteBuffer<>(tabFilm);
+        NoHeapEntities<Film> buf = new NoHeapEntities<>(tabFilm);
 
         Entities<Film> films = generator.getFilms2();
 
@@ -57,7 +57,7 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
         long start = 0;//System.currentTimeMillis();
         long stop = 0;
 
-        EntityByteBuffer<Film> bbuf = new EntityByteBuffer<>(tabFilm);
+        NoHeapEntities<Film> bbuf = new NoHeapEntities<>(tabFilm);
 
         start = System.currentTimeMillis();
         System.out.println("start");

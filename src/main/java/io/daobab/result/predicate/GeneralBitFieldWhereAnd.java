@@ -6,7 +6,7 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.where.base.Where;
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import static io.daobab.statement.where.base.WhereBase.OR;
 
 public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
 
-    protected final BaseByteBuffer<E> bufferEntityPointer;
+    protected final NoHeapBuffer<E> bufferEntityPointer;
     protected transient Logger log = LoggerFactory.getLogger(this.getClass());
     protected Where wrapperWhere;
     protected List<Integer> skipSteps;
@@ -26,7 +26,7 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
     protected List<Integer> columnsBufferPositionInWhere = new LinkedList<>();
     protected List<Integer> columnsEntityPositionInWhere = new LinkedList<>();
 
-    public GeneralBitFieldWhereAnd(BaseByteBuffer<E> bufferEntityPointer, Where wrapperWhere, List<Integer> skipSteps) {
+    public GeneralBitFieldWhereAnd(NoHeapBuffer<E> bufferEntityPointer, Where wrapperWhere, List<Integer> skipSteps) {
         this.wrapperWhere = wrapperWhere;
         this.skipSteps = skipSteps == null ? new LinkedList<>() : skipSteps;
         this.bufferEntityPointer = bufferEntityPointer;
@@ -78,7 +78,7 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
     }
 
     @Override
-    public boolean bitTest(BaseByteBuffer bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
+    public boolean bitTest(NoHeapBuffer bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
         for (int i = 0; i < predicates.size(); i++) {
 
             if (skipSteps.contains(i)) {

@@ -1,4 +1,4 @@
-package io.daobab.target.buffer.bytebyffer;
+package io.daobab.target.buffer.noheap;
 
 import io.daobab.error.ByteBufferIOException;
 import io.daobab.error.DaobabEntityCreationException;
@@ -20,23 +20,23 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implements EntitiesProvider<E> {
+public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements EntitiesProvider<E> {
 
     protected Class<E> entityClass;
 
-    public EntityByteBuffer(List<E> entities) {
+    public NoHeapEntities(List<E> entities) {
         this(entities == null || entities.isEmpty() ? null : entities.get(0), entities == null ? 8 : entities.size());
         if (entities != null) {
             entities.forEach(this::add);
         }
     }
 
-    public EntityByteBuffer(E entity) {
+    public NoHeapEntities(E entity) {
         this(entity, 8);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public EntityByteBuffer(E entity, int capacity) {
+    public NoHeapEntities(E entity, int capacity) {
         adjustForCapacity(capacity);//1 << pageMaxCapacityBytes;
         this.entityClass = (Class<E>) entity.getEntityClass();
         this.columns = entity.columns();
@@ -195,7 +195,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
 
     public List<E> finalFilter(Query<E, ?, ?> query) {
         List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
-        return new EntityByteBufferList<>(this, ids);
+        return new NoHeapEntityList<>(this, ids);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -243,7 +243,7 @@ public class EntityByteBuffer<E extends Entity> extends BaseByteBuffer<E> implem
         List<TableColumn> col = query.getFields();
         List<TableColumn> col2 = new ArrayList<>(col.size());
         col2.addAll(col);
-        PlateByteBufferList rv = new PlateByteBufferList(this, ids, col2);
+        NoHeapPlateList rv = new NoHeapPlateList(this, ids, col2);
         return new PlateBuffer(rv);
     }
 

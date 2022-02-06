@@ -1,4 +1,4 @@
-package io.daobab.target.buffer.bytebyffer;
+package io.daobab.target.buffer.noheap;
 
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
@@ -17,20 +17,20 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PlateByteBuffer extends BaseByteBuffer<Plate> {
+public class NoHeapPlates extends NoHeapBuffer<Plate> {
 
-    public PlateByteBuffer(List<Plate> entities) {
+    public NoHeapPlates(List<Plate> entities) {
         this(entities == null || entities.isEmpty() ? null : entities.get(0), entities == null ? 8 : entities.size());
         if (entities != null) {
             entities.forEach(this::add);
         }
     }
 
-    public PlateByteBuffer(Plate entity) {
+    public NoHeapPlates(Plate entity) {
         this(entity, 8);
     }
 
-    public PlateByteBuffer(Plate entity, int capacity) {
+    public NoHeapPlates(Plate entity, int capacity) {
         adjustForCapacity(capacity);//1 << pageMaxCapacityBytes;
         this.columns = entity.columns();
         List<TableColumn> columns = entity.columns();
@@ -180,7 +180,7 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
 
     public List<Plate> finalFilter(Query<?, ?, ?> query) {
         List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
-        List<Plate> rv = new PlateByteBufferList(this, ids, query.getFields());
+        List<Plate> rv = new NoHeapPlateList(this, ids, query.getFields());
         return rv;
     }
 
@@ -241,7 +241,7 @@ public class PlateByteBuffer extends BaseByteBuffer<Plate> {
         for (TableColumn c : col) {
             col2.add(c);
         }
-        PlateByteBufferList rv = new PlateByteBufferList(this, ids, col2);
+        NoHeapPlateList rv = new NoHeapPlateList(this, ids, col2);
         return new PlateBuffer(rv);
     }
 

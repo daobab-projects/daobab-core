@@ -3,14 +3,14 @@ package io.daobab.result.index;
 import io.daobab.model.Column;
 import io.daobab.model.EntityRelation;
 import io.daobab.statement.condition.Operator;
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapBuffer;
 
 import java.util.*;
 
 public class BitBufferIndexComparable<E, F extends Comparable<F>> extends BitBufferIndex<E, F> {
 
-
-    public BitBufferIndexComparable(Column<?, ?, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
+    @SuppressWarnings("rawtypes")
+    public BitBufferIndexComparable(Column<?, ?, EntityRelation> indexedColumn, NoHeapBuffer<E> buffer) {
         super(indexedColumn, buffer);
     }
 

@@ -7,7 +7,7 @@ import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.statement.condition.Limit;
 import io.daobab.statement.condition.base.OrderComparatorPlate;
-import io.daobab.target.buffer.bytebyffer.PlateBufferIndexed;
+import io.daobab.target.buffer.noheap.PlateBufferIndexed;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.protection.AccessProtector;

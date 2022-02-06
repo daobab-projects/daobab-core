@@ -4,13 +4,13 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.statement.condition.Operator;
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapBuffer;
 
 import java.util.*;
 
 public class BitBufferIndexUniqueDouble<E extends Entity> extends BitBufferUniqueIndex<E, Double> {
 
-    public BitBufferIndexUniqueDouble(Column<E, Double, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
+    public BitBufferIndexUniqueDouble(Column<E, Double, EntityRelation> indexedColumn, NoHeapBuffer<E> buffer) {
         super(indexedColumn, buffer);
     }
 

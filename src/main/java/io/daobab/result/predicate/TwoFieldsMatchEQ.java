@@ -1,7 +1,7 @@
 package io.daobab.result.predicate;
 
 import io.daobab.result.bytebuffer.BitFieldInteger;
-import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapEntities;
 
 import java.nio.ByteBuffer;
 
@@ -21,7 +21,7 @@ public class TwoFieldsMatchEQ implements WherePredicate<Integer> {
         return valueToCompare == valueFromEntityField;
     }
 
-    protected Integer getEntityVal(EntityByteBuffer bufferEntityPointer, int entityPosition, int colPosition) {
+    protected Integer getEntityVal(NoHeapEntities bufferEntityPointer, int entityPosition, int colPosition) {
         int page = entityPosition >> bufferEntityPointer.pageMaxCapacityBytes;
         int rowAtPage = entityPosition - (page << bufferEntityPointer.pageMaxCapacityBytes);
         int fieldPosition = (rowAtPage * bufferEntityPointer.totalEntitySpace) + colPosition;

@@ -1,4 +1,4 @@
-package io.daobab.target.buffer.bytebyffer;
+package io.daobab.target.buffer.noheap;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
@@ -35,7 +35,7 @@ import java.util.function.Predicate;
 
 import static io.daobab.statement.where.base.WhereBase.*;
 
-public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQueryTarget, MemoryUsageMonitor {
+public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryTarget, MemoryUsageMonitor {
 
     protected static List<Class> bitBufferedClasses = Arrays.asList(
             String.class,
@@ -266,7 +266,7 @@ public abstract class BaseByteBuffer<E> extends BaseTarget implements BufferQuer
         List<TableColumn> col = query.getFields();
         List<TableColumn> col2 = new ArrayList<>(col.size());
         col2.addAll(col);
-        return new PlateBuffer(new PlateByteBufferList(this, ids, col2));
+        return new PlateBuffer(new NoHeapPlateList(this, ids, col2));
     }
 
     @Override

@@ -1,4 +1,4 @@
-package io.daobab.target.buffer.bytebyffer;
+package io.daobab.target.buffer.noheap;
 
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;

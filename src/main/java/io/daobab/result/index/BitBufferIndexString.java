@@ -4,7 +4,7 @@ import io.daobab.model.Column;
 import io.daobab.model.EntityRelation;
 import io.daobab.result.predicate.MatchLike;
 import io.daobab.statement.condition.Operator;
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapBuffer;
 
 import java.util.Collection;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.TreeMap;
 
 public class BitBufferIndexString<E> extends BitBufferIndex<E, String> {
 
-    public BitBufferIndexString(Column<?, ?, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
+    public BitBufferIndexString(Column<?, ?, EntityRelation> indexedColumn, NoHeapBuffer<E> buffer) {
         super(indexedColumn, buffer);
     }
 

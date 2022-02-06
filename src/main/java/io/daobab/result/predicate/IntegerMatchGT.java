@@ -1,7 +1,7 @@
 package io.daobab.result.predicate;
 
 
-import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapEntities;
 
 public class IntegerMatchGT extends IntegerMatchEQ {
 
@@ -14,7 +14,7 @@ public class IntegerMatchGT extends IntegerMatchEQ {
         return valueFromEntityField != null && valueToCompare < valueFromEntityField;
     }
 
-    public boolean bitTest(EntityByteBuffer bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
+    public boolean bitTest(NoHeapEntities bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
         Integer v = getEntityVal(bufferEntityPointer, entityPosition, columnPositionIntoEntity, colPosition);
         return v != null && valueToCompare < v;
     }

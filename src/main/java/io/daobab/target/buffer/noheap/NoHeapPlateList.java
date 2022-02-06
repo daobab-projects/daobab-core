@@ -1,7 +1,7 @@
-package io.daobab.target.buffer.bytebyffer;
+package io.daobab.target.buffer.noheap;
 
-import io.daobab.error.TargetNotSupports;
-import io.daobab.model.Entity;
+import io.daobab.model.Plate;
+import io.daobab.model.TableColumn;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -9,14 +9,16 @@ import java.util.List;
 import java.util.ListIterator;
 
 
-public class EntityByteBufferList<E extends Entity> implements List<E> {
+class NoHeapPlateList implements List<Plate> {
 
-    private final EntityByteBuffer<E> buffer;
+    private final NoHeapBuffer<?> buffer;
     private final List<Integer> pointerList;
+    private final Collection<TableColumn> chosenColumns;
 
-    public EntityByteBufferList(EntityByteBuffer<E> buffer, List<Integer> pointerList) {
+    public NoHeapPlateList(NoHeapBuffer<?> buffer, List<Integer> pointerList, Collection<TableColumn> chosenColumns) {
         this.buffer = buffer;
         this.pointerList = pointerList;
+        this.chosenColumns = chosenColumns;
     }
 
     @Override
@@ -31,12 +33,12 @@ public class EntityByteBufferList<E extends Entity> implements List<E> {
 
     @Override
     public boolean contains(Object o) {
-        throw new TargetNotSupports();
+        return false;
     }
 
     @Override
-    public Iterator<E> iterator() {
-        return new Iterator<E>() {
+    public Iterator<Plate> iterator() {
+        return new Iterator<Plate>() {
             private final Iterator<Integer> iter = pointerList.iterator();
 
             @Override
@@ -45,7 +47,7 @@ public class EntityByteBufferList<E extends Entity> implements List<E> {
             }
 
             @Override
-            public E next() {
+            public Plate next() {
                 return get(iter.next());
             }
 
@@ -56,6 +58,7 @@ public class EntityByteBufferList<E extends Entity> implements List<E> {
         };
     }
 
+
     @Override
     public Object[] toArray() {
         return new Object[0];
@@ -63,92 +66,93 @@ public class EntityByteBufferList<E extends Entity> implements List<E> {
 
     @Override
     public <T> T[] toArray(T[] ts) {
-        throw new TargetNotSupports();
+        return null;
     }
 
     @Override
-    public boolean add(E e) {
-        throw new TargetNotSupports();
+    public boolean add(Plate e) {
+        return false;
     }
 
     @Override
     public boolean remove(Object o) {
-        throw new TargetNotSupports();
+        return false;
     }
 
     @Override
     public boolean containsAll(Collection<?> collection) {
-        throw new TargetNotSupports();
+        return false;
     }
 
     @Override
-    public boolean addAll(Collection<? extends E> collection) {
-        throw new TargetNotSupports();
+    public boolean addAll(Collection<? extends Plate> collection) {
+        return false;
     }
 
     @Override
-    public boolean addAll(int i, Collection<? extends E> collection) {
-        throw new TargetNotSupports();
+    public boolean addAll(int i, Collection<? extends Plate> collection) {
+        return false;
     }
 
     @Override
     public boolean removeAll(Collection<?> collection) {
-        throw new TargetNotSupports();
+        return false;
     }
 
     @Override
     public boolean retainAll(Collection<?> collection) {
-        throw new TargetNotSupports();
+        return false;
     }
 
     @Override
     public void clear() {
-        throw new TargetNotSupports();
+
     }
 
     @Override
-    public E get(int i) {
-        return buffer.get(i);
+    public Plate get(int i) {
+        return buffer.getPlate(i, chosenColumns);
     }
 
     @Override
-    public E set(int i, E e) {
-        throw new TargetNotSupports();
+    public Plate set(int i, Plate e) {
+        return null;
     }
 
     @Override
-    public void add(int i, E e) {
-        throw new TargetNotSupports();
+    public void add(int i, Plate e) {
+
     }
 
     @Override
-    public E remove(int i) {
-        throw new TargetNotSupports();
+    public Plate remove(int i) {
+        return null;
     }
 
     @Override
     public int indexOf(Object o) {
-        throw new TargetNotSupports();
+        return 0;
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        throw new TargetNotSupports();
+        return 0;
     }
 
     @Override
-    public ListIterator<E> listIterator() {
-        throw new TargetNotSupports();
+    public ListIterator<Plate> listIterator() {
+        return null;
     }
 
     @Override
-    public ListIterator<E> listIterator(int i) {
-        throw new TargetNotSupports();
+    public ListIterator<Plate> listIterator(int i) {
+        return null;
     }
 
     @Override
-    public List<E> subList(int i, int i1) {
-        throw new TargetNotSupports();
+    public List<Plate> subList(int i, int i1) {
+        return null;
     }
+
 
 }

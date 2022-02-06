@@ -3,7 +3,7 @@ package io.daobab.result.index;
 import io.daobab.model.Column;
 import io.daobab.model.EntityRelation;
 import io.daobab.statement.condition.Operator;
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
 
     private double efficiency = 0;
 
-    protected BitBufferIndex(Column<?, ?, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
+    protected BitBufferIndex(Column<?, ?, EntityRelation> indexedColumn, NoHeapBuffer<E> buffer) {
         this.indexedColumn = indexedColumn;
         this.indexedColumnPosition = buffer.getBufferPositionOfColumn(indexedColumn);
         this.indexedColumnOrder = buffer.getColumnIntoEntityPosition(indexedColumn);
@@ -40,8 +40,8 @@ public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
         log.info("Index created for column {}, Total elements: {} indexed size: {}. Index considered as {}", indexedColumn.getEntityName() + "." + indexedColumn.getColumnName(), buffer.size(), indexSize, worthless ? "worthless" : "useful");
     }
 
-
-    private void init(BaseByteBuffer<E> elements) {
+    @SuppressWarnings("unchecked")
+    private void init(NoHeapBuffer<E> elements) {
         for (int i = 0; i < elements.size(); i++) {
             F columnvalue = (F) elements.getValueForColumnPosition(i, indexedColumnOrder, indexedColumnPosition);
             addValue(columnvalue, i);

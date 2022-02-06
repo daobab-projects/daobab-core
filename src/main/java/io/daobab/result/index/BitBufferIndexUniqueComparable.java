@@ -3,13 +3,13 @@ package io.daobab.result.index;
 import io.daobab.model.Column;
 import io.daobab.model.EntityRelation;
 import io.daobab.statement.condition.Operator;
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapBuffer;
 
 import java.util.*;
 
 public class BitBufferIndexUniqueComparable<E, F extends Comparable<F>> extends BitBufferUniqueIndex<E, F> {
 
-    public BitBufferIndexUniqueComparable(Column<?, F, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
+    public BitBufferIndexUniqueComparable(Column<?, F, EntityRelation> indexedColumn, NoHeapBuffer<E> buffer) {
         super(indexedColumn, buffer);
     }
 

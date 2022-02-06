@@ -1,13 +1,13 @@
 package io.daobab.result.predicate;
 
 import io.daobab.statement.where.base.Where;
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapBuffer;
 
 import java.util.List;
 
 public class GeneralBitFieldWhereOr<E> extends GeneralBitFieldWhereAnd<E> {
 
-    public GeneralBitFieldWhereOr(BaseByteBuffer<E> bufferEntityPointer, Where wrapperWhere, List<Integer> skipSteps) {
+    public GeneralBitFieldWhereOr(NoHeapBuffer<E> bufferEntityPointer, Where wrapperWhere, List<Integer> skipSteps) {
         super(bufferEntityPointer, wrapperWhere, skipSteps);
     }
 
@@ -30,7 +30,7 @@ public class GeneralBitFieldWhereOr<E> extends GeneralBitFieldWhereAnd<E> {
 
 
     @Override
-    public boolean bitTest(BaseByteBuffer bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
+    public boolean bitTest(NoHeapBuffer bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
 
         for (int i = 0; i < predicates.size(); i++) {
 

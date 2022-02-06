@@ -8,7 +8,7 @@ import io.daobab.result.EntitiesProvider;
 import io.daobab.statement.condition.Count;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
-import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.QueryTarget;
 
@@ -72,8 +72,8 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
     }
 
     @Override
-    public EntityByteBuffer<E> createByteBuffer() {
-        return new EntityByteBuffer<E>(this.findMany());
+    public NoHeapEntities<E> toNoHeap() {
+        return new NoHeapEntities<E>(this.findMany());
     }
 
     @Override

@@ -3,7 +3,7 @@ package io.daobab.result.index;
 import io.daobab.model.Column;
 import io.daobab.model.EntityRelation;
 import io.daobab.statement.condition.Operator;
-import io.daobab.target.buffer.bytebyffer.BaseByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapBuffer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +14,7 @@ public class BitBufferIndexBoolean<E> extends BitBufferIndex<E, Boolean> {
 
 
     @SuppressWarnings("rawtypes")
-    public BitBufferIndexBoolean(Column<?, ?, EntityRelation> indexedColumn, BaseByteBuffer<E> buffer) {
+    public BitBufferIndexBoolean(Column<?, ?, EntityRelation> indexedColumn, NoHeapBuffer<E> buffer) {
         super(indexedColumn, buffer);
     }
 

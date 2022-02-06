@@ -6,9 +6,9 @@ import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesProvider;
 import io.daobab.target.Target;
 import io.daobab.target.buffer.BufferQueryTarget;
-import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
 import io.daobab.target.buffer.multi.MultiEntityTarget;
 import io.daobab.target.buffer.multi.SimpleMultiTarget;
+import io.daobab.target.buffer.noheap.NoHeapEntities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,8 +30,8 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
     Class<E> getEntityClass();
 
     @Override
-    default EntityByteBuffer<E> createByteBuffer() {
-        return new EntityByteBuffer<>(this);
+    default NoHeapEntities<E> toNoHeap() {
+        return new NoHeapEntities<>(this);
     }
 
     Entities<E> copy();

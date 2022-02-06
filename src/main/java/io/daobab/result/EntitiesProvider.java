@@ -2,7 +2,7 @@ package io.daobab.result;
 
 import io.daobab.error.NullFunction;
 import io.daobab.model.Entity;
-import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 
 import java.util.LinkedList;
@@ -20,8 +20,8 @@ public interface EntitiesProvider<E extends Entity> {
 
     Entities<E> findMany();
 
-    default EntityByteBuffer<E> createByteBuffer() {
-        return new EntityByteBuffer<>(findMany());
+    default NoHeapEntities<E> toNoHeap() {
+        return new NoHeapEntities<>(findMany());
     }
 
     Optional<E> findFirst();

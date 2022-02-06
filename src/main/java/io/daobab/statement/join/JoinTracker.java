@@ -87,7 +87,7 @@ public interface JoinTracker {
 
             for (Entity destinationPoint : getEntities(destinations, bunch)) {
                 dijkstra.execute(getByEntity(sourcePoint, nodes));
-                LinkedList<Vertex> path = dijkstra.getPath(getByEntity(destinationPoint, nodes));
+                List<Vertex> path = dijkstra.getPath(getByEntity(destinationPoint, nodes));
                 if (path == null) continue;
                 for (int i = 0; i < path.size(); i++) {
                     if (i < path.size() - 1) {
@@ -99,12 +99,8 @@ public interface JoinTracker {
             }
         }
 
-
-        if (alreadyDefinedJoins != null) {
-
-            for (JoinWrapper jw : alreadyDefinedJoins) {
-                if (!addedAlready(jw, rv)) rv.add(jw);
-            }
+        for (JoinWrapper jw : alreadyDefinedJoins) {
+            if (!addedAlready(jw, rv)) rv.add(jw);
         }
 
         return rv;

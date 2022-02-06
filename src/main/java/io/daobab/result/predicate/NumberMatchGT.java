@@ -2,7 +2,7 @@ package io.daobab.result.predicate;
 
 
 import io.daobab.result.bytebuffer.BitFieldInteger;
-import io.daobab.target.buffer.bytebyffer.EntityByteBuffer;
+import io.daobab.target.buffer.noheap.NoHeapEntities;
 
 import java.nio.ByteBuffer;
 
@@ -19,7 +19,7 @@ public class NumberMatchGT extends NumberMatchEQ {
         return valueFromEntityField != null && valueToCompare < (((Number) valueFromEntityField).doubleValue());
     }
 
-    public boolean bitTest(EntityByteBuffer bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
+    public boolean bitTest(NoHeapEntities bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
 //        return test((O) bufferEntityPointer.getValue(entityPosition, columnPositionIntoEntity, colPosition));
 
         int page = entityPosition >> bufferEntityPointer.pageMaxCapacityBytes;
