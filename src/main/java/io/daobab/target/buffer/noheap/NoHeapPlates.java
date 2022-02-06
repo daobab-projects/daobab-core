@@ -2,8 +2,8 @@ package io.daobab.target.buffer.noheap;
 
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
-import io.daobab.result.bytebuffer.BitField;
-import io.daobab.result.index.BitBufferIndexBase;
+import io.daobab.target.buffer.noheap.access.BitField;
+import io.daobab.target.buffer.noheap.index.BitBufferIndexBase;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;

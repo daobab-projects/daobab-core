@@ -1,8 +1,8 @@
 package io.daobab.result.predicate;
 
 
-import io.daobab.result.bytebuffer.BitFieldInteger;
 import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.noheap.access.BitFieldInteger;
 
 import java.nio.ByteBuffer;
 
