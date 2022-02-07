@@ -7,10 +7,10 @@ import java.nio.ByteBuffer;
 public class BitFieldChar extends BitField<Character> {
 
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object val) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, Character val) {
         if (val != null) {
             byteBuffer.put(position, (byte) 1);
-            byteBuffer.putChar(position + 1, (char) val);
+            byteBuffer.putChar(position + 1, val);
             return;
         }
         byteBuffer.put(position, (byte) 0);

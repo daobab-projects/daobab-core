@@ -7,9 +7,8 @@ import java.nio.ByteBuffer;
 public class BitFieldBlob extends BitField<byte[]> {
 
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object bytes) {
-        if (bytes != null) {
-            byte[] bytearray = (byte[]) bytes;
+    public void writeValue(ByteBuffer byteBuffer, Integer position, byte[] bytearray) {
+        if (bytearray != null) {
             byteBuffer.put(position, (byte) 1);
             byteBuffer.putInt(position + CHECK_NULL_SIZE, bytearray.length);
             byteBuffer.position(position + CHECK_NULL_SIZE + INT_SIZE);

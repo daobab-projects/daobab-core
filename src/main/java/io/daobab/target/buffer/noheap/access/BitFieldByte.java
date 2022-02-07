@@ -6,8 +6,8 @@ import java.nio.ByteBuffer;
 
 public class BitFieldByte extends BitField<Byte> {
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object val) {
-        byteBuffer.put(position, (byte) val);
+    public void writeValue(ByteBuffer byteBuffer, Integer position, Byte val) {
+        byteBuffer.put(position, val);
     }
 
     @Override

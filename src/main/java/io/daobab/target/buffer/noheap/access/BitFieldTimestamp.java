@@ -9,11 +9,10 @@ import java.time.Instant;
 public class BitFieldTimestamp extends BitField<Timestamp> {
 
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object val) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, Timestamp val) {
         if (val != null) {
             byteBuffer.put(position, (byte) 1);
-            Timestamp tval = (Timestamp) val;
-            Instant instant = tval.toInstant();
+            Instant instant = val.toInstant();
             byteBuffer.putLong(position + CHECK_NULL_SIZE, instant.getEpochSecond());
             byteBuffer.putInt(position + CHECK_NULL_SIZE + LONG_SIZE, instant.getNano());
             return;

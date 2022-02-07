@@ -7,11 +7,10 @@ import java.nio.ByteBuffer;
 public class BitFieldBoolean extends BitField<Boolean> {
 
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object val) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, Boolean val) {
         if (val != null) {
-            Boolean v = (Boolean) val;
-            byteBuffer.put(position, (byte) (Boolean.TRUE.equals(v) ? 2 : 1));
-            byteBuffer.put(position + 1, (byte) val);
+            byteBuffer.put(position, (byte) (Boolean.TRUE.equals(val) ? 2 : 1));
+//            byteBuffer.put(position + 1, (byte) val);
             return;
         }
         byteBuffer.put(position, (byte) 0); //2 means null in Boolean

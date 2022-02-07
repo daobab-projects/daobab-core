@@ -9,11 +9,10 @@ import java.nio.charset.StandardCharsets;
 public class BitFieldString extends BitField<String> {
 
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object value) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, String val) {
 
-        if (value != null) {
+        if (val != null) {
             byteBuffer.put(position, (byte) 1);
-            String val = (String) value;
 
             byteBuffer.putInt(position + CHECK_NULL_SIZE, val.length());
             byteBuffer.position(position + INT_SIZE + CHECK_NULL_SIZE);
@@ -47,7 +46,8 @@ public class BitFieldString extends BitField<String> {
         if (column.getSize() == 0) {
             throw new DaobabException("Field " + column.getColumn().toString() + " needs size specified.");
         }
-        return column.getSize() + INT_SIZE + CHECK_NULL_SIZE;
+        //max utf-8 space has to be multiplied by 6 (worst case scenario)
+        return column.getSize() * 6 + INT_SIZE + CHECK_NULL_SIZE;
     }
 
 }

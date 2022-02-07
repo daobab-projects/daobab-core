@@ -9,11 +9,10 @@ import java.util.Date;
 public class BitFieldDate extends BitField<Date> {
 
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object val) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, Date val) {
         if (val != null) {
             byteBuffer.put(position, (byte) 1);
-            Date tval = (Date) val;
-            Instant instant = tval.toInstant();
+            Instant instant = val.toInstant();
 
             byteBuffer.putLong(position + CHECK_NULL_SIZE, instant.getEpochSecond());
             byteBuffer.putInt(position + CHECK_NULL_SIZE + LONG_SIZE, instant.getNano());

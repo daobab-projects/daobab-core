@@ -10,10 +10,9 @@ import java.nio.ByteBuffer;
 public class BitFieldBigDecimal extends BitField<BigDecimal> {
 
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object val) {
-        if (val != null) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, BigDecimal bval) {
+        if (bval != null) {
             byteBuffer.put(position, (byte) 1);
-            BigDecimal bval = (BigDecimal) val;
             byteBuffer.putInt(position + CHECK_NULL_SIZE, bval.precision());
             byteBuffer.putInt(position + CHECK_NULL_SIZE + INT_SIZE, bval.scale());
             byte[] arr = bval.unscaledValue().toByteArray();

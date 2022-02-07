@@ -7,10 +7,10 @@ import java.nio.ByteBuffer;
 public class BitFieldDouble extends BitField<Double> {
 
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object aDouble) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, Double aDouble) {
         if (aDouble != null) {
             byteBuffer.put(position, (byte) 1);
-            byteBuffer.putDouble(position + 1, (double) aDouble);
+            byteBuffer.putDouble(position + 1, aDouble);
             return;
         }
         byteBuffer.put(position, (byte) 0);
@@ -31,7 +31,7 @@ public class BitFieldDouble extends BitField<Double> {
 
     @Override
     public int calculateSpace(TableColumn column) {
-        return 8 + CHECK_NULL_SIZE;
+        return DOUBLE_SIZE + CHECK_NULL_SIZE;
     }
 
 }

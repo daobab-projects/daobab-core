@@ -6,10 +6,10 @@ import java.nio.ByteBuffer;
 
 public class BitFieldFloat extends BitField<Float> {
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object val) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, Float val) {
         if (val != null) {
             byteBuffer.put(position, (byte) 1);
-            byteBuffer.putFloat(position + 1, (float) val);
+            byteBuffer.putFloat(position + 1, val);
             return;
         }
         byteBuffer.put(position, (byte) 0);
@@ -30,7 +30,7 @@ public class BitFieldFloat extends BitField<Float> {
 
     @Override
     public int calculateSpace(TableColumn column) {
-        return 4 + CHECK_NULL_SIZE;
+        return FLOAT_SIZE + CHECK_NULL_SIZE;
     }
 
 }

@@ -8,12 +8,11 @@ import java.nio.ByteBuffer;
 public class BitFieldBigInteger extends BitField<BigInteger> {
 
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object val) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, BigInteger val) {
         if (val != null) {
             byteBuffer.put(position, (byte) 1);
-            BigInteger bval = (BigInteger) val;
             byteBuffer.position(position + 1);
-            byteBuffer.put(bval.toByteArray());
+            byteBuffer.put(val.toByteArray());
             return;
         }
         byteBuffer.put(position, (byte) 0);

@@ -8,11 +8,10 @@ import java.sql.Date;
 public class BitFieldSqlDate extends BitField<Date> {
 
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object val) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, Date val) {
         if (val != null) {
             byteBuffer.put(position, (byte) 1);
-            Date tval = (Date) val;
-            byteBuffer.putLong(position + CHECK_NULL_SIZE, tval.getTime());
+            byteBuffer.putLong(position + CHECK_NULL_SIZE, val.getTime());
             return;
         }
         byteBuffer.put(position, (byte) 0);

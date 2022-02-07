@@ -6,12 +6,14 @@ import java.nio.ByteBuffer;
 
 public class BitFieldInteger extends BitField<Integer> {
 
+    public static int INTEGER_BIT_SIZE = CHECK_NULL_SIZE + INT_SIZE;
+
     @Override
-    public void writeValue(ByteBuffer byteBuffer, Integer position, Object val) {
+    public void writeValue(ByteBuffer byteBuffer, Integer position, Integer val) {
 
         if (val != null) {
             byteBuffer.put(position, (byte) 1);
-            byteBuffer.putInt(position + CHECK_NULL_SIZE, (int) val);
+            byteBuffer.putInt(position + CHECK_NULL_SIZE, val);
             return;
         }
         byteBuffer.put(position, (byte) 0);
