@@ -14,8 +14,7 @@ import io.daobab.statement.where.base.Where;
 import io.daobab.statement.where.base.WhereBase;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.BufferQueryTarget;
-import io.daobab.target.buffer.noheap.access.BitField;
-import io.daobab.target.buffer.noheap.access.DictBitField;
+import io.daobab.target.buffer.noheap.access.field.BitField;
 import io.daobab.target.buffer.noheap.index.*;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.PlateBuffer;
@@ -26,8 +25,6 @@ import io.daobab.target.protection.BasicAccessProtector;
 import io.daobab.target.protection.OperationType;
 import io.daobab.transaction.Propagation;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,19 +34,6 @@ import static io.daobab.statement.where.base.WhereBase.*;
 
 public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryTarget, MemoryUsageMonitor {
 
-    protected static List<Class> bitBufferedClasses = Arrays.asList(
-            String.class,
-            Integer.class,
-            Long.class,
-            Double.class,
-            Date.class,
-            Float.class,
-            Short.class,
-            Character.class,
-            BigDecimal.class,
-            BigInteger.class,
-            Character.class
-    );
     public int pageMaxCapacityBytes = 2;
     public int totalEntitySpace = 0;
     protected int pageMaxCapacity;
@@ -68,14 +52,10 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
     protected LinkedList<Integer> removed = new LinkedList<>();
     protected Map<Integer, HashMap<String, Object>> additionalParameters = new HashMap<>();
     private AccessProtector accessProtector = new BasicAccessProtector();
+    protected final BitFieldRegistry bitFieldRegistry;
 
-    protected boolean mayBeBitBuffered(Column col) {
-        for (Class<?> cl : bitBufferedClasses) {
-            if (cl.isAssignableFrom(col.getFieldClass())) {
-                return true;
-            }
-        }
-        return false;
+    protected NoHeapBuffer(BitFieldRegistry bitFieldRegistry) {
+        this.bitFieldRegistry = bitFieldRegistry;
     }
 
     protected void adjustForCapacity(int capacity) {
@@ -200,21 +180,6 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
         return bitFieldOperations[columnPositionIntoEntity].readValue(pages.get(page), fieldPosition);
     }
 
-    @SuppressWarnings("unchecked")
-    protected BitField determineBitField(Column column) {
-        if (column.getFieldClass().equals(java.sql.Date.class)) {
-            return DictBitField.BT_SQLDATE.getField();
-        }
-        if (column.getFieldClass().equals(java.sql.Timestamp.class)) {
-            return DictBitField.BT_TIMESTAMP.getField();
-        }
-        for (DictBitField bt : DictBitField.values()) {
-            if (bt.getField().getClazz().isAssignableFrom(column.getFieldClass())) {
-                return bt.getField();
-            }
-        }
-        return null;
-    }
 
     @SuppressWarnings("unchecked")
     public Integer getColumnIntoEntityPosition(Column<?, ?, ?> column) {

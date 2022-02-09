@@ -5,7 +5,7 @@ import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesProvider;
-import io.daobab.target.buffer.noheap.access.BitField;
+import io.daobab.target.buffer.noheap.access.field.BitField;
 import io.daobab.target.buffer.noheap.index.BitBufferIndexBase;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.Entities;
@@ -25,18 +25,27 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
     protected Class<E> entityClass;
 
     public NoHeapEntities(List<E> entities) {
-        this(entities == null || entities.isEmpty() ? null : entities.get(0), entities == null ? 8 : entities.size());
+        this(entities, new BitFieldRegistry());
+    }
+
+    public NoHeapEntities(List<E> entities, BitFieldRegistry bitFieldRegistry) {
+        this(entities == null || entities.isEmpty() ? null : entities.get(0), entities == null ? 8 : entities.size(), bitFieldRegistry);
         if (entities != null) {
             entities.forEach(this::add);
         }
     }
 
     public NoHeapEntities(E entity) {
-        this(entity, 8);
+        this(entity, new BitFieldRegistry());
+    }
+
+    public NoHeapEntities(E entity, BitFieldRegistry bitFieldRegistry) {
+        this(entity, 8, bitFieldRegistry);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public NoHeapEntities(E entity, int capacity) {
+    public NoHeapEntities(E entity, int capacity, BitFieldRegistry bitFieldRegistry) {
+        super(bitFieldRegistry);
         adjustForCapacity(capacity);//1 << pageMaxCapacityBytes;
         this.entityClass = (Class<E>) entity.getEntityClass();
         this.columns = entity.columns();
@@ -50,9 +59,9 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
 
         for (TableColumn tableColumn : columns) {
             Column column = tableColumn.getColumn();
-            bitFieldOperations[columnOrderIntoEntity] = determineBitField(column);
+            bitFieldOperations[columnOrderIntoEntity] = bitFieldRegistry.getBitFieldFor(tableColumn);
             int fieldSize = bitFieldOperations[columnOrderIntoEntity].calculateSpace(tableColumn);
-            if (!mayBeBitBuffered(column)) {
+            if (!bitFieldRegistry.mayBeBitBuffered(column)) {
                 columnsPositionsQueue[columnOrderIntoEntity] = null;
                 columnOrderIntoEntity++;
                 continue;

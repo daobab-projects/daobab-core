@@ -1,6 +1,6 @@
 package io.daobab.result.predicate;
 
-import io.daobab.target.buffer.noheap.access.BitField;
+import io.daobab.target.buffer.noheap.access.field.BitField;
 
 import java.nio.ByteBuffer;
 
