@@ -3,8 +3,9 @@ package io.daobab.target.buffer.noheap.access.field;
 import io.daobab.model.TableColumn;
 
 import java.nio.ByteBuffer;
+import java.util.Comparator;
 
-public class BitFieldShort implements BitField<Short> {
+public class BitFieldShort extends BitFieldComparable<Short> {
 
     public BitFieldShort(TableColumn tableColumn) {
     }
@@ -34,7 +35,11 @@ public class BitFieldShort implements BitField<Short> {
 
     @Override
     public int calculateSpace(TableColumn column) {
-        return BitSize.SHORT + BitSize.CHECK_NULL;
+        return BitSize.SHORT + BitSize.NULL;
     }
 
+    @Override
+    public Comparator<? super Short> comparator() {
+        return Comparator.comparing(Short::valueOf);
+    }
 }

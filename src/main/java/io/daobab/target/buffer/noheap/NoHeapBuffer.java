@@ -1,11 +1,12 @@
 package io.daobab.target.buffer.noheap;
 
+import io.daobab.error.DaobabException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
 import io.daobab.model.TableColumn;
 import io.daobab.query.base.Query;
-import io.daobab.result.ResultBitBufferPositionWithSkipStepsWrapper;
+import io.daobab.result.IndexedFilterResult;
 import io.daobab.result.predicate.AlwaysTrue;
 import io.daobab.result.predicate.GeneralBitFieldWhereAnd;
 import io.daobab.result.predicate.GeneralBitFieldWhereOr;
@@ -15,7 +16,7 @@ import io.daobab.statement.where.base.WhereBase;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.target.buffer.noheap.access.field.BitField;
-import io.daobab.target.buffer.noheap.index.*;
+import io.daobab.target.buffer.noheap.index.BitBufferIndexBase;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.buffer.single.Plates;
@@ -41,17 +42,17 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
     //in bytes, all pages
     protected int totalBufferSize;
     protected List<ByteBuffer> pages;
-    protected Map<String, Integer> columnOrderIntoEntityHashMap;
+    protected Map<String, Integer> columnsOrder;
     protected Integer[] columnsPositionsQueue;
-    protected BitField[] bitFieldOperations;
+    protected BitField[] bitFields;
     protected List<TableColumn> columns;
     protected BitBufferIndexBase[] indexRepository;
     protected boolean isIndexRepositoryEmpty = true;
-    protected boolean bufferStatic = false;
     protected List<Integer> locations = new LinkedList<>();
     protected LinkedList<Integer> removed = new LinkedList<>();
     protected Map<Integer, HashMap<String, Object>> additionalParameters = new HashMap<>();
     private AccessProtector accessProtector = new BasicAccessProtector();
+
     protected final BitFieldRegistry bitFieldRegistry;
 
     protected NoHeapBuffer(BitFieldRegistry bitFieldRegistry) {
@@ -78,8 +79,8 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
     @Override
     public long getBufferMemoryUsage() {
         long usage = 0;
-        for (ByteBuffer bb : pages) {
-            usage = usage + bb.limit();
+        for (ByteBuffer page : pages) {
+            usage = usage + page.limit();
         }
         return usage;
     }
@@ -166,7 +167,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
                 continue;
             }
             pages.get(page).position(0);
-            rv.setValue(col, bitFieldOperations[cnt].readValue(pages.get(page), posEntity + posCol));
+            rv.setValue(col, bitFields[cnt].readValue(pages.get(page), posEntity + posCol));
             cnt++;
         }
         return rv;
@@ -177,9 +178,8 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
         int page = entityLocation >> pageMaxCapacityBytes;
         int rowAtPage = entityLocation - (page << pageMaxCapacityBytes);
         int fieldPosition = (rowAtPage * totalEntitySpace) + colOrder;
-        return bitFieldOperations[columnPositionIntoEntity].readValue(pages.get(page), fieldPosition);
+        return bitFields[columnPositionIntoEntity].readValue(pages.get(page), fieldPosition);
     }
-
 
     @SuppressWarnings("unchecked")
     public Integer getColumnIntoEntityPosition(Column<?, ?, ?> column) {
@@ -188,7 +188,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
                 return i;
             }
         }
-        return null;
+        throw new DaobabException("Column '%s' is not related to the buffer.", column.getColumnName());
     }
 
     public Integer getBufferPositionOfColumn(Column<?, ?, ?> column) {
@@ -201,7 +201,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
         int entityLocation = locations.get(entityPointer);
         int page = entityLocation >> pageMaxCapacityBytes;
         int entityAtPagePointer = entityLocation - (page << pageMaxCapacityBytes);
-        return bitFieldOperations[columnIntoEntityPosition].readValue(pages.get(page), (entityAtPagePointer * totalEntitySpace) + columnBufferRowPosition);
+        return bitFields[columnIntoEntityPosition].readValue(pages.get(page), (entityAtPagePointer * totalEntitySpace) + columnBufferRowPosition);
     }
 
     @SuppressWarnings("unchecked")
@@ -209,7 +209,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
         int columnIntoEntityPosition = getColumnIntoEntityPosition(query.getFields().get(0).getColumn());
         int columnBufferRowPosition = getBufferPositionOfColumn(query.getFields().get(0).getColumn());
 
-        List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
+        List<Integer> ids = finalFilter(filterByIndexes(null, query.getWhereWrapper()), query);
         List<F> rv = new ArrayList<>(ids.size());
         for (int i = 0; i < ids.size(); i++) {
             rv.add(i, (F) getValueForColumnPosition(ids.get(i), columnIntoEntityPosition, columnBufferRowPosition));
@@ -226,7 +226,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
     @Override
     public Plates readPlateList(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
-        List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
+        List<Integer> ids = finalFilter(filterByIndexes(null, query.getWhereWrapper()), query);
 
         List<TableColumn> col = query.getFields();
         List<TableColumn> col2 = new ArrayList<>(col.size());
@@ -286,14 +286,15 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected List<Integer> finalFilter(ResultBitBufferPositionWithSkipStepsWrapper rw, Query<?, ?, ?> query) {
+    protected List<Integer> finalFilter(IndexedFilterResult rw, Query<?, ?, ?> query) {
         int counter = 0;
-        List<Integer> entitiesToHandle = rw == null ? null : rw.getEntityPointers();
-        List<Integer> skipSteps = rw == null ? Collections.emptyList() : rw.getSkipSteps();
+        Collection<Integer> pointers = rw == null ? null : rw.getPointers();
+        List<Integer> skippedSteps = rw == null ? Collections.emptyList() : rw.getSkippedWhereSteps();
 
         List<Integer> rv = new ArrayList<>();
         Where wrapper = query.getWhereWrapper();
         boolean usedLimitWithoutOrder = query.getOrderBy() == null && query.getLimit() != null;
+        //sometimes you may just order or sth...
         boolean useWhere = wrapper != null;
 
         int offset = !usedLimitWithoutOrder ? 0 : query.getLimit().getOffset();
@@ -303,16 +304,15 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
         if (!useWhere) {
             generalPredicate = new AlwaysTrue();
         } else if (WhereBase.OR.equals(wrapper.getRelationBetweenExpressions())) {
-            GeneralBitFieldWhereOr genPred = new GeneralBitFieldWhereOr<>(this, wrapper, skipSteps);
+            GeneralBitFieldWhereOr genPred = new GeneralBitFieldWhereOr<>(this, wrapper, skippedSteps);
             generalPredicate = genPred.isEmpty() ? new AlwaysTrue() : genPred;
         } else {
-            GeneralBitFieldWhereAnd genPred = new GeneralBitFieldWhereAnd<>(this, wrapper, skipSteps);
+            GeneralBitFieldWhereAnd genPred = new GeneralBitFieldWhereAnd<>(this, wrapper, skippedSteps);
             generalPredicate = genPred.isEmpty() ? new AlwaysTrue() : genPred;
         }
 
-
         if (usedLimitWithoutOrder) {
-            if (entitiesToHandle == null) {
+            if (pointers == null) {
                 for (int i = 0; i < size(); i++) {
 
                     if (generalPredicate.test(i)) {
@@ -326,7 +326,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
                     }
                 }
             } else {
-                for (int i : entitiesToHandle) {
+                for (int i : pointers) {
                     if (generalPredicate.test(i)) {
                         counter++;
                         if (counter < offset) {
@@ -339,16 +339,16 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
                 }
             }
         } else {
-            if (entitiesToHandle == null) {
+            if (pointers == null) {
                 for (int i = 0; i < size(); i++) {
                     if (generalPredicate.test(i)) {
                         rv.add(i);
                     }
                 }
             } else {
-                for (int i : entitiesToHandle) {
-                    if (generalPredicate.test(i)) {
-                        rv.add(i);
+                for (int item : pointers) {
+                    if (generalPredicate.test(item)) {
+                        rv.add(item);
                     }
                 }
             }
@@ -358,11 +358,34 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     //Filters provides ids or all (if list is null) for provided wrapper
-    protected ResultBitBufferPositionWithSkipStepsWrapper filterUsingIndexes(List<Integer> entitiesToHandle, Where wrapper) {
+    protected IndexedFilterResult filterByIndexes(List<Integer> entitiesToHandle, Where wrapper) {
 
         //if indexRepository is empty, don't even use the index logic
         if (wrapper == null || isIndexRepositoryEmpty || !mayBeIndexed(wrapper)) {
-            return new ResultBitBufferPositionWithSkipStepsWrapper(entitiesToHandle, Collections.emptyList());
+            return new IndexedFilterResult(entitiesToHandle, Collections.emptyList());
+        }
+
+        if (wrapper.getCounter() == 2) {
+            Column column1 = wrapper.getKeyForPointer(1);
+            BitBufferIndexBase index = indexRepository[getColumnIntoEntityPosition(column1)];
+            if (index == null) {
+                return new IndexedFilterResult(entitiesToHandle, Collections.emptyList());
+            }
+            Operator operator1 = wrapper.getRelationForPointer(1);
+            Object val1 = wrapper.getValueForPointer(1);
+            List<Integer> skipSteps1 = new ArrayList<>();
+            skipSteps1.add(1);
+            String relations1 = wrapper.getRelationBetweenExpressions();
+            switch (relations1) {
+                default:
+                case OR:
+                case AND: {
+                    return new IndexedFilterResult(index.filter(operator1, val1), skipSteps1);
+                }
+                case NOT: {
+                    return new IndexedFilterResult(index.filterNegative(operator1, val1), skipSteps1);
+                }
+            }
         }
 
         String relations = wrapper.getRelationBetweenExpressions();
@@ -385,22 +408,21 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
             //if Where has a second Where inside...
             Where<?> innerWhere = wrapper.getInnerWhere(counter);
             if (innerWhere != null) {
-                ResultBitBufferPositionWithSkipStepsWrapper pks = filterUsingIndexes(entitiesToHandle, innerWhere);
+                IndexedFilterResult indexedFilterResult = filterByIndexes(entitiesToHandle, innerWhere);
 
                 if (OR.equals(relations)) {
-                    for (int in : pks.getEntityPointers()) {
+                    for (int in : indexedFilterResult.getPointers()) {
                         flags[0][in] = true;
                     }
                 } else {
-                    int size = 0;
-                    for (int in : pks.getEntityPointers()) {
+                    int size = indexedFilterResult.getPointers().size();
+                    for (int in : indexedFilterResult.getPointers()) {
                         flags[indexedArguments][in] = true;
-                        size++;
                     }
 
                     if (lowestSize > size) {
                         lowestSize = size;
-                        lowestCollection = pks.getEntityPointers();
+                        lowestCollection = indexedFilterResult.getPointers();
                     }
 
                 }
@@ -422,10 +444,9 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
                 case AND: {
                     Collection<Integer> filtered = index.filter(operator, val);
 
-                    int size = 0;
+                    int size = filtered.size();
                     for (int in : filtered) {
                         flags[indexedArguments][in] = true;
-                        size++;
                     }
                     if (lowestSize > size) {
                         lowestSize = size;
@@ -493,7 +514,8 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
                 }
             }
         }
-        return new ResultBitBufferPositionWithSkipStepsWrapper(pointers, skipSteps);
+
+        return new IndexedFilterResult(pointers, skipSteps);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -514,42 +536,13 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
                 }
             }
         }
-
         return true;
-    }
-
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    protected BitBufferIndexBase<E> determineIndex(TableColumn infocolumn) {
-        Column column = infocolumn.getColumn();
-        Class<?> clazz = column.getFieldClass();
-        if (clazz.isAssignableFrom(String.class)) {
-            return new BitBufferIndexString<>(column, this);
-        } else if (clazz.isAssignableFrom(Integer.class)) {
-            if (infocolumn.isUnique()) {
-                return new BitBufferIndexUniqueNumber(column, this);
-            } else {
-                return new BitBufferIndexInteger<>(column, this);
-            }
-        } else if (clazz.isAssignableFrom(Boolean.class)) {
-            return new BitBufferIndexBoolean<>(column, this);
-        } else if (clazz.isAssignableFrom(Comparable.class)) {
-            return new BitBufferIndexComparable<>(column, this);
-        }
-        return null;
     }
 
     public List<ByteBuffer> getPages() {
         return pages;
     }
 
-    public boolean isBufferStatic() {
-        return bufferStatic;
-    }
-
-    public void setBufferStatic(boolean bufferStatic) {
-        this.bufferStatic = bufferStatic;
-    }
 
     @Override
     public AccessProtector getAccessProtector() {
@@ -559,6 +552,17 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
     @Override
     public void setAccessProtector(AccessProtector accessProtector) {
         this.accessProtector = accessProtector;
+    }
+
+
+    public BitFieldRegistry getBitFieldRegistry() {
+        return bitFieldRegistry;
+    }
+
+
+    public BitField getBifFieldForColumn(Column column) {
+        int columnPosition = columnsOrder.get(column.getColumnName());
+        return bitFields[columnPosition];
     }
 
 }

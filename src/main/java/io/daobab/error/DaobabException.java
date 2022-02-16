@@ -2,6 +2,8 @@ package io.daobab.error;
 
 import io.daobab.internallogger.ILoggerBean;
 
+import static java.lang.String.format;
+
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
@@ -16,9 +18,18 @@ public class DaobabException extends RuntimeException {
         setStatusDesc(msg);
     }
 
+    public DaobabException(ILoggerBean loggerbean, String msg, Object... arguments) {
+        this(format(msg, arguments));
+        loggerbean.getLog().error(format(msg, arguments));
+    }
+
     public DaobabException(ILoggerBean loggerbean, String msg) {
         this(msg);
         loggerbean.getLog().error(msg);
+    }
+
+    public DaobabException(String msg, Object... arguments) {
+        this(format(msg, arguments));
     }
 
     public DaobabException(String msg, Throwable th) {

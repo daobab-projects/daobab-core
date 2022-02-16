@@ -1,8 +1,12 @@
 package io.daobab.target.buffer.noheap.access.field;
 
 import io.daobab.model.TableColumn;
+import io.daobab.result.predicate.WherePredicate;
+import io.daobab.statement.condition.Operator;
 
 import java.nio.ByteBuffer;
+import java.util.Comparator;
+import java.util.function.Function;
 
 public class BitFieldBlob implements BitField<byte[]> {
 
@@ -13,8 +17,8 @@ public class BitFieldBlob implements BitField<byte[]> {
     public void writeValue(ByteBuffer byteBuffer, Integer position, byte[] bytearray) {
         if (bytearray != null) {
             byteBuffer.put(position, (byte) 1);
-            byteBuffer.putInt(position + BitSize.CHECK_NULL, bytearray.length);
-            byteBuffer.position(position + BitSize.CHECK_NULL + BitSize.INT);
+            byteBuffer.putInt(position + BitSize.NULL, bytearray.length);
+            byteBuffer.position(position + BitSize.NULL + BitSize.INT);
             byteBuffer.put(bytearray);
             return;
         }
@@ -26,9 +30,9 @@ public class BitFieldBlob implements BitField<byte[]> {
         if (byteBuffer.get(position) == 0) {
             return new byte[0];
         }
-        int length = byteBuffer.getInt(position + BitSize.CHECK_NULL);
+        int length = byteBuffer.getInt(position + BitSize.NULL);
         byte[] bytearray = new byte[length];
-        byteBuffer.position(position + BitSize.CHECK_NULL + BitSize.INT);
+        byteBuffer.position(position + BitSize.NULL + BitSize.INT);
         byteBuffer.get(bytearray);
         return bytearray;
     }
@@ -40,7 +44,17 @@ public class BitFieldBlob implements BitField<byte[]> {
 
     @Override
     public int calculateSpace(TableColumn column) {
-        return BitSize.INT + BitSize.CHECK_NULL;
+        return BitSize.INT + BitSize.NULL;
+    }
+
+    @Override
+    public Comparator<? super byte[]> comparator() {
+        return null;
+    }
+
+    @Override
+    public Function<byte[], WherePredicate<byte[]>> getPredicate(Operator operator) {
+        return null;
     }
 
 }

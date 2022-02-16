@@ -3,8 +3,9 @@ package io.daobab.target.buffer.noheap.access.field;
 import io.daobab.model.TableColumn;
 
 import java.nio.ByteBuffer;
+import java.util.Comparator;
 
-public class BitFieldByte implements BitField<Byte> {
+public class BitFieldByte extends BitFieldComparable<Byte> {
 
     public BitFieldByte(TableColumn tableColumn) {
     }
@@ -27,6 +28,11 @@ public class BitFieldByte implements BitField<Byte> {
     @Override
     public int calculateSpace(TableColumn column) {
         return 1;
+    }
+
+    @Override
+    public Comparator<? super Byte> comparator() {
+        return null;
     }
 
 }

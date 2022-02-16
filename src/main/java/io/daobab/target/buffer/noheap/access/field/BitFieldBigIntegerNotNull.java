@@ -4,8 +4,9 @@ import io.daobab.model.TableColumn;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.Comparator;
 
-public class BitFieldBigIntegerNotNull implements BitField<BigInteger> {
+public class BitFieldBigIntegerNotNull extends BitFieldComparable<BigInteger> {
 
     public BitFieldBigIntegerNotNull(TableColumn tableColumn) {
     }
@@ -32,5 +33,17 @@ public class BitFieldBigIntegerNotNull implements BitField<BigInteger> {
     @Override
     public int calculateSpace(TableColumn column) {
         return BitSize.BIG_INTEGER;
+    }
+
+    @Override
+    public Comparator<? super BigInteger> comparator() {
+        return (Comparator<BigInteger>) (o1, o2) -> {
+            if (o1 != null && o2 != null) {
+                return o1.compareTo(o2);
+            }
+            if (o1 == null && o2 == null) return 0;
+            if (o1 != null) return -1;
+            return 1;
+        };
     }
 }

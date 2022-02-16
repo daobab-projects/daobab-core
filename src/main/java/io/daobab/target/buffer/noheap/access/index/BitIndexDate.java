@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
 
-public class BitIndexDate extends AbstractBitIndex<Date, BitFieldDateNotNull, BitIndexDate> {
+public class BitIndexDate extends BitIndex<Date, BitFieldDateNotNull, BitIndexDate> {
 
     public BitIndexDate(final TableColumn tableColumn, SortedMap<Date, Collection<Integer>> valueIndex, List<Integer> nullValues) {
         super(tableColumn, valueIndex, nullValues, new BitArrayDateNotNull(tableColumn));
@@ -19,4 +19,14 @@ public class BitIndexDate extends AbstractBitIndex<Date, BitFieldDateNotNull, Bi
     protected BitIndexDate createInstance(final TableColumn tableColumn, SortedMap<Date, Collection<Integer>> valueIndex, List<Integer> nullValues) {
         return new BitIndexDate(tableColumn, valueIndex, nullValues);
     }
+
+    protected BitIndexDate(BitIndexDate original, TableColumn tableColumn, Collection<Date> keys, boolean nullValues) {
+        super(original, tableColumn, keys, nullValues);
+    }
+
+    @Override
+    protected BitIndexDate createSubIndex(BitIndexDate original, TableColumn tableColumn, Collection<Date> keys, boolean nullValues) {
+        return new BitIndexDate(original, tableColumn, keys, nullValues);
+    }
+
 }

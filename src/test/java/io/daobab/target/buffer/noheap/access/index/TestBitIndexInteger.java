@@ -22,10 +22,10 @@ public class TestBitIndexInteger {
 
         List<Integer> readNullValues = bitIndexInteger.getNullValues();
         readNullValues.forEach(System.out::println);
-        List<Integer> readKeys = bitIndexInteger.getKeys();
+        Set<Integer> readKeys = bitIndexInteger.getKeys();
         readKeys.forEach(System.out::println);
 
-        List<Integer> keysValues = bitIndexInteger.getValuesForKey(9);
+        List<Integer> keysValues = bitIndexInteger.get(9);
         keysValues.forEach(System.out::println);
 
 

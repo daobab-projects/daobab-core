@@ -5,8 +5,6 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.noheap.access.field.BitFieldLongNotNull;
 import io.daobab.target.buffer.noheap.access.field.BitSize;
 
-import java.util.Comparator;
-
 public class BitArrayLongNotNull extends BitArrayBaseNotNull<Long, BitFieldLongNotNull> {
 
     private final BitFieldLongNotNull instance;
@@ -35,8 +33,4 @@ public class BitArrayLongNotNull extends BitArrayBaseNotNull<Long, BitFieldLongN
         return Long[].class;
     }
 
-    @Override
-    public Comparator<? super Long> comparator() {
-        return Comparator.comparing(Long::valueOf);
-    }
 }

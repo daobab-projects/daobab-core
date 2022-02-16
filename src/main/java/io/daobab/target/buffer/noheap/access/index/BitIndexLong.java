@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
-public class BitIndexLong extends AbstractBitIndex<Long, BitFieldLongNotNull, BitIndexLong> {
+public class BitIndexLong extends BitIndex<Long, BitFieldLongNotNull, BitIndexLong> {
 
     public BitIndexLong(SortedMap<Long, Collection<Integer>> valueIndex, List<Integer> nullValues) {
         this(new EmptyTableColumn(), valueIndex, nullValues);
@@ -22,6 +22,15 @@ public class BitIndexLong extends AbstractBitIndex<Long, BitFieldLongNotNull, Bi
     @Override
     protected BitIndexLong createInstance(final TableColumn tableColumn, SortedMap<Long, Collection<Integer>> valueIndex, List<Integer> nullValues) {
         return new BitIndexLong(tableColumn, valueIndex, nullValues);
+    }
+
+    protected BitIndexLong(BitIndexLong original, TableColumn tableColumn, Collection<Long> keys, boolean nullValues) {
+        super(original, tableColumn, keys, nullValues);
+    }
+
+    @Override
+    protected BitIndexLong createSubIndex(BitIndexLong original, TableColumn tableColumn, Collection<Long> keys, boolean nullValues) {
+        return new BitIndexLong(original, tableColumn, keys, nullValues);
     }
 
 }

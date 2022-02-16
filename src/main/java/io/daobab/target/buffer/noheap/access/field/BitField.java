@@ -1,8 +1,12 @@
 package io.daobab.target.buffer.noheap.access.field;
 
 import io.daobab.model.TableColumn;
+import io.daobab.result.predicate.WherePredicate;
+import io.daobab.statement.condition.Operator;
 
 import java.nio.ByteBuffer;
+import java.util.Comparator;
+import java.util.function.Function;
 
 public interface BitField<T> {
 
@@ -13,6 +17,10 @@ public interface BitField<T> {
     Class<T> getClazz();
 
     int calculateSpace(TableColumn column);
+
+    Comparator<? super T> comparator();
+
+    Function<T, WherePredicate<T>> getPredicate(Operator operator);
 
 
 }

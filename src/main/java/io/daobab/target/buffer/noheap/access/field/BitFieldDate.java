@@ -4,9 +4,10 @@ import io.daobab.model.TableColumn;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Date;
 
-public class BitFieldDate implements BitField<Date> {
+public class BitFieldDate extends BitFieldComparable<Date> {
 
     public BitFieldDate(TableColumn tableColumn) {
     }
@@ -17,8 +18,8 @@ public class BitFieldDate implements BitField<Date> {
             byteBuffer.put(position, (byte) 1);
             Instant instant = val.toInstant();
 
-            byteBuffer.putLong(position + BitSize.CHECK_NULL, instant.getEpochSecond());
-            byteBuffer.putInt(position + BitSize.CHECK_NULL + BitSize.LONG, instant.getNano());
+            byteBuffer.putLong(position + BitSize.NULL, instant.getEpochSecond());
+            byteBuffer.putInt(position + BitSize.NULL + BitSize.LONG, instant.getNano());
             return;
         }
         byteBuffer.put(position, (byte) 0);
@@ -29,8 +30,8 @@ public class BitFieldDate implements BitField<Date> {
         if (byteBuffer.get(position) == 0) {
             return null;
         }
-        Instant instant = Instant.ofEpochSecond((byteBuffer.getLong(position + BitSize.CHECK_NULL)));
-        return Date.from(instant.plusNanos(byteBuffer.getInt(position + BitSize.CHECK_NULL + BitSize.LONG)));
+        Instant instant = Instant.ofEpochSecond((byteBuffer.getLong(position + BitSize.NULL)));
+        return Date.from(instant.plusNanos(byteBuffer.getInt(position + BitSize.NULL + BitSize.LONG)));
     }
 
     @Override
@@ -40,7 +41,19 @@ public class BitFieldDate implements BitField<Date> {
 
     @Override
     public int calculateSpace(TableColumn column) {
-        return BitSize.CHECK_NULL + BitSize.DATE_UTIL;
+        return BitSize.NULL + BitSize.DATE_UTIL;
     }
 
+
+    @Override
+    public Comparator<? super Date> comparator() {
+        return (Comparator<Date>) (o1, o2) -> {
+            if (o1 != null && o2 != null) {
+                return o1.compareTo(o2);
+            }
+            if (o1 == null && o2 == null) return 0;
+            if (o1 != null) return -1;
+            return 1;
+        };
+    }
 }

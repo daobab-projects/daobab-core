@@ -7,17 +7,19 @@ import io.daobab.model.EntityRelation;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.where.base.Where;
 import io.daobab.target.buffer.noheap.NoHeapBuffer;
+import io.daobab.target.buffer.noheap.access.field.BitField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.function.Function;
 
 import static io.daobab.statement.where.base.WhereBase.OR;
 
 public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
 
-    protected final NoHeapBuffer<E> bufferEntityPointer;
+    protected final NoHeapBuffer<E> noHeapBuffer;
     protected transient Logger log = LoggerFactory.getLogger(this.getClass());
     protected Where wrapperWhere;
     protected List<Integer> skipSteps;
@@ -26,10 +28,10 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
     protected List<Integer> columnsBufferPositionInWhere = new LinkedList<>();
     protected List<Integer> columnsEntityPositionInWhere = new LinkedList<>();
 
-    public GeneralBitFieldWhereAnd(NoHeapBuffer<E> bufferEntityPointer, Where wrapperWhere, List<Integer> skipSteps) {
+    public GeneralBitFieldWhereAnd(NoHeapBuffer<E> noHeapBuffer, Where wrapperWhere, List<Integer> skipSteps) {
         this.wrapperWhere = wrapperWhere;
         this.skipSteps = skipSteps == null ? new LinkedList<>() : skipSteps;
-        this.bufferEntityPointer = bufferEntityPointer;
+        this.noHeapBuffer = noHeapBuffer;
 
         for (int i = 1; i < wrapperWhere.getCounter(); i++) {
 
@@ -48,9 +50,9 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
             }
 //            wrapperWhere.getKeyForPointer(i);
             Column<Entity, Object, EntityRelation> keyFromWrapper = (Column<Entity, Object, EntityRelation>) wrapperWhere.getKeyForPointer(i);
-            int columnOrder = bufferEntityPointer.getBufferPositionOfColumn(keyFromWrapper);
+            int columnOrder = noHeapBuffer.getBufferPositionOfColumn(keyFromWrapper);
             columnsBufferPositionInWhere.add(columnOrder);
-            columnsEntityPositionInWhere.add(bufferEntityPointer.getColumnIntoEntityPosition(keyFromWrapper));
+            columnsEntityPositionInWhere.add(noHeapBuffer.getColumnIntoEntityPosition(keyFromWrapper));
         }
 
     }
@@ -68,9 +70,8 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
                 continue;
             }
 
-
             //if at least one record into AND clause if false, entity doesn't match
-            if (!predicates.get(i).bitTest(bufferEntityPointer, entityPointer, columnsEntityPositionInWhere.get(i), columnsBufferPositionInWhere.get(i)))
+            if (!predicates.get(i).bitTest(noHeapBuffer, entityPointer, columnsEntityPositionInWhere.get(i), columnsBufferPositionInWhere.get(i)))
                 return false;
         }
 
@@ -78,14 +79,14 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
     }
 
     @Override
-    public boolean bitTest(NoHeapBuffer bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
+    public boolean bitTest(NoHeapBuffer buffer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
         for (int i = 0; i < predicates.size(); i++) {
 
             if (skipSteps.contains(i)) {
                 continue;
             }
 
-            if (!predicates.get(i).bitTest(bufferEntityPointer, entityPosition, columnsEntityPositionInWhere.get(i), columnsBufferPositionInWhere.get(i)))
+            if (!predicates.get(i).bitTest(buffer, entityPosition, columnsEntityPositionInWhere.get(i), columnsBufferPositionInWhere.get(i)))
                 return false;
         }
 
@@ -103,14 +104,20 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
             Where wrval = (Where) valueFromWrapper;
             String innerRelation = wrval.getRelationBetweenExpressions();
             if (OR.equals(innerRelation)) {
-                System.out.println("jest predicat OR");
-                return new GeneralBitFieldWhereOr<>(bufferEntityPointer, wrval, null);
+                return new GeneralBitFieldWhereOr<>(noHeapBuffer, wrval, null);
             }
             //for AND and NOT
-            System.out.println("jest predicat AND");
-            return new GeneralBitFieldWhereAnd<>(bufferEntityPointer, wrval, null);
+            return new GeneralBitFieldWhereAnd<>(noHeapBuffer, wrval, null);
         }
 
+        Object keyFromWrapper = wrapper.getKeyForPointer(i);
+
+        if (keyFromWrapper instanceof Column) {
+            BitField<?> bitField = noHeapBuffer.getBifFieldForColumn((Column) keyFromWrapper);
+            System.out.println("znalazlem bit field " + bitField.getClass().getName());
+            Function function = bitField.getPredicate(relation);
+            return (WherePredicate) function.apply(valueFromWrapper);
+        }
 
         boolean numeric = (valueFromWrapper instanceof Number);
         boolean datetime = false;

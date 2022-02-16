@@ -2,10 +2,12 @@ package io.daobab.target.buffer.noheap;
 
 import io.daobab.error.ByteBufferIOException;
 import io.daobab.error.DaobabEntityCreationException;
+import io.daobab.error.DaobabException;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesProvider;
 import io.daobab.target.buffer.noheap.access.field.BitField;
+import io.daobab.target.buffer.noheap.access.index.BitIndex;
 import io.daobab.target.buffer.noheap.index.BitBufferIndexBase;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.Entities;
@@ -33,6 +35,16 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
         if (entities != null) {
             entities.forEach(this::add);
         }
+
+        int columnNo = 0;
+        for (TableColumn tableColumn : columns) {
+            Optional<BitIndex> bb = bitFieldRegistry.createIndex(tableColumn, entities);
+            indexRepository[columnNo] = bb.orElse(null);
+            if (indexRepository[columnNo] != null) {
+                isIndexRepositoryEmpty = false;
+            }
+            columnNo++;
+        }
     }
 
     public NoHeapEntities(E entity) {
@@ -50,30 +62,29 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
         this.entityClass = (Class<E>) entity.getEntityClass();
         this.columns = entity.columns();
         List<TableColumn> columns = entity.columns();
-        columnOrderIntoEntityHashMap = new HashMap<>();
+        columnsOrder = new HashMap<>();
         columnsPositionsQueue = new Integer[columns.size()];
-        bitFieldOperations = new BitField[columns.size()];
+        bitFields = new BitField[columns.size()];
         indexRepository = new BitBufferIndexBase[columns.size()];
         int offsetCounter = 1;
-        int columnOrderIntoEntity = 0;
+        int columnNo = 0;
 
         for (TableColumn tableColumn : columns) {
             Column column = tableColumn.getColumn();
-            bitFieldOperations[columnOrderIntoEntity] = bitFieldRegistry.getBitFieldFor(tableColumn);
-            int fieldSize = bitFieldOperations[columnOrderIntoEntity].calculateSpace(tableColumn);
+            Optional<BitField<Object>> bitField = bitFieldRegistry.getBitFieldFor(tableColumn);
+            if (!bitField.isPresent()) {
+                throw new DaobabException(this, "Class %s is not registered in %s", column.getFieldClass(), bitFieldRegistry.getClass().getName());
+            }
+            bitFields[columnNo] = bitField.get();
+            int fieldSize = bitFields[columnNo].calculateSpace(tableColumn);
             if (!bitFieldRegistry.mayBeBitBuffered(column)) {
-                columnsPositionsQueue[columnOrderIntoEntity] = null;
-                columnOrderIntoEntity++;
-                continue;
+                throw new DaobabException("Column %s cannot be bitbuffered", column.getColumnName());
             }
-            columnsPositionsQueue[columnOrderIntoEntity] = offsetCounter;
-            columnOrderIntoEntityHashMap.put(column.getColumnName(), columnOrderIntoEntity);
-            indexRepository[columnOrderIntoEntity] = determineIndex(tableColumn);
-            if (indexRepository[columnOrderIntoEntity] != null) {
-                isIndexRepositoryEmpty = false;
-            }
+            columnsPositionsQueue[columnNo] = offsetCounter;
+            columnsOrder.put(column.getColumnName(), columnNo);
+
             offsetCounter = offsetCounter + fieldSize;
-            columnOrderIntoEntity++;
+            columnNo++;
         }
         totalEntitySpace = offsetCounter;
         pages = new ArrayList<>();
@@ -81,6 +92,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
 
         totalBufferSize = pages.size() * (totalEntitySpace << pageMaxCapacityBytes);
     }
+
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void remove(int position) {
@@ -96,7 +108,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
 
         for (TableColumn tableColumn : entityToRemove.columns()) {
             Column column = tableColumn.getColumn();
-            int pointer = columnOrderIntoEntityHashMap.get(column.getColumnName());
+            int pointer = columnsOrder.get(column.getColumnName());
 
             BitBufferIndexBase index = indexRepository[pointer];
             if (index != null) {
@@ -119,7 +131,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
 
         for (TableColumn tableColumn : entity.columns()) {
             Column column = tableColumn.getColumn();
-            Integer pointer = columnOrderIntoEntityHashMap.get(column.getColumnName());
+            Integer pointer = columnsOrder.get(column.getColumnName());
             Object value = column.getValueOf((EntityRelation) entity);
             if (pointer == null) {
                 Map<String, Object> additionalValues = additionalParameters.getOrDefault(entityLocation, new HashMap<>());
@@ -129,7 +141,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
             int posCol = rowAtPage * totalEntitySpace + columnsPositionsQueue[pointer];
 
             pages.get(page).position(0);
-            bitFieldOperations[pointer].writeValue(pages.get(page), posCol, value);
+            bitFields[pointer].writeValue(pages.get(page), posCol, value);
             BitBufferIndexBase index = indexRepository[pointer];
             if (index != null) {
                 index.addValue(value, entityLocation);
@@ -159,7 +171,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
                 continue;
             }
             pages.get(page).position(0);
-            rv.setValue(tableColumn, bitFieldOperations[cnt].readValue(pages.get(page), posEntity + posCol));
+            rv.setValue(tableColumn, bitFields[cnt].readValue(pages.get(page), posEntity + posCol));
             cnt++;
         }
         return rv;
@@ -189,7 +201,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
                 }
                 pageBuffer.position(0);
                 try {
-                    column.setValue((EntityRelation) rv, bitFieldOperations[cnt].readValue(pageBuffer, posEntity + posCol));
+                    column.setValue((EntityRelation) rv, bitFields[cnt].readValue(pageBuffer, posEntity + posCol));
                 } catch (Exception e) {
                     throw new ByteBufferIOException(tableColumn, e);
                 }
@@ -203,7 +215,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
     }
 
     public List<E> finalFilter(Query<E, ?, ?> query) {
-        List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
+        List<Integer> ids = finalFilter(filterByIndexes(null, query.getWhereWrapper()), query);
         return new NoHeapEntityList<>(this, ids);
     }
 
@@ -247,7 +259,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
     @Override
     public Plates readPlateList(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
-        List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
+        List<Integer> ids = finalFilter(filterByIndexes(null, query.getWhereWrapper()), query);
 
         List<TableColumn> col = query.getFields();
         List<TableColumn> col2 = new ArrayList<>(col.size());

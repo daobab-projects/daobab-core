@@ -3,8 +3,9 @@ package io.daobab.target.buffer.noheap.access.field;
 import io.daobab.model.TableColumn;
 
 import java.nio.ByteBuffer;
+import java.util.Comparator;
 
-public class BitFieldShortNotNull implements BitField<Short> {
+public class BitFieldShortNotNull extends BitFieldComparable<Short> {
 
     public BitFieldShortNotNull(TableColumn tableColumn) {
     }
@@ -29,5 +30,9 @@ public class BitFieldShortNotNull implements BitField<Short> {
         return BitSize.SHORT;
     }
 
+    @Override
+    public Comparator<? super Short> comparator() {
+        return Comparator.comparing(Short::valueOf);
+    }
 
 }

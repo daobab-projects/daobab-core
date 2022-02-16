@@ -5,7 +5,6 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.noheap.access.field.BitFieldDateNotNull;
 import io.daobab.target.buffer.noheap.access.field.BitSize;
 
-import java.util.Comparator;
 import java.util.Date;
 
 public class BitArrayDateNotNull extends BitArrayBaseNotNull<Date, BitFieldDateNotNull> {
@@ -29,11 +28,6 @@ public class BitArrayDateNotNull extends BitArrayBaseNotNull<Date, BitFieldDateN
     @Override
     public int getTypeSize() {
         return BitSize.DATE_UTIL;
-    }
-
-    @Override
-    public Comparator<? super Date> comparator() {
-        return Comparator.comparing(Date::getTime);
     }
 
     @Override

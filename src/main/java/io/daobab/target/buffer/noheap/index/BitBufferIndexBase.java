@@ -13,6 +13,7 @@ public interface BitBufferIndexBase<F> {
 
     Collection<Integer> filterNegative(Operator operator, Object key1);
 
+
     void addValue(F value, int pointer);
 
     boolean removeValue(F value, int pointer);

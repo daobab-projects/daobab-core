@@ -12,6 +12,7 @@ import java.util.Map;
  */
 public interface EntityMap extends Entity, Map<String, Object>, MapParameterHandler, JsonMarshaller {
 
+    @SuppressWarnings("unchecked")
     @Override
     default <X> X getColumnParam(String key) {
         return (X) get(key);
@@ -25,7 +26,7 @@ public interface EntityMap extends Entity, Map<String, Object>, MapParameterHand
 
     default void fixSerialisation() {
         for (TableColumn ecol : columns()) {
-            Column col = ecol.getColumn();
+            Column<?, ?, ?> col = ecol.getColumn();
             Object val = getColumnParam(col.getFieldName());
             if (val == null) continue;
 

@@ -23,11 +23,11 @@ public class TestBitIndexString {
         List<Integer> readNullValues = bitIndexLong.getNullValues();
         readNullValues.forEach(System.out::println);
         System.out.println("**** keys ****");
-        List<String> readKeys = bitIndexLong.getKeys();
+        Set<String> readKeys = bitIndexLong.getKeys();
         readKeys.forEach(System.out::println);
         System.out.println("**** key 'malgosia' values ****");
 
-        List<Integer> keysValues = bitIndexLong.getValuesForKey("malgosia");
+        List<Integer> keysValues = bitIndexLong.get("malgosia");
         keysValues.forEach(System.out::println);
 
         System.out.println("**** first key ****");

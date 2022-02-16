@@ -5,8 +5,9 @@ import io.daobab.model.TableColumn;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 
-public class BitFieldString implements BitField<String> {
+public class BitFieldString extends BitFieldComparable<String> {
 
     public BitFieldString(TableColumn tableColumn) {
 
@@ -18,8 +19,8 @@ public class BitFieldString implements BitField<String> {
         if (val != null) {
             byteBuffer.put(position, (byte) 1);
 
-            byteBuffer.putInt(position + BitSize.CHECK_NULL, val.length());
-            byteBuffer.position(position + BitSize.INT + BitSize.CHECK_NULL);
+            byteBuffer.putInt(position + BitSize.NULL, val.length());
+            byteBuffer.position(position + BitSize.INT + BitSize.NULL);
             byteBuffer.put(val.getBytes(StandardCharsets.UTF_8));
             return;
         }
@@ -33,9 +34,9 @@ public class BitFieldString implements BitField<String> {
         if (isNull == 0) {
             return null;
         }
-        byteBuffer.position(position + BitSize.CHECK_NULL);
+        byteBuffer.position(position + BitSize.NULL);
         byte[] read = new byte[byteBuffer.getInt()];
-        byteBuffer.position(position + BitSize.INT + BitSize.CHECK_NULL);
+        byteBuffer.position(position + BitSize.INT + BitSize.NULL);
         byteBuffer.get(read);
         return new String(read, StandardCharsets.UTF_8);
     }
@@ -55,4 +56,16 @@ public class BitFieldString implements BitField<String> {
         return BitSize.calculateStringSize(column.getSize(), true);
     }
 
+
+    @Override
+    public Comparator<? super String> comparator() {
+        return (Comparator<String>) (o1, o2) -> {
+            if (o1 != null && o2 != null) {
+                return o1.compareTo(o2);
+            }
+            if (o1 == null && o2 == null) return 0;
+            if (o1 != null) return -1;
+            return 1;
+        };
+    }
 }

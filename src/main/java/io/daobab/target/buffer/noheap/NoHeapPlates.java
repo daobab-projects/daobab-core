@@ -1,8 +1,10 @@
 package io.daobab.target.buffer.noheap;
 
+import io.daobab.error.DaobabException;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.target.buffer.noheap.access.field.BitField;
+import io.daobab.target.buffer.noheap.access.index.BitIndex;
 import io.daobab.target.buffer.noheap.index.BitBufferIndexBase;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.Entities;
@@ -19,14 +21,24 @@ import java.util.stream.Collectors;
 
 public class NoHeapPlates extends NoHeapBuffer<Plate> {
 
-    public NoHeapPlates(List<Plate> entities) {
-        this(entities, new BitFieldRegistry());
+    public NoHeapPlates(List<Plate> plates) {
+        this(plates, new BitFieldRegistry());
     }
 
-    public NoHeapPlates(List<Plate> entities, BitFieldRegistry bitFieldRegistry) {
-        this(entities == null || entities.isEmpty() ? null : entities.get(0), entities == null ? 8 : entities.size(), bitFieldRegistry);
-        if (entities != null) {
-            entities.forEach(this::add);
+    public NoHeapPlates(List<Plate> plates, BitFieldRegistry bitFieldRegistry) {
+        this(plates == null || plates.isEmpty() ? null : plates.get(0), plates == null ? 8 : plates.size(), bitFieldRegistry);
+        if (plates != null) {
+            plates.forEach(this::add);
+        }
+
+        int columnNo = 0;
+        for (TableColumn tableColumn : columns) {
+            Optional<BitIndex> bb = bitFieldRegistry.createIndex(tableColumn, plates);
+            indexRepository[columnNo] = bb.orElse(null);
+            if (indexRepository[columnNo] != null) {
+                isIndexRepositoryEmpty = false;
+            }
+            columnNo++;
         }
     }
 
@@ -43,30 +55,38 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
         adjustForCapacity(capacity);//1 << pageMaxCapacityBytes;
         this.columns = entity.columns();
         List<TableColumn> columns = entity.columns();
-        columnOrderIntoEntityHashMap = new HashMap<>();
+        columnsOrder = new HashMap<>();
         columnsPositionsQueue = new Integer[columns.size()];
-        bitFieldOperations = new BitField[columns.size()];
+        bitFields = new BitField[columns.size()];
         indexRepository = new BitBufferIndexBase[columns.size()];
         int offsetCounter = 1;
-        int columnOrderIntoEntity = 0;
+        int columnNo = 0;
 
-        for (TableColumn ecol : columns) {
-            Column<?, ?, ?> col = ecol.getColumn();
-            bitFieldOperations[columnOrderIntoEntity] = bitFieldRegistry.getBitFieldFor(ecol);
-            int fieldSize = bitFieldOperations[columnOrderIntoEntity].calculateSpace(ecol);
+        for (TableColumn tableColumn : columns) {
+            Column<?, ?, ?> col = tableColumn.getColumn();
+
+            Optional<BitField<Object>> bitField = bitFieldRegistry.getBitFieldFor(tableColumn);
+            if (!bitField.isPresent()) {
+                throw new DaobabException(this, "Class %s is not registered in %s", col.getFieldClass(), bitFieldRegistry.getClass().getName());
+            }
+            bitFields[columnNo] = bitField.get();
+            int fieldSize = bitFields[columnNo].calculateSpace(tableColumn);
+
             if (!bitFieldRegistry.mayBeBitBuffered(col)) {
-                columnsPositionsQueue[columnOrderIntoEntity] = null;
-                columnOrderIntoEntity++;
-                continue;
+                throw new DaobabException("Column %s cannot be bitbuffered", col.getColumnName());
+//                columnsPositionsQueue[columnOrderIntoEntity] = null;
+//                columnOrderIntoEntity++;
+//                continue;
             }
-            columnsPositionsQueue[columnOrderIntoEntity] = offsetCounter;
-            columnOrderIntoEntityHashMap.put(col.getColumnName(), columnOrderIntoEntity);
-            indexRepository[columnOrderIntoEntity] = determineIndex(ecol);
-            if (indexRepository[columnOrderIntoEntity] != null) {
-                isIndexRepositoryEmpty = false;
-            }
+
+            columnsPositionsQueue[columnNo] = offsetCounter;
+            columnsOrder.put(col.getColumnName(), columnNo);
+//            indexRepository[columnNo] = determineIndex(tableColumn);
+//            if (indexRepository[columnNo] != null) {
+//                isIndexRepositoryEmpty = false;
+//            }
             offsetCounter = offsetCounter + fieldSize;
-            columnOrderIntoEntity++;
+            columnNo++;
         }
         totalEntitySpace = offsetCounter;
         pages = new ArrayList<>();
@@ -89,7 +109,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
 
         for (TableColumn ecol : entityToRemove.columns()) {
             Column col = ecol.getColumn();
-            int pointer = columnOrderIntoEntityHashMap.get(col.getColumnName());
+            int pointer = columnsOrder.get(col.getColumnName());
 
             BitBufferIndexBase index = indexRepository[pointer];
             if (index != null) {
@@ -113,7 +133,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
 
         for (TableColumn ecol : entity.columns()) {
             Column col = ecol.getColumn();
-            Integer pointer = columnOrderIntoEntityHashMap.get(col.getColumnName());
+            Integer pointer = columnsOrder.get(col.getColumnName());
             Object value = col.getValueOf((EntityRelation) entity);
             if (pointer == null) {
                 Map<String, Object> additionalValues = additionalParameters.getOrDefault(entityLocation, new HashMap<>());
@@ -123,7 +143,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
             int posCol = rowAtPage * totalEntitySpace + columnsPositionsQueue[pointer];
 
             pages.get(page).position(0);
-            bitFieldOperations[pointer].writeValue(pages.get(page), posCol, value);
+            bitFields[pointer].writeValue(pages.get(page), posCol, value);
             BitBufferIndexBase index = indexRepository[pointer];
             if (index != null) {
                 index.addValue(value, entityLocation);
@@ -154,7 +174,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
                 continue;
             }
             pages.get(page).position(0);
-            rv.setValue(col, bitFieldOperations[cnt].readValue(pages.get(page), posEntity + posCol));
+            rv.setValue(col, bitFields[cnt].readValue(pages.get(page), posEntity + posCol));
             cnt++;
         }
         return rv;
@@ -181,14 +201,14 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
                 continue;
             }
             pageBuffer.position(0);
-            col.setValue((EntityRelation) rv, bitFieldOperations[cnt].readValue(pageBuffer, posEntity + posCol));
+            col.setValue((EntityRelation) rv, bitFields[cnt].readValue(pageBuffer, posEntity + posCol));
             cnt++;
         }
         return rv;
     }
 
     public List<Plate> finalFilter(Query<?, ?, ?> query) {
-        List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), query);
+        List<Integer> ids = finalFilter(filterByIndexes(null, query.getWhereWrapper()), query);
         List<Plate> rv = new NoHeapPlateList(this, ids, query.getFields());
         return rv;
     }
@@ -243,7 +263,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
     public Plates readPlateList(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         Query q = query;
-        List<Integer> ids = finalFilter(filterUsingIndexes(null, query.getWhereWrapper()), q);
+        List<Integer> ids = finalFilter(filterByIndexes(null, query.getWhereWrapper()), q);
 
         List<TableColumn> col = query.getFields();
         List<TableColumn> col2 = new ArrayList<>(col.size());

@@ -5,8 +5,6 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.noheap.access.field.BitFieldFloat;
 import io.daobab.target.buffer.noheap.access.field.BitSize;
 
-import java.util.Comparator;
-
 public class BitArrayFloat extends BitArrayBase<Float, BitFieldFloat> {
 
     private final BitFieldFloat instance;
@@ -27,7 +25,7 @@ public class BitArrayFloat extends BitArrayBase<Float, BitFieldFloat> {
 
     @Override
     public int getTypeSize() {
-        return BitSize.CHECK_NULL + BitSize.FLOAT;
+        return BitSize.NULL + BitSize.FLOAT;
     }
 
     @Override
@@ -35,9 +33,5 @@ public class BitArrayFloat extends BitArrayBase<Float, BitFieldFloat> {
         return Float[].class;
     }
 
-    @Override
-    public Comparator<? super Float> comparator() {
-        return Comparator.comparing(Float::valueOf);
-    }
 
 }

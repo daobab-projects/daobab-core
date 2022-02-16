@@ -6,7 +6,6 @@ import io.daobab.target.buffer.noheap.access.field.BitFieldTimestampNotNull;
 import io.daobab.target.buffer.noheap.access.field.BitSize;
 
 import java.sql.Timestamp;
-import java.util.Comparator;
 
 public class BitArrayTimestampNotNull extends BitArrayBaseNotNull<Timestamp, BitFieldTimestampNotNull> {
 
@@ -28,7 +27,7 @@ public class BitArrayTimestampNotNull extends BitArrayBaseNotNull<Timestamp, Bit
 
     @Override
     public int getTypeSize() {
-        return BitSize.TIMESTAMP_UTIL;
+        return BitSize.TIMESTAMP_SQL;
     }
 
     @Override
@@ -36,8 +35,4 @@ public class BitArrayTimestampNotNull extends BitArrayBaseNotNull<Timestamp, Bit
         return Timestamp[].class;
     }
 
-    @Override
-    public Comparator<? super Timestamp> comparator() {
-        return Comparator.comparing(Timestamp::getTime);
-    }
 }

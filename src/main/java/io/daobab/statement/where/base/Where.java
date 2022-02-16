@@ -632,4 +632,8 @@ public abstract class Where<W extends Where> extends WhereBase {
         return rv;
     }
 
+    public boolean hasRelation(String relation) {
+        return relation.equals(getRelationBetweenExpressions());
+    }
+
 }

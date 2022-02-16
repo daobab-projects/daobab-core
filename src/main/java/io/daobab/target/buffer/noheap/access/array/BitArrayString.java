@@ -5,16 +5,14 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.noheap.access.field.BitFieldString;
 import io.daobab.target.buffer.noheap.access.field.BitSize;
 
-import java.util.Comparator;
-
 public class BitArrayString extends BitArrayBase<String, BitFieldString> {
 
     private final BitFieldString instance;
-    private final int stringLength;
+    private final int fieldLength;
 
     public BitArrayString(final TableColumn tableColumn) {
         instance = new BitFieldString(tableColumn);
-        this.stringLength = tableColumn.getSize();
+        this.fieldLength = tableColumn.getSize();
     }
 
     @Override
@@ -29,7 +27,7 @@ public class BitArrayString extends BitArrayBase<String, BitFieldString> {
 
     @Override
     public int getTypeSize() {
-        return BitSize.CHECK_NULL + (stringLength * 6 + BitSize.INT + BitSize.CHECK_NULL);
+        return BitSize.NULL + (fieldLength * 6 + BitSize.INT + BitSize.NULL);
     }
 
     @Override
@@ -37,8 +35,4 @@ public class BitArrayString extends BitArrayBase<String, BitFieldString> {
         return String[].class;
     }
 
-    @Override
-    public Comparator<? super String> comparator() {
-        return Comparator.comparing(String::valueOf);
-    }
 }

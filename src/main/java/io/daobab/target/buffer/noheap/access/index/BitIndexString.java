@@ -9,10 +9,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
-public class BitIndexString extends AbstractBitIndex<String, BitFieldStringNotNull, BitIndexString> {
+public class BitIndexString extends BitIndex<String, BitFieldStringNotNull, BitIndexString> {
 
     private final int length;
-
 
     public BitIndexString(int length, SortedMap<String, Collection<Integer>> valueIndex, List<Integer> nullValues) {
         super(null, valueIndex, nullValues, new BitArrayStringNotNull(new SizeOnlyTableColumn(length)));
@@ -27,6 +26,17 @@ public class BitIndexString extends AbstractBitIndex<String, BitFieldStringNotNu
     @Override
     protected BitIndexString createInstance(final TableColumn tableColumn, SortedMap<String, Collection<Integer>> valueIndex, List<Integer> nullValues) {
         return new BitIndexString(tableColumn, valueIndex, nullValues);
+    }
+
+
+    protected BitIndexString(BitIndexString original, TableColumn tableColumn, Collection<String> keys, boolean nullValues) {
+        super(original, tableColumn, keys, nullValues);
+        this.length = original.length;
+    }
+
+    @Override
+    protected BitIndexString createSubIndex(BitIndexString original, TableColumn tableColumn, Collection<String> keys, boolean nullValues) {
+        return new BitIndexString(original, tableColumn, keys, nullValues);
     }
 
 }

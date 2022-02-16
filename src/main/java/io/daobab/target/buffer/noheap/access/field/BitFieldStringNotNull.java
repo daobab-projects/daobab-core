@@ -4,10 +4,11 @@ import io.daobab.model.TableColumn;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 
-public class BitFieldStringNotNull implements BitField<String> {
+public class BitFieldStringNotNull extends BitFieldComparable<String> {
 
-    int length;
+    private final int length;
 
     public BitFieldStringNotNull(TableColumn tableColumn) {
         this.length = tableColumn.getSize();
@@ -28,6 +29,7 @@ public class BitFieldStringNotNull implements BitField<String> {
     public String readValue(ByteBuffer byteBuffer, Integer position) {
         byteBuffer.position(position);
         byte[] read = new byte[byteBuffer.getInt()];
+
         byteBuffer.position(position + BitSize.INT);
         byteBuffer.get(read);
         return new String(read, StandardCharsets.UTF_8);
@@ -43,4 +45,16 @@ public class BitFieldStringNotNull implements BitField<String> {
         return (length * 6) + BitSize.INT;
     }
 
+
+    @Override
+    public Comparator<? super String> comparator() {
+        return (Comparator<String>) (o1, o2) -> {
+            if (o1 != null && o2 != null) {
+                return o1.compareTo(o2);
+            }
+            if (o1 == null && o2 == null) return 0;
+            if (o1 != null) return -1;
+            return 1;
+        };
+    }
 }

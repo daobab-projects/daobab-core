@@ -5,8 +5,6 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.noheap.access.field.BitFieldDoubleNotNull;
 import io.daobab.target.buffer.noheap.access.field.BitSize;
 
-import java.util.Comparator;
-
 public class BitArrayDoubleNotNull extends BitArrayBaseNotNull<Double, BitFieldDoubleNotNull> {
 
     private final BitFieldDoubleNotNull instance;
@@ -34,11 +32,6 @@ public class BitArrayDoubleNotNull extends BitArrayBaseNotNull<Double, BitFieldD
     @Override
     public Class<Double[]> getClazz() {
         return Double[].class;
-    }
-
-    @Override
-    public Comparator<? super Double> comparator() {
-        return Comparator.comparing(Double::valueOf);
     }
 
 }
