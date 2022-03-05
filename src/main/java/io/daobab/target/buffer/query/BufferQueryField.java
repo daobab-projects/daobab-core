@@ -9,11 +9,14 @@ import io.daobab.model.dummy.DummyColumnTemplate;
 import io.daobab.query.base.QueryType;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.result.FieldsProvider;
+import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.function.type.DummyColumnRelation;
 import io.daobab.statement.inner.InnerQueryFields;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.buffer.BufferQueryTarget;
+import io.daobab.target.buffer.function.BufferFunctionManager;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,10 +30,23 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
     private BufferQueryField() {
     }
 
+    HashMap<Integer, ColumnFunction<?, ?, ?, ?>> functionMap = new HashMap<>();
+
     public BufferQueryField(BufferQueryTarget target, Column<E, F, ?> column) {
         if (column == null) throw new ColumnMandatory();
         init(target, column.getInstance());
-        fields.add(getInfoColumn(column));
+
+        if (column instanceof ColumnFunction) {
+            ColumnFunction function = (ColumnFunction<?, ?, ?, ?>) column;
+
+            fields.add(getInfoColumn(function.getFinalColumn()));
+//            column = function.getFinalColumn();
+            functionMap.put(0, function);
+        } else {
+            fields.add(getInfoColumn(column));
+        }
+
+
     }
 
     public BufferQueryField(BufferQueryTarget target, Map<String, Object> remote) {
@@ -62,7 +78,8 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
 
     @Override
     public List<F> findMany() {
-        return getTarget().readFieldList(modifyQuery(this));
+        List<F> rv = getTarget().readFieldList(modifyQuery(this));
+        return (List<F>) new BufferFunctionManager().applyFunctionsField(rv, functionMap);
     }
 
     @Override

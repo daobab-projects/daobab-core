@@ -16,15 +16,16 @@ import java.util.Map;
  */
 public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> implements Column<E, C, R> {
 
-    public static String KEY_VALUES = "VALUES";
-    public static String BEFORE_COL3 = "BEFORE_COL3";
-    public static String BEFORE_COL2 = "BEFORE_COL2";
-    public static String BEFORE_COL = "BEFORE_COL";
-    public static String AFTER_COL = "AFTER_COL";
-    public static String AFTER_COL2 = "AFTER_COL2";
-    public static String AFTER_COL3 = "AFTER_COL3";
-    public static String AFTER_COL4 = "AFTER_COL4";
-    public static String KEY_ARGUMENT = "ARGUMENT";
+    public static final String KEY_VALUES = "VALUES";
+    public static final String BEFORE_COL3 = "BEFORE_COL3";
+    public static final String BEFORE_COL2 = "BEFORE_COL2";
+    public static final String BEFORE_COL = "BEFORE_COL";
+    public static final String AFTER_COL = "AFTER_COL";
+    public static final String AFTER_COL2 = "AFTER_COL2";
+    public static final String AFTER_COL3 = "AFTER_COL3";
+    public static final String AFTER_COL4 = "AFTER_COL4";
+    public static final String KEY_ARGUMENT = "ARGUMENT";
+    @SuppressWarnings("rawtypes")
     protected static Column dummy = DummyColumnTemplate.dummyColumn("dummy");
     private final E thisEntity;
     public String identifier;
@@ -38,8 +39,9 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
     private String columnName;
     private String fieldName;
     private boolean noParameter = false;
+    private boolean parentFunction = false;
 
-
+    @SuppressWarnings("unchecked")
     public ColumnFunction(String mode, Class<C> functionClass) {
         setMode(mode);
         columnClass = functionClass;
@@ -57,10 +59,12 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
         setKeyValue(KEY_VALUES, argument);
     }
 
+    @SuppressWarnings("unchecked")
     public ColumnFunction(String mode) {
         this(dummy, mode);
     }
 
+    @SuppressWarnings("unchecked")
     public ColumnFunction(Column<E, F, R> column, String mode) {
         setMode(mode);
         columnName = column.getColumnName();
@@ -68,8 +72,10 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
         columnClass = (Class<C>) column.getFieldClass();
         thisEntity = column.getInstance();
         this.column = column;
+        this.parentFunction = column instanceof ColumnFunction;
     }
 
+    @SuppressWarnings("unchecked")
     public ColumnFunction(ColumnOrQuery<E, F, R> col, String mode) {
         setMode(mode);
         if (col instanceof Column) {
@@ -79,6 +85,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
             columnClass = (Class<C>) column.getFieldClass();
             thisEntity = column.getInstance();
             this.column = column;
+            this.parentFunction = column instanceof ColumnFunction;
         } else {
             Query<E, ?, ?> query = (Query<E, ?, ?>) col;
             this.query = query;
@@ -88,7 +95,6 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
         }
     }
 
-
     public ColumnFunction(Column<E, F, R> column, String mode, Class<C> functionClass) {
         if (column == null) throw new MandatoryFunctionParameter(mode);
         setMode(mode);
@@ -97,9 +103,10 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
         columnClass = functionClass;
         thisEntity = column.getInstance();
         this.column = column;
+        this.parentFunction = column instanceof ColumnFunction;
     }
 
-
+    @SuppressWarnings("unchecked")
     public ColumnFunction(ColumnOrQuery<E, F, R> col, String mode, Class<C> functionClass) {
         if (col == null) throw new MandatoryFunctionParameter(mode);
         setMode(mode);
@@ -110,15 +117,15 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
             columnClass = functionClass;
             thisEntity = column.getInstance();
             this.column = column;
+            this.parentFunction = column instanceof ColumnFunction;
         } else {
-            Query<E, ?, ?> query = (Query<E, ?, ?>) col;
-            this.query = query;
+            this.query = (Query<E, ?, ?>) col;
             columnClass = functionClass;
             thisEntity = (E) dummy.getInstance();
         }
-
     }
 
+    @SuppressWarnings("unchecked")
     public ColumnFunction(String columnIdentifier, String mode, Class<C> functionClass) {
         if (columnIdentifier == null) throw new MandatoryFunctionParameter(mode);
         setMode(mode);
@@ -127,6 +134,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
         this.thisEntity = (E) dummy.getInstance();
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public ColumnFunction(String mode, Class<C> functionClass, String mediator, Column... columns) {
         setMode(mode);
         columnClass = functionClass;
@@ -135,6 +143,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
         this.mediator = mediator;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public ColumnFunction(String mode, Class<C> functionClass, Column... columns) {
         setMode(mode);
         columnClass = functionClass;
@@ -142,6 +151,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
         this.columns = columns;
     }
 
+    @SuppressWarnings("unchecked")
     public ColumnFunction(String mode, Class<C> functionClass, Object... values) {
         setMode(mode);
         columnClass = functionClass;
@@ -170,6 +180,7 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     public <N> ColumnFunction<E, F, R, N> cast(Class<N> clazz) {
         ColumnFunction<E, F, R, N> rv = (ColumnFunction<E, F, R, N>) this;
         rv.columnClass = clazz;
@@ -246,5 +257,24 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
 
     public void setNoParameter(boolean noParameter) {
         this.noParameter = noParameter;
+    }
+
+    public Column getFinalColumn() {
+        if (!hasChild()) {
+            return column;
+        }
+        ColumnFunction columnFunction = (ColumnFunction) column;
+        return columnFunction.getFinalColumn();
+    }
+
+    public boolean hasChild() {
+        return parentFunction;
+    }
+
+    public ColumnFunction getChild() {
+        if (!hasChild()) {
+            return null;
+        }
+        return (ColumnFunction) column;
     }
 }

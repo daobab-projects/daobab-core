@@ -37,11 +37,23 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
             setValue(tableColumn, tableColumn.getColumn().getValue((EntityRelation) entity));
         }
     }
+
     @SuppressWarnings("unchecked")
     public Plate(Plate plate) {
         this.fields = plate.columns();
         for (TableColumn tableColumn : fields) {
             setValue(tableColumn, plate.getValue(tableColumn.getColumn()));
+        }
+    }
+
+    public Plate(Plate plate, boolean quickCopy) {
+        this.fields = plate.columns();
+        if (quickCopy) {
+            putAll(plate);
+        } else {
+            for (TableColumn tableColumn : fields) {
+                setValue(tableColumn, plate.getValue(tableColumn.getColumn()));
+            }
         }
     }
 
@@ -159,31 +171,31 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
         return (E) getEntity(entity.getClass());
     }
 
-    public <F> void setValue(TableColumn c, F val) {
+    public <F> void setValue(TableColumn tableColumn, F val) {
         Map<String, Object> entityMap;
 
-        if (!this.containsKey(c.getColumn().getEntityName())) {
+        if (!this.containsKey(tableColumn.getColumn().getEntityName())) {
             entityMap = new HashMap<>();
-            put(c.getColumn().getEntityName(), entityMap);
+            put(tableColumn.getColumn().getEntityName(), entityMap);
         } else {
-            entityMap = get(c.getColumn().getEntityName());
+            entityMap = get(tableColumn.getColumn().getEntityName());
         }
 
-        entityMap.put(c.getColumn().getFieldName(), val);
+        entityMap.put(tableColumn.getColumn().getFieldName(), val);
     }
 
     @SuppressWarnings("rawtypes")
-    public <F> void setValue(Column c, F val) {
+    public <F> void setValue(Column column, F val) {
         Map<String, Object> entityMap;
 
-        if (!this.containsKey(c.getEntityName())) {
+        if (!this.containsKey(column.getEntityName())) {
             entityMap = new HashMap<>();
-            put(c.getEntityName(), entityMap);
+            put(column.getEntityName(), entityMap);
         } else {
-            entityMap = get(c.getEntityName());
+            entityMap = get(column.getEntityName());
         }
 
-        entityMap.put(c.getFieldName(), val);
+        entityMap.put(column.getFieldName(), val);
     }
 
     public FlatPlate toFlat() {

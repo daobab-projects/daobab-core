@@ -8,7 +8,9 @@ import io.daobab.query.base.QueryType;
 import io.daobab.result.FieldsBuffer;
 import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
+import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.target.buffer.BufferQueryTarget;
+import io.daobab.target.buffer.function.BufferFunctionManager;
 import io.daobab.target.buffer.single.Plates;
 
 import java.util.*;
@@ -47,18 +49,37 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         setSingleEntity(entities.length == 1);
     }
 
-    public BufferQueryPlate(BufferQueryTarget target, Column<? extends Entity, ?, ?>[] columndaos) {
+    HashMap<Integer, ColumnFunction<?, ?, ?, ?>> functionMap = new HashMap<>();
 
-        Column<?, ?, ?> fielddao = columndaos[0];
-        if (fielddao == null) throw new ColumnMandatory();
-        init(target, fielddao.getInstance());
+    public BufferQueryPlate(BufferQueryTarget target, Column<? extends Entity, ?, ?>[] columns) {
 
-        andColumn(fielddao);
+        Column<?, ?, ?> column;
+        if (columns[0] instanceof ColumnFunction) {
+            ColumnFunction function = (ColumnFunction<?, ?, ?, ?>) columns[0];
+
+            column = function.getFinalColumn();
+            functionMap.put(0, function);
+        } else {
+            column = columns[0];
+        }
+        if (column == null) throw new ColumnMandatory();
+        init(target, column.getInstance());
+
+        andColumn(column);
 
         Set<String> entities = new HashSet<>();
-        for (int i = 1; i < columndaos.length; i++) {
-            getFields().add(getInfoColumn(columndaos[i]));
-            entities.add(columndaos[i].getEntityName());
+        for (int i = 1; i < columns.length; i++) {
+            if (columns[i] instanceof ColumnFunction) {
+                ColumnFunction function = (ColumnFunction) columns[i];
+                functionMap.put(i, function);
+                Column functionFinalColumn = function.getFinalColumn();
+                getFields().add(getInfoColumn(functionFinalColumn));
+                entities.add(functionFinalColumn.getEntityName());
+            } else {
+                getFields().add(getInfoColumn(columns[i]));
+                entities.add(columns[i].getEntityName());
+            }
+
         }
         setSingleEntity(entities.size() == 1);
     }
@@ -108,7 +129,9 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
 
     @Override
     public Plates findMany() {
-        return getTarget().readPlateList(modifyQuery(this));
+        Plates plates = getTarget().readPlateList(modifyQuery(this));
+        return new BufferFunctionManager().applyFunctions(plates, functionMap);
+
     }
 
     @Override
