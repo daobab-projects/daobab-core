@@ -1,6 +1,6 @@
 package io.daobab.target.buffer.single;
 
-import io.daobab.converter.JsonListHandler;
+import io.daobab.converter.JsonHandler;
 import io.daobab.model.Entity;
 import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesProvider;
@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public interface Entities<E extends Entity> extends EntitiesProvider<E>, Serializable, List<E>, Target, Cloneable, JsonListHandler, BufferQueryTarget {
+public interface Entities<E extends Entity> extends EntitiesProvider<E>, Serializable, List<E>, Target, Cloneable, JsonHandler, BufferQueryTarget {
 
     default E findOne() {
         return findFirst().orElse(null);

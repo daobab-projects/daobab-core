@@ -1,10 +1,7 @@
 package io.daobab.target.buffer.single;
 
-import io.daobab.converter.JsonListHandler;
-import io.daobab.model.Column;
-import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
-import io.daobab.model.Plate;
+import io.daobab.converter.JsonHandler;
+import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.target.buffer.query.BufferQueryPlate;
@@ -18,13 +15,15 @@ import java.util.stream.Collectors;
  *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public interface Plates extends Serializable, List<Plate>, Cloneable, JsonListHandler, BufferQueryTarget {
+public interface Plates extends Serializable, List<Plate>, Cloneable, JsonHandler, BufferQueryTarget {
 
     Plates findMany();
 
     Optional<Plate> findFirst();
 
     Plates calculateIndexes();
+
+    Plates sanitise(List<TableColumn> tableColumns);
 
     long countAny();
 

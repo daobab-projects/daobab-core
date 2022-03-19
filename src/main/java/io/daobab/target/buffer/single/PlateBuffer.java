@@ -7,6 +7,7 @@ import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.statement.condition.Limit;
 import io.daobab.statement.condition.base.OrderComparatorPlate;
+import io.daobab.target.buffer.function.BufferFunctionManager;
 import io.daobab.target.buffer.noheap.PlateBufferIndexed;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
@@ -43,7 +44,11 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     public PlateBuffer() {
     }
 
-    public PlateBuffer(List<Plate> entities) {
+    public PlateBuffer(List<Plate> plateList) {
+        super(plateList);
+    }
+
+    public PlateBuffer(Entities<?> entities) {
         super(entities);
     }
 
@@ -98,11 +103,13 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     @SuppressWarnings({"unchecked", "rawtypes"})
     private <E extends Entity, R extends EntityRelation> PlateBuffer resultPlateList(BufferQueryPlate query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        PlateBuffer matched = new PlateBuffer(filter((Query<E, ?, ?>) query));
+        Plates matched = new PlateBuffer(filter((Query<E, ?, ?>) query));
         if (matched.isEmpty()) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return new PlateBuffer();
         }
+
+        matched = new BufferFunctionManager().applyFunctions(matched, query.getFunctionMap());
 
         List<Plate> results = new ArrayList<>();
         Plates elements = matched.orderAndLimit(query);
@@ -126,17 +133,17 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     @SuppressWarnings("unchecked")
     private <E extends Entity, R extends EntityRelation, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        PlateBuffer matched = new PlateBuffer(filter(query));
+        Plates matched = new PlateBuffer(filter(query));
         if (matched.isEmpty()) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return new ArrayList<>();
         }
+        matched = new BufferFunctionManager().applyFunctions(matched, query.getFunctionMap());
         Plates elements = matched.orderAndLimit(query);
         Column<E, F, R> firstColumn = query.getFields().get(0).getColumn();
         List<F> results = elements.stream().map(e -> firstColumn.getValueOf((R) e)).collect(Collectors.toList());
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
         return results;
-
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -296,6 +303,18 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     @Override
     public Plates calculateIndexes() {
         return null;
+    }
+
+    @Override
+    public Plates sanitise(List<TableColumn> tableColumns) {
+        if (isEmpty()) {
+            return this;
+        }
+        Plate template = new Plate(tableColumns);
+        for (Plate plate : this) {
+            plate.maskPlate(template);
+        }
+        return this;
     }
 
     @Override

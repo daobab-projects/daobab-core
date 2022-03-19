@@ -14,7 +14,6 @@ import io.daobab.statement.function.type.DummyColumnRelation;
 import io.daobab.statement.inner.InnerQueryFields;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.buffer.BufferQueryTarget;
-import io.daobab.target.buffer.function.BufferFunctionManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,14 +29,14 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
     private BufferQueryField() {
     }
 
-    HashMap<Integer, ColumnFunction<?, ?, ?, ?>> functionMap = new HashMap<>();
+    private final Map<Integer, ColumnFunction<?, ?, ?, ?>> functionMap = new HashMap<>();
 
     public BufferQueryField(BufferQueryTarget target, Column<E, F, ?> column) {
         if (column == null) throw new ColumnMandatory();
         init(target, column.getInstance());
 
         if (column instanceof ColumnFunction) {
-            ColumnFunction function = (ColumnFunction<?, ?, ?, ?>) column;
+            ColumnFunction<?, ?, ?, ?> function = (ColumnFunction<?, ?, ?, ?>) column;
 
             fields.add(getInfoColumn(function.getFinalColumn()));
 //            column = function.getFinalColumn();
@@ -78,8 +77,8 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
 
     @Override
     public List<F> findMany() {
-        List<F> rv = getTarget().readFieldList(modifyQuery(this));
-        return (List<F>) new BufferFunctionManager().applyFunctionsField(rv, functionMap);
+        return getTarget().readFieldList(modifyQuery(this));
+//        return (List<F>) new BufferFunctionManager().applyFunctionsField(rv, functionMap);
     }
 
     @Override
@@ -87,4 +86,7 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
         return QueryType.FIELD;
     }
 
+    public Map<Integer, ColumnFunction<?, ?, ?, ?>> getFunctionMap() {
+        return functionMap;
+    }
 }

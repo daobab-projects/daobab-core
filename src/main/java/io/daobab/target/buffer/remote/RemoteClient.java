@@ -1,7 +1,7 @@
 package io.daobab.target.buffer.remote;
 
+import io.daobab.error.ReadRemoteException;
 import io.daobab.error.RemoteDaobabException;
-import io.daobab.error.RemoteReadingException;
 import io.daobab.error.RemoteTargetCanNotHandleOpenedTransactionException;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityMap;
@@ -72,7 +72,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
 
             return new EntityList<>(rv, query.getEntityClass());
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -89,7 +89,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
             rv.putAll((Map<String, Object>) response.getContent());
             return (E) rv;
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -120,10 +120,10 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
         if (Integer.parseInt(response.getStatus()) < 0) {
             throw new RemoteDaobabException(response);
         }
-        List<Map<String, Map<String, Object>>> listmap = (List<Map<String, Map<String, Object>>>) response.getContent();
+        List<Map<String, Map<String, Object>>> listMap = (List<Map<String, Map<String, Object>>>) response.getContent();
         List<Plate> rv = new LinkedList<>();
         try {
-            for (Map<String, Map<String, Object>> map : listmap) {
+            for (Map<String, Map<String, Object>> map : listMap) {
                 Plate entity = new Plate();
                 entity.putAll(map);
                 rv.add(entity);
@@ -131,7 +131,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
 
             return new PlateBuffer(rv);
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -147,7 +147,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
             rv.putAll((Map<String, Map<String, Object>>) response.getContent());
             return rv;
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -161,7 +161,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
         try {
             return (Integer) response.getContent();
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -175,7 +175,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
         try {
             return (Integer) response.getContent();
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -190,7 +190,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
         try {
             return (E) response.getContent();
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 

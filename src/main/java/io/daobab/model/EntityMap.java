@@ -1,6 +1,6 @@
 package io.daobab.model;
 
-import io.daobab.converter.JsonMarshaller;
+import io.daobab.converter.JsonHandler;
 import io.daobab.parser.ParserNumber;
 
 import java.math.BigDecimal;
@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public interface EntityMap extends Entity, Map<String, Object>, MapParameterHandler, JsonMarshaller {
+public interface EntityMap extends Entity, Map<String, Object>, MapParameterHandler, JsonHandler {
 
     @SuppressWarnings("unchecked")
     @Override

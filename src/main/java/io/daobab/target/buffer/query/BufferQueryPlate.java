@@ -10,7 +10,6 @@ import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.target.buffer.BufferQueryTarget;
-import io.daobab.target.buffer.function.BufferFunctionManager;
 import io.daobab.target.buffer.single.Plates;
 
 import java.util.*;
@@ -20,10 +19,12 @@ import java.util.stream.Collectors;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryPlate> implements FieldsProvider, QueryJoin<BufferQueryPlate> {
 
     private boolean singleEntity = false;
+
+    private final HashMap<Integer, ColumnFunction<?, ?, ?, ?>> functionMap = new HashMap<>();
 
     public BufferQueryPlate(BufferQueryTarget target, Map<String, Object> remote) {
         fromRemote(target, remote);
@@ -49,8 +50,6 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         setSingleEntity(entities.length == 1);
     }
 
-    HashMap<Integer, ColumnFunction<?, ?, ?, ?>> functionMap = new HashMap<>();
-
     public BufferQueryPlate(BufferQueryTarget target, Column<? extends Entity, ?, ?>[] columns) {
 
         Column<?, ?, ?> column;
@@ -70,9 +69,9 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         Set<String> entities = new HashSet<>();
         for (int i = 1; i < columns.length; i++) {
             if (columns[i] instanceof ColumnFunction) {
-                ColumnFunction function = (ColumnFunction) columns[i];
+                ColumnFunction<?, ?, ?, ?> function = (ColumnFunction<?, ?, ?, ?>) columns[i];
                 functionMap.put(i, function);
-                Column functionFinalColumn = function.getFinalColumn();
+                Column<?, ?, ?> functionFinalColumn = function.getFinalColumn();
                 getFields().add(getInfoColumn(functionFinalColumn));
                 entities.add(functionFinalColumn.getEntityName());
             } else {
@@ -87,10 +86,10 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
     @SuppressWarnings("rawtypes")
     public BufferQueryPlate(BufferQueryTarget target, List<? extends Column> columndaos) {
 
-        Column<?, ?, ?> fielddao = columndaos.get(0);
-        if (fielddao == null) throw new ColumnMandatory();
-        init(target, fielddao.getInstance());
-        andColumn(fielddao);
+        Column<?, ?, ?> field = columndaos.get(0);
+        if (field == null) throw new ColumnMandatory();
+        init(target, field.getInstance());
+        andColumn(field);
 
         Set<String> entities = new HashSet<>();
         for (int i = 1; i < columndaos.size(); i++) {
@@ -129,9 +128,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
 
     @Override
     public Plates findMany() {
-        Plates plates = getTarget().readPlateList(modifyQuery(this));
-        return new BufferFunctionManager().applyFunctions(plates, functionMap);
-
+        return getTarget().readPlateList(modifyQuery(this));
     }
 
     @Override
@@ -173,6 +170,10 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
     @Override
     public QueryType getQueryType() {
         return QueryType.PLATE;
+    }
+
+    public Map<Integer, ColumnFunction<?, ?, ?, ?>> getFunctionMap() {
+        return functionMap;
     }
 
 }

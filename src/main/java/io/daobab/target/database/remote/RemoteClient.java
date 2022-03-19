@@ -1,7 +1,7 @@
 package io.daobab.target.database.remote;
 
+import io.daobab.error.ReadRemoteException;
 import io.daobab.error.RemoteDaobabException;
-import io.daobab.error.RemoteReadingException;
 import io.daobab.error.RemoteTargetCanNotHandleOpenedTransactionException;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
@@ -69,7 +69,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
 
             return new EntityList<>(rv, query.getEntityClass());
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -86,7 +86,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
             rv.putAll((Map<String, Object>) response.getContent());
             return (E) rv;
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -128,7 +128,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
 
             return new PlateBuffer(rv);
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -144,7 +144,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
             rv.putAll((Map<String, Map<String, Object>>) response.getContent());
             return rv;
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -158,7 +158,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         try {
             return (Integer) response.getContent();
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -172,7 +172,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         try {
             return (Integer) response.getContent();
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 
@@ -187,7 +187,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         try {
             return (E) response.getContent();
         } catch (Exception e) {
-            throw new RemoteReadingException(e);
+            throw new ReadRemoteException(e);
         }
     }
 

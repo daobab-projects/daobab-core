@@ -9,6 +9,7 @@ import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesBufferIndexed;
 import io.daobab.statement.condition.Limit;
 import io.daobab.statement.condition.base.OrderComparator;
+import io.daobab.target.buffer.function.BufferFunctionManager;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.protection.AccessProtector;
@@ -99,7 +100,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <R extends EntityRelation> PlateBuffer resultPlates(BufferQueryPlate query) {
+    private <R extends EntityRelation> Plates resultPlates(BufferQueryPlate query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         EntityList<E> matched = new EntityList<>(filter((Query<E, ?, ?>) query), (Class<E>) query.getEntityClass());
 
@@ -108,22 +109,18 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
             return new PlateBuffer();
         }
 
-        List<Plate> results = new ArrayList<>();
+        Plates results = new PlateBuffer(matched);
 
-        for (E entity : matched.orderAndLimit((Query<E, ?, ?>) query)) {
-            Plate plate = new Plate(query.getFields());
-            for (TableColumn tableColumn : query.getFields()) {
-                plate.setValue(tableColumn, tableColumn.getColumn().getValueOf((R) entity));
-            }
-            results.add(plate);
-        }
+        results = new BufferFunctionManager().applyFunctions(results, query.getFunctionMap());
+        results = results.orderAndLimit(query);
+        results = results.sanitise(query.getFields());
 
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
-        return new PlateBuffer(results);
+        return results;
     }
 
     private Plate readPlateFromBuffer(BufferQueryPlate query) {
-        PlateBuffer proj = resultPlates(query);
+        Plates proj = resultPlates(query);
         return proj.isEmpty() ? null : proj.get(0);
     }
 
@@ -214,13 +211,13 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @Override
-    public PlateBuffer readPlateList(BufferQueryPlate query) {
+    public Plates readPlateList(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         if (!query.isSingleEntity()) {
             throw new BufferedOperationAllowedOnlyForSingleEntityColumns();
         }
-        PlateBuffer rv = resultPlates(query);
+        Plates rv = resultPlates(query);
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, rv.size());
         return rv;
     }

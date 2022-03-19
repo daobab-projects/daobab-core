@@ -32,8 +32,8 @@ public class OrderComparatorPlate implements Comparator<Plate> {
 
         for (OrderField<?, ?, ?> fo : getOrderList()) {
 
-            Object v1 = ((OrderField<?, ?, EntityRelation>) fo).getField().getValue((EntityRelation) o1);
-            Object v2 = ((OrderField<?, ?, EntityRelation>) fo).getField().getValue((EntityRelation) o2);
+            Object v1 = o1.getValue(((OrderField<?, ?, EntityRelation>) fo).getField());
+            Object v2 = o2.getValue(((OrderField<?, ?, EntityRelation>) fo).getField());
 
             int result = 0;
             if (v1 instanceof Number) {

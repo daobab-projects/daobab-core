@@ -1,6 +1,6 @@
 package io.daobab.model;
 
-import io.daobab.converter.JsonMapHierarchicalHandler;
+import io.daobab.converter.JsonHandler;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.error.ColumnMandatory;
 import io.daobab.error.DaobabException;
@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public class Plate extends HashMap<String, Map<String, Object>> implements JsonMapHierarchicalHandler, ColumnsProvider {
+public class Plate extends HashMap<String, Map<String, Object>> implements JsonHandler, ColumnsProvider {
 
     private transient List<TableColumn> fields;
 
@@ -236,14 +236,31 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonM
                 continue;
             }
 
-            Map<String,Object> otherPlateColumns=otherPlateEntry.getValue();
-            Map<String,Object> thisPlateColumns=get(otherPlateEntry.getKey());
+            Map<String, Object> otherPlateColumns = otherPlateEntry.getValue();
+            Map<String, Object> thisPlateColumns = get(otherPlateEntry.getKey());
 
-            for (Entry<String,Object> otherPlateColumn:otherPlateColumns.entrySet()){
+            for (Entry<String, Object> otherPlateColumn : otherPlateColumns.entrySet()) {
                 thisPlateColumns.putIfAbsent(otherPlateColumn.getKey(), otherPlateColumn.getValue());
             }
         }
     }
 
+    public void maskPlate(Plate mask) {
+        for (Entry<String, Map<String, Object>> otherPlateEntry : mask.entrySet()) {
+            if (!this.containsKey(otherPlateEntry.getKey())) {
+                remove(otherPlateEntry.getKey());
+                continue;
+            }
+
+            Map<String, Object> maskColumns = otherPlateEntry.getValue();
+            Map<String, Object> thisPlateColumns = get(otherPlateEntry.getKey());
+
+            for (Entry<String, Object> maskColumn : maskColumns.entrySet()) {
+                if (!thisPlateColumns.containsKey(maskColumn.getKey())) {
+                    thisPlateColumns.remove(otherPlateEntry.getKey());
+                }
+            }
+        }
+    }
 
 }

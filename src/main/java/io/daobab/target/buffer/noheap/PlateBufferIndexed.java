@@ -9,6 +9,7 @@ import io.daobab.result.predicate.GeneralWhereAndPlate;
 import io.daobab.result.predicate.GeneralWhereOrPlate;
 import io.daobab.statement.where.base.Where;
 import io.daobab.statement.where.base.WhereBase;
+import io.daobab.target.buffer.single.Entities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ import java.util.function.Predicate;
 
 public abstract class PlateBufferIndexed {
 
-    protected List<Plate> plateList;
+    protected final List<Plate> plateList;
     protected Logger log = LoggerFactory.getLogger(this.getClass());
     private boolean primaryKey = false;
 
@@ -34,6 +35,14 @@ public abstract class PlateBufferIndexed {
             setPrimaryKey(entity instanceof PrimaryKey);
         }
         plateList = entities;
+    }
+
+    protected <E extends Entity> PlateBufferIndexed(Entities<E> entities) {
+        plateList = new ArrayList<>(entities.size());
+        for (E entity : entities) {
+            Plate plate = new Plate(entity);
+            plateList.add(plate);
+        }
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

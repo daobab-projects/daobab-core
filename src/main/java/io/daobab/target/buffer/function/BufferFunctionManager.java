@@ -1,5 +1,6 @@
 package io.daobab.target.buffer.function;
 
+import io.daobab.error.DaobabException;
 import io.daobab.model.Plate;
 import io.daobab.statement.function.dictionary.DictFunctionBuffer;
 import io.daobab.statement.function.type.ColumnFunction;
@@ -63,30 +64,22 @@ public class BufferFunctionManager extends HashMap<String, BufferFunction> imple
             rvPlate.joinPlate(aggregatedPlate);
             rv = new PlateBuffer(Collections.singletonList(rvPlate));
         }
-
         return rv;
     }
 
-    public List<?> applyFunctionsField(List<?> plates, Map<Integer, ColumnFunction<?, ?, ?, ?>> map) {
+    public List applyFunctionsField(List<?> plates, Map<Integer, ColumnFunction<?, ?, ?, ?>> map) {
         if (map.isEmpty()) {
             return plates;
         }
 
         //at first, execute aggregated function on the entire buffer and collect the single results
         for (Map.Entry<Integer, ColumnFunction<?, ?, ?, ?>> entry : map.entrySet()) {
-            BufferFunction<?> bufferFunction = this.get(entry.getValue().getMode());
-            if (bufferFunction != null && bufferFunction.getType().equals(FunctionType.AGGREGATED)) {
-                return bufferFunction.executeField(this, plates, entry.getValue());
+            BufferFunction<?> bufferFunction = get(entry.getValue().getMode());
+            if (bufferFunction == null) {
+                throw new DaobabException("Cannot find handler for function %s", entry.getValue().getMode());
             }
+            return bufferFunction.executeField(this, plates, entry.getValue());
         }
-
-        for (Map.Entry<Integer, ColumnFunction<?, ?, ?, ?>> entry : map.entrySet()) {
-            BufferFunction<?> bufferFunction = this.get(entry.getValue().getMode());
-            if (bufferFunction != null && !bufferFunction.getType().equals(FunctionType.AGGREGATED)) {
-                return bufferFunction.executeField(this, plates, entry.getValue());
-            }
-        }
-
         return Collections.emptyList();
     }
 }
