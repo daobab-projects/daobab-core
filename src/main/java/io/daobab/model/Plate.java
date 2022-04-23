@@ -5,6 +5,7 @@ import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.error.ColumnMandatory;
 import io.daobab.error.DaobabException;
 import io.daobab.error.NullParameter;
+import io.daobab.statement.function.type.ColumnFunction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -46,6 +47,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
         }
     }
 
+    @SuppressWarnings("unchecked")
     public Plate(Plate plate, boolean quickCopy) {
         this.fields = plate.columns();
         if (quickCopy) {
@@ -75,6 +77,18 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
         Map<String, Object> entityMap = get(df.getEntityName());
         if (entityMap == null) return null;
         return (F) entityMap.get(df.getFieldName());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <F> F getFunctionValue(ColumnFunction<?, F, ?, ?> df) {
+        if (df == null) return null;
+        Map<String, Object> entityMap = get(df.getEntityName());
+        if (entityMap == null) return null;
+        if (df.identifier != null) {
+            return (F) entityMap.get(df.identifier);
+        } else {
+            return (F) entityMap.get(df.getFieldName());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -127,8 +141,8 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
     @SuppressWarnings("unchecked")
     public <F> F getValue(String fieldName) {
         if (fieldName == null) return null;
-        for (String entitykey : this.keySet()) {
-            Map<String, Object> entityMap = get(entitykey);
+        for (String entityKey : this.keySet()) {
+            Map<String, Object> entityMap = get(entityKey);
             if (entityMap.containsKey(fieldName)) {
                 return (F) entityMap.get(fieldName);
             }
@@ -139,8 +153,8 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
     @SuppressWarnings("unchecked")
     public <F> F getValueOrElse(String fieldName, F defaultValue) {
         if (fieldName == null) return defaultValue;
-        for (String entitykey : this.keySet()) {
-            Map<String, Object> entityMap = get(entitykey);
+        for (String entityKey : this.keySet()) {
+            Map<String, Object> entityMap = get(entityKey);
             if (entityMap.containsKey(fieldName)) {
                 return (F) entityMap.get(fieldName);
             }
@@ -173,6 +187,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
 
     public <F> void setValue(TableColumn tableColumn, F val) {
         Map<String, Object> entityMap;
+        if (tableColumn == null) return;
 
         if (!this.containsKey(tableColumn.getColumn().getEntityName())) {
             entityMap = new HashMap<>();

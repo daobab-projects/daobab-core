@@ -1,4 +1,4 @@
-package io.daobab.target.buffer.function.command;
+package io.daobab.target.buffer.function.command.date;
 
 import io.daobab.model.Plate;
 import io.daobab.statement.function.type.ColumnFunction;
@@ -7,36 +7,32 @@ import io.daobab.target.buffer.function.command.type.FunctionType;
 import io.daobab.target.buffer.single.Plates;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+public class CurrentDate extends BufferFunction<Date> {
 
-public class Length extends BufferFunction<String> {
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     protected Plates apply(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Plates rv = getClonedPlates(plates, false);
+        Date currDate = new Date();
         for (Plate plate : rv) {
-            String val = (String) plate.getValue(function.getFinalColumn());
-            if (val == null) {
-                plate.setValue(function, 0);
-            } else {
-                plate.setValue(function, val.length());
-            }
+            plate.setValue(function, currDate);
         }
         return rv;
     }
 
-
+    @SuppressWarnings("rawtypes")
     @Override
     protected List<Object> applyField(Map<String, BufferFunction> manager, List<?> plates, ColumnFunction<?, ?, ?, ?> function) {
         List<Object> rv = new ArrayList<>();
+        Date currDate = new Date();
         for (Object plate : plates) {
             if (plate != null) {
-                rv.add(0);
+                rv.add(currDate);
             } else {
-                rv.add(((String) plate).length());
+                rv.add(null);
             }
         }
         return rv;
@@ -47,8 +43,5 @@ public class Length extends BufferFunction<String> {
         return FunctionType.NORMAL;
     }
 
-    @Override
-    protected Collection<Class<?>> getSuitableTypes() {
-        return STRING_ONLY;
-    }
+
 }

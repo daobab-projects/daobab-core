@@ -5,10 +5,20 @@ import io.daobab.model.Dual;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 
+import java.util.Date;
+
 public interface DummyColumnTemplate {
 
     static Column<Dual, String, EntityRelation> dummyColumn(String name) {
         return createDummyColumn(new Dual(), String.class, name);
+    }
+
+    static Column<Dual, Date, EntityRelation> dummyDateColumn(String name) {
+        return createDummyColumn(new Dual(), Date.class, name);
+    }
+
+    static <E extends Entity> Column<E, Date, EntityRelation> dummyEntityDateColumn(E entity, String name) {
+        return createDummyColumn(entity, Date.class, name);
     }
 
     static <F> Column<Dual, F, EntityRelation> dummyColumn(String name, Class<F> clazz) {

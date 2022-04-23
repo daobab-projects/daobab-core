@@ -76,13 +76,13 @@ public interface Marschaller {
 
     }
 
-    static MarshalledEntity marschallEntity(Entity entity) {
+    static MarshalledEntity marshalEntity(Entity entity) {
         MarshalledEntity rv = new MarshalledEntity();
         rv.setEntityClass(entity.getClass().getSimpleName());
         return rv;
     }
 
-    static <E extends Entity> List<TableColumn> unMarschallColumns(Map<String, Object> map, Target target) {
+    static List<TableColumn> unMarshallColumns(Map<String, Object> map, Target target) {
         if (target == null) throw new TargetMandatoryException();
         if (map == null) throw new TargetMandatoryException();
         if (target.getTables() == null || target.getTables().isEmpty()) throw new NoEntitiesIntoTargetException(target);
@@ -94,7 +94,7 @@ public interface Marschaller {
             Object o = map.get("" + counter);
             counter++;
             if (o == null) return rv;
-            TableColumn col = unMarschallColumn((Map<String, Object>) o, target);
+            TableColumn col = unMarshallColumn((Map<String, Object>) o, target);
             if (col != null) {
                 rv.add(col);
             }
@@ -102,16 +102,16 @@ public interface Marschaller {
 
     }
 
-    static <E extends Entity> TableColumn unMarschallColumn(Map<String, Object> rv, Target target) {
+    static TableColumn unMarshallColumn(Map<String, Object> rv, Target target) {
         if (target == null) throw new TargetMandatoryException();
         if (target.getTables() == null || target.getTables().isEmpty()) throw new NoEntitiesIntoTargetException(target);
         String fieldName = (String) rv.get(DictRemoteKey.FIELD);
         String entityName = (String) rv.get(DictRemoteKey.ENTITY_NAME);
 
         Entity ent = fromRemote(target, entityName);
-
+        if (ent == null) return null;
         for (TableColumn ec : ent.columns()) {
-            Column c = ec.getColumn();
+            Column<?, ?, ?> c = ec.getColumn();
             if (c.getFieldName().equals(fieldName)) {
                 return ec;
             }

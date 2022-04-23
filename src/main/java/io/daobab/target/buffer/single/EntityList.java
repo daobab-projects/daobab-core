@@ -9,6 +9,7 @@ import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesBufferIndexed;
 import io.daobab.statement.condition.Limit;
 import io.daobab.statement.condition.base.OrderComparator;
+import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.target.buffer.function.BufferFunctionManager;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
@@ -24,10 +25,12 @@ import io.daobab.transaction.Propagation;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -40,10 +43,13 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     private static final long serialVersionUID = 2291798166104201910L;
     private final transient Class<E> entityClazz;
-    private final boolean transactionActive = false;
-    private transient StatisticCollector statistic;
+    private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private boolean statisticEnabled = false;
     private transient AccessProtector accessProtector = new BasicAccessProtector();
+    private final Lock readLock = readWriteLock.readLock();
+    private final Lock writeLock = readWriteLock.writeLock();
+    //    private final boolean transactionActive = false;
+    private transient StatisticCollector statistic;
 
     public EntityList(List<E> entities, E entityinstance) {
         this(entities, (Class<E>) entityinstance.getClass());
@@ -61,7 +67,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     @Override
     public boolean isTransactionActive() {
-        return transactionActive;
+        throw new TargetNotSupports();
     }
 
     @Override
@@ -71,7 +77,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     @Override
     public <T> T aroundTransaction(Supplier<T> t) {
-        return null;
+        throw new TargetNotSupports();
     }
 
     @SuppressWarnings("unchecked")
@@ -92,11 +98,10 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        EntityList<E> rv = new EntityList<>(filter((Query<E, ?, ?>) query), (Class<E>) query.getEntityClass());
-        rv.orderAndLimit((Query<E, ?, ?>) query);
-        Entities<E1> rt = (Entities<E1>) rv;
-        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, rv.size());
-        return rt;
+        EntityList<E> results = new EntityList<>(filter((Query<E, ?, ?>) query), (Class<E>) query.getEntityClass());
+        results.orderAndLimit((Query<E, ?, ?>) query);
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
+        return (Entities<E1>) results;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -201,13 +206,25 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     public <O extends Entity, F> List<F> readFieldList(BufferQueryField<O, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        List<F> results = readFieldList2((BufferQueryField<E, F>) query);
-        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
-        return results;
-    }
 
-    public <F> List<F> readFieldList2(BufferQueryField<E, F> query) {
-        return resultFieldListFromBuffer(query);
+        List<F> finalResults;
+        if (!query.getFunctionMap().isEmpty()) {
+            EntityList<E> matched = new EntityList<>(filter((Query<E, ?, ?>) query), (Class<E>) query.getEntityClass());
+
+            Plates firstResults = new PlateBuffer(matched);
+
+            firstResults = new BufferFunctionManager().applyFunctions(firstResults, query.getFunctionMap());
+            firstResults = firstResults.orderAndLimit(query);
+            firstResults = firstResults.sanitise(query.getFields());
+
+            ColumnFunction<?, F, ?, ?> firstColumn = (ColumnFunction<?, F, ?, ?>) query.getFunctionMap().get(0);
+            finalResults = firstResults.stream().map(e -> e.getFunctionValue(firstColumn)).collect(Collectors.toList());
+        } else {
+            finalResults = resultFieldListFromBuffer((BufferQueryField<E, F>) query);
+        }
+
+        if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, finalResults.size());
+        return finalResults;
     }
 
     @Override
@@ -248,9 +265,34 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     public <E extends Entity> int delete(BufferQueryDelete<E> query, Propagation propagation) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.DELETE);
         List<E> toRemove = query.toSelect().findMany();
-        toRemove.forEach(this::remove);
+
+        writeLock.lock();
+        try {
+            toRemove.forEach(this::remove);
+        } finally {
+            writeLock.unlock();
+        }
         return toRemove.size();
     }
+
+    public EntityList<E> writeLockDo(UnaryOperator<EntityList<E>> function) {
+        writeLock.lock();
+        try {
+            return function.apply(this);
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    public EntityList<E> readLockDo(UnaryOperator<EntityList<E>> function) {
+        readLock.lock();
+        try {
+            return function.apply(this);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
 
     @Override
     public <E extends Entity> int update(BufferQueryUpdate<E> query, Propagation propagation) {
@@ -273,7 +315,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     @Override
     public List<Entity> getTables() {
-        return new LinkedList<>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -335,7 +377,6 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         }
 
         rv.append("]");
-
         return rv.toString();
     }
 

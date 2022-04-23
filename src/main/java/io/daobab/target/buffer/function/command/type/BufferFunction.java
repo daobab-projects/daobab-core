@@ -6,11 +6,13 @@ import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.buffer.single.Plates;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 public abstract class BufferFunction<F> {
 
     protected Collection<Class<?>> STRING_ONLY = Collections.singletonList(String.class);
+    protected Collection<Class<?>> ALL_DATES = Arrays.asList(Date.class, java.sql.Date.class, Timestamp.class);
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Plates execute(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {

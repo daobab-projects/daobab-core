@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -45,11 +44,11 @@ public abstract class PlateBufferIndexed {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked", "java:S135", "java:S3358", "java:S3776"})
     public static List<Plate> finalFilter(List<Plate> entities, Query<?, ?, ?> query) {
         int counter = 0;
 
-        List<Plate> rv = new LinkedList<>();
+        List<Plate> rv = new ArrayList<>();
         Where<?> wrapper = query.getWhereWrapper();
         boolean useWhere = wrapper != null;
 
@@ -73,7 +72,6 @@ public abstract class PlateBufferIndexed {
 
         if (useLimit) {
             for (Plate entity : entities) {
-
                 if (generalPredicate.test(entity)) {
                     counter++;
                     if (counter < offset) {
@@ -83,13 +81,11 @@ public abstract class PlateBufferIndexed {
                     }
                     rv.add(entity);
                 }
-
             }
         } else {
             entities.stream().filter(generalPredicate).forEach(rv::add);
         }
-
-        return rv;//new EntityList<>(rv);
+        return rv;
     }
 
     public <E extends Entity> List<Plate> filter(Query<E, ?, ?> query) {
@@ -103,6 +99,5 @@ public abstract class PlateBufferIndexed {
     public void setPrimaryKey(boolean primaryKey) {
         this.primaryKey = primaryKey;
     }
-
 
 }

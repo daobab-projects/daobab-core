@@ -388,7 +388,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
             setWhereWrapper(WhereBase.fromRemote(target, (Map<String, Object>) where));
         }
         if (fields != null) {
-            setFields(Marschaller.unMarschallColumns((Map<String, Object>) fields, target));
+            setFields(Marschaller.unMarshallColumns((Map<String, Object>) fields, target));
         }
 
 

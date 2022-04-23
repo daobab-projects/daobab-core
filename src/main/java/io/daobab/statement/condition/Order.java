@@ -107,7 +107,7 @@ public class Order {
         for (String key : orderMap.keySet()) {
             Object val = orderMap.get(key);
             if (val instanceof Entity) {
-                rv.put(key, Marschaller.marschallEntity((Entity) val));
+                rv.put(key, Marschaller.marshalEntity((Entity) val));
             } else if (val instanceof TableColumn) {
                 rv.put(key, Marschaller.marschallColumnToString((TableColumn) val));
             } else {

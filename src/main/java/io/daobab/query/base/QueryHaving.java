@@ -36,18 +36,15 @@ public interface QueryHaving<Q extends Query> {
         return (Q) this;
     }
 
-
     default <F extends Number, R extends EntityRelation> Q having(ColumnFunction<? extends Entity, F, R, F> col, InnerQueryFieldsProvider<? extends R, F> val) {
         setHavingWrapper(new Having().in(col, val));
         return (Q) this;
     }
 
-
     default <E extends Entity, F extends Number, R extends EntityRelation> Q having(ColumnFunction<E, F, R, F> column, F val) {
         setHavingWrapper(new Having().equal(column, val));
         return (Q) this;
     }
-
 
     default <E extends Entity, F extends Number, R extends EntityRelation> Q having(ColumnFunction<E, F, R, F> column, R val) {
         setHavingWrapper(new Having().equal(column, column.getValueOf(val)));

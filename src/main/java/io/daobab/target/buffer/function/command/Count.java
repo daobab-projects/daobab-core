@@ -20,6 +20,7 @@ public class Count extends BufferFunction<Object> {
         return rv;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     protected List<Object> applyField(Map<String, BufferFunction> manager, List<?> plates, ColumnFunction<?, ?, ?, ?> function) {
         return Collections.singletonList(plates.stream().filter(Objects::nonNull).count());

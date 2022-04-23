@@ -73,7 +73,11 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
                 functionMap.put(i, function);
                 Column<?, ?, ?> functionFinalColumn = function.getFinalColumn();
                 getFields().add(getInfoColumn(functionFinalColumn));
-                entities.add(functionFinalColumn.getEntityName());
+                String functionEntity = functionFinalColumn.getEntityName();
+                if (functionEntity.equals("DUAL")) {
+                    functionEntity = getEntityName();
+                }
+                entities.add(functionEntity);
             } else {
                 getFields().add(getInfoColumn(columns[i]));
                 entities.add(columns[i].getEntityName());

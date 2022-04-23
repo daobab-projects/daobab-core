@@ -156,7 +156,7 @@ public abstract class WhereBase {
         for (Map.Entry<String, Object> entry : whereMap.entrySet()) {
             Object val = entry.getValue();
             if (val instanceof Entity) {
-                rv.put(entry.getKey(), Marschaller.marschallEntity((Entity) val));
+                rv.put(entry.getKey(), Marschaller.marshalEntity((Entity) val));
             } else if (val instanceof Column) {
                 rv.put(entry.getKey(), Marschaller.marschallColumnToString((Column) val));
             } else if (val instanceof Where) {

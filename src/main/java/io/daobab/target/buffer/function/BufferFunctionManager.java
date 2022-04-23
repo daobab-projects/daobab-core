@@ -5,6 +5,11 @@ import io.daobab.model.Plate;
 import io.daobab.statement.function.dictionary.DictFunctionBuffer;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.target.buffer.function.command.*;
+import io.daobab.target.buffer.function.command.date.CurrentDate;
+import io.daobab.target.buffer.function.command.text.Length;
+import io.daobab.target.buffer.function.command.text.Lower;
+import io.daobab.target.buffer.function.command.text.Trim;
+import io.daobab.target.buffer.function.command.text.Upper;
 import io.daobab.target.buffer.function.command.type.BufferFunction;
 import io.daobab.target.buffer.function.command.type.FunctionType;
 import io.daobab.target.buffer.single.PlateBuffer;
@@ -23,7 +28,8 @@ public class BufferFunctionManager extends HashMap<String, BufferFunction> imple
         put(DictFunctionBuffer.SUM, new Sum());
         put(DictFunctionBuffer.MIN, new Min());
         put(DictFunctionBuffer.MAX, new Max());
-        put(DictFunctionBuffer.AVG, new Avg());
+        put(DictFunctionBuffer.TRIM, new Trim());
+        put(DictFunctionBuffer.CURRENT_DATE, new CurrentDate());
     }
 
     public Plates applyFunctions(Plates plates, Map<Integer, ColumnFunction<?, ?, ?, ?>> map) {
@@ -31,7 +37,7 @@ public class BufferFunctionManager extends HashMap<String, BufferFunction> imple
             return plates;
         }
 
-        List<Plates> aggregatedResults = new LinkedList<>();
+        List<Plates> aggregatedResults = new ArrayList<>();
 
         //at first, execute aggregated function on the entire buffer and collect the single results
         for (Map.Entry<Integer, ColumnFunction<?, ?, ?, ?>> entry : map.entrySet()) {
@@ -61,8 +67,24 @@ public class BufferFunctionManager extends HashMap<String, BufferFunction> imple
 
         if (!aggregatedResults.isEmpty() && nonAggregativeWereInUse) {
             Plate rvPlate = resultPlates.get(0);
+            for (Plates agg : aggregatedResults) {
+                if (agg.isEmpty()) {
+                    continue; //shouldn't happen
+                }
+                rvPlate.joinPlate(agg.get(0));
+            }
             rvPlate.joinPlate(aggregatedPlate);
             rv = new PlateBuffer(Collections.singletonList(rvPlate));
+        } else if (!aggregatedResults.isEmpty()) {
+            Plate plate = new Plate();
+            for (Plates agg : aggregatedResults) {
+                if (agg.isEmpty()) {
+                    continue; //shouldn't happen
+                }
+                plate.joinPlate(agg.get(0));
+            }
+
+            rv = new PlateBuffer(Collections.singletonList(plate));
         }
         return rv;
     }

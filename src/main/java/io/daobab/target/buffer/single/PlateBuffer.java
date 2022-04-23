@@ -169,8 +169,8 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     public Plates orderAndLimit(Query<?, ?, ?> query) {
         if (query == null) return this;
-        PlateBuffer copy = new PlateBuffer(this);
-        if (query.getOrderBy() != null) {
+        if (size() > 1 && query.getOrderBy() != null) {
+            PlateBuffer copy = new PlateBuffer(this);
             OrderComparatorPlate comparator = new OrderComparatorPlate(query.getOrderBy().toOrderFieldList());
             copy.sort(comparator);
             return copy.limit(query);
@@ -310,6 +310,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         if (isEmpty()) {
             return this;
         }
+
         Plate template = new Plate(tableColumns);
         for (Plate plate : this) {
             plate.maskPlate(template);

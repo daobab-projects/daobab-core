@@ -3,7 +3,6 @@ package io.daobab.statement.base;
 import io.daobab.target.buffer.function.FunctionWhispererBuffer;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
-import io.daobab.target.buffer.single.Plates;
 import io.daobab.test.dao.SakilaTables;
 import io.daobab.test.dao.table.Film;
 import org.junit.jupiter.api.Test;
@@ -17,24 +16,23 @@ class TestBufferFunction implements FunctionWhispererBuffer, SakilaTables {
     void test() {
         List<Film> filmy = new ArrayList<>();
 
-        filmy.add(new Film().setId(5).setDescription("a"));
+        filmy.add(new Film().setId(3).setDescription("bb"));
         filmy.add(new Film().setId(12).setDescription("bb"));
-        filmy.add(new Film().setId(3).setDescription("dbc"));
+        filmy.add(new Film().setId(5).setDescription("dbc"));
 
         Entities<Film> films = new EntityList<>(filmy, Film.class);
 
-        Plates rv = films.select(upper(lower(tabFilm.colDescription())).as("cos"),
-                        length(tabFilm.colDescription())
+        films.select(count(tabFilm.colDescription()).as("length"), max(tabFilm.colID()), min(tabFilm.colID()), currentDate().as("date"))
 //                        count(distinct(tabFilm.colID())),
 //                        sum(tabFilm.colID()),
 //                        max(tabFilm.colID()).as("minimum"),
 //                        avg(tabFilm.colID()).as("srednia").cast(BigDecimal.class),
 //                        min(tabFilm.colID()).as("maximum"))
-                )
-                .orderDescBy(tabFilm.colID())
-                .findMany();//.forEach(p -> System.out.println(p.toJSON()));
+//                )
+//                .orderDescBy("length")
+                .findMany().forEach(p -> System.out.println(p.toJSON()));
 
-        System.out.println(rv.toJSON());
+//        System.out.println(rv.size());
     }
 
     @Test

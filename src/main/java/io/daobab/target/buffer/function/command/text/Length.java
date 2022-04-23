@@ -1,4 +1,4 @@
-package io.daobab.target.buffer.function.command;
+package io.daobab.target.buffer.function.command.text;
 
 import io.daobab.model.Plate;
 import io.daobab.statement.function.type.ColumnFunction;
@@ -6,30 +6,38 @@ import io.daobab.target.buffer.function.command.type.BufferFunction;
 import io.daobab.target.buffer.function.command.type.FunctionType;
 import io.daobab.target.buffer.single.Plates;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-public class Upper extends BufferFunction<String> {
+
+public class Length extends BufferFunction<String> {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected Plates apply(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Plates rv = getClonedPlates(plates, false);
         for (Plate plate : rv) {
             String val = (String) plate.getValue(function.getFinalColumn());
-            if (val != null) {
-                plate.setValue(function, val.toUpperCase(Locale.ROOT));
+            if (val == null) {
+                plate.setValue(function, 0);
+            } else {
+                plate.setValue(function, val.length());
             }
         }
         return rv;
     }
 
+
+    @SuppressWarnings("rawtypes")
     @Override
     protected List<Object> applyField(Map<String, BufferFunction> manager, List<?> plates, ColumnFunction<?, ?, ?, ?> function) {
         List<Object> rv = new ArrayList<>();
         for (Object plate : plates) {
-            if (plate != null) {
-                rv.add(((String) plate).toUpperCase(Locale.ROOT));
+            if (plate == null) {
+                rv.add(0);
             } else {
-                rv.add(null);
+                rv.add(((String) plate).length());
             }
         }
         return rv;

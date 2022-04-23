@@ -1,4 +1,4 @@
-package io.daobab.target.buffer.function.command;
+package io.daobab.target.buffer.function.command.text;
 
 import io.daobab.model.Plate;
 import io.daobab.statement.function.type.ColumnFunction;
@@ -25,6 +25,7 @@ public class Lower extends BufferFunction<String> {
         return rv;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     protected List<Object> applyField(Map<String, BufferFunction> manager, List<?> plates, ColumnFunction<?, ?, ?, ?> function) {
         List<Object> rv = new ArrayList<>();

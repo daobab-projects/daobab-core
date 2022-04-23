@@ -49,6 +49,7 @@ public class Sum extends BufferFunction<Object> {
         return new PlateBuffer(Collections.singletonList(rv));
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     protected List<Object> applyField(Map<String, BufferFunction> manager, List<?> plates, ColumnFunction<?, ?, ?, ?> function) {
         Class<?> clazz = readClass(plates);
@@ -139,7 +140,6 @@ public class Sum extends BufferFunction<Object> {
     protected BigInteger sumBigIntegerField(List<BigInteger> plates) {
         return plates.stream().filter(Objects::nonNull).reduce(BigInteger.valueOf(0), BigInteger::add);
     }
-
 
     @Override
     protected Collection<Class<?>> getSuitableTypes() {

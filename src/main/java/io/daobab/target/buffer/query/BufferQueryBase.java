@@ -361,7 +361,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
             setWhereWrapper(WhereBase.fromRemote(target, (Map<String, Object>) where));
         }
         if (fields != null) {
-            setFields(Marschaller.unMarschallColumns((Map<String, Object>) fields, target));
+            setFields(Marschaller.unMarshallColumns((Map<String, Object>) fields, target));
         }
 
 
@@ -420,6 +420,10 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     protected TableColumn getInfoColumn(Column column) {
         if (column == null) return null;
         if (column instanceof ColumnFunction) {
+            return new TableColumn(column);
+        }
+
+        if (column.getEntityName().equals("DUAL")) {
             return new TableColumn(column);
         }
 
