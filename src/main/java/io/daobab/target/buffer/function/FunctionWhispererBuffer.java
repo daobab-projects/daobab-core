@@ -59,6 +59,10 @@ public interface FunctionWhispererBuffer {
         return new ColumnFunction<>(columnOrQuery, DictFunctionBuffer.TRIM, String.class);
     }
 
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> year(ColumnOrQuery<E, F, R> columnOrQuery) {
+        return new ColumnFunction<>(columnOrQuery, DictFunctionBuffer.YEAR, String.class);
+    }
+
     default ColumnFunction<Dual, Date, EntityRelation, Date> currentDate() {
         return new ColumnFunction<>(DummyColumnTemplate.dummyEntityDateColumn(new Dual(), ""), DictFunctionBuffer.CURRENT_DATE);
     }

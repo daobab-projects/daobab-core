@@ -6,6 +6,7 @@ import io.daobab.statement.function.dictionary.DictFunctionBuffer;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.target.buffer.function.command.*;
 import io.daobab.target.buffer.function.command.date.CurrentDate;
+import io.daobab.target.buffer.function.command.date.Year;
 import io.daobab.target.buffer.function.command.text.Length;
 import io.daobab.target.buffer.function.command.text.Lower;
 import io.daobab.target.buffer.function.command.text.Trim;
@@ -30,6 +31,7 @@ public class BufferFunctionManager extends HashMap<String, BufferFunction> imple
         put(DictFunctionBuffer.MAX, new Max());
         put(DictFunctionBuffer.TRIM, new Trim());
         put(DictFunctionBuffer.CURRENT_DATE, new CurrentDate());
+        put(DictFunctionBuffer.YEAR, new Year());
     }
 
     public Plates applyFunctions(Plates plates, Map<Integer, ColumnFunction<?, ?, ?, ?>> map) {

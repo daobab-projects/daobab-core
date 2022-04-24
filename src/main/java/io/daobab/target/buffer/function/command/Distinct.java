@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class Distinct extends BufferFunction<Object> {
 
-    protected Plates apply(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
+    protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         List<Plate> filtered = new ArrayList<>();
         List<Object> values = new LinkedList<>();
         for (Plate value : plates) {
@@ -31,10 +31,10 @@ public class Distinct extends BufferFunction<Object> {
 
     @SuppressWarnings("rawtypes")
     @Override
-    protected List<Object> applyField(Map<String, BufferFunction> manager, List<?> plates, ColumnFunction<?, ?, ?, ?> function) {
+    protected List<Object> applyOnFields(Map<String, BufferFunction> manager, List<?> fields, ColumnFunction<?, ?, ?, ?> function) {
         List<Object> filtered = new ArrayList<>();
 
-        for (Object value : plates) {
+        for (Object value : fields) {
             if (!filtered.contains(value)) {
                 filtered.add(value);
             }

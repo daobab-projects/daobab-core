@@ -68,6 +68,7 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
         return new InnerQueryFields<>(findMany());
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public long countAny() {
         return findMany().stream().map(e -> getFields().get(0).getColumn().getValueOf((EntityRelation) e))

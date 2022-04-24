@@ -11,7 +11,7 @@ import java.util.*;
 public class Upper extends BufferFunction<String> {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected Plates apply(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
+    protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Plates rv = getClonedPlates(plates, false);
         for (Plate plate : rv) {
             String val = (String) plate.getValue(function.getFinalColumn());
@@ -24,9 +24,9 @@ public class Upper extends BufferFunction<String> {
 
     @SuppressWarnings("rawtypes")
     @Override
-    protected List<Object> applyField(Map<String, BufferFunction> manager, List<?> plates, ColumnFunction<?, ?, ?, ?> function) {
+    protected List<Object> applyOnFields(Map<String, BufferFunction> manager, List<?> fields, ColumnFunction<?, ?, ?, ?> function) {
         List<Object> rv = new ArrayList<>();
-        for (Object plate : plates) {
+        for (Object plate : fields) {
             if (plate != null) {
                 rv.add(((String) plate).toUpperCase(Locale.ROOT));
             } else {

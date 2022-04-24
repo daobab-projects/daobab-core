@@ -53,6 +53,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         boolean entityIsPk = entity instanceof PrimaryKey;
         IdGeneratorType idgeneratorType = null;
         if (entityIsPk) {
+            @SuppressWarnings("unchecked")
             PrimaryKey<E, Object, EntityRelation> pk = (PrimaryKey<E, Object, EntityRelation>) entity;
 
             idgeneratorType = pk.getIdGeneratorType();
@@ -73,18 +74,18 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
             }
         }
 
+
         for (TableColumn ec : entity.columns()) {
             Column c = ec.getColumn();
-            Column<E, Object, EntityRelation> ce = (Column<E, Object, EntityRelation>) c;
-
-            Object oo = ce.getValueOf((EntityRelation) entity);
+            @SuppressWarnings("unchecked")
+            Object oo = ((Column<E, Object, EntityRelation>) c).getValueOf((EntityRelation) entity);
 
             // no PK column into SEQUENCE,AUTO_INCREMENT
             if (entityIsPk && ((PrimaryKey) entity).colID().equals(c) && (SEQUENCE.equals(idgeneratorType) || AUTO_INCREMENT.equals(idgeneratorType))) {
                 continue;
             }
-            getFields().add(getInfoColumn(ce));
-            sd.setValue(ce, oo);
+            getFields().add(getInfoColumn(c));
+            sd.setValue(c, oo);
         }
         set(sd);
     }

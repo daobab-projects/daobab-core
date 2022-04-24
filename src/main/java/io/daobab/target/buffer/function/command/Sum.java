@@ -17,8 +17,6 @@ import java.util.function.Function;
 
 public class Sum extends BufferFunction<Object> {
 
-    protected Map<Class<?>, BiFunction<Plates, Column<?, ?, ?>, ?>> map = new HashMap<>();
-    protected Map<Class<?>, Function<List, ?>> mapField = new HashMap<>();
 
     public Sum() {
         map.put(Double.class, this::sumDouble);
@@ -41,35 +39,24 @@ public class Sum extends BufferFunction<Object> {
     }
 
     @SuppressWarnings("rawtypes")
-    protected Plates apply(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
+    protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Column<?, ?, ?> finalColumn = function.getFinalColumn();
-        BiFunction<Plates, Column<?, ?, ?>, ?> function2 = map.get(function.getFinalColumn().getFieldClass());
+        BiFunction<Plates, Column<?, ?, ?>, ?> functionPlates = map.get(function.getFinalColumn().getFieldClass());
         Plate rv = new Plate();
-        rv.setValue(function, function2.apply(plates, finalColumn));
+        rv.setValue(function, functionPlates.apply(plates, finalColumn));
         return new PlateBuffer(Collections.singletonList(rv));
     }
 
     @SuppressWarnings("rawtypes")
     @Override
-    protected List<Object> applyField(Map<String, BufferFunction> manager, List<?> plates, ColumnFunction<?, ?, ?, ?> function) {
-        Class<?> clazz = readClass(plates);
+    protected List<Object> applyOnFields(Map<String, BufferFunction> manager, List<?> fields, ColumnFunction<?, ?, ?, ?> function) {
+        Class<?> clazz = readClass(fields);
         if (clazz == null) {
-            return Collections.singletonList(0);
+            return Collections.emptyList();
         }
-        Function<List, ?> function2 = mapField.get(clazz);
-        return Collections.singletonList(function2.apply(plates));
+        Function<List, ?> functionFields = mapField.get(clazz);
+        return Collections.singletonList(functionFields.apply(fields));
     }
-
-    private Class<?> readClass(List<?> list) {
-        if (list == null || list.isEmpty()) return null;
-        for (Object obj : list) {
-            if (obj != null) {
-                return obj.getClass();
-            }
-        }
-        return null;
-    }
-
 
     @Override
     public FunctionType getType() {

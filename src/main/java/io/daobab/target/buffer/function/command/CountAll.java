@@ -12,7 +12,7 @@ import java.util.Map;
 public class CountAll extends BufferFunction<Object> {
 
     @SuppressWarnings("rawtypes")
-    protected Plates apply(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
+    protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Plates rv = getClonedPlates(plates, true);
         rv.get(0).setValue(function, plates.size());
         return rv;
@@ -20,8 +20,8 @@ public class CountAll extends BufferFunction<Object> {
 
     @SuppressWarnings("rawtypes")
     @Override
-    protected List<Object> applyField(Map<String, BufferFunction> manager, List<?> plates, ColumnFunction<?, ?, ?, ?> function) {
-        return Collections.singletonList(plates.size());
+    protected List<Object> applyOnFields(Map<String, BufferFunction> manager, List<?> fields, ColumnFunction<?, ?, ?, ?> function) {
+        return Collections.singletonList(fields.size());
     }
 
     @Override
