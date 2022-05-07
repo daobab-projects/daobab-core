@@ -83,6 +83,7 @@ public interface DaobabClassGeneratorTemplates {
             "import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;\n" +
             "\n" +
             "\n" +
+            "@SuppressWarnings(\"rawtypes\")\n" +
             "@JsonInclude(JsonInclude.Include.NON_NULL)\n" +
             "@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)\n" +
             "public class " + GenKeys.TABLE_CAMEL_NAME + " extends Table implements \n" +

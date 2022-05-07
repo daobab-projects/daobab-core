@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageExporter {
@@ -88,7 +88,7 @@ public class ImageExporter {
     }
 
     private Entities<MetaTable> readTables(ResultSet rs) throws SQLException {
-        List<MetaTable> metaTables = new LinkedList<>();
+        List<MetaTable> metaTables = new ArrayList<>();
         while (rs.next()) {
             MetaTable table = new MetaTable();
             table.setTableName(rs.getString("TABLE_NAME"));
@@ -102,7 +102,7 @@ public class ImageExporter {
     }
 
     private Entities<MetaColumn> readColumns(ResultSet rs) throws SQLException {
-        List<MetaColumn> metaColumns = new LinkedList<>();
+        List<MetaColumn> metaColumns = new ArrayList<>();
         while (rs.next()) {
             MetaColumn column = new MetaColumn();
             column.setColumnName(rs.getString("COLUMN_NAME"));
@@ -126,7 +126,7 @@ public class ImageExporter {
 
 
     private Entities<MetaIndex> readIndexes(ResultSet rs) throws SQLException {
-        List<MetaIndex> metaColumns = new LinkedList<>();
+        List<MetaIndex> metaColumns = new ArrayList<>();
         while (rs.next()) {
             MetaIndex column = new MetaIndex();
             column.setCatalogName(rs.getString("TABLE_CAT"));
@@ -147,7 +147,7 @@ public class ImageExporter {
 
 
     private Entities<MetaPrimaryKey> readPrimaryKeys(ResultSet rs) throws SQLException {
-        List<MetaPrimaryKey> metaPrimaryKeys = new LinkedList<>();
+        List<MetaPrimaryKey> metaPrimaryKeys = new ArrayList<>();
         while (rs.next()) {
             MetaPrimaryKey primaryKey = new MetaPrimaryKey();
             primaryKey.setCatalogName(rs.getString("TABLE_CAT"));
@@ -164,7 +164,7 @@ public class ImageExporter {
     }
 
     private Entities<MetaSchema> readSchemas(ResultSet rs) throws SQLException {
-        List<MetaSchema> schemas = new LinkedList<>();
+        List<MetaSchema> schemas = new ArrayList<>();
         while (rs.next()) {
             MetaSchema schema = new MetaSchema();
             schema.setCatalogName(rs.getString("TABLE_CAT"));
@@ -178,7 +178,7 @@ public class ImageExporter {
 
 
     private Entities<MetaCatalog> readCatalogs(ResultSet rs) throws SQLException {
-        List<MetaCatalog> schemas = new LinkedList<>();
+        List<MetaCatalog> schemas = new ArrayList<>();
         while (rs.next()) {
             MetaCatalog schema = new MetaCatalog();
             schema.setCatalogName(rs.getString("TABLE_CAT"));

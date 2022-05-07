@@ -49,7 +49,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
     private List<E> finalFilter(List<E> entities, Query<E, ?, ?> query, List<Integer> skipSteps) {
         int counter = 0;
 
-        List<E> rv = new LinkedList<>();
+        List<E> rv = new ArrayList<>();
         Where wrapper = query.getWhereWrapper();
         boolean useLimit = query.getOrderBy() == null && query.getLimit() != null;
         boolean useWhere = wrapper != null;

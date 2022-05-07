@@ -48,12 +48,13 @@ public class MetaTable extends Table implements
         return EntityDuplicator.cloneEntity(this);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Column<MetaTable, String, MetaTableName> colID() {
         return colTableName();
     }
 
-
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

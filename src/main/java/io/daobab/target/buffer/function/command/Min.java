@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 
-
+@SuppressWarnings("unused")
 public class Min extends Sum {
 
     public Min() {

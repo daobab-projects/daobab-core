@@ -32,7 +32,7 @@ import java.util.function.UnaryOperator;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQueryBase> implements Query<E, QueryTarget, Q>, QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, QueryGroupBy<Q>, RemoteQuery<Q>, ILoggerBean {
 
-    public List<Column<?, ?, ?>> _groupBy = new LinkedList<>();
+    public List<Column<?, ?, ?>> _groupBy = new ArrayList<>();
     public String _groupByAlias = null;
     public boolean _unique = false;
     public boolean _calcJoins = false;

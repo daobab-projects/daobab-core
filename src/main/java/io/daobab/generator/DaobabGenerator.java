@@ -13,7 +13,6 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import static io.daobab.generator.GenerateFormatter.decapitalize;
@@ -184,7 +183,7 @@ public class DaobabGenerator {
     private List<GenerateTable> createTables(DatabaseMetaData meta, String catalog, String schema) {
         Writter writter = new Writter();
 
-        List<GenerateColumn> allColumns = new LinkedList<>();
+        List<GenerateColumn> allColumns = new ArrayList<>();
         List<GenerateTable> allTables = getTablesFromDB(meta, catalog, schema, allColumns);
 
 
@@ -310,7 +309,7 @@ public class DaobabGenerator {
     }
 
     private List<String> getCataloques(DatabaseMetaData meta) {
-        List<String> rv = new LinkedList<>();
+        List<String> rv = new ArrayList<>();
         try {
             ResultSet rs = meta.getCatalogs();
             while (rs.next()) {
@@ -341,7 +340,7 @@ public class DaobabGenerator {
 
 
     private List<String> getSchemas(DatabaseMetaData meta, String catalog) {
-        List<String> rv = new LinkedList<>();
+        List<String> rv = new ArrayList<>();
         try {
             ResultSet rs = meta.getSchemas(catalog, "%");
             while (rs.next()) {
@@ -359,9 +358,9 @@ public class DaobabGenerator {
 
     private List<GenerateTable> getTablesFromDB(DatabaseMetaData meta, String catalog, String schema, List<GenerateColumn> allColumns) {
 
-        List<GenerateTable> tables = new LinkedList<>();
+        List<GenerateTable> tables = new ArrayList<>();
 
-        List<String> tableTypesOrdered = new LinkedList<>();
+        List<String> tableTypesOrdered = new ArrayList<>();
         if (isGenerateTables()) {
             tableTypesOrdered.add("TABLE");
         }

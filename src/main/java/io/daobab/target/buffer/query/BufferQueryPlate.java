@@ -34,7 +34,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         if (entities == null || entities.length == 0) {
             throw new NullOrEmptyParameter("entities");
         }
-        List<TableColumn> columns = new LinkedList<>();
+        List<TableColumn> columns = new ArrayList<>();
         for (Entity e : entities) {
             columns.addAll(e.columns());
         }
@@ -115,7 +115,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
 
     private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
         List<Plate> res = findMany();
-        List<M> rv = new LinkedList<>();
+        List<M> rv = new ArrayList<>();
         if (mapper == null) {
             return new FieldsBuffer<>(rv);
         }

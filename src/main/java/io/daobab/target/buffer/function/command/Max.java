@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 
+@SuppressWarnings("unused")
 public class Max extends Sum {
 
     public Max() {

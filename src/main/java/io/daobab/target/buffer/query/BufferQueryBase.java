@@ -32,7 +32,7 @@ import java.util.function.UnaryOperator;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBase> implements Query<E, BufferQueryTarget, Q>, QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, RemoteQuery<Q>, ILoggerBean {
 
-    public List<Column<?, ?, ?>> _groupBy = new LinkedList<>();
+    public List<Column<?, ?, ?>> _groupBy = new ArrayList<>();
     public String _groupByAlias = null;
     public boolean _unique = false;
     public boolean _calcJoins = false;

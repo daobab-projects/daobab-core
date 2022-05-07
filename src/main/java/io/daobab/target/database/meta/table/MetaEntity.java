@@ -9,6 +9,7 @@ import io.daobab.model.TableColumn;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 public class MetaEntity extends Table {
 
     private final String tableName;

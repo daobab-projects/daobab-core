@@ -5,7 +5,7 @@ import io.daobab.model.Entity;
 import io.daobab.target.buffer.noheap.NoHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -40,7 +40,7 @@ public interface EntitiesProvider<E extends Entity> {
         if (mapper == null) throw new NullFunction();
         Entities<E> res = findMany();
 
-        List<M> rv = new LinkedList<>();
+        List<M> rv = new ArrayList<>();
         res.forEach(t -> rv.add(mapper.apply(t)));
 
         return new FieldsBuffer<>(rv);

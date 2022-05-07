@@ -39,6 +39,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         fromRemote(target, remote);
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public DataBaseQueryInsert(QueryTarget target, E entity) {
 
         init(target, entity);

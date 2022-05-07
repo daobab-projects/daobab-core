@@ -8,16 +8,16 @@ import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.buffer.single.Plates;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 
 public class Distinct extends BufferFunction<Object> {
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         List<Plate> filtered = new ArrayList<>();
-        List<Object> values = new LinkedList<>();
+        List<Object> values = new ArrayList<>();
         for (Plate value : plates) {
             Plate plate = new Plate(value, true);
             Object val = plate.getValue(function.getFinalColumn());

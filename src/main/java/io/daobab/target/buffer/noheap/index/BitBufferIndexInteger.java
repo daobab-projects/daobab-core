@@ -5,7 +5,10 @@ import io.daobab.model.EntityRelation;
 import io.daobab.statement.condition.Operator;
 import io.daobab.target.buffer.noheap.NoHeapBuffer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 public class BitBufferIndexInteger<E> extends BitBufferIndex<E, Integer> {
 
@@ -51,7 +54,7 @@ public class BitBufferIndexInteger<E> extends BitBufferIndex<E, Integer> {
                 return toOneList(valueIndex);
             }
             default:
-                return new LinkedList<>();
+                return new ArrayList<>();
         }
     }
 

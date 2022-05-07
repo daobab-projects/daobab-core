@@ -7,8 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -117,7 +117,7 @@ public interface ParserString {
 
 
     static List<String> splitByDot(String str) {
-        if (str == null) return new LinkedList<>();
+        if (str == null) return new ArrayList<>();
         return Arrays.asList(str.split("\\."));
     }
 }

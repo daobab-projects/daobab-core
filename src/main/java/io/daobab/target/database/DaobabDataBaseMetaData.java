@@ -6,6 +6,7 @@ import io.daobab.target.database.meta.table.*;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings("unused")
 public class DaobabDataBaseMetaData {
 
     private int maxBinaryLiteralLength;

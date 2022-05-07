@@ -6,8 +6,8 @@ import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.*;
 import io.daobab.target.Target;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +88,7 @@ public interface Marschaller {
         if (target.getTables() == null || target.getTables().isEmpty()) throw new NoEntitiesIntoTargetException(target);
 
         int counter = 0;
-        List<TableColumn> rv = new LinkedList<>();
+        List<TableColumn> rv = new ArrayList<>();
 
         while (true) {
             Object o = map.get("" + counter);

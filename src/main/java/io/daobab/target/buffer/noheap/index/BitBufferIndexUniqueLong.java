@@ -46,7 +46,7 @@ public class BitBufferIndexUniqueLong<E extends Entity> extends BitBufferUniqueI
                 return valueIndex.values();
             }
             default:
-                return new LinkedList<>();
+                return new ArrayList<>();
         }
     }
 

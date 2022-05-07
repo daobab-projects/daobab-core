@@ -9,7 +9,7 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
 
-
+@SuppressWarnings("unused")
 public class Avg extends Sum {
 
     public Avg() {

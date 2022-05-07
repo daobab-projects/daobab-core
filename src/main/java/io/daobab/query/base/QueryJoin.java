@@ -57,7 +57,7 @@ public interface QueryJoin<Q extends Query> {
 
 
     default <E extends Entity> Q joinByFlag2(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (!columns.isEmpty()) join(JoinType.INNER, joinedTable, columns);
@@ -65,7 +65,7 @@ public interface QueryJoin<Q extends Query> {
     }
 
     default <E extends Entity> Q joinByFlag2(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, Where where) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (!columns.isEmpty()) {
@@ -76,7 +76,7 @@ public interface QueryJoin<Q extends Query> {
 
 
     default <E extends Entity> Q joinByFlag3(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, boolean enableTFK3, Column<?, ?, ?> joinByColumn3) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (enableTFK3) columns.add(joinByColumn3);
@@ -85,7 +85,7 @@ public interface QueryJoin<Q extends Query> {
     }
 
     default <E extends Entity> Q joinByFlag3(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, boolean enableTFK3, Column<?, ?, ?> joinByColumn3, Where where) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (enableTFK3) columns.add(joinByColumn3);
@@ -97,7 +97,7 @@ public interface QueryJoin<Q extends Query> {
 
 
     default <E extends Entity> Q joinByFlag4(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, boolean enableTFK3, Column<?, ?, ?> joinByColumn3, boolean enableTFK4, Column<?, ?, ?> joinByColumn4) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (enableTFK3) columns.add(joinByColumn3);
@@ -107,7 +107,7 @@ public interface QueryJoin<Q extends Query> {
     }
 
     default <E extends Entity> Q joinByFlag4(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, boolean enableTFK3, Column<?, ?, ?> joinByColumn3, boolean enableTFK4, Column<?, ?, ?> joinByColumn4, Where where) {
-        List<Column<?, ?, ?>> columns = new LinkedList<>();
+        List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
         if (enableTFK2) columns.add(joinByColumn2);
         if (enableTFK3) columns.add(joinByColumn3);

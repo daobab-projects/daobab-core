@@ -77,8 +77,8 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         sb.append("from ");
 
         boolean thereWasAValue = false;
-        for (String d : storage.getAllDao()) {
-            if (!storage.isDaoInJoinClause(d)) {
+        for (String d : storage.getQueryEntities()) {
+            if (!storage.isEntityInJoinClause(d)) {
                 if (thereWasAValue) sb.append(COMMASPACE);
                 thereWasAValue = true;
                 sb.append(d);
@@ -245,7 +245,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
         if (base.isJoin()) {
-            List<String> from = new LinkedList<>();
+            List<String> from = new ArrayList<>();
             from.add(base.getEntityName());
             base.setJoins(JoinTracker.calculateJoins(getTables(), from, (base.getWhereWrapper() == null ? new HashSet<>() : base.getWhereWrapper().getAllDaoInWhereClause()), base.getJoins()));
         }
@@ -287,14 +287,14 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
         for (JoinWrapper<?> joinWrapper : base.getJoins()) {
             storage.getIdentifierForColumn(joinWrapper.getByColumn());
-            storage.getIdentifierForJoinClause(joinWrapper.getTable().getEntityName());
+            storage.registerIdentifierForJoinClause(joinWrapper.getTable().getEntityName());
         }
 
         sb.append(LINE_SEPARATOR);
         sb.append(" from ");
         boolean valueAlready = false;
-        for (String d : storage.getAllDao()) {
-            if (!storage.isDaoInJoinClause(d)) {
+        for (String d : storage.getQueryEntities()) {
+            if (!storage.isEntityInJoinClause(d)) {
                 if (valueAlready) sb.append(COMMASPACE);
                 valueAlready = true;
                 sb.append(d);
@@ -649,9 +649,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             } else if (value instanceof Where) {
                 Where wr = (Where) value;
                 sb.append(SPACE_OPEN_BRACKET).append(whereToExpression(wr, storage)).append(CLOSED_BRACKET);
-//            } else if (value instanceof InnerSelectManyEntities) {
-//                InnerSelectManyEntities<?> wr = (InnerSelectManyEntities<?>) value;
-//                sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
             } else if (value instanceof InnerQueryFields) {
                 InnerQueryFields wr = (InnerQueryFields) value;
                 sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation))

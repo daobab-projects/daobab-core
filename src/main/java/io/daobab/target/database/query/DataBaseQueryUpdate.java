@@ -31,6 +31,7 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
         fromRemote(target, remote);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     //This is for the whole object update
     public <E1 extends PrimaryKey<E, F, ?>, F> DataBaseQueryUpdate(QueryTarget target, E1 entity) {
         if (target == null) throw new TargetMandatoryException();
@@ -59,6 +60,7 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
         setEntity(entity);
     }
 
+    @SuppressWarnings("unchecked")
     public DataBaseQueryUpdate(QueryTarget target, SetFields setFields) {
         if (setFields == null || setFields.getCounter() == 0) {
             throw new AtLeastOneColumnToUpdateIsRequired();
@@ -95,6 +97,7 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
         return this;
     }
 
+    @SuppressWarnings("rawtypes")
     public <F, R extends EntityRelation> DataBaseQueryUpdate<E> set(Column<E, F, R> key, R value) {
         set(new SetFields().setValue(key, value));
         return this;

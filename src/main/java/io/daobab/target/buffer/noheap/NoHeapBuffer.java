@@ -48,7 +48,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
     protected List<TableColumn> columns;
     protected BitBufferIndexBase[] indexRepository;
     protected boolean isIndexRepositoryEmpty = true;
-    protected List<Integer> locations = new LinkedList<>();
+    protected List<Integer> locations = new ArrayList<>();
     protected LinkedList<Integer> removed = new LinkedList<>();
     protected Map<Integer, HashMap<String, Object>> additionalParameters = new HashMap<>();
     private AccessProtector accessProtector = new BasicAccessProtector();

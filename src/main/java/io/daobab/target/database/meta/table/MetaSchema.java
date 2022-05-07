@@ -14,11 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("rawtypes")
 public class MetaSchema extends Table implements
         Remarks<MetaSchema>,
         MetaCatalogName<MetaSchema>,
         MetaSchemaName<MetaSchema>,
-
         PrimaryKey<MetaSchema, String, MetaSchemaName> {
 
 

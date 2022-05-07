@@ -20,10 +20,10 @@ public abstract class Index<E extends Entity, F> {
 
     private final Column<E, ?, EntityRelation> indexedColumn;
 
-    protected List<E> nullValuesEntities = new LinkedList<>();
+    protected List<E> nullValuesEntities = new ArrayList<>();
     protected TreeMap<F, List<E>> fieldEntitiesMap = new TreeMap<>();
 
-    protected List<Number> nullValuesPk = new LinkedList<>();
+    protected List<Number> nullValuesPk = new ArrayList<>();
     protected TreeMap<F, List<Number>> fieldPkMap = new TreeMap<>();
     protected F firstKeyInMap;
     protected F lastKeyInMap;
@@ -76,10 +76,10 @@ public abstract class Index<E extends Entity, F> {
 
             List<E> valueRelatedEntities = fieldEntitiesMap.get(columnvalue);
             if (valueRelatedEntities == null) {
-                List<E> entities = new LinkedList<>();
+                List<E> entities = new ArrayList<>();
                 entities.add(fakePkEntity.getEntity());
                 fieldEntitiesMap.put(columnvalue, entities);
-                List<Number> pkList = new LinkedList<>();
+                List<Number> pkList = new ArrayList<>();
                 pkList.add(fakePkEntity.getPk());
                 fieldPkMap.put(columnvalue, pkList);
             } else {
@@ -91,7 +91,7 @@ public abstract class Index<E extends Entity, F> {
     }
 
     public List<E> filter(Operator operator, F... keys) {
-        List<E> list = new LinkedList<>();
+        List<E> list = new ArrayList<>();
 
         if (Operator.IN.equals(operator)) {
             for (F key : keys) {
@@ -106,7 +106,7 @@ public abstract class Index<E extends Entity, F> {
     }
 
     public List<Number> filterPk(Operator operator, F... keys) {
-        List<Number> list = new LinkedList<>();
+        List<Number> list = new ArrayList<>();
 
         if (Operator.IN.equals(operator)) {
             for (F key : keys) {
@@ -200,7 +200,7 @@ public abstract class Index<E extends Entity, F> {
     }
 
     protected List<Number> toPkList2(Map<F, List<Number>> subManyMap, List<Number> nullValuesAsPK) {
-        List<Number> tempCollection = new LinkedList<>();
+        List<Number> tempCollection = new ArrayList<>();
 
         tempCollection.addAll(nullValuesAsPK);
         if (subManyMap != null) {
@@ -213,7 +213,7 @@ public abstract class Index<E extends Entity, F> {
     }
 
     protected List<E> toPkList(Map<F, List<E>> subManyMap, List<E> nullValuesAsPK) {
-        List<E> tempCollection = new LinkedList<>();
+        List<E> tempCollection = new ArrayList<>();
 
         tempCollection.addAll(nullValuesAsPK);
         if (subManyMap != null) {

@@ -15,6 +15,7 @@ import io.daobab.target.database.meta.table.MetaTable;
 
 import java.util.Optional;
 
+@SuppressWarnings({"rawtypes", "unused"})
 public interface MetaData extends MultiEntity, BufferQueryTarget {
 
     Entities<MetaTable> getMetaTables();

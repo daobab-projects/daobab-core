@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings("unused")
 public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBaseQueryPlate> implements QueryExpressionProvider<Entity>, PlateProvider {
 
     private boolean singleEntity = false;
@@ -32,7 +33,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         if (entities == null || entities.length == 0) {
             throw new NullOrEmptyParameter("entities");
         }
-        List<TableColumn> columns = new LinkedList<>();
+        List<TableColumn> columns = new ArrayList<>();
         for (Entity e : entities) {
             columns.addAll(e.columns());
         }
@@ -112,7 +113,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
 
     private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
         List<Plate> res = findMany();
-        List<M> rv = new LinkedList<>();
+        List<M> rv = new ArrayList<>();
         if (mapper == null) return new FieldsBuffer<>(rv);
 
         res.forEach(t -> rv.add(mapper.apply(t)));
@@ -121,7 +122,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     }
 
     private DataBaseQueryPlate andColumn(Column<?, ?, ?> columndao) {
-        if (getFields() == null) setFields(new LinkedList<>());
+        if (getFields() == null) setFields(new ArrayList<>());
         getFields().add(getInfoColumn(columndao));
         return this;
     }
@@ -161,7 +162,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     }
 
     public List<Entity> getRelatedEntities() {
-        List<Entity> rv = new LinkedList<>();
+        List<Entity> rv = new ArrayList<>();
         if (getFields() == null || getFields().isEmpty()) return rv;
         for (TableColumn col : getFields()) {
             for (Entity e : rv) {

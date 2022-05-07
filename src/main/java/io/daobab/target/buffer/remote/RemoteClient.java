@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +44,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
 
     @Override
     public List<Entity> getTables() {
-        return new LinkedList<>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -121,7 +120,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
             throw new RemoteDaobabException(response);
         }
         List<Map<String, Map<String, Object>>> listMap = (List<Map<String, Map<String, Object>>>) response.getContent();
-        List<Plate> rv = new LinkedList<>();
+        List<Plate> rv = new ArrayList<>();
         try {
             for (Map<String, Map<String, Object>> map : listMap) {
                 Plate entity = new Plate();

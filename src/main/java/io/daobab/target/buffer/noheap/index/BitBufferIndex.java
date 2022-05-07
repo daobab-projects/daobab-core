@@ -17,7 +17,7 @@ public abstract class BitBufferIndex<E, F> implements BitBufferIndexBase<F> {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final Column<?, ?, EntityRelation> indexedColumn;
     protected TreeMap<F, Collection<Integer>> valueIndex = new TreeMap<>();
-    protected List<Integer> nullValues = new LinkedList<>();
+    protected List<Integer> nullValues = new ArrayList<>();
     private int indexedColumnPosition = 0;
     private int indexedColumnOrder = 0;
     private boolean worthless = false;

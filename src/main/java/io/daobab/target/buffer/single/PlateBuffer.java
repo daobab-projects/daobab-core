@@ -287,7 +287,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     @Override
     public List<Entity> getTables() {
-        return new LinkedList<>();
+        return new ArrayList<>();
     }
 
     @Override

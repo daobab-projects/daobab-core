@@ -11,8 +11,8 @@ import io.daobab.target.database.query.*;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -22,7 +22,7 @@ import java.util.List;
  * as a result of implementation.
  * Gathers interfaces Target and QueryDataBaseHandler
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"unused", "rawtypes"})
 public interface QueryTarget extends Target, QueryDataBaseHandler {
 
     OpenTransactionDataBaseTargetImpl beginTransaction();
@@ -42,7 +42,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     }
 
     default <E extends Entity> boolean insertAll(Collection<E> entities, int commitEvery) {
-        Collection<E> sub = new LinkedList<>();
+        Collection<E> sub = new ArrayList<>();
         entities.forEach(entity -> {
             sub.add(entity);
             if (sub.size() > commitEvery) {

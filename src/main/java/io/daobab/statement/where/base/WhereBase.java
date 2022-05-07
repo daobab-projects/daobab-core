@@ -183,7 +183,7 @@ public abstract class WhereBase {
                 List<Integer> pointerList = map.get(optimalisationWeight);
                 pointerList.add(i);
             } else {
-                List<Integer> pointerList = new LinkedList<>();
+                List<Integer> pointerList = new ArrayList<>();
                 pointerList.add(i);
                 map.put(optimalisationWeight, pointerList);
             }

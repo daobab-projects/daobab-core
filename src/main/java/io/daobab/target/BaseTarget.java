@@ -15,7 +15,8 @@ import io.daobab.target.statistic.table.StatisticRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -24,11 +25,12 @@ import static java.lang.String.format;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
+@SuppressWarnings("unused")
 public abstract class BaseTarget implements Target, StatisticCollectorProvider, StatisticProvider {
 
     protected final Entity entityAny = new EntityAny();
     protected Logger log = LoggerFactory.getLogger(this.getClass().getName());
-    private Map<Entity, LinkedList<DaobabInterceptor>> interceptors;
+    private Map<Entity, List<DaobabInterceptor>> interceptors;
     private StatisticCollector statistic;
     private boolean statisticEnabled = false;
     private AccessProtector accessProtector;
@@ -42,7 +44,7 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         return log;
     }
 
-    protected Map<Entity, LinkedList<DaobabInterceptor>> getInterceptorsMap() {
+    protected Map<Entity, List<DaobabInterceptor>> getInterceptorsMap() {
         return interceptors;
     }
 
@@ -54,8 +56,8 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         if (entity == null)
             throw new DaobabException("You cannot add interceptor to null entity. If you want to add interceptor to any Entity into target, use addInterceptorForAllEntities(DaobabInterceptor interceptor) method.");
         if (interceptor == null) throw new DaobabException("You cannot add interceptor which is null");
-        LinkedList<DaobabInterceptor> interceptors = getInterceptorsMap().get(entity);
-        LinkedList<DaobabInterceptor> interceptors_for_any_entity = getInterceptorsMap().get(entityAny);
+        List<DaobabInterceptor> interceptors = getInterceptorsMap().get(entity);
+        List<DaobabInterceptor> interceptors_for_any_entity = getInterceptorsMap().get(entityAny);
 
         if (interceptors_for_any_entity.contains(interceptor) && !EntityAny.class.getName().equals(entity.getClass().getName())) {
             getLog().warn(format("Interceptor %s is already added to any entity into target %s", interceptor.getClass().getName(), this.getClass().getName()));
@@ -64,7 +66,7 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
 
         boolean firstInterceptor = false;
         if (interceptors == null) {
-            interceptors = new LinkedList<>();
+            interceptors = new ArrayList<>();
             firstInterceptor = true;
         }
         if (interceptors.contains(interceptor)) {

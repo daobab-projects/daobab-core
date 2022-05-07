@@ -46,7 +46,7 @@ public class BitBufferIndexUniqueInteger<E> extends BitBufferUniqueIndex<E, Inte
                 return valueIndex.values();
             }
             default:
-                return new LinkedList<>();
+                return new ArrayList<>();
         }
     }
 

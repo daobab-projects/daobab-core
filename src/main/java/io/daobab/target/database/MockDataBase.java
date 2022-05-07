@@ -6,7 +6,7 @@ import io.daobab.target.database.connection.SqlProducer;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 
 import javax.sql.DataSource;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,9 +30,8 @@ public class MockDataBase extends DataBaseTarget implements SqlProducer {
 
     @Override
     protected List<Entity> initTables() {
-        return new LinkedList<>();
+        return new ArrayList<>();
     }
-
 
     @Override
     public OpenTransactionDataBaseTargetImpl beginTransaction() {

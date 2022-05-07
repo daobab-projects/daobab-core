@@ -4,7 +4,7 @@ import io.daobab.error.NullFunction;
 import io.daobab.model.Plate;
 import io.daobab.target.buffer.single.Plates;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -38,7 +38,7 @@ public interface PlateProvider {
 
     default FieldsProvider<Plate> filter(Predicate<Plate> predicate) {
         if (predicate == null) throw new NullFunction();
-        List<Plate> rv = new LinkedList<>();
+        List<Plate> rv = new ArrayList<>();
         findMany().forEach(r -> {
             if (predicate.test(r)) {
                 rv.add(r);
@@ -52,7 +52,7 @@ public interface PlateProvider {
         List<Plate> res = findMany();
         if (mapper == null) return null;
 
-        List<M> rv = new LinkedList<>();
+        List<M> rv = new ArrayList<>();
         res.forEach(t -> rv.add(mapper.apply(t)));
 
         return new FieldsBuffer<>(rv);

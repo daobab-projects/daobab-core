@@ -47,7 +47,7 @@ public class BitBufferIndexUniqueNumber<E extends Entity, F extends Number> exte
                 return valueIndex.values();
             }
             default:
-                return new LinkedList<>();
+                return new ArrayList<>();
         }
     }
 

@@ -23,7 +23,7 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
 
     private final String lineSep = System.getProperty("line.separator");
     private final boolean ignoreSuccessful = false;
-    protected Logger log = LoggerFactory.getLogger(this.getClass().getName());
+    protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
     private int bufferSize = 500;
     private long ignoreBelowMilliseconds = 0;
 

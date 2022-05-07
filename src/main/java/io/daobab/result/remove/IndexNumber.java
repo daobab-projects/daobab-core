@@ -55,7 +55,7 @@ public class IndexNumber<E extends Entity, F extends Number> extends Index<E, F>
                 return toPkList(fieldEntitiesMap, new LinkedList<>());
             }
             default:
-                return new LinkedList<>();
+                return new ArrayList<>();
         }
     }
 
@@ -92,10 +92,10 @@ public class IndexNumber<E extends Entity, F extends Number> extends Index<E, F>
                 return toPkList2(new TreeMap<>(), nullValuesPk);
             }
             case NOT_NULL: {
-                return toPkList2(fieldPkMap, new LinkedList<>());
+                return toPkList2(fieldPkMap, new ArrayList<>());
             }
             default:
-                return new LinkedList<>();
+                return new ArrayList<>();
         }
     }
 

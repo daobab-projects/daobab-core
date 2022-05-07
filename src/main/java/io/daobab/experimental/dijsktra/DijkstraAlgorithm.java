@@ -100,7 +100,7 @@ public class DijkstraAlgorithm {
      * NULL if no path exists
      */
     public List<Vertex> getPath(Vertex target) {
-        LinkedList<Vertex> path = new LinkedList<>();
+        List<Vertex> path = new ArrayList<>();
         Vertex step = target;
         // check if a path exists
         if (predecessors.get(step) == null) {

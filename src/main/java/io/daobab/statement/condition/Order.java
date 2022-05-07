@@ -7,8 +7,9 @@ import io.daobab.query.marschal.Marschaller;
 import io.daobab.statement.condition.base.OrderDirection;
 import io.daobab.statement.condition.base.OrderField;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,8 +82,8 @@ public class Order {
     }
 
     //Warning. If query is related to in-memory buffers, this order may skip string based arguments.
-    public LinkedList<OrderField> toOrderFieldList() {
-        LinkedList<OrderField> rv = new LinkedList<>();
+    public List<OrderField> toOrderFieldList() {
+        List<OrderField> rv = new ArrayList<>();
         for (int i = 1; i < getCounter(); i++) {
             Object field = getObjectForPointer(i);
             if (!(field instanceof Column)) {

@@ -14,7 +14,10 @@ import io.daobab.target.database.meta.table.*;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaData, MetaDataTables {
 
@@ -102,7 +105,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
         DatabaseMetaData databaseMetaData = getSourceTarget().getDataSource().getConnection().getMetaData();
 
         ResultSet rs = databaseMetaData.getSchemas();
-        List<MetaSchema> schemas = new LinkedList<>();
+        List<MetaSchema> schemas = new ArrayList<>();
 
         while (rs.next()) {
             MetaSchema schema = new MetaSchema();
@@ -116,7 +119,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
 
     private List<MetaIndex> readIndexes(ResultSet rs) throws SQLException {
-        List<MetaIndex> indexList = new LinkedList<>();
+        List<MetaIndex> indexList = new ArrayList<>();
         while (rs.next()) {
             MetaIndex index = new MetaIndex();
             index.setCatalogName(rs.getString("TABLE_CAT"));
@@ -138,7 +141,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
 
     private List<MetaPrimaryKey> readPrimaryKeys(ResultSet rs) throws SQLException {
-        List<MetaPrimaryKey> metaPrimaryKeys = new LinkedList<>();
+        List<MetaPrimaryKey> metaPrimaryKeys = new ArrayList<>();
         while (rs.next()) {
             MetaPrimaryKey primaryKey = new MetaPrimaryKey();
             primaryKey.setCatalogName(rs.getString("TABLE_CAT"));
@@ -155,7 +158,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
     }
 
     private List<MetaForeignKey> readForeignKeys(ResultSet rs) throws SQLException {
-        List<MetaForeignKey> foreignKeyList = new LinkedList<>();
+        List<MetaForeignKey> foreignKeyList = new ArrayList<>();
         while (rs.next()) {
 
             MetaForeignKey foreignKey = new MetaForeignKey();

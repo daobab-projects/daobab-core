@@ -67,11 +67,9 @@ public enum Propagation {
             return GO_AHEAD;
         }
 
-
         if (this == REQUIRED_NEW || (this == REQUIRED && !target.isTransactionActive())) {
             return START_NEW_JUST_FOR_IT;
         }
-
 
         if (this == NOT_SUPPORTED || ((this == NEVER || this == SUPPORTS) && !target.isTransactionActive())) {
             return EXECUTE_WITHOUT;
@@ -80,7 +78,6 @@ public enum Propagation {
         if (this == MANDATORY && !target.isTransactionActive()) {
             throw new TransactionClosedException(target);
         }
-
 
         if (this == NEVER && target.isTransactionActive()) {
             throw new TransactionNotAllowerForPropagationNever();

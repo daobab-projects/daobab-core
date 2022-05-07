@@ -10,8 +10,8 @@ import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings({"rawtypes", "unused"})
@@ -35,7 +35,7 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
     }
 
     default <E extends Entity> boolean insertAll(Collection<E> entities, int commitEvery) {
-        Collection<E> sub = new LinkedList<>();
+        Collection<E> sub = new ArrayList<>();
         entities.forEach(entity -> {
             sub.add(entity);
             if (sub.size() > commitEvery) {

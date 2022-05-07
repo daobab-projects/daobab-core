@@ -10,10 +10,10 @@ import java.util.*;
 public class EntityBufferGenerator {
 
     private static final int size = 2000000;
-    private List<String> rates = Arrays.asList("perfect", "very good", "good", "medium", "poor", "disaster");
+    private final List<String> rates = Arrays.asList("perfect", "very good", "good", "medium", "poor", "disaster");
 
     public Entities<Film> getFilms(){
-        List<Film> filmList = new LinkedList<>();
+        List<Film> filmList = new ArrayList<>();
         for (int i = 1; i <= size; i++) {
             Film film = new Film();
             film.setFilmId(i);
@@ -33,7 +33,7 @@ public class EntityBufferGenerator {
 
 
     public Entities<Film> getFilms2() {
-        List<Film> filmList = new LinkedList<>();
+        List<Film> filmList = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             Film film = new Film();
             film.setFilmId(i);

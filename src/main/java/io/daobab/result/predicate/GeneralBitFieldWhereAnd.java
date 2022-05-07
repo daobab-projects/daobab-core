@@ -23,14 +23,14 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
     protected transient Logger log = LoggerFactory.getLogger(this.getClass());
     protected Where wrapperWhere;
     protected List<Integer> skipSteps;
-    protected List<WherePredicate<Object>> predicates = new LinkedList<>();
+    protected List<WherePredicate<Object>> predicates = new ArrayList<>();
     //column order
-    protected List<Integer> columnsBufferPositionInWhere = new LinkedList<>();
-    protected List<Integer> columnsEntityPositionInWhere = new LinkedList<>();
+    protected List<Integer> columnsBufferPositionInWhere = new ArrayList<>();
+    protected List<Integer> columnsEntityPositionInWhere = new ArrayList<>();
 
     public GeneralBitFieldWhereAnd(NoHeapBuffer<E> noHeapBuffer, Where wrapperWhere, List<Integer> skipSteps) {
         this.wrapperWhere = wrapperWhere;
-        this.skipSteps = skipSteps == null ? new LinkedList<>() : skipSteps;
+        this.skipSteps = skipSteps == null ? new ArrayList<>() : skipSteps;
         this.noHeapBuffer = noHeapBuffer;
 
         for (int i = 1; i < wrapperWhere.getCounter(); i++) {

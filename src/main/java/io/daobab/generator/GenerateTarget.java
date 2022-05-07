@@ -1,6 +1,6 @@
 package io.daobab.generator;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,11 +10,9 @@ public class GenerateTarget {
 
     private String schemaName;
     private String catalogName;
-
-    private List<GenerateTable> tableList = new LinkedList<>();
-
     private String javaPackage;
-    private boolean alreadyGenerated;
+
+    private List<GenerateTable> tableList = new ArrayList<>();
 
 
     public String toString() {
@@ -35,14 +33,6 @@ public class GenerateTarget {
 
     public void setJavaPackage(String javaPackage) {
         this.javaPackage = javaPackage;
-    }
-
-    public boolean isAlreadyGenerated() {
-        return alreadyGenerated;
-    }
-
-    public void setAlreadyGenerated(boolean alreadyGenerated) {
-        this.alreadyGenerated = alreadyGenerated;
     }
 
     public List<GenerateTable> getTableList() {

@@ -5,7 +5,6 @@ import io.daobab.model.CompositeColumns;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,7 +20,7 @@ public class GenerateTable {
     private List<GenerateColumn> primaryKeys;
     private String compositeKeyName;
     private List<GenerateTable> inheritedSubCompositeKeys = new ArrayList<>();
-    private List<GenerateColumn> columnList = new LinkedList<>();
+    private List<GenerateColumn> columnList = new ArrayList<>();
 
     private String javaPackage;
     private boolean alreadyGenerated;

@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 
 import static io.daobab.statement.where.base.WhereBase.OR;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class GeneralWhereAnd<E> implements WherePredicate<E> {
 
     protected Logger log = LoggerFactory.getLogger(this.getClass());
@@ -22,8 +23,8 @@ public class GeneralWhereAnd<E> implements WherePredicate<E> {
     protected Where wrapperWhere;
     protected List<Integer> skipSteps;
 
-    protected List<Predicate<Object>> predicates = new LinkedList<>();
-    protected List<Column<Entity, Object, EntityRelation>> keys = new LinkedList<>();
+    protected List<Predicate<Object>> predicates = new ArrayList<>();
+    protected List<Column<Entity, Object, EntityRelation>> keys = new ArrayList<>();
 
     public GeneralWhereAnd(Where wrapperWhere) {
         this.wrapperWhere = wrapperWhere;
@@ -86,7 +87,6 @@ public class GeneralWhereAnd<E> implements WherePredicate<E> {
         Object valueFromWrapper = wrapper.getValueForPointer(i);
 
         Operator relation = wrapper.getRelationForPointer(i);
-
 
         //if Where has a second Where inside...
         Where where = wrapper.getInnerWhere(i);
