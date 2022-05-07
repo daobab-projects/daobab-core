@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface EntityCloneable<E extends Entity> extends Entity {
 

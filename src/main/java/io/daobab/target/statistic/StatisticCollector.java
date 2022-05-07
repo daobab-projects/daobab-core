@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface StatisticCollector extends ILoggerBean {
 

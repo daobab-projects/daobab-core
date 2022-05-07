@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public abstract class RemoteClient extends BaseTarget implements QueryTarget {
 

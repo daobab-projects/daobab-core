@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 @SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryJoin<Q extends Query> {

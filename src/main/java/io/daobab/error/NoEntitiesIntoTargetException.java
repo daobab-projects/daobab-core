@@ -3,7 +3,7 @@ package io.daobab.error;
 import io.daobab.target.Target;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class NoEntitiesIntoTargetException extends DaobabException {
 

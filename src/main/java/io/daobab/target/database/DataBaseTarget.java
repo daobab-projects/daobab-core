@@ -27,7 +27,7 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public abstract class DataBaseTarget extends BaseTarget implements DataBaseTargetLogic, MetaDataTables {
 

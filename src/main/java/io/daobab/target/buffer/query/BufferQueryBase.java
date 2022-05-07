@@ -27,7 +27,7 @@ import java.util.function.UnaryOperator;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBase> implements Query<E, BufferQueryTarget, Q>, QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, RemoteQuery<Q>, ILoggerBean {

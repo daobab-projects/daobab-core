@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 @SuppressWarnings("unused")
 public interface ParserGeneral {

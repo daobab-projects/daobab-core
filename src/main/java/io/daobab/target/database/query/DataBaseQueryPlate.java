@@ -18,7 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 @SuppressWarnings("unused")
 public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBaseQueryPlate> implements QueryExpressionProvider<Entity>, PlateProvider {

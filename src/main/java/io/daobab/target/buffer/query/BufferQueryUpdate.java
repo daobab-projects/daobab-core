@@ -15,7 +15,7 @@ import static io.daobab.statement.where.WhereAnd.and;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E, BufferQueryUpdate<E>> implements ParserGeneral {
 

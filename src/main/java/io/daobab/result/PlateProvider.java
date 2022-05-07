@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface PlateProvider {
 

@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * Contains inner query or fields collection.
  *
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class InnerQueryFields<E extends Entity, F> implements QueryExpressionProvider<E>, FieldsProvider<F> {
 

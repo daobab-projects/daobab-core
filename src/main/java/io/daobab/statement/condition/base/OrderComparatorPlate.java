@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * OrderBy comparator for cached entities
  *
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class OrderComparatorPlate implements Comparator<Plate> {

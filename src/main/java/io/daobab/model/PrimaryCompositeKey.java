@@ -13,7 +13,7 @@ import io.daobab.transaction.Propagation;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 @SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface PrimaryCompositeKey<E extends Entity, K extends Composite> extends EntityRelation<E>, Composite<E>, QueryWhisperer {

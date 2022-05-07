@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecord> implements StatisticCollector, ParserGeneral {
 

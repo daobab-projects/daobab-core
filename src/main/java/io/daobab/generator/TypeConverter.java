@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface TypeConverter {
 

@@ -20,7 +20,7 @@ import static io.daobab.generator.TypeConverter.getDbTypeName;
 import static java.lang.String.join;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class DaobabGenerator {
 

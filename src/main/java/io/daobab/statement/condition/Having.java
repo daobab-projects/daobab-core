@@ -6,7 +6,7 @@ import io.daobab.statement.where.base.Where;
 import static io.daobab.statement.condition.Operator.*;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class Having extends Where<Having> {
 

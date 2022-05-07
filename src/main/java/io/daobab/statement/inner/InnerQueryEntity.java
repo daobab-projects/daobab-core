@@ -6,7 +6,8 @@ import io.daobab.model.EntityRelation;
 
 /**
  * Retrieves inner queries from entities related Queries
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface InnerQueryEntity<E extends Entity> {
 

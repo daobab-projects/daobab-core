@@ -3,7 +3,7 @@ package io.daobab.error;
 import io.daobab.statement.condition.Operator;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class UnhandledOperator extends DaobabException {
 

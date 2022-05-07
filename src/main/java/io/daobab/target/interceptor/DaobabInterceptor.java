@@ -3,7 +3,7 @@ package io.daobab.target.interceptor;
 import io.daobab.model.Entity;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface DaobabInterceptor {
 

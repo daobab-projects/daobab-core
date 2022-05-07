@@ -13,7 +13,7 @@ import io.daobab.transaction.Propagation;
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 @SuppressWarnings({"rawtypes","unused"})
 public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> extends EntityRelation<E>, QueryWhisperer {

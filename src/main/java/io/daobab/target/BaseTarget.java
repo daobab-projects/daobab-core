@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
 import static java.lang.String.format;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 @SuppressWarnings("unused")
 public abstract class BaseTarget implements Target, StatisticCollectorProvider, StatisticProvider {

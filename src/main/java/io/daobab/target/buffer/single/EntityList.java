@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * Buffered Entity collection.
  *
  * @param <E> - Entity class
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> implements Entities<E>, StatisticCollectorProvider, StatisticProvider {
 

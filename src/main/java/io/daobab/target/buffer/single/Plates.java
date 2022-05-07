@@ -15,7 +15,7 @@ import java.util.Optional;
 /**
  * Provides cached (in memory) entities
  *
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public interface Plates extends Serializable, List<Plate>, Cloneable, JsonHandler, BufferQueryTarget {
 
