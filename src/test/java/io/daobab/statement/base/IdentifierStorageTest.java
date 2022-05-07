@@ -9,11 +9,11 @@ public class IdentifierStorageTest {
 
     @Test
     public void testIdentifiers(){
-        IdentifierStorage identifierStorage=new IdentifierStorage();
-        String id1=identifierStorage.getIdentifierFor(ONE);
-        String id2=identifierStorage.getIdentifierFor(TWO);
-        Assertions.assertEquals(id1,IdentifierStorage.identifier+"1");
-        Assertions.assertEquals(id2,IdentifierStorage.identifier+"2");
+        IdentifierStorage identifierStorage = new IdentifierStorage();
+        String id1 = identifierStorage.getIdentifierFor(ONE);
+        String id2 = identifierStorage.getIdentifierFor(TWO);
+        Assertions.assertEquals(id1, IdentifierStorage.IDENTIFIER + "1");
+        Assertions.assertEquals(id2, IdentifierStorage.IDENTIFIER + "2");
 
 //        identifierStorage.getAllDao().forEach(System.out::println);
     }

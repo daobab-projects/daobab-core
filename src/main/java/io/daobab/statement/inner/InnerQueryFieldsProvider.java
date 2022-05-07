@@ -12,5 +12,4 @@ public interface InnerQueryFieldsProvider<E extends Entity, F> {
 
     InnerQueryFields<E, F> innerResult();
 
-
 }

@@ -10,7 +10,6 @@ import static io.daobab.statement.condition.Operator.*;
  */
 public class Having extends Where<Having> {
 
-    // ------ Contructors
     public Having() {
         super();
     }

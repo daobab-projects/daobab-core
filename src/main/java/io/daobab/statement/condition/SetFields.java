@@ -13,14 +13,15 @@ import java.util.HashMap;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings({"rawtypes", "unchecked", "unused"})
 public class SetFields {
 
-    protected static final String FIELD = "field";
-    protected static final String VALUE = "value";
+    private static final String FIELD = "field";
+    private static final String VALUE = "value";
     private final HashMap<String, Object> hash = new HashMap<>();
     private int counter = 1;
 
-    public static final <F, R extends EntityRelation> SetFields setColumn(Column<?, F, R> field, R related) {
+    public static <F, R extends EntityRelation> SetFields setColumn(Column<?, F, R> field, R related) {
         SetFields s = new SetFields();
         s.setValue(field, related);
         return s;
@@ -34,7 +35,7 @@ public class SetFields {
         return s;
     }
 
-    public static final <F, R extends EntityRelation> SetFields setColumns(R related, Column<?, F, R>... fields) {
+    public static <F, R extends EntityRelation> SetFields setColumns(R related, Column<?, F, R>... fields) {
         SetFields s = new SetFields();
         for (Column<?, F, R> field : fields) {
             s.setValue(field, related);
@@ -42,13 +43,13 @@ public class SetFields {
         return s;
     }
 
-    public static final <F, R extends EntityRelation> SetFields setColumn(Column<?, F, R> field, F value) {
+    public static <F, R extends EntityRelation> SetFields setColumn(Column<?, F, R> field, F value) {
         SetFields s = new SetFields();
         s.setValue(field, value);
         return s;
     }
 
-    public static final <E extends Entity, R extends EntityRelation> SetFields setColumns(E related, Column<E, ?, ?>... fields) {
+    public static <E extends Entity, R extends EntityRelation> SetFields setColumns(E related, Column<E, ?, ?>... fields) {
         SetFields s = new SetFields();
         for (Column<E, ?, ?> c : fields) {
             Column<E, ?, R> cc = (Column<E, ?, R>) c;

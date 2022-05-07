@@ -34,5 +34,4 @@ public class SetOperator {
         this.type = type;
     }
 
-
 }

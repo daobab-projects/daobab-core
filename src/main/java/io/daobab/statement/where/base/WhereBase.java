@@ -50,24 +50,24 @@ public abstract class WhereBase {
             throw new DaobabException("Invalid relation: " + relation);
         }
 
-        boolean endofconditions = false;
+        boolean conditionsEnd = false;
 
-        while (!endofconditions) {
+        while (!conditionsEnd) {
             Object key = map.get(KEY + rv.getCounter());
             Object wrapper = map.get(WRAPPER + rv.getCounter());
             String operator = (String) map.get(RELATION + rv.getCounter());
             Object val = map.get(VALUE + rv.getCounter());
 
             if (key == null && wrapper == null) {
-                endofconditions = true;
+                conditionsEnd = true;
                 break;
             }
             if (key instanceof Map) {
-                Column<?, ?, ?> keycolumn = Marshaller.fromRemote(target, (Map<String, Object>) key);
-                if (keycolumn == null) {
+                Column<?, ?, ?> keyColumn = Marshaller.fromRemote(target, (Map<String, Object>) key);
+                if (keyColumn == null) {
                     throw new ColumnMandatory();
                 } else {
-                    rv.put(KEY + rv.getCounter(), keycolumn);
+                    rv.put(KEY + rv.getCounter(), keyColumn);
                 }
             }
 

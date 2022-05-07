@@ -397,7 +397,6 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W) this;
     }
 
-
     public Set<String> getAllDaoInWhereClause() {
         Set<String> rv = new HashSet<>();
         for (int i = 1; i < getCounter(); i++) {
@@ -413,11 +412,9 @@ public abstract class Where<W extends Where> extends WhereBase {
         return rv;
     }
 
-
     private <F, R extends EntityRelation> void temp(Field<?, F, R> column, F val) {
         temp(column, Operator.EQ, val);
     }
-
 
     private <E1 extends Entity, E2 extends Entity, F, R extends EntityRelation> void temp(Column<E2, F, R> column, Operator operator, InnerQueryEntity<E1> select) {
         if (column == null) throw new ColumnMandatory();
@@ -450,6 +447,7 @@ public abstract class Where<W extends Where> extends WhereBase {
                 return null;
             }
 
+            @SuppressWarnings("java:S1186")
             @Override
             public void setValue(R entity, F value) {
             }
@@ -467,7 +465,6 @@ public abstract class Where<W extends Where> extends WhereBase {
 
         putKeyMandatoryRelationValue(column, operator, select.limitToField(col).innerResult());
     }
-
 
     private <F> void temp(Field<?, F, ?> column, Operator operator) {
 
@@ -537,9 +534,7 @@ public abstract class Where<W extends Where> extends WhereBase {
     private <F, R extends EntityRelation> void temp(Field<?, F, R> column, Operator operator, R... val) {
         if (column == null) throw new ColumnMandatory();
         if (val == null) throw new ValueCanNotBeNullException();
-        List<F> lisf = Arrays.asList(val).stream().map(column::getValueOf).collect(Collectors.toList());
-
-        putKeyMandatoryRelationValue(column, operator, lisf);
+        putKeyMandatoryRelationValue(column, operator, Arrays.stream(val).map(column::getValueOf).collect(Collectors.toList()));
     }
 
 

@@ -9,19 +9,16 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * DAO identifier storage for sql querues
+ * Identifier storage for sql queries
  *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 public final class IdentifierStorage {
 
-    static final String identifier = "ihs";
+    static final String IDENTIFIER = "ihs";
     private final AtomicInteger count = new AtomicInteger();
-
     private final Map<String, String> queryIdentifiers = new HashMap<>();
-
-    private final Map<String, String> joinClauseIdentifiers = new HashMap<>();
-
+    private final Map<String, String> joinIdentifiers = new HashMap<>();
     private final List<String> queryEntities = new ArrayList<>();
 
     public void registerIdentifiers(String... entities) {
@@ -30,15 +27,11 @@ public final class IdentifierStorage {
         for (String entityName : entities) {
             getIdentifierFor(entityName);
         }
-
     }
 
     public void registerIdentifiers(Collection<String> entityNames) {
         if (entityNames == null) return;
-
-        for (String entityName : entityNames) {
-            getIdentifierFor(entityName);
-        }
+        entityNames.forEach(this::getIdentifierFor);
     }
 
     public StringBuilder getIdentifierForColumn(Column<?, ?, ?> field) {
@@ -55,12 +48,11 @@ public final class IdentifierStorage {
     }
 
     public String getIdentifierFor(String entityName) {
-
         if (entityName == null) throw new DaobabException("Entity name must be provided");
 
         String entityIdentifier = queryIdentifiers.get(entityName);
         if (entityIdentifier == null) {
-            entityIdentifier = identifier + count.incrementAndGet();
+            entityIdentifier = IDENTIFIER + count.incrementAndGet();
             queryIdentifiers.put(entityName, entityIdentifier);
             getQueryEntities().add(entityName);
         }
@@ -69,25 +61,24 @@ public final class IdentifierStorage {
     }
 
     public boolean isEntityInJoinClause(String entityName) {
-        return joinClauseIdentifiers.containsKey(entityName);
+        return joinIdentifiers.containsKey(entityName);
     }
 
     public void registerIdentifierForJoinClause(String entityName) {
-
         if (entityName == null) throw new DaobabException("Entity name must be provided.");
 
         String entityIdentifier = queryIdentifiers.get(entityName);
         if (entityIdentifier == null) {
-            entityIdentifier = identifier + count.incrementAndGet();
+            entityIdentifier = IDENTIFIER + count.incrementAndGet();
             queryIdentifiers.put(entityName, entityIdentifier);
-            getQueryEntities().add(entityName);
+            queryEntities.add(entityName);
         }
-        joinClauseIdentifiers.put(entityName, entityName);
+
+        joinIdentifiers.put(entityName, entityIdentifier);
     }
 
     public List<String> getQueryEntities() {
         return queryEntities;
     }
-
 
 }

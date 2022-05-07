@@ -17,11 +17,8 @@ import java.util.Map;
  */
 public class Order {
 
-
     private HashMap<String, Object> orderMap = new HashMap<>();
-
     private int counter = 1;
-
 
     public static Order ASC(Column<?, ?, ?> col) {
         Order o = new Order();
