@@ -23,7 +23,6 @@ public class DaobabSQLException extends DaobabException {
         initCause(sqlexception);
     }
 
-
     public SQLException getNextException() {
         return nextException;
     }

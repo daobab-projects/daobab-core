@@ -14,7 +14,6 @@ public class MarshalledEntity {
         setEntityClass(col.getEntityClass().getName());
     }
 
-
     public String getEntityClass() {
         return entityClass;
     }

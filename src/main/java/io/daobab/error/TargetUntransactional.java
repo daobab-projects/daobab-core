@@ -9,10 +9,8 @@ public class TargetUntransactional extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-
     public TargetUntransactional(Target target) {
         super("Untransactional target: " + target.getClass().getName());
     }
-
 
 }

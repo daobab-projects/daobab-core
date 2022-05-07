@@ -7,10 +7,8 @@ public class RemoteTargetCanNotHandleOpenedTransactionException extends DaobabEx
 
     private static final long serialVersionUID = 1L;
 
-
     public RemoteTargetCanNotHandleOpenedTransactionException() {
         super("You are trying to execute query with manual transaction management. This feature is unavailable to remote targets.");
     }
-
 
 }

@@ -5,7 +5,7 @@ import io.daobab.error.DaobabException;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.query.marschal.Marschaller;
+import io.daobab.query.marschal.Marshaller;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.WhereNot;
@@ -63,7 +63,7 @@ public abstract class WhereBase {
                 break;
             }
             if (key instanceof Map) {
-                Column<?, ?, ?> keycolumn = Marschaller.fromRemote(target, (Map<String, Object>) key);
+                Column<?, ?, ?> keycolumn = Marshaller.fromRemote(target, (Map<String, Object>) key);
                 if (keycolumn == null) {
                     throw new ColumnMandatory();
                 } else {
@@ -156,9 +156,9 @@ public abstract class WhereBase {
         for (Map.Entry<String, Object> entry : whereMap.entrySet()) {
             Object val = entry.getValue();
             if (val instanceof Entity) {
-                rv.put(entry.getKey(), Marschaller.marshalEntity((Entity) val));
+                rv.put(entry.getKey(), Marshaller.marshalEntity((Entity) val));
             } else if (val instanceof Column) {
-                rv.put(entry.getKey(), Marschaller.marschallColumnToString((Column) val));
+                rv.put(entry.getKey(), Marshaller.marshallColumnToString((Column) val));
             } else if (val instanceof Where) {
                 rv.put(entry.getKey(), ((Where<?>) val).toMap());
             } else {

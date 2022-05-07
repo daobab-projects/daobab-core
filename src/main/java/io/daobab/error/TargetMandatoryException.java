@@ -7,10 +7,8 @@ public class TargetMandatoryException extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-
     public TargetMandatoryException() {
         super("Target is mandatory");
     }
-
 
 }

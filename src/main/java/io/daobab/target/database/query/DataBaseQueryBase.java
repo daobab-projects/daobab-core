@@ -11,7 +11,7 @@ import io.daobab.model.EnhancedEntity;
 import io.daobab.model.Entity;
 import io.daobab.model.TableColumn;
 import io.daobab.query.base.*;
-import io.daobab.query.marschal.Marschaller;
+import io.daobab.query.marschal.Marshaller;
 import io.daobab.statement.base.IdentifierStorage;
 import io.daobab.statement.condition.*;
 import io.daobab.statement.function.type.ColumnFunction;
@@ -338,7 +338,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         rv.put(DictRemoteKey.QUERY_CLASS, this.getClass().getName());
         rv.put(DictRemoteKey.SINGLE_RESULT, singleResult);
         if (fields != null && !fields.isEmpty())
-            rv.put(DictRemoteKey.FIELDS, Marschaller.marschallColumnList(fields));
+            rv.put(DictRemoteKey.FIELDS, Marshaller.marshalColumnList(fields));
         if (entityName != null) rv.put(DictRemoteKey.ENTITY_NAME, entityName);
         if (entityClass != null) rv.put(DictRemoteKey.ENTITY_CLASS, entityClass.getName());
         if (_unique) rv.put(DictRemoteKey.UNIQUE, _unique);
@@ -376,7 +376,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         Object unique = rv.get(DictRemoteKey.UNIQUE);
         Object cache = rv.get(DictRemoteKey.CACHE);
 
-        Entity ent = Marschaller.fromRemote(target, (String) remoteEntityName);
+        Entity ent = Marshaller.fromRemote(target, (String) remoteEntityName);
 
         if (ent != null) setEntityClass(ent.getEntityClass());
         setEntityName((String) remoteEntityName);
@@ -388,7 +388,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
             setWhereWrapper(WhereBase.fromRemote(target, (Map<String, Object>) where));
         }
         if (fields != null) {
-            setFields(Marschaller.unMarshallColumns((Map<String, Object>) fields, target));
+            setFields(Marshaller.unMarshallColumns((Map<String, Object>) fields, target));
         }
 
 

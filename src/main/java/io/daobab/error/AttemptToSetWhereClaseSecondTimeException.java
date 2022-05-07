@@ -7,7 +7,6 @@ public class AttemptToSetWhereClaseSecondTimeException extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-
     public AttemptToSetWhereClaseSecondTimeException() {
         super("Where clause should be set once.");
     }

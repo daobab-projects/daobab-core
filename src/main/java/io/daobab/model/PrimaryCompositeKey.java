@@ -26,9 +26,8 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
             throw new DaobabException("Composite key cannot be null");
         }
         WhereAnd where = new WhereAnd();
-        for (TableColumn tcol : keyColumns()) {
-            Column col = tcol.getColumn();
-
+        for (TableColumn tCol : keyColumns()) {
+            Column col = tCol.getColumn();
             where.equal(col, col.getValue((EntityRelation) keyEntity));
         }
         return where;
@@ -92,7 +91,6 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
 
-
             boolean occColumnUpdated = false;
             for (Column<E, ?, ?> c : columnsToUpdate) {
                 if (c.equalsColumn(occ.getOCCColumn())) {
@@ -112,7 +110,6 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
         target.update(SetFields.setColumns((E) this, columnsToUpdate)).where(getKeyWhere(this)).execute(propagation);
         return (E) this;
     }
-
 
     default E update(QueryTarget target) {
         if (this instanceof OptimisticConcurrencyForPrimaryKey) {
@@ -163,7 +160,6 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
                 .execute(transaction);
         return (E) this;
     }
-
 
     default E findById(QueryTarget target, K id) {
         return target.select((E) this).where(getKeyWhere(this)).findOne();

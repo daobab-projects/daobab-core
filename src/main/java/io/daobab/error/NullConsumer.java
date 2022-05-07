@@ -7,10 +7,8 @@ public class NullConsumer extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-
     public NullConsumer() {
         super("Null Consumer");
     }
-
 
 }

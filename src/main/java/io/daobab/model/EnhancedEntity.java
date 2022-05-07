@@ -6,7 +6,7 @@ import io.daobab.query.base.QueryJoin;
 import java.util.Collections;
 import java.util.List;
 
-
+@SuppressWarnings("rawtypes")
 public interface EnhancedEntity extends ColumnsProvider {
 
     default List<Column> joinedColumns() {

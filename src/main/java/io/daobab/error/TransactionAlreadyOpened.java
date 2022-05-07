@@ -7,10 +7,8 @@ public class TransactionAlreadyOpened extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-
     public TransactionAlreadyOpened() {
         super("Transaction already opened");
     }
-
 
 }

@@ -4,7 +4,7 @@ import io.daobab.experimental.dijsktra.Edge;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
-import io.daobab.query.marschal.Marschaller;
+import io.daobab.query.marschal.Marshaller;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
 
@@ -130,7 +130,7 @@ public class JoinWrapper<E extends Entity> {
     public Map<String, Object> toMap() {
         Map<String, Object> rv = new HashMap<>();
         rv.put("type", type.toString());
-        rv.put("byColumn", Marschaller.marschallColumnToString(byColumn));
+        rv.put("byColumn", Marshaller.marshallColumnToString(byColumn));
         rv.put("table", table.getClass().getName());
         if (getWhere() != null) rv.put("where", getWhere().toMap());
         return rv;

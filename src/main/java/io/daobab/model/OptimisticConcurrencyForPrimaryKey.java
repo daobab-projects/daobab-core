@@ -24,7 +24,7 @@ public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKe
 
         F cellval = entityToUpdate.findRelatedOne(target, getOCCColumn());
 
-        Object val = null;
+        Object val;
 
         if (getOCCColumn().getFieldClass().isAssignableFrom(BigDecimal.class)) {
             if (cellval == null) {

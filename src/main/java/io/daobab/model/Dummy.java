@@ -7,7 +7,6 @@ import java.util.Objects;
 
 public interface Dummy<E extends EntityMap> extends EntityRelationMap<E> {
 
-
     /**
      * db name: DUMMY,
      * db type: VARCHAR

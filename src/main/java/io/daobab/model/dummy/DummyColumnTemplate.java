@@ -7,6 +7,7 @@ import io.daobab.model.EntityRelation;
 
 import java.util.Date;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public interface DummyColumnTemplate {
 
     static Column<Dual, String, EntityRelation> dummyColumn(String name) {

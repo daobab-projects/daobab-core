@@ -7,7 +7,6 @@ public class QueryMandatory extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-
     public QueryMandatory() {
         super("Query is mandatory.");
     }

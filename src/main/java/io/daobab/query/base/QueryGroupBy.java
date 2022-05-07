@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryGroupBy<Q extends Query> {
 
     List<Column<?, ?, ?>> getGroupBy();

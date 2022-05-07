@@ -9,11 +9,9 @@ public class NoDataBaseConnectionException extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-
     public NoDataBaseConnectionException(Target dao) {
         super("Target " + dao.getClass().getName() + " has no database connection.");
     }
-
 
     public NoDataBaseConnectionException(String msg) {
         super(msg);

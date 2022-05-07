@@ -5,12 +5,10 @@ package io.daobab.error;
  */
 public class ValidationException extends RuntimeException {
 
-
     private static final long serialVersionUID = 8963724980254353803L;
 
     public ValidationException(String msg) {
         super(msg);
     }
-
 
 }

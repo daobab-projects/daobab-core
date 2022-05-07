@@ -3,7 +3,7 @@ package io.daobab.statement.condition;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.TableColumn;
-import io.daobab.query.marschal.Marschaller;
+import io.daobab.query.marschal.Marshaller;
 import io.daobab.statement.condition.base.OrderDirection;
 import io.daobab.statement.condition.base.OrderField;
 
@@ -108,9 +108,9 @@ public class Order {
         for (String key : orderMap.keySet()) {
             Object val = orderMap.get(key);
             if (val instanceof Entity) {
-                rv.put(key, Marschaller.marshalEntity((Entity) val));
+                rv.put(key, Marshaller.marshalEntity((Entity) val));
             } else if (val instanceof TableColumn) {
-                rv.put(key, Marschaller.marschallColumnToString((TableColumn) val));
+                rv.put(key, Marshaller.marshallColumnToString((TableColumn) val));
             } else {
                 rv.put(key, val);
             }

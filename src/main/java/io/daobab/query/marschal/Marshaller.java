@@ -14,31 +14,31 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-public interface Marschaller {
+public interface Marshaller {
 
-    static <E extends Entity> Map<String, Object> marschallColumnList(List<TableColumn> columnList) {
+    static <E extends Entity> Map<String, Object> marshalColumnList(List<TableColumn> columnList) {
         Map<String, Object> rv = new HashMap<>();
         if (columnList == null) return rv;
         int counter = 0;
         for (TableColumn col : columnList) {
-            rv.put("" + counter, marschallColumnToString(col.getColumn()));
+            rv.put("" + counter, marshallColumnToString(col.getColumn()));
             counter++;
         }
         return rv;
     }
 
-    static MarshalledColumn marschallColumn(TableColumn column) {
+    static MarshalledColumn marshallColumn(TableColumn column) {
         MarshalledColumn rv = new MarshalledColumn();
         rv.setColumnClass(column.getColumn().getFieldName());
         rv.setEntityClass(column.getColumn().getEntityClass().getSimpleName());
         return rv;
     }
 
-    static Map<String, Object> marschallColumnToString(TableColumn column) {
-        return marschallColumnToString(column.getColumn());
+    static Map<String, Object> marshallColumnToString(TableColumn column) {
+        return marshallColumnToString(column.getColumn());
     }
 
-    static Map<String, Object> marschallColumnToString(Column column) {
+    static Map<String, Object> marshallColumnToString(Column column) {
         Map<String, Object> rv = new HashMap<>();
 
         rv.put(DictRemoteKey.FIELD, column.getFieldName());

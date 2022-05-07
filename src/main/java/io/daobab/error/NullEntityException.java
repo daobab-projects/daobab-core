@@ -11,5 +11,4 @@ public class NullEntityException extends DaobabException {
         super("Null Entity");
     }
 
-
 }

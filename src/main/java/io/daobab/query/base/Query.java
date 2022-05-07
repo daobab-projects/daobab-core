@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2021
  */
-@SuppressWarnings({"rawtypes"})
+@SuppressWarnings({"rawtypes", "unused"})
 public interface Query<E extends Entity, T extends Target & QueryHandler, Q extends Query> extends ILoggerBean {
 
     List<SetOperator> getSetOperatorList();

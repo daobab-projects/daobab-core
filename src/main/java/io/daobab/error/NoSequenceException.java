@@ -11,5 +11,4 @@ public class NoSequenceException extends DaobabException {
         super("Entity has no sequence.");
     }
 
-
 }

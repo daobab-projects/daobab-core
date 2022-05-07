@@ -7,10 +7,8 @@ public class TargetNotSupports extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-
     public TargetNotSupports() {
         super("Target does not support such operation");
     }
-
 
 }

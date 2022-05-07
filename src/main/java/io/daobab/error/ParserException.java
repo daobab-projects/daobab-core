@@ -16,5 +16,4 @@ public class ParserException extends RuntimeException {
         super(msg, th);
     }
 
-
 }

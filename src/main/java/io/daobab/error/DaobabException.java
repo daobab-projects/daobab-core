@@ -12,7 +12,6 @@ public class DaobabException extends RuntimeException {
     private static final long serialVersionUID = -1127875855361548L;
     private String statusDesc;
 
-
     public DaobabException(String msg) {
         super(msg);
         setStatusDesc(msg);

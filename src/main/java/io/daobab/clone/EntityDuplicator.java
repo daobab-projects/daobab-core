@@ -45,7 +45,7 @@ public interface EntityDuplicator {
         if (src.size() == 0) {
             throw new DaobabException("Entity to clone need to have at least one column.");
         }
-        Plate clone = null;
+        Plate clone;
         try {
             clone = src.getClass().getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -53,19 +53,15 @@ public interface EntityDuplicator {
         }
 
         Plate finalClone = clone;
-        src.entrySet().forEach(entry -> {
-            finalClone.put(entry.getKey(), cloneMap(entry.getValue()));
-        });
+        src.forEach((key, value) -> finalClone.put(key, cloneMap(value)));
 
         return clone;
     }
 
     static Map<String, Object> cloneMap(Map<String, Object> src) {
         Map<String, Object> rv = new HashMap<>();
-        src.entrySet().forEach(entry -> {
+        src.forEach((key, val) -> {
 
-            String key = entry.getKey();
-            Object val = entry.getValue();
             Class columnClass = val.getClass();
 //            if (val == null) continue;
             if (columnClass.equals(DictFieldType.CLASS_BIG_DECIMAL)) {
@@ -81,7 +77,7 @@ public interface EntityDuplicator {
             } else if (columnClass.equals(DictFieldType.CLASS_TIME_SQL)) {
                 rv.put(key, new Time(((Time) val).getTime()));
             } else if (columnClass.equals(DictFieldType.CLASS_BOOLEAN)) {
-                rv.put(key, Boolean.valueOf((boolean) val));
+                rv.put(key, val);
             } else if (columnClass.equals(DictFieldType.CLASS_BIG_INTEGER)) {
                 rv.put(key, new BigInteger(val.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_DOUBLE)) {
@@ -105,10 +101,10 @@ public interface EntityDuplicator {
     }
 
     static <E extends EntityMap> E cloneEntity(E src) {
-        if (src.columns().size() == 0) {
+        if (src.columns().isEmpty()) {
             throw new DaobabException("Entity to clone need to have at least one column.");
         }
-        E clone = null;
+        E clone;
         try {
             clone = (E) src.getClass().getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -135,7 +131,7 @@ public interface EntityDuplicator {
             } else if (columnClass.equals(DictFieldType.CLASS_TIME_SQL)) {
                 clone.setColumnParam(col.getFieldName(), new Time(((Time) val).getTime()));
             } else if (columnClass.equals(DictFieldType.CLASS_BOOLEAN)) {
-                clone.setColumnParam(col.getFieldName(), Boolean.valueOf((boolean) val));
+                clone.setColumnParam(col.getFieldName(), (boolean) val);
             } else if (columnClass.equals(DictFieldType.CLASS_BIG_INTEGER)) {
                 clone.setColumnParam(col.getFieldName(), new BigInteger(val.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_DOUBLE)) {
@@ -152,7 +148,6 @@ public interface EntityDuplicator {
                 clone.setColumnParam(col.getFieldName(), EntityDuplicator.cloneEntity((EntityMap) val));
             }
         }
-
 
         return clone;
     }

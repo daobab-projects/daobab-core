@@ -15,5 +15,4 @@ public class UnknownEntityClass extends DaobabException {
         super(msg);
     }
 
-
 }

@@ -7,7 +7,6 @@ public class InnerQueryMandatory extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-
     public InnerQueryMandatory() {
         super("Inner Query is mandatory.");
     }

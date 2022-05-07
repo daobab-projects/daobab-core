@@ -7,10 +7,8 @@ public class NullFunction extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-
     public NullFunction() {
         super("Null Function");
     }
-
 
 }

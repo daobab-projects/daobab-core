@@ -11,5 +11,4 @@ public class DaobabEntityCreationException extends RuntimeException {
         super("No-args contructor is not available thus Daobab cannot create an instance of object " + clazz.getName(), e);
     }
 
-
 }

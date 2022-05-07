@@ -71,9 +71,9 @@ public class GenerateTarget {
         StringBuilder sb = new StringBuilder();
         for (GenerateTable gc : getTableList()) {
             sb.append("import ")
-                    .append(gc.getJavaPackage());
-
-            sb.append(".").append(GenerateFormatter.toCamelCase(gc.getTableName()))
+                    .append(gc.getJavaPackage())
+                    .append(".")
+                    .append(GenerateFormatter.toCamelCase(gc.getTableName()))
                     .append(";")
                     .append("\n");
         }
@@ -89,7 +89,6 @@ public class GenerateTarget {
             GenerateTable gc = getTableList().get(i);
 
             sb.append("\t\t\t")
-
                     .append(gc.isView() ? "view" : "tab")
                     .append(GenerateFormatter.toCamelCase(gc.getTableName()));
             if (i < getTableList().size() - 1) sb.append(",");
@@ -102,9 +101,8 @@ public class GenerateTarget {
         if (getTableList() == null || getTableList().isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
         for (GenerateTable gc : getTableList()) {
-
-            sb.append(TableDescriptionGenerator.getTableDescription(gc));
-            sb.append("\t")
+            sb.append(TableDescriptionGenerator.getTableDescription(gc))
+                    .append("\t")
                     .append(GenerateFormatter.toCamelCase(gc.getTableName()))
                     .append(" ")
                     .append(gc.isView() ? "view" : "tab")
@@ -117,7 +115,6 @@ public class GenerateTarget {
         }
         return sb.toString();
     }
-
 
     public String getCatalogName() {
         return catalogName;

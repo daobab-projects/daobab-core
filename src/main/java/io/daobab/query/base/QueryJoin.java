@@ -28,15 +28,6 @@ public interface QueryJoin<Q extends Query> {
 
     Q smartJoins();
 
-    /**
-     * Inner Join tables by their ForeignKey
-     *
-     * @param tablePK  - table with PrimaryKey
-     * @param tablesFK - tables with relagtion ForeignKey to tablePK
-     * @param <E>
-     * @param <R>
-     * @return
-     */
     default <E extends Entity & PrimaryKey, R extends EntityRelation> Q joinByPk(E tablePK, R... tablesFK) {
         if (tablePK == null) throw new NullParameter("tablesFK");
         for (R pk : tablesFK) {
