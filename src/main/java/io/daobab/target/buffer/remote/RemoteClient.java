@@ -26,6 +26,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings("unused")
 public abstract class RemoteClient extends BaseTarget implements BufferQueryTarget {
 
     protected Logger log = LoggerFactory.getLogger(this.getClass().getName());

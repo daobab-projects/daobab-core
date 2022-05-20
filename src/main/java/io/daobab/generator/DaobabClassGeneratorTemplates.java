@@ -131,7 +131,11 @@ public interface DaobabClassGeneratorTemplates {
             "\n" +
             "" + GenKeys.TABLES_AND_TYPE +
             "    default " + GenKeys.CLASS_SIMPLE_NAME + " get" + GenKeys.INTERFACE_NAME + "(){return getColumnParam(\"" + GenKeys.FIELD_NAME + "\");}\n" +
+            "    @SuppressWarnings(\"unchecked\")" +
+            "\n" +
             "    default E set" + GenKeys.INTERFACE_NAME + "(" + GenKeys.CLASS_SIMPLE_NAME + " val){setColumnParam(\"" + GenKeys.FIELD_NAME + "\",val); return (E)this;}\n" +
+            "\n" +
+            "    @SuppressWarnings(\"rawtypes\")" +
             "\n" +
             "    default Column<E," + GenKeys.CLASS_SIMPLE_NAME + "," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){\n" +
             "        return new Column<E," + GenKeys.CLASS_SIMPLE_NAME + "," + GenKeys.INTERFACE_NAME + ">() {\n" +

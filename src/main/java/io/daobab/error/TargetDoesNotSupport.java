@@ -3,11 +3,11 @@ package io.daobab.error;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public class TargetNotSupports extends DaobabException {
+public class TargetDoesNotSupport extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-    public TargetNotSupports() {
+    public TargetDoesNotSupport() {
         super("Target does not support such operation");
     }
 

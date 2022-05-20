@@ -19,7 +19,6 @@ public class BitIndexFloat extends BitIndex<Float, BitFieldFloatNotNull, BitInde
         return new BitIndexFloat(tableColumn, valueIndex, nullValues);
     }
 
-
     protected BitIndexFloat(BitIndexFloat original, TableColumn tableColumn, Collection<Float> keys, boolean nullValues) {
         super(original, tableColumn, keys, nullValues);
     }
@@ -28,6 +27,5 @@ public class BitIndexFloat extends BitIndex<Float, BitFieldFloatNotNull, BitInde
     protected BitIndexFloat createSubIndex(BitIndexFloat original, TableColumn tableColumn, Collection<Float> keys, boolean nullValues) {
         return new BitIndexFloat(original, tableColumn, keys, nullValues);
     }
-
 
 }

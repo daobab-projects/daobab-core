@@ -1,6 +1,6 @@
 package io.daobab.target.buffer.multi;
 
-import io.daobab.error.TargetNotSupports;
+import io.daobab.error.TargetDoesNotSupport;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
@@ -61,7 +61,6 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
                 getEntities(clazz);
             }
         }
-
     }
 
     @SafeVarargs
@@ -189,7 +188,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     }
 
     public <E extends Entity> E insert(BufferQueryInsert<E> query, Propagation propagation) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     public <E extends Entity> int update(BufferQueryUpdate<E> query, boolean transaction) {
@@ -202,7 +201,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     }
 
     public <E extends Entity> int update(BufferQueryUpdate<E> query, Propagation propagation) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @SuppressWarnings("unchecked")
@@ -270,7 +269,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
     }
 
     public <E extends Entity> int delete(BufferQueryDelete<E> query, Propagation propagation) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override

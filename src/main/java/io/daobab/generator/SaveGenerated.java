@@ -36,7 +36,7 @@ public interface SaveGenerated {
 
 
         if (subfolder != null && !subfolder.trim().isEmpty()) {
-            sbfol.append(subfolder.trim().toLowerCase() + File.separator);
+            sbfol.append(subfolder.trim().toLowerCase()).append(File.separator);
         }
 
 

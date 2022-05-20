@@ -1,6 +1,6 @@
 package io.daobab.target.buffer.noheap;
 
-import io.daobab.error.TargetNotSupports;
+import io.daobab.error.TargetDoesNotSupport;
 import io.daobab.model.Entity;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ class NoHeapEntityList<E extends Entity> implements List<E> {
 
     @Override
     public boolean contains(Object o) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
@@ -63,47 +63,47 @@ class NoHeapEntityList<E extends Entity> implements List<E> {
 
     @Override
     public <T> T[] toArray(T[] ts) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean add(E e) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean remove(Object o) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean containsAll(Collection<?> collection) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean addAll(Collection<? extends E> collection) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean addAll(int i, Collection<? extends E> collection) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean removeAll(Collection<?> collection) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean retainAll(Collection<?> collection) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public void clear() {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
@@ -113,42 +113,42 @@ class NoHeapEntityList<E extends Entity> implements List<E> {
 
     @Override
     public E set(int i, E e) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public void add(int i, E e) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public E remove(int i) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public int indexOf(Object o) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public ListIterator<E> listIterator() {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public ListIterator<E> listIterator(int i) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public List<E> subList(int i, int i1) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
 }

@@ -56,6 +56,7 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
         return Optional.ofNullable(getTarget().readEntity(modifyQuery(this)));
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public <E1 extends Entity, F, R extends EntityRelation> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> field) {
         BufferQueryField<E1, F> queryField = new BufferQueryField<>(getTarget(), field);
@@ -64,7 +65,7 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
 
     @Override
     public NoHeapEntities<E> toNoHeap() {
-        return new NoHeapEntities<E>(this.findMany());
+        return new NoHeapEntities<>(this.findMany());
     }
 
     @Override

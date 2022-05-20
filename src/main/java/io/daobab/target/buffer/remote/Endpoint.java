@@ -13,6 +13,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings("unused")
 public class Endpoint {
 
     public static ResponseWrapper invoke(BufferQueryTarget exposedTarget, Map<String, Object> query) {
@@ -24,10 +25,10 @@ public class Endpoint {
             ResponseWrapper r = new ResponseWrapper();
             boolean accessProtectorAvailable = protector != null && protector.isEnabled();
 
-            String queryclass = (String) query.get(DictRemoteKey.QUERY_CLASS);
+            String queryClass = (String) query.get(DictRemoteKey.QUERY_CLASS);
             boolean singleResult = (boolean) query.get(DictRemoteKey.SINGLE_RESULT);
 
-            if (BufferQueryEntity.class.getName().equals(queryclass)) {
+            if (BufferQueryEntity.class.getName().equals(queryClass)) {
                 BufferQueryEntity<?> q = new BufferQueryEntity<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.validateEntityAllowedFor(q.getEntityName(), OperationType.READ);
@@ -35,7 +36,7 @@ public class Endpoint {
                 }
                 r.setContent(singleResult ? exposedTarget.readEntity(q) : exposedTarget.readEntityList(q));
 
-            } else if (BufferQueryField.class.getName().equals(queryclass)) {
+            } else if (BufferQueryField.class.getName().equals(queryClass)) {
                 BufferQueryField<?, ?> q = new BufferQueryField<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.removeViolatedInfoColumns3(q.getFields(), OperationType.READ);
@@ -43,7 +44,7 @@ public class Endpoint {
                 if (!q.getFields().isEmpty()) {
                     r.setContent(singleResult ? exposedTarget.readField(q) : exposedTarget.readFieldList(q));
                 }
-            } else if (BufferQueryPlate.class.getName().equals(queryclass)) {
+            } else if (BufferQueryPlate.class.getName().equals(queryClass)) {
                 BufferQueryPlate q = new BufferQueryPlate(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.removeViolatedInfoColumns3(q.getFields(), OperationType.READ);
@@ -51,19 +52,19 @@ public class Endpoint {
                 if (!q.getFields().isEmpty()) {
                     r.setContent(singleResult ? exposedTarget.readPlate(q) : exposedTarget.readPlateList(q));
                 }
-            } else if (BufferQueryDelete.class.getName().equals(queryclass)) {
+            } else if (BufferQueryDelete.class.getName().equals(queryClass)) {
                 BufferQueryDelete<?> q = new BufferQueryDelete<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.validateEntityAllowedFor(q.getEntityName(), OperationType.DELETE);
                 }
                 r.setContent(exposedTarget.delete(q, true));
-            } else if (BufferQueryUpdate.class.getName().equals(queryclass)) {
+            } else if (BufferQueryUpdate.class.getName().equals(queryClass)) {
                 BufferQueryUpdate<?> q = new BufferQueryUpdate<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.validateEntityAllowedFor(q.getEntityName(), OperationType.UPDATE);
                 }
                 r.setContent(exposedTarget.update(q, true));
-            } else if (BufferQueryInsert.class.getName().equals(queryclass)) {
+            } else if (BufferQueryInsert.class.getName().equals(queryClass)) {
                 BufferQueryInsert<?> q = new BufferQueryInsert<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.validateEntityAllowedFor(q.getEntityName(), OperationType.INSERT);

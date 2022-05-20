@@ -12,6 +12,7 @@ import io.daobab.target.buffer.noheap.NoHeapEntities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -45,9 +46,7 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
     default MultiEntityTarget joinEntities(Entities<? extends Entity>... targets) {
         List<Entities<? extends Entity>> list = new ArrayList<>();
         list.add(this);
-        for (Entities<? extends Entity> e : targets) {
-            list.add(e);
-        }
+        list.addAll(Arrays.asList(targets));
         return new SimpleMultiTarget(list);
     }
 

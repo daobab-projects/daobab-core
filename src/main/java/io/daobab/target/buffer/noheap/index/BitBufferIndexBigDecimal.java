@@ -8,7 +8,6 @@ import io.daobab.target.buffer.noheap.NoHeapBuffer;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -30,44 +29,53 @@ public class BitBufferIndexBigDecimal<E> extends BitBufferIndex<E, BigDecimal> {
                 }
                 return toOneList(subManyMap);
             }
-            case LIKE: {
-                String keyLike = (String) key1;
-                subManyMap = new TreeMap<>();
-                if (keyLike == null) {
-                    return toOneList(subManyMap);
-                }
 
-                MatchLike matchLike = new MatchLike(keyLike);
-                for (Map.Entry<BigDecimal, Collection<Integer>> entry : valueIndex.entrySet()) {
-                    if (matchLike.test(entry.getKey())) {
-                        subManyMap.put(entry.getKey(), entry.getValue());
-                    }
+            case LIKE: {
+                if (key1 == null) {
+                    return toOneList(new TreeMap<>());
                 }
+                subManyMap = new TreeMap<>();
+
+                MatchLike matchLike = new MatchLike(key1);
+
+                valueIndex.entrySet().stream()
+                        .filter(entry -> matchLike.test(entry.getKey()))
+                        .forEach(entry -> subManyMap.put(entry.getKey(), entry.getValue()));
+
+//                for (Map.Entry<BigDecimal, Collection<Integer>> entry : valueIndex.entrySet()) {
+//                    if (matchLike.test(entry.getKey())) {
+//                        subManyMap.put(entry.getKey(), entry.getValue());
+//                    }
+//                }
                 return toOneList(subManyMap);
             }
 
             case NOT_LIKE: {
-                String keyLike = (String) key1;
                 subManyMap = new TreeMap<>();
-                if (keyLike == null) {
+                if (key1 == null) {
                     return toOneList(subManyMap);
                 }
 
-                MatchLike matchLike = new MatchLike(keyLike);
-                for (Map.Entry<BigDecimal, Collection<Integer>> entry : valueIndex.entrySet()) {
-                    if (!matchLike.test(entry.getKey())) {
-                        subManyMap.put(entry.getKey(), entry.getValue());
-                    }
-                }
+                MatchLike matchLike = new MatchLike(key1);
+                valueIndex.entrySet().stream()
+                        .filter(entry -> !matchLike.test(entry.getKey()))
+                        .forEach(entry -> subManyMap.put(entry.getKey(), entry.getValue()));
+//                for (Map.Entry<BigDecimal, Collection<Integer>> entry : valueIndex.entrySet()) {
+//                    if (!matchLike.test(entry.getKey())) {
+//                        subManyMap.put(entry.getKey(), entry.getValue());
+//                    }
+//                }
                 return toOneList(subManyMap);
             }
 
             case IS_NULL: {
                 return nullValues;
             }
+
             case NOT_NULL: {
                 return toOneList(valueIndex);
             }
+
             default:
                 return toOneList(valueIndex);
         }

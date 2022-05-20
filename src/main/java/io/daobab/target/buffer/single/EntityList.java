@@ -3,7 +3,7 @@ package io.daobab.target.buffer.single;
 import io.daobab.clone.EntityDuplicator;
 import io.daobab.error.BufferedOperationAllowedOnlyForSingleEntityColumns;
 import io.daobab.error.DaobabException;
-import io.daobab.error.TargetNotSupports;
+import io.daobab.error.TargetDoesNotSupport;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesBufferIndexed;
@@ -51,6 +51,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     //    private final boolean transactionActive = false;
     private transient StatisticCollector statistic;
 
+    @SuppressWarnings("unchecked")
     public EntityList(List<E> entities, E entityinstance) {
         this(entities, (Class<E>) entityinstance.getClass());
     }
@@ -67,7 +68,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     @Override
     public boolean isTransactionActive() {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
@@ -77,7 +78,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     @Override
     public <T> T aroundTransaction(Supplier<T> t) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @SuppressWarnings("unchecked")
@@ -249,14 +250,14 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     @Override
     public <E extends Entity> int update(BufferQueryUpdate<E> query, boolean transaction) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
 //        getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.UPDATE);
 //        return 0;
     }
 
     @Override
     public <E extends Entity> E insert(BufferQueryInsert<E> query, boolean transaction) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
 //        getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.INSERT);
 //        return null;
     }
@@ -296,21 +297,21 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     @Override
     public <E extends Entity> int update(BufferQueryUpdate<E> query, Propagation propagation) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
 //        getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.UPDATE);
 //        return 0;
     }
 
     @Override
     public <E extends Entity> E insert(BufferQueryInsert<E> query, Propagation propagation) {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
 //        getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.INSERT);
 //        return null;
     }
 
     @Override
     public OpenedTransactionBufferTarget beginTransaction() {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
@@ -340,7 +341,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     @Override
     public void refreshImmediately() {
-        throw new TargetNotSupports();
+        throw new TargetDoesNotSupport();
     }
 
     @Override
