@@ -54,18 +54,6 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
             i++;
         }
 
-//        int i = 0;
-//        for (K key : keys) {
-//            KeyLengthPosition<K> klp = new KeyLengthPosition(key);
-//            Integer originalKeyPosition = original.keysQueue.get(key);
-//            klp.setLength(original.keysArray[originalKeyPosition].getLength());
-//            klp.setPosition(original.keysArray[originalKeyPosition].getPosition());
-//
-//            keysQueue.put(key, i);
-//            keysArray[i] = klp;
-//            i++;
-//        }
-
         this.byteBuffer = original.byteBuffer;
 
         //null values array
