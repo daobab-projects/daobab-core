@@ -39,10 +39,10 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
             columns.addAll(e.columns());
         }
 
-        TableColumn fielddao = columns.get(0);
-        if (fielddao == null) throw new ColumnMandatory();
-        init(target, fielddao.getColumn().getInstance());
-        andColumn(fielddao.getColumn());
+        TableColumn tableColumn = columns.get(0);
+        if (tableColumn == null) throw new ColumnMandatory();
+        init(target, tableColumn.getColumn().getInstance());
+        andColumn(tableColumn.getColumn());
 
         for (int i = 1; i < columns.size(); i++) {
             getFields().add(columns.get(i));

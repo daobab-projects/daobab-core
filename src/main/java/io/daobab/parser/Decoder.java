@@ -28,8 +28,8 @@ public class Decoder {
     }
 
     static byte[] parseBase64Binary(String text) {
-        final int buflen = guessLength(text);
-        final byte[] out = new byte[buflen];
+        final int bufLen = guessLength(text);
+        final byte[] out = new byte[bufLen];
         int o = 0;
 
         final int len = text.length();
@@ -60,7 +60,7 @@ public class Decoder {
             }
         }
 
-        if (buflen == o) // speculation worked out to be OK
+        if (bufLen == o) // speculation worked out to be OK
         {
             return out;
         }

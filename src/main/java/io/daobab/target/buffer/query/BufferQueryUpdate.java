@@ -70,7 +70,6 @@ public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E
         setEntity((E) setFields.getFieldForPointer(1).getInstance());
     }
 
-
     public Integer execute(boolean transaction) {
         return getTarget().update(this, transaction);
     }

@@ -73,5 +73,4 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
         return QueryType.ENTITY;
     }
 
-
 }

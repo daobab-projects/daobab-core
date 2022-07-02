@@ -67,16 +67,14 @@ public class GenerateTarget {
 
 
     public String getTableImports() {
-        if (getTableList() == null || getTableList().isEmpty()) return "";
+        if (getTableList() == null) return "";
         StringBuilder sb = new StringBuilder();
-        for (GenerateTable gc : getTableList()) {
-            sb.append("import ")
-                    .append(gc.getJavaPackage())
-                    .append(".")
-                    .append(GenerateFormatter.toCamelCase(gc.getTableName()))
-                    .append(";")
-                    .append("\n");
-        }
+        getTableList().forEach(gc -> sb.append("import ")
+                .append(gc.getJavaPackage())
+                .append(".")
+                .append(GenerateFormatter.toCamelCase(gc.getTableName()))
+                .append(";")
+                .append("\n"));
         return sb.toString();
     }
 

@@ -43,8 +43,6 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
         } else {
             fields.add(getInfoColumn(column));
         }
-
-
     }
 
     public BufferQueryField(BufferQueryTarget target, Map<String, Object> remote) {
@@ -60,7 +58,6 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
     public <F1> DummyColumnRelation<Dual, F1, EntityRelation> as(String asName, Class<F1> clazz) {
         return new DummyColumnRelation<>(this, DummyColumnTemplate.createDummyColumn(new Dual(), clazz, asName));
     }
-
 
     @Override
     public InnerQueryFields<E, F> innerResult() {

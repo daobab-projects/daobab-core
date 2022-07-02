@@ -9,69 +9,72 @@ import java.math.BigInteger;
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
 @SuppressWarnings("unused")
-public interface ParserNumber {
+public class ParserNumber {
 
-    static Double toDouble(Number from) {
+    private ParserNumber() {
+    }
+
+    public static Double toDouble(Number from) {
         if (from == null) return null;
         return from.doubleValue();
     }
 
-    static double toSmallDouble(Number from) {
+    public static double toSmallDouble(Number from) {
         if (from == null) return 0;
         return from.doubleValue();
     }
 
-    static Integer toInteger(Number from) {
+    public static Integer toInteger(Number from) {
         if (from == null) return null;
         return from.intValue();
     }
 
-    static int toSmallInteger(Number from) {
+    public static int toSmallInteger(Number from) {
         if (from == null) return 0;
         return from.intValue();
     }
 
-    static Long toLong(Number from) {
+    public static Long toLong(Number from) {
         if (from == null) return null;
         return from.longValue();
     }
 
-    static long toSmallLong(Number from) {
+    public static long toSmallLong(Number from) {
         if (from == null) return 0;
         return from.longValue();
     }
 
-    static Short toShort(Number from) {
+    public static Short toShort(Number from) {
         if (from == null) return null;
         return from.shortValue();
     }
 
-    static short toSmallShort(Number from) {
+    public static short toSmallShort(Number from) {
         if (from == null) return 0;
         return from.shortValue();
     }
 
-    static Float toFloat(Number from) {
+    public static Float toFloat(Number from) {
         if (from == null) return null;
         return from.floatValue();
     }
 
-    static float toSmallFloat(Number from) {
+    public static float toSmallFloat(Number from) {
         if (from == null) return 0;
         return from.floatValue();
     }
 
-    static String toString(Number from) {
+    public static String toString(Number from) {
         if (from == null) return null;
         return from.toString();
     }
 
-    static String toHexString(Number from) {
+    public static String toHexString(Number from) {
         if (from == null) return null;
         return String.format("%X", from);
     }
 
-    static BigDecimal toBigDecimal(Number from) {
+    public static BigDecimal toBigDecimal(Number from) {
         if (from == null) return null;
         return new BigDecimal(from.toString());
     }

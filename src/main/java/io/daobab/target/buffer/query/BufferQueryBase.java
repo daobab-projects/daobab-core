@@ -242,7 +242,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         return logQueryEnabled;
     }
 
-
     public Q distinct() {
         _unique = true;
         return (Q) this;
@@ -335,7 +334,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         return rv;
     }
 
-
     public void fromRemote(BufferQueryTarget target, Map<String, Object> rv) {
         setTarget(target);
         if (!this.getClass().getName().equals(rv.get(DictRemoteKey.QUERY_CLASS))) {
@@ -363,7 +361,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         if (fields != null) {
             setFields(Marshaller.unMarshallColumns((Map<String, Object>) fields, target));
         }
-
 
         IdentifierStorage storage = new IdentifierStorage();
         storage.registerIdentifiers(getEntityName());
@@ -410,8 +407,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         return (Q) this;
     }
 
-    public abstract QueryType getQueryType();
-
     protected TableColumn getInfoColumn(ColumnFunction column) {
         if (column == null) return null;
         return new TableColumn(column);
@@ -432,7 +427,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
                 return ic;
             }
         }
-
         return null;
     }
 

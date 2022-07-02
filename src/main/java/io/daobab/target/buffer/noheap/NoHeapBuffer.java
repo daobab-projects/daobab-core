@@ -441,6 +441,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
             Object val = wrapper.getValueForPointer(counter);
 
             switch (relations) {
+                default:
                 case AND: {
                     Collection<Integer> filtered = index.filter(operator, val);
 
@@ -518,7 +519,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
         return new IndexedFilterResult(pointers, skipSteps);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     //If there is OR, indexes may be in in use ONLY if all where arguments have them.
     private boolean mayBeIndexed(Where wrapper) {
         if (OR.equals(wrapper.getRelationBetweenExpressions())) {
@@ -542,7 +543,6 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
     public List<ByteBuffer> getPages() {
         return pages;
     }
-
 
     @Override
     public AccessProtector getAccessProtector() {

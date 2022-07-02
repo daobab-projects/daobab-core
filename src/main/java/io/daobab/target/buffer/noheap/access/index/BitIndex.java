@@ -26,7 +26,7 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
     final BitArrayBaseNotNull<K, B> bitKeyArray;
     final SortedMap<K, Integer> keysQueue;
     protected final TableColumn tableColumn;
-    private final B bitKeyField;
+    protected final B bitKeyField;
     final KeyLengthPosition<K>[] keysArray;
     private final int keysLength;
 
@@ -356,9 +356,7 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
             case NOT_IN: {
                 return filterNegative(Operator.IN, key);
             }
-//            case NOT_LIKE: {
-//                return filterNegative(Operator.LIKE,key);
-//            }
+
             case GT: {
                 return (isEmpty() || bitKeyField.comparator().compare(key, lastKey()) > 0) ? Collections.emptyList() : subValues(key, false, lastKey(), true);
             }

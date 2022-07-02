@@ -28,7 +28,6 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
     private String pkColumnName;
     private boolean pkResolved = false;
     private E entity;
-    private Query<?, ?, ?> selectQuery;
 
     @SuppressWarnings("unused")
     private BufferQueryInsert() {
@@ -103,7 +102,6 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
             throw new DaobabException("Insert and select query has to have the same target.");
         }
 
-        setSelectQuery(query);
         return this;
     }
 
@@ -224,15 +222,6 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         if (entity != null) rv.put(DictRemoteKey.ENTITY, entity);
         if (setFields != null) rv.put(DictRemoteKey.SET_FIELDS, setFields);
         return rv;
-    }
-
-
-    public Query<?, ?, ?> getSelectQuery() {
-        return selectQuery;
-    }
-
-    public void setSelectQuery(Query<?, ?, ?> selectQuery) {
-        this.selectQuery = selectQuery;
     }
 
     @Override

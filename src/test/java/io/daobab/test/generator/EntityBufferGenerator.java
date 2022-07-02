@@ -9,7 +9,7 @@ import java.util.*;
 
 public class EntityBufferGenerator {
 
-    private static final int size = 2000000;
+    private static final int size = 1000000;
     private final List<String> rates = Arrays.asList("perfect", "very good", "good", "medium", "poor", "disaster");
 
     public Entities<Film> getFilms(){

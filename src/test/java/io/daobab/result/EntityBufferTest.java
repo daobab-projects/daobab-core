@@ -29,9 +29,11 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
     @Test
     void test2() {
         EntityBufferGenerator generator = new EntityBufferGenerator();
-        NoHeapEntities<Film> buf = new NoHeapEntities<>(tabFilm);
+
 
         Entities<Film> films = generator.getFilms2();
+
+        NoHeapEntities<Film> buf = new NoHeapEntities<>(films);
 
         for (int i = 0; i < 5; i++) {
             buf.add(films.get(i));
@@ -57,14 +59,14 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
         long start = 0;//System.currentTimeMillis();
         long stop = 0;
 
-        NoHeapEntities<Film> bbuf = new NoHeapEntities<>(tabFilm);
+        NoHeapEntities<Film> noHeapEntities = new NoHeapEntities<>(films);
 
         start = System.currentTimeMillis();
         System.out.println("start");
 
         List<Film> resStream = films.stream()
-                .filter(f -> (f.getFilmId() < 1995000 && f.getFilmId() > 1990000))//||f.getRating().equals("poor"))
-//                .filter(f->f.getRating().equals("very good"))
+                .filter(f -> (f.getFilmId() < 995000 && f.getFilmId() > 990000))//||f.getRating().equals("poor"))
+                .filter(f -> f.getRating().equals("very good"))
 //                .map(e -> e.getTitle())
 //                .filter(f->f.getLength()<150)//||f.getRating().equals("poor"))
 //                .filter(f->f.getLength()>100)//||f.getRating().equals("poor"))
@@ -78,24 +80,25 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
 
         System.out.println("stream result: " + resStream.size() + " time: " + (stop - start));
 
-
-        films.forEach(bbuf::add);
+        //films.forEach(bbuf::add);
 
 
         start = System.currentTimeMillis();
-        BufferQueryEntity<Film> res = bbuf.select(tabFilm)
-                .where(and().greater(tabFilm.colFilmId(), 1990000)
-                        .less(tabFilm.colFilmId(), 1995000))
-//                .equal(tabFilm.colRating(),"very good"))
+        BufferQueryEntity<Film> res = noHeapEntities.select(tabFilm)
+                .where(and()
+                        .greater(tabFilm.colFilmId(), 990000)
+                        .less(tabFilm.colFilmId(), 995000)
+                        .equal(tabFilm.colRating(), "very good"))
 
 //                .whereEqual(tabFilm.colFilmId(), 10)
-
 
 //                        .lessOrEqual(tabFilm.colFilmId(), 10000))
 //                                .less(tabFilm.colLength(), 150)
 //                                .or(tabFilm.colRating(),EQ,"poor")
 //                         .and(tabFilm.colRentalRate(),GT,new BigDecimal(18))
                 ;
+
+//        System.out.println(noHeapEntities.size());
 
         Entities<Film> res2 = res.findMany();
         stop = System.currentTimeMillis();

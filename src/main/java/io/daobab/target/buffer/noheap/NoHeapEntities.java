@@ -31,15 +31,54 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
     }
 
     public NoHeapEntities(List<E> entities, BitFieldRegistry bitFieldRegistry) {
-        this(entities == null || entities.isEmpty() ? null : entities.get(0), entities == null ? 8 : entities.size(), bitFieldRegistry);
+//        this(entities == null || entities.isEmpty() ? null : entities.get(0), entities == null ? 8 : entities.size(), bitFieldRegistry);
+
+        super(bitFieldRegistry);
+        E entity = entities == null || entities.isEmpty() ? null : entities.get(0);
+        adjustForCapacity(8);//1 << pageMaxCapacityBytes;
+        this.entityClass = (Class<E>) entity.getEntityClass();
+        this.columns = entity.columns();
+        List<TableColumn> columns = entity.columns();
+        columnsOrder = new HashMap<>();
+        columnsPositionsQueue = new Integer[columns.size()];
+        bitFields = new BitField[columns.size()];
+        indexRepository = new BitBufferIndexBase[columns.size()];
+        int offsetCounter = 1;
+        int columnNo = 0;
+
+        for (TableColumn tableColumn : columns) {
+            Column column = tableColumn.getColumn();
+            Optional<BitField<Object>> bitField = bitFieldRegistry.getBitFieldFor(tableColumn);
+            if (!bitField.isPresent()) {
+                throw new DaobabException(this, "Class %s is not registered in %s", column.getFieldClass(), bitFieldRegistry.getClass().getName());
+            }
+            bitFields[columnNo] = bitField.get();
+            int fieldSize = bitFields[columnNo].calculateSpace(tableColumn);
+            if (!bitFieldRegistry.mayBeBitBuffered(column)) {
+                throw new DaobabException("Column %s cannot be bitbuffered", column.getColumnName());
+            }
+            columnsPositionsQueue[columnNo] = offsetCounter;
+            columnsOrder.put(column.getColumnName(), columnNo);
+
+            offsetCounter = offsetCounter + fieldSize;
+            columnNo++;
+        }
+        totalEntitySpace = offsetCounter;
+        pages = new ArrayList<>();
+        pages.add(ByteBuffer.allocateDirect(totalEntitySpace << pageMaxCapacityBytes));
+
+        totalBufferSize = pages.size() * (totalEntitySpace << pageMaxCapacityBytes);
+
+
         if (entities != null) {
             entities.forEach(this::add);
         }
 
-        int columnNo = 0;
+        columnNo = 0;
         for (TableColumn tableColumn : columns) {
-            Optional<BitIndex> bb = bitFieldRegistry.createIndex(tableColumn, entities);
-            indexRepository[columnNo] = bb.orElse(null);
+            Optional<BitIndex> index = bitFieldRegistry.createIndex(tableColumn, entities);
+            indexRepository[columnNo] = index.orElse(null);
+            System.out.println("column " + columnNo + " index: " + indexRepository[columnNo]);
             if (indexRepository[columnNo] != null) {
                 isIndexRepositoryEmpty = false;
             }

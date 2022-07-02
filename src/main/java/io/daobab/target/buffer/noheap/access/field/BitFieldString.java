@@ -2,10 +2,14 @@ package io.daobab.target.buffer.noheap.access.field;
 
 import io.daobab.error.DaobabException;
 import io.daobab.model.TableColumn;
+import io.daobab.result.predicate.MatchStringLike;
+import io.daobab.result.predicate.MatchStringNotLike;
+import io.daobab.result.predicate.WherePredicate;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
+import java.util.function.Function;
 
 public class BitFieldString extends BitFieldComparable<String> {
 
@@ -67,5 +71,15 @@ public class BitFieldString extends BitFieldComparable<String> {
             if (o1 != null) return -1;
             return 1;
         };
+    }
+
+    @Override
+    public Function<String, WherePredicate<String>> getPredicateLike() {
+        return MatchStringLike::new;
+    }
+
+    @Override
+    public Function<String, WherePredicate<String>> getPredicateNotLike() {
+        return MatchStringNotLike::new;
     }
 }
