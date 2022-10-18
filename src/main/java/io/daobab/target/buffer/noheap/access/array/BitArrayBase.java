@@ -8,10 +8,8 @@ import io.daobab.target.buffer.noheap.access.field.BitField;
 import io.daobab.target.buffer.noheap.access.field.BitSize;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 import java.util.function.Function;
 
 public abstract class BitArrayBase<T, B extends BitField<T>> implements BitArray<T, B> {
@@ -69,8 +67,10 @@ public abstract class BitArrayBase<T, B extends BitField<T>> implements BitArray
         position += BitSize.INT;
         T[] rv = createArrayForLength(length);
 
+        B bitField = getTypeBitField();
+
         for (int i = 0; i < length; i++) {
-            rv[i] = getTypeBitField().readValue(byteBuffer, position);
+            rv[i] = bitField.readValue(byteBuffer, position);
             position += BitSize.INT;
         }
         return rv;
@@ -92,15 +92,13 @@ public abstract class BitArrayBase<T, B extends BitField<T>> implements BitArray
 
 
     @Override
-    public List<T> readValueListWithLength(ByteBuffer byteBuffer, Integer position, int length) {
+    public void readValueListWithLength(ByteBuffer byteBuffer, T[] readTo, Integer position, int length) {
         //todo: check nulls
         position += BitSize.NULL;
-        List<T> rv = new ArrayList<>(length);
         for (int i = 0; i < length; i++) {
-            rv.add(getTypeBitField().readValue(byteBuffer, position));
+            readTo[i] = (getTypeBitField().readValue(byteBuffer, position));
             position += BitSize.INT;
         }
-        return rv;
     }
 
     @Deprecated

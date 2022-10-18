@@ -7,11 +7,10 @@ import io.daobab.target.buffer.noheap.access.array.BitArrayStringNotNull;
 import io.daobab.target.buffer.noheap.access.field.BitFieldStringNotNull;
 import io.daobab.target.buffer.noheap.access.field.SizeOnlyTableColumn;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
-import java.util.stream.Collectors;
 
 public class BitIndexString extends BitIndex<String, BitFieldStringNotNull, BitIndexString> {
 
@@ -44,24 +43,24 @@ public class BitIndexString extends BitIndex<String, BitFieldStringNotNull, BitI
     }
 
 
-    public Collection<Integer> filter(Operator operator, String key) {
+    public Integer[] filter(Operator operator, String key) {
 
         switch (operator) {
 
             case LIKE: {
                 if (key == null) {
-                    return new ArrayList<>();
+                    return new Integer[0];
                 }
                 MatchLike matchLike = new MatchLike(key);
-                return getKeys().stream().filter(matchLike).map(this::get).flatMap(Collection::stream).collect(Collectors.toList());
+                return getKeys().stream().filter(matchLike).map(this::get).flatMap(Arrays::stream).toArray(Integer[]::new);
             }
 
             case NOT_LIKE: {
                 if (key == null) {
-                    return new ArrayList<>();
+                    return new Integer[0];
                 }
                 MatchLike matchLike = new MatchLike(key);
-                return getKeys().stream().filter(k -> !matchLike.test(k)).map(this::get).flatMap(Collection::stream).collect(Collectors.toList());
+                return getKeys().stream().filter(k -> !matchLike.test(k)).map(this::get).flatMap(Arrays::stream).toArray(Integer[]::new);
             }
 
             default:

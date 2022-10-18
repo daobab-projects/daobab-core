@@ -1,23 +1,22 @@
 package io.daobab.result;
 
-import java.util.Collection;
 import java.util.List;
 
 public class IndexedFilterResult {
 
-    private Collection<Integer> pointers;
+    private Integer[] pointers;
     private List<Integer> skippedWhereSteps;
 
-    public IndexedFilterResult(Collection<Integer> eList, List<Integer> skipSteps) {
+    public IndexedFilterResult(Integer[] eList, List<Integer> skipSteps) {
         this.pointers = eList;
         this.setSkippedWhereSteps(skipSteps);
     }
 
-    public Collection<Integer> getPointers() {
+    public Integer[] getPointers() {
         return pointers;
     }
 
-    public void setPointers(Collection<Integer> pointers) {
+    public void setPointers(Integer[] pointers) {
         this.pointers = pointers;
     }
 

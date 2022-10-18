@@ -4,7 +4,6 @@ import io.daobab.target.buffer.noheap.access.field.BitField;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
-import java.util.List;
 
 public interface BitArray<T, B extends BitField<T>> extends BitField<T[]> {
 
@@ -20,7 +19,7 @@ public interface BitArray<T, B extends BitField<T>> extends BitField<T[]> {
 
     T[] readValueWithLength(ByteBuffer byteBuffer, Integer position, int length);
 
-    List<T> readValueListWithLength(ByteBuffer byteBuffer, Integer position, int length);
+    void readValueListWithLength(ByteBuffer byteBuffer, T[] readTo, Integer position, int length);
 
     T[] createArrayForLength(int length);
 

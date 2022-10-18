@@ -11,7 +11,6 @@ public class TestBitIndexLong {
         SortedMap<Long, Collection<Integer>> map = new TreeMap<>();
         List<Integer> nullValues = new ArrayList<>();
 
-
         nullValues.add(1);
         nullValues.add(3);
 
@@ -20,15 +19,15 @@ public class TestBitIndexLong {
         BitIndexLong bitIndexLong = new BitIndexLong(map, nullValues);
 
         System.out.println("**** null values ****");
-        List<Integer> readNullValues = bitIndexLong.getNullValues();
-        readNullValues.forEach(System.out::println);
+        Integer[] readNullValues = bitIndexLong.getNullValues();
+//        readNullValues.forEach(System.out::println);
         System.out.println("**** keys ****");
         Set<Long> readKeys = bitIndexLong.getKeys();
         readKeys.forEach(System.out::println);
         System.out.println("**** key 9 values ****");
 
-        List<Integer> keysValues = bitIndexLong.get(9L);
-        keysValues.forEach(System.out::println);
+        Integer[] keysValues = bitIndexLong.get(9L);
+        Arrays.stream(keysValues).forEach(System.out::println);
 
 
     }

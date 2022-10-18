@@ -41,12 +41,14 @@ public class ParserDate {
         if (from == null) return null;
         return parse(from, new SimpleDateFormatThreadSafe(pattern));
     }
+    static final Object synchro = "";
 
     public static String parse(Date from, SimpleDateFormatThreadSafe df) {
         if (from == null) return null;
         if (df == null) throw new ParserException("Invalid SimpleDateFormatThreadSafe");
         String result;
-        synchronized (df) {
+
+        synchronized (synchro) {
             result = df.format(from);
         }
         return result;

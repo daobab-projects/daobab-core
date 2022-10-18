@@ -20,13 +20,13 @@ public class TestBitIndexInteger {
         map.put(9, Arrays.asList(9, 3, 7, 8));
         BitIndexInteger bitIndexInteger = new BitIndexInteger(new EmptyTableColumn(), map, nullValues);
 
-        List<Integer> readNullValues = bitIndexInteger.getNullValues();
-        readNullValues.forEach(System.out::println);
+        Integer[] readNullValues = bitIndexInteger.getNullValues();
+//        readNullValues.forEach(System.out::println);
         Set<Integer> readKeys = bitIndexInteger.getKeys();
         readKeys.forEach(System.out::println);
 
-        List<Integer> keysValues = bitIndexInteger.get(9);
-        keysValues.forEach(System.out::println);
+        Integer[] keysValues = bitIndexInteger.get(9);
+//        keysValues.forEach(System.out::println);
 
 
     }

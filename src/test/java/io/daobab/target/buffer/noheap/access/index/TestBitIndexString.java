@@ -20,15 +20,15 @@ public class TestBitIndexString {
         BitIndexString bitIndexLong = new BitIndexString(20, map, nullValues);//.subIndex("jas",false,"malgosia",true,true);
 
         System.out.println("**** null values ****");
-        List<Integer> readNullValues = bitIndexLong.getNullValues();
-        readNullValues.forEach(System.out::println);
+        Integer[] readNullValues = bitIndexLong.getNullValues();
+//        readNullValues.forEach(System.out::println);
         System.out.println("**** keys ****");
         Set<String> readKeys = bitIndexLong.getKeys();
         readKeys.forEach(System.out::println);
         System.out.println("**** key 'malgosia' values ****");
 
-        List<Integer> keysValues = bitIndexLong.get("malgosia");
-        keysValues.forEach(System.out::println);
+        Integer[] keysValues = bitIndexLong.get("malgosia");
+//        keysValues.forEach(System.out::println);
 
         System.out.println("**** first key ****");
         System.out.println(bitIndexLong.firstKey());

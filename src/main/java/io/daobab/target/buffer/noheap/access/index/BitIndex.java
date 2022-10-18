@@ -11,7 +11,6 @@ import io.daobab.target.buffer.noheap.index.BitBufferIndexCounterBase;
 
 import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B, I>> implements BitBufferIndexBase<K>, BitBufferIndexCounterBase<K> {
 
@@ -44,7 +43,7 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
 
         int i = 0;
         for (K key : keys) {
-            KeyLengthPosition<K> klp = new KeyLengthPosition(key);
+            KeyLengthPosition<K> klp = new KeyLengthPosition<>(key);
             Integer originalKeyPosition = original.keysQueue.get(key);
             klp.setLength(original.keysArray[originalKeyPosition].getLength());
             klp.setPosition(original.keysArray[originalKeyPosition].getPosition());
@@ -121,11 +120,15 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
 
     }
 
-    public List<Integer> getNullValues() {
-        if (nullValuesLength == 0) {
-            return new ArrayList<>();
+    public static Integer[] flatten(Integer[][] a2) {
+        Integer[] result = new Integer[totalSize(a2)];
+        int index = 0;
+        for (Integer[] a1 : a2) {
+            for (Integer s : a1) {
+                result[index++] = s;
+            }
         }
-        return Arrays.asList(bitIntArray.readValue(byteBuffer, positionNullValues));
+        return result;
     }
 
     public int countGetNullValues() {
@@ -136,10 +139,12 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
         return keysQueue.keySet();
     }
 
-    public List<Integer> get(K key) {
-        int keyPositionInQueue = keysQueue.get(key);
-        KeyLengthPosition<K> klp = keysArray[keyPositionInQueue];
-        return bitIntArray.readValueListWithLength(byteBuffer, klp.getPosition(), klp.getLength());
+    public static int totalSize(Integer[][] a2) {
+        int result = 0;
+        for (Integer[] a1 : a2) {
+            result += a1.length;
+        }
+        return result;
     }
 
     public int countGet(K key) {
@@ -148,28 +153,34 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
         return klp.getLength();
     }
 
-    public List<Integer> get(KeyLengthPosition<K> klp) {
-        return bitIntArray.readValueListWithLength(byteBuffer, klp.getPosition(), klp.getLength());
+    public static Integer[] flattenList(List<Integer[]> a2) {
+        Integer[] result = new Integer[totalSizeList(a2)];
+        int index = 0;
+        for (Integer[] a1 : a2) {
+            for (Integer s : a1) {
+                result[index++] = s;
+            }
+        }
+        return result;
     }
 
     public int countGet(KeyLengthPosition<K> klp) {
         return klp.getLength();
     }
 
-
-    public List<Integer> getValuesForKeys(List<K> keys) {
-        return keys.stream()
-                .map(this::get)
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
+    public static int totalSizeList(List<Integer[]> a2) {
+        int result = 0;
+        for (Integer[] a1 : a2) {
+            result += a1.length;
+        }
+        return result;
     }
 
-    public int countGetValuesForKeys(List<K> keys) {
-        return keys.stream()
-                .map(this::get)
-                .map(List::size)
-                .mapToInt(Integer::intValue)
-                .sum();
+    public Integer[] getNullValues() {
+        if (nullValuesLength == 0) {
+            return new Integer[0];
+        }
+        return bitIntArray.readValue(byteBuffer, positionNullValues);
     }
 
     public K firstKey() {
@@ -209,27 +220,12 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
         return createSubIndex((I) this, tableColumn, subKeys, includeNulls);
     }
 
-
-    public List<Integer> subValues(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
-        int fromKeyNo = keysQueue.get(fromKey);
-        int toKeyNo = keysQueue.get(toKey);
-        if (!fromInclusive) {
-            fromKeyNo++;
-        }
-        if (toInclusive) {
-            toKeyNo++;
-        }
-
-        fromKeyNo = Math.max(0, fromKeyNo);
-        toKeyNo = Math.min(keysLength - 1, toKeyNo);
-
-        List<Integer> rv = new ArrayList<>();
-
-        for (int i = fromKeyNo; i < toKeyNo; i++) {
-            rv.addAll(get(keysArray[i]));
-        }
-
-        return rv;
+    public Integer[] get(K key) {
+        int keyPositionInQueue = keysQueue.get(key);
+        KeyLengthPosition<K> klp = keysArray[keyPositionInQueue];
+        Integer[] readTo = new Integer[klp.getLength()];
+        bitIntArray.readValueListWithLength(byteBuffer, readTo, klp.getPosition(), klp.getLength());
+        return readTo;
     }
 
     public int countSubValues(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
@@ -254,14 +250,10 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
         return count;
     }
 
-    public List<Integer> allValues() {
-        List<Integer> rv = new ArrayList<>();
-
-        for (int i = 0; i < keysLength; i++) {
-            rv.addAll(get(keysArray[i]));
-        }
-
-        return rv;
+    public Integer[] get(KeyLengthPosition<K> klp) {
+        Integer[] readTo = new Integer[klp.getLength()];
+        bitIntArray.readValueListWithLength(byteBuffer, readTo, klp.getPosition(), klp.getLength());
+        return readTo;
     }
 
     public int countAllValues() {
@@ -278,30 +270,18 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
 
     protected abstract I createSubIndex(I original, final TableColumn tableColumn, final Collection<K> keys, final boolean nullValues);
 
-
-    public Collection<Integer> filter(Operator operator, K... keys) {
-        List<Integer> rv = new ArrayList<>();
-
-        if (Operator.IN.equals(operator)) {
-            for (K indexKey:getKeys()){
-                for (K key : keys) {
-                    if (bitKeyField.comparator().compare(indexKey,key)==0){
-                        rv.addAll(get(indexKey));
-                    }
-                }
-            }
-
-        } else if (Operator.NOT_IN.equals(operator)) {
-            for (K indexKey:getKeys()){
-                for (K key : keys) {
-                    if (bitKeyField.comparator().compare(indexKey, key) == 0) {
-                        continue;
-                    }
-                    rv.addAll(get(indexKey));
-                }
-            }
+    public Integer[] getValuesForKeys(List<K> keys) {
+        List<Integer[]> rv = new ArrayList<>();
+        for (K key : keys) {
+            rv.add(get(key));
         }
-        return rv;
+
+//        return keys.stream()
+//                .map(this::get)
+//                .flatMap(Arrays::stream)
+//                .collect(Collectors.toList());
+
+        return flattenList(rv);
     }
 
     public Integer countFilter(Operator operator, K... keys) {
@@ -329,43 +309,12 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
         return counter;
     }
 
-    @SuppressWarnings("unchecked")
-    public Collection<Integer> filter(Operator operator, Object key1) {
-        K key = (K) key1;
-
-        switch (operator) {
-            case IN:
-            case EQ: {
-                return get(key);
-            }
-            case NOT_EQ: {
-                return filterNegative(Operator.EQ, key);
-            }
-            case NOT_IN: {
-                return filterNegative(Operator.IN, key);
-            }
-
-            case GT: {
-                return (isEmpty() || bitKeyField.comparator().compare(key, lastKey()) > 0) ? Collections.emptyList() : subValues(key, false, lastKey(), true);
-            }
-            case GTEQ: {
-                return (isEmpty() || bitKeyField.comparator().compare(key, lastKey()) > 0) ? Collections.emptyList() : subValues(key, true, lastKey(), true);
-            }
-            case LT: {
-                return (isEmpty() || bitKeyField.comparator().compare(key, firstKey()) < 0) ? Collections.emptyList() : subValues(firstKey(), true, key, false);
-            }
-            case LTEQ: {
-                return (isEmpty() || bitKeyField.comparator().compare(key, firstKey()) < 0) ? Collections.emptyList() : subValues(firstKey(), true, key, true);
-            }
-            case IS_NULL: {
-                return getNullValues();
-            }
-            case NOT_NULL: {
-                return allValues();
-            }
-            default:
-                return new ArrayList<>();
-        }
+    public int countGetValuesForKeys(List<K> keys) {
+        return keys.stream()
+                .map(this::get)
+                .map(a -> a.length)
+                .mapToInt(Integer::intValue)
+                .sum();
     }
 
     @SuppressWarnings("unchecked")
@@ -406,37 +355,25 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public Collection<Integer> filterNegative(Operator operator, Object key1) {
-        K key = (K) key1;
-        switch (operator) {
-            case IN:
-            case EQ: {
-                List<K> keys = new ArrayList<>(getKeys());
-                keys.remove(key);
-                return getValuesForKeys(keys);
-            }
-            case GT: {
-                return filter(Operator.LTEQ, key);
-            }
-            case GTEQ: {
-                return filter(Operator.LT, key);
-            }
-            case LT: {
-                return filter(Operator.GTEQ, key);
-            }
-            case LTEQ: {
-                return filter(Operator.GT, key);
-            }
-            case IS_NULL: {
-                return filter(Operator.NOT_NULL, key);
-            }
-            case NOT_NULL: {
-                return filter(Operator.IS_NULL, key);
-            }
-            default:
-                return Collections.emptyList();
+    public Integer[] subValues(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+        int fromKeyNo = keysQueue.get(fromKey);
+        int toKeyNo = keysQueue.get(toKey);
+        if (!fromInclusive) {
+            fromKeyNo++;
         }
+        if (toInclusive) {
+            toKeyNo++;
+        }
+
+        fromKeyNo = Math.max(0, fromKeyNo);
+        toKeyNo = Math.min(keysLength - 1, toKeyNo);
+
+        Integer[][] rv = new Integer[toKeyNo - fromKeyNo][];
+        for (int i = 0; i < toKeyNo - fromKeyNo; i++) {
+            rv[i] = get(keysArray[fromKeyNo + i]);
+        }
+
+        return flatten(rv);
     }
 
 
@@ -482,4 +419,118 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
     public boolean removeValue(K value, int pointer) {
         return false;
     }
+
+    public Integer[] allValues() {
+
+        Integer[][] rv = new Integer[keysLength][];
+        for (int i = 0; i < keysLength; i++) {
+            rv[i] = get(keysArray[i]);
+        }
+//        List<Integer> rv = new ArrayList<>();
+//
+//        for (int i = 0; i < keysLength; i++) {
+//            rv.addAll(get(keysArray[i]));
+//        }
+
+        return flatten(rv);
+    }
+
+    public Integer[] filter(Operator operator, K... keys) {
+        List<Integer[]> rv = new ArrayList<>();
+
+        if (Operator.IN.equals(operator)) {
+            for (K indexKey : getKeys()) {
+                for (K key : keys) {
+                    if (bitKeyField.comparator().compare(indexKey, key) == 0) {
+                        rv.add(get(indexKey));
+                    }
+                }
+            }
+
+        } else if (Operator.NOT_IN.equals(operator)) {
+            for (K indexKey : getKeys()) {
+                for (K key : keys) {
+                    if (bitKeyField.comparator().compare(indexKey, key) == 0) {
+                        continue;
+                    }
+                    rv.add(get(indexKey));
+                }
+            }
+        }
+//        return rv;
+        return flattenList(rv);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Integer[] filter(Operator operator, Object key1) {
+        K key = (K) key1;
+
+        switch (operator) {
+            case IN:
+            case EQ: {
+                return get(key);
+            }
+            case NOT_EQ: {
+                return filterNegative(Operator.EQ, key);
+            }
+            case NOT_IN: {
+                return filterNegative(Operator.IN, key);
+            }
+
+            case GT: {
+                return (isEmpty() || bitKeyField.comparator().compare(key, lastKey()) > 0) ? new Integer[0] : subValues(key, false, lastKey(), true);
+            }
+            case GTEQ: {
+                return (isEmpty() || bitKeyField.comparator().compare(key, lastKey()) > 0) ? new Integer[0] : subValues(key, true, lastKey(), true);
+            }
+            case LT: {
+                return (isEmpty() || bitKeyField.comparator().compare(key, firstKey()) < 0) ? new Integer[0] : subValues(firstKey(), true, key, false);
+            }
+            case LTEQ: {
+                return (isEmpty() || bitKeyField.comparator().compare(key, firstKey()) < 0) ? new Integer[0] : subValues(firstKey(), true, key, true);
+            }
+            case IS_NULL: {
+                return getNullValues();
+            }
+            case NOT_NULL: {
+                return allValues();
+            }
+            default:
+                return new Integer[0];
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Integer[] filterNegative(Operator operator, Object key1) {
+        K key = (K) key1;
+        switch (operator) {
+            case IN:
+            case EQ: {
+                List<K> keys = new ArrayList<>(getKeys());
+                keys.remove(key);
+                return getValuesForKeys(keys);
+            }
+            case GT: {
+                return filter(Operator.LTEQ, key);
+            }
+            case GTEQ: {
+                return filter(Operator.LT, key);
+            }
+            case LT: {
+                return filter(Operator.GTEQ, key);
+            }
+            case LTEQ: {
+                return filter(Operator.GT, key);
+            }
+            case IS_NULL: {
+                return filter(Operator.NOT_NULL, key);
+            }
+            case NOT_NULL: {
+                return filter(Operator.IS_NULL, key);
+            }
+            default:
+                return new Integer[0];
+        }
+    }
+
 }

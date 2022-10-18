@@ -24,7 +24,6 @@ public abstract class BitArrayBaseNotNull<T, B extends BitField<T>> implements B
         }
     }
 
-
     @Override
     public void writeValueWithoutLength(ByteBuffer byteBuffer, Integer position, T[] array) {
         for (T integer : array) {
@@ -32,7 +31,6 @@ public abstract class BitArrayBaseNotNull<T, B extends BitField<T>> implements B
             position += getTypeSize();
         }
     }
-
 
     public void writeValue(ByteBuffer byteBuffer, Integer position, Collection<T> list) {
         writeValue(byteBuffer, position, list.toArray(createArrayForLength(list.size())));
@@ -63,7 +61,6 @@ public abstract class BitArrayBaseNotNull<T, B extends BitField<T>> implements B
         return rv;
     }
 
-
     @Override
     public T[] readValueWithLength(ByteBuffer byteBuffer, Integer position, int length) {
 
@@ -77,13 +74,11 @@ public abstract class BitArrayBaseNotNull<T, B extends BitField<T>> implements B
     }
 
     @Override
-    public List<T> readValueListWithLength(ByteBuffer byteBuffer, Integer position, int length) {
-        List<T> rv = new ArrayList<>(length);
+    public void readValueListWithLength(ByteBuffer byteBuffer, T[] readTo, Integer position, int length) {
         for (int i = 0; i < length; i++) {
-            rv.add(getTypeBitField().readValue(byteBuffer, position));
+            readTo[i] = getTypeBitField().readValue(byteBuffer, position);
             position += getTypeSize();
         }
-        return rv;
     }
 
     public List<T> subListKey(ByteBuffer byteBuffer, Integer position, Integer fromKeyNo, Integer toKeyNo) {

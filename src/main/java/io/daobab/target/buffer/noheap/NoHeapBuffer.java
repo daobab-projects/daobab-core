@@ -288,7 +288,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected List<Integer> finalFilter(IndexedFilterResult rw, Query<?, ?, ?> query) {
         int counter = 0;
-        Collection<Integer> pointers = rw == null ? null : rw.getPointers();
+        Integer[] pointers = rw == null ? null : rw.getPointers();
         List<Integer> skippedSteps = rw == null ? Collections.emptyList() : rw.getSkippedWhereSteps();
 
         List<Integer> rv = new ArrayList<>();
@@ -362,14 +362,15 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
 
         //if indexRepository is empty, don't even use the index logic
         if (wrapper == null || isIndexRepositoryEmpty || !mayBeIndexed(wrapper)) {
-            return new IndexedFilterResult(entitiesToHandle, Collections.emptyList());
+            return new IndexedFilterResult(entitiesToHandle.toArray(new Integer[entitiesToHandle.size()]), Collections.emptyList());
         }
 
-        if (wrapper.getCounter() == 2) {
+        if (wrapper.getCounter() == 2 && wrapper.getKeyForPointer(1) != null) {
             Column column1 = wrapper.getKeyForPointer(1);
+
             BitBufferIndexBase index = indexRepository[getColumnIntoEntityPosition(column1)];
             if (index == null) {
-                return new IndexedFilterResult(entitiesToHandle, Collections.emptyList());
+                return new IndexedFilterResult(entitiesToHandle.toArray(new Integer[entitiesToHandle.size()]), Collections.emptyList());
             }
             Operator operator1 = wrapper.getRelationForPointer(1);
             Object val1 = wrapper.getValueForPointer(1);
@@ -401,7 +402,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
         List<Integer> skipSteps = new ArrayList<>();
         int indexedArguments = 0;
         int lowestSize = Integer.MAX_VALUE;
-        Collection<Integer> lowestCollection = new ArrayList<>();
+        Integer[] lowestCollection = new Integer[0];
         for (int counter = 1; counter < wrapper.getCounter(); counter++) {
 
             skipSteps.add(counter);
@@ -415,7 +416,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
                         flags[0][in] = true;
                     }
                 } else {
-                    int size = indexedFilterResult.getPointers().size();
+                    int size = indexedFilterResult.getPointers().length;
                     for (int in : indexedFilterResult.getPointers()) {
                         flags[indexedArguments][in] = true;
                     }
@@ -443,9 +444,9 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
             switch (relations) {
                 default:
                 case AND: {
-                    Collection<Integer> filtered = index.filter(operator, val);
+                    Integer[] filtered = index.filter(operator, val);
 
-                    int size = filtered.size();
+                    int size = filtered.length;
                     for (int in : filtered) {
                         flags[indexedArguments][in] = true;
                     }
@@ -456,14 +457,14 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
                     break;
                 }
                 case OR: {
-                    Collection<Integer> filtered = index.filter(operator, val);
+                    Integer[] filtered = index.filter(operator, val);
                     for (int in : filtered) {
                         flags[0][in] = true;
                     }
                     break;
                 }
                 case NOT: {
-                    Collection<Integer> filtered = index.filterNegative(operator, val);
+                    Integer[] filtered = index.filterNegative(operator, val);
                     for (int in : filtered) {
                         flags[indexedArguments][in] = true;
                     }
@@ -516,7 +517,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
             }
         }
 
-        return new IndexedFilterResult(pointers, skipSteps);
+        return new IndexedFilterResult(pointers.toArray(new Integer[pointers.size()]), skipSteps);
     }
 
     @SuppressWarnings("rawtypes")
