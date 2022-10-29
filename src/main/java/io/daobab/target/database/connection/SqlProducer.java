@@ -507,6 +507,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             sb.append(LIMIT).append(limit.getLimit()).append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
         } else if (DictDatabaseType.H2.equals(databaseEngine)) {
             sb.append(LIMIT).append(limit.getLimit()).append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
+        } else if (databaseEngine.startsWith(DictDatabaseType.MYSQL)) {
+            sb.append(" fetch next ").append(limit.getLimit()).append(" rows only ").append(SPACE)
+                    .append(limit.getOffset() > 0 ? "offset " + (limit.getOffset() + " rows) ") : "");
         }
 
         return sb;
@@ -1007,6 +1010,11 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             dateAsString = dateFormat.format(value);
             sb.append(" to_date('").append(dateAsString).append("', 'YYYY-MM-DD HH24:MI:SS')");
             return sb;
+        } else if (databasetype.startsWith(DictDatabaseType.MicrosoftSQL)) {
+            SimpleDateFormat dateFormatMsSql = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            dateAsString = dateFormatMsSql.format(value);
+            sb.append(" convert(DATETIME,'").append(dateAsString).append("')");
+            return sb;
         } else {
             dateAsString = dateFormat.format(value);
             sb.append(APOSTROPHE).append(dateAsString).append(APOSTROPHE);
@@ -1033,6 +1041,11 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         } else if (DictDatabaseType.PostgreSQL.equals(databasetype)) {
             dateAsString = dateFormat.format(value);
             sb.append(" to_date('").append(dateAsString).append("', 'YYYY-MM-DD HH24:MI:SS')");
+            return sb;
+        } else if (databasetype.startsWith(DictDatabaseType.MicrosoftSQL)) {
+            SimpleDateFormat dateFormatMsSql = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            dateAsString = dateFormatMsSql.format(value);
+            sb.append(" convert(DATETIME,'").append(dateAsString).append("')");
             return sb;
         } else {
             dateAsString = dateFormat.format(value);

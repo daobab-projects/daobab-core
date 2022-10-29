@@ -9,6 +9,7 @@ public interface DictDatabaseType {
     String MYSQL = "MySQL";
     String H2 = "H2";
     String PostgreSQL = "PostgreSQL";
+    String MicrosoftSQL = "Microsoft SQL Server";
 
 
 }
