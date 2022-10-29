@@ -507,7 +507,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             sb.append(LIMIT).append(limit.getLimit()).append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
         } else if (DictDatabaseType.H2.equals(databaseEngine)) {
             sb.append(LIMIT).append(limit.getLimit()).append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
-        } else if (databaseEngine.startsWith(DictDatabaseType.MYSQL)) {
+        } else if (databaseEngine.startsWith(DictDatabaseType.MicrosoftSQL)) {
             sb.append(" fetch next ").append(limit.getLimit()).append(" rows only ").append(SPACE)
                     .append(limit.getOffset() > 0 ? "offset " + (limit.getOffset() + " rows) ") : "");
         }
