@@ -161,11 +161,11 @@ public class DaobabGenerator {
                 while (rsSch.next()) {
                     String sch = rsSch.getString("TABLE_SCHEM");
                     wasSchema = true;
-                    System.out.println("Catalog: " + cat + ", Schema:" + sch);
+                    System.out.printf("Catalog: %s, Schema: %s%n", cat, sch);
                 }
 
                 if (!wasSchema) {
-                    System.out.println("Catalog: " + cat + " (no schema)");
+                    System.out.printf("Catalog: %s (no schema)%n", cat);
                 }
             }
 
@@ -277,9 +277,7 @@ public class DaobabGenerator {
         column.setInterfaceName(interfaceName);
 
         StringBuilder javaPackageName = JavaPackageResolver.resolve(getPackage(), catalog, schema);
-
         javaPackageName.append(".column");
-
         column.setPackage(javaPackageName.toString());
 
         return column;
