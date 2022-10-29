@@ -16,8 +16,12 @@ public class JavaPackageResolver {
             "switch", "synchronized", "this", "throw", "throws", "transient",
             "true", "try", "void", "volatile", "while",
 
+            //Daobab KeyWords
+            "sequenceName", "idGeneratorType", "sqlUpdate", "entity",
             "id", "entityrelationmap", "entitymap", "object", "class", "field",
-            "con", "nul", "aux", "lst", "prn", "eof", "inp", "out" //Windows forbidden
+            //Windows forbidden
+            "con", "nul", "aux", "lst", "prn", "eof", "inp", "out"
+
     );
 
     private JavaPackageResolver() {
