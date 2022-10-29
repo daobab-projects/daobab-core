@@ -475,7 +475,7 @@ public class DaobabGenerator {
         return generateTypeScript;
     }
 
-    public DaobabGenerator allowTypeScriptGeneration(boolean generateTypeScript) {
+    public DaobabGenerator generateTypeScripts(boolean generateTypeScript) {
         this.generateTypeScript = generateTypeScript;
         return this;
     }
@@ -484,7 +484,7 @@ public class DaobabGenerator {
         return schemas;
     }
 
-    public DaobabGenerator allowOnlySchemas(String... schemas) {
+    public DaobabGenerator generateOnlyForSchemas(String... schemas) {
         this.schemas = schemas;
         return this;
     }
@@ -493,7 +493,7 @@ public class DaobabGenerator {
         return catalogues;
     }
 
-    public DaobabGenerator allowOnlyCatalogues(String... catalogues) {
+    public DaobabGenerator generateOnlyForCatalogues(String... catalogues) {
         this.catalogues = catalogues;
         return this;
     }
@@ -579,7 +579,7 @@ public class DaobabGenerator {
         writter.generateColumn(catalog, schema, column, getPath(), isOverride());
     }
 
-    public void allowOnlyTables(String... onlyAllowedTables) {
+    public void generateOnlyTables(String... onlyAllowedTables) {
         if (onlyAllowedTables == null) return;
         this.onlyAllowedTables.addAll(Arrays.asList(onlyAllowedTables));
     }
