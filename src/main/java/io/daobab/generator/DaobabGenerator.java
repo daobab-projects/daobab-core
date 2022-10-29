@@ -9,6 +9,7 @@ import io.daobab.target.database.connection.ConnectionGateway;
 import io.daobab.target.database.connection.JdbcType;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,6 +69,8 @@ public class DaobabGenerator {
             long startTime = System.currentTimeMillis();
             connection = DriverManager.getConnection(url, user, pass);
 
+            validateAndJoinPathAndPackage();
+
             createTables(connection.getMetaData());
             summary(startTime);
 
@@ -78,11 +81,32 @@ public class DaobabGenerator {
         }
     }
 
+    private void validateAndJoinPathAndPackage() {
+        if (getPath() == null || getPath().trim().isEmpty()) {
+            throw new RuntimeException("Please set a path.");
+        }
+
+        if (getPackage() == null || getPackage().trim().isEmpty()) {
+            throw new RuntimeException("Please set a package.");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(getPath());
+        sb.append(File.separator);
+        for (String pck : getPackage().split("\\.")) {
+            sb.append(pck);
+            sb.append(File.separator);
+        }
+        setPath(sb.toString());
+    }
+
     public void reverseEngineering(DataSource ds) {
         Connection c = null;
         try {
             c = ds.getConnection();
             long startTime = System.currentTimeMillis();
+
+            validateAndJoinPathAndPackage();
 
             createTables(c.getMetaData());
             summary(startTime);

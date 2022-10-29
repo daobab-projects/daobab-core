@@ -53,10 +53,10 @@ public interface SaveGenerated {
         Path p = Paths.get(sbfol.append(filename).append(type.getExtension()).toString());
 
         if (Files.exists(p) && !override) {
-            System.out.println("File: " + p.getFileName() + " already exists and can't be overrided. If you want to override, setOverride(true) or simple delete file.");
+            System.out.println("File: " + p.getFileName() + " already exists and can't be overridden. Set setOverride(true) or delete the file.");
             return;
         } else if (Files.exists(p) && override) {
-            System.out.println("Overriding file: " + p + ".");
+            System.out.println("Overriding a file: " + p + ".");
         }
 
         try (BufferedWriter writer = Files.newBufferedWriter(p, charset)) {
