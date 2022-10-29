@@ -1,9 +1,18 @@
 package io.daobab.generator;
 
-import io.daobab.model.Composite;
-import io.daobab.model.CompositeColumns;
-import io.daobab.model.EntityMap;
-import io.daobab.model.TableColumn;
+import io.daobab.clone.EntityDuplicator;
+import io.daobab.error.AttemptToReadFromNullEntityException;
+import io.daobab.error.AttemptToWriteIntoNullEntityException;
+import io.daobab.model.*;
+import io.daobab.parser.ParserGeneral;
+import io.daobab.query.base.QueryWhisperer;
+import io.daobab.target.database.DataBaseTarget;
+import io.daobab.target.database.connection.SqlProducer;
+
+import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
@@ -22,8 +31,8 @@ public interface DaobabClassGeneratorTemplates {
 
     String TABLESINTERFACETEMP = "package " + GenKeys.TARGET_PACKAGE + "\n" +
             "\n" +
-            "import io.daobab.parser.ParserGeneral;\n" +
-            "import io.daobab.query.base.QueryWhisperer;\n" +
+            "import " + ParserGeneral.class.getName() + ";\n" +
+            "import " + QueryWhisperer.class.getName() + ";\n" +
             GenKeys.TAB_IMPORTS + "\n" +
             "\n" +
             "public interface " + GenKeys.TABLES_INTERFACE_NAME + " extends ParserGeneral, QueryWhisperer {\n" +
@@ -35,20 +44,20 @@ public interface DaobabClassGeneratorTemplates {
     String targettemp = "package " + GenKeys.TARGET_PACKAGE + "\n" +
             "\n" +
             "\n" +
-            "import io.daobab.model.Entity;\n" +
-            "import io.daobab.target.database.DataBaseTarget;\n" +
-            "import io.daobab.target.database.connection.SqlQueryResolver;\n" +
+            "import " + Entity.class.getName() + ";\n" +
+            "import " + DataBaseTarget.class.getName() + ";\n" +
+            "import " + SqlProducer.class.getName() + ";\n" +
             "\n" +
-            "import javax.sql.DataSource;\n" +
-            "import java.util.Arrays;\n" +
-            "import java.util.List;\n" +
+            "import " + DataSource.class.getName() + ";\n" +
+            "import " + Arrays.class.getName() + ";\n" +
+            "import " + List.class.getName() + ";\n" +
             "\n" +
             "\n" +
-            "public class " + GenKeys.TARGET_CLASS_NAME + " extends DataBaseTarget implements " + GenKeys.TARGET_TABLES_INTERFACE + ", SqlQueryResolver {\n" +
+            "public class " + GenKeys.TARGET_CLASS_NAME + " extends " + DataBaseTarget.class.getSimpleName() + " implements " + GenKeys.TARGET_TABLES_INTERFACE + ", " + SqlProducer.class.getSimpleName() + " {\n" +
             "    @Override\n" +
-            "    protected DataSource initDataSource() {\n" +
+            "    protected " + DataSource.class.getSimpleName() + " initDataSource() {\n" +
             "\n" +
-            "        return /* return DataSource here */;\n" +
+            "        return /* return " + DataSource.class.getSimpleName() + " here */;\n" +
             "    }\n" +
             "\n" +
             "\n" +
@@ -67,12 +76,12 @@ public interface DaobabClassGeneratorTemplates {
             "\n" +
             "import com.fasterxml.jackson.annotation.JsonAutoDetect;\n" +
             "import com.fasterxml.jackson.annotation.JsonInclude;\n" +
-            "import io.daobab.clone.EntityDuplicator;\n" +
-            "import io.daobab.model.Column;\n" +
-            "import io.daobab.model.TableColumn;\n" +
+            "import " + EntityDuplicator.class.getName() + ";\n" +
+            "import " + Column.class.getName() + ";\n" +
+            "import " + TableColumn.class.getName() + ";\n" +
             GenKeys.PK_IMPORT + "\n" +
             GenKeys.COLUMN_IMPORTS + "\n" +
-            "import io.daobab.model.Table;\n" +
+            "import " + Table.class.getName() + ";\n" +
             "\n" +
             GenKeys.PK_TYPE_IMPORT + "\n" +
             "import java.util.Arrays;\n" +
@@ -117,12 +126,12 @@ public interface DaobabClassGeneratorTemplates {
 
     String COLUMN_TEMPLATE = "package " + GenKeys.PACKAGE + ";\n" +
             "\n" +
-            "import io.daobab.error.AttemptToReadFromNullEntityException;\n" +
-            "import io.daobab.error.AttemptToWriteIntoNullEntityException;\n" +
-            "import io.daobab.model.Column;\n" +
-            "import io.daobab.model.EntityRelationMap;\n" +
-            "import io.daobab.model.EntityMap;\n" +
-            "import java.util.Objects;\n" +
+            "import " + AttemptToReadFromNullEntityException.class.getName() + ";\n" +
+            "import " + AttemptToWriteIntoNullEntityException.class.getName() + ";\n" +
+            "import " + Column.class.getName() + ";\n" +
+            "import " + EntityRelationMap.class.getName() + ";\n" +
+            "import " + EntityMap.class.getName() + ";\n" +
+            "import " + Objects.class.getName() + ";\n" +
             "\n" +
             GenKeys.CLASS_FULL_NAME + "\n" +
             "\n" +

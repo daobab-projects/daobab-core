@@ -1,7 +1,7 @@
 package io.daobab.target.database.query;
 
 import io.daobab.error.AtLeastOneColumnToUpdateIsRequired;
-import io.daobab.error.TargetMandatoryException;
+import io.daobab.error.MandatoryTargetException;
 import io.daobab.model.*;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.query.base.QueryType;
@@ -34,7 +34,7 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
     @SuppressWarnings({"unchecked", "rawtypes"})
     //This is for the whole object update
     public <E1 extends PrimaryKey<E, F, ?>, F> DataBaseQueryUpdate(QueryTarget target, E1 entity) {
-        if (target == null) throw new TargetMandatoryException();
+        if (target == null) throw new MandatoryTargetException();
         init(target, entity);
 
         SetFields sf = new SetFields();
@@ -54,7 +54,7 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
     }
 
     public DataBaseQueryUpdate(QueryTarget target, E entity, boolean something) {
-        if (target == null) throw new TargetMandatoryException();
+        if (target == null) throw new MandatoryTargetException();
         init(target, entity);
 
         setEntity(entity);

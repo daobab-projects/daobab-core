@@ -91,9 +91,6 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
 
 
         int bufferSpace = (
-//                (bitKeyArray.getTypeSize() * keysLength) //keys
-//                        + bitIntArray.calculateSpace(keysLength)  //key positions - int
-//                        + bitIntArray.calculateSpace(keysLength)  //value lengths - int
                 +bitIntArray.calculateSpace(nullValuesLength) //values -int
                         + bitIntArray.calculateSpace(totalElements + keysLength)); //space for values -int
         this.byteBuffer = ByteBuffer.allocateDirect(bufferSpace);
@@ -198,27 +195,27 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
     public boolean isEmpty() {
         return keysLength == 0;
     }
-
-    public I subIndex(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive, boolean includeNulls) {
-        int fromKeyNo = keysQueue.get(fromKey);
-        int toKeyNo = keysQueue.get(toKey);
-        if (!fromInclusive) {
-            fromKeyNo++;
-        }
-        if (toInclusive) {
-            toKeyNo++;
-        }
-
-        fromKeyNo = Math.max(0, fromKeyNo);
-        toKeyNo = Math.min(keysLength - 1, toKeyNo);
-
-        List<K> subKeys = new ArrayList<>();
-        for (int i = fromKeyNo; i < toKeyNo; i++) {
-            subKeys.add(keysArray[i].getKey());
-        }
-
-        return createSubIndex((I) this, tableColumn, subKeys, includeNulls);
-    }
+//
+//    public I subIndex(K fromKey, boolean fromInclusive, K toKey, boolean toInclusive, boolean includeNulls) {
+//        int fromKeyNo = keysQueue.get(fromKey);
+//        int toKeyNo = keysQueue.get(toKey);
+//        if (!fromInclusive) {
+//            fromKeyNo++;
+//        }
+//        if (toInclusive) {
+//            toKeyNo++;
+//        }
+//
+//        fromKeyNo = Math.max(0, fromKeyNo);
+//        toKeyNo = Math.min(keysLength - 1, toKeyNo);
+//
+//        List<K> subKeys = new ArrayList<>();
+//        for (int i = fromKeyNo; i < toKeyNo; i++) {
+//            subKeys.add(keysArray[i].getKey());
+//        }
+//
+//        return createSubIndex((I) this, tableColumn, subKeys, includeNulls);
+//    }
 
     public Integer[] get(K key) {
         int keyPositionInQueue = keysQueue.get(key);

@@ -1,7 +1,7 @@
 package io.daobab.target.buffer;
 
-import io.daobab.error.ColumnMandatory;
 import io.daobab.error.DaobabException;
+import io.daobab.error.MandatoryColumn;
 import io.daobab.model.*;
 import io.daobab.statement.condition.SetField;
 import io.daobab.statement.condition.SetFields;
@@ -117,13 +117,13 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
     }
 
     default <E extends EntityMap & PrimaryKey<E, F, ?>, F> E findFieldsByPk(F id, Column<E, ?, ?>... columns) {
-        if (columns == null || columns.length == 0) throw new ColumnMandatory();
+        if (columns == null || columns.length == 0) throw new MandatoryColumn();
         BufferQueryPlate query = new BufferQueryPlate(this, columns).whereEqual(columns[0].getInstance().colID(), id);
         return query.findOneAs(columns[0].getEntityClass());
     }
 
     default <E extends EntityMap & PrimaryCompositeKey<E, K>, K extends Composite> E findFieldsByPk(K key, Column<E, ?, ?>... columns) {
-        if (columns == null || columns.length == 0) throw new ColumnMandatory();
+        if (columns == null || columns.length == 0) throw new MandatoryColumn();
         BufferQueryPlate query = new BufferQueryPlate(this, columns).whereEqual(columns[0].getInstance().keyColumns(), key);
         return query.findOneAs(columns[0].getEntityClass());
     }

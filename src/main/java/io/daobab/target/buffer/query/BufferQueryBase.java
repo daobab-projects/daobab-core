@@ -2,8 +2,8 @@ package io.daobab.target.buffer.query;
 
 import io.daobab.error.AttemptToSetWhereClaseSecondTimeException;
 import io.daobab.error.DaobabEntityCreationException;
+import io.daobab.error.MandatoryTargetException;
 import io.daobab.error.NullEntityException;
-import io.daobab.error.TargetMandatoryException;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.Column;
@@ -116,7 +116,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     }
 
     protected void init(BufferQueryTarget target, String entityName) {
-        if (target == null) throw new TargetMandatoryException();
+        if (target == null) throw new MandatoryTargetException();
         setTarget(target);
         setEntityName(entityName);
         IdentifierStorage storage = new IdentifierStorage();
@@ -125,7 +125,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     }
 
     protected void init(BufferQueryTarget target, Entity entity) {
-        if (target == null) throw new TargetMandatoryException();
+        if (target == null) throw new MandatoryTargetException();
         if (entity == null) throw new NullEntityException();
         setTarget(target);
         setEntityName(entity.getEntityName());
@@ -188,7 +188,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     }
 
     protected void setTarget(BufferQueryTarget target) {
-        if (target == null) throw new TargetMandatoryException();
+        if (target == null) throw new MandatoryTargetException();
         this.target = target;
     }
 

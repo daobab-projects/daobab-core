@@ -1,7 +1,7 @@
 package io.daobab.model;
 
-import io.daobab.error.ColumnMandatory;
 import io.daobab.error.DaobabException;
+import io.daobab.error.MandatoryColumn;
 import io.daobab.model.dummy.DummyColumnTemplate;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class ProcedureParameters {
     public <E extends Entity> ProcedureParameters(Column<?, ?, ?>... columns) {
         this(columns == null ? 0 : columns.length);
         if (columns == null) {
-            throw new ColumnMandatory();
+            throw new MandatoryColumn();
         }
         for (int i = 0; i < columns.length; i++) {
             specifyValue(i + 1, columns[i]);

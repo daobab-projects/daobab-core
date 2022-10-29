@@ -1,6 +1,6 @@
 package io.daobab.target.database.query;
 
-import io.daobab.error.ColumnMandatory;
+import io.daobab.error.MandatoryColumn;
 import io.daobab.model.Column;
 import io.daobab.model.Dual;
 import io.daobab.model.Entity;
@@ -30,7 +30,7 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
     }
 
     public DataBaseQueryField(QueryTarget target, Column<E, F, ?> column) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         init(target, column.getInstance());
         fields.add(getInfoColumn(column));
     }

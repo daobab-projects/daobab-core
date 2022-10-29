@@ -1,6 +1,6 @@
 package io.daobab.target.database.query;
 
-import io.daobab.error.TargetMandatoryException;
+import io.daobab.error.MandatoryTargetException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.query.base.QueryType;
@@ -32,7 +32,7 @@ public final class DataBaseQueryDelete<E extends Entity> extends DataBaseQueryBa
     }
 
     public DataBaseQueryDelete(QueryTarget target, Column<E, ?, ?> column) {
-        if (column == null) throw new TargetMandatoryException();
+        if (column == null) throw new MandatoryTargetException();
         init(target, column.getEntityName());
         setFields(Collections.singletonList(getInfoColumn(column)));
     }

@@ -2,8 +2,8 @@ package io.daobab.model;
 
 import io.daobab.converter.JsonHandler;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
-import io.daobab.error.ColumnMandatory;
 import io.daobab.error.DaobabException;
+import io.daobab.error.MandatoryColumn;
 import io.daobab.error.NullParameter;
 import io.daobab.statement.function.type.ColumnFunction;
 
@@ -22,7 +22,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
 
     public Plate(List<TableColumn> fields, Object[] rowResults) {
         if (fields == null || fields.isEmpty()) {
-            throw new ColumnMandatory();
+            throw new MandatoryColumn();
         }
         this.fields = fields;
         for (int i = 0; i < fields.size(); i++) {
@@ -61,7 +61,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
 
     public Plate(List<TableColumn> fields) {
         if (fields == null || fields.isEmpty()) {
-            throw new ColumnMandatory();
+            throw new MandatoryColumn();
         }
         this.fields = fields;
         fields.forEach(c -> setValue(c, null));

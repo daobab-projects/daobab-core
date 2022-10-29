@@ -55,13 +55,13 @@ public class Writter implements DaobabClassGeneratorTemplates {
         generatedCompositesCount++;
     }
 
-    void generateTarget(String catalog, String schema, List<GenerateTable> tables, String javapackage, String path, boolean override) {
+    void generateTarget(String catalog, String schema, List<GenerateTable> tables, String javapackageName, String path, boolean override) {
         GenerateTarget target = new GenerateTarget();
         target.setSchemaName(schema);
         target.setCatalogName(catalog);
         target.setTableList(tables);
 
-        StringBuilder javaPackage = JavaPackageResolver.resolve(javapackage, catalog, schema);
+        StringBuilder javaPackage = JavaPackageResolver.resolve(javapackageName, catalog, schema);
         target.setJavaPackage(javaPackage.toString());
 
         Replacer replacer = new Replacer();

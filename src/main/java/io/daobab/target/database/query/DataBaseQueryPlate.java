@@ -1,6 +1,6 @@
 package io.daobab.target.database.query;
 
-import io.daobab.error.ColumnMandatory;
+import io.daobab.error.MandatoryColumn;
 import io.daobab.error.NullOrEmptyParameter;
 import io.daobab.model.*;
 import io.daobab.query.base.QueryExpressionProvider;
@@ -39,7 +39,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         }
 
         TableColumn fielddao = columns.get(0);
-        if (fielddao == null) throw new ColumnMandatory();
+        if (fielddao == null) throw new MandatoryColumn();
         init(target, fielddao.getColumn().getInstance());
         andColumn(fielddao.getColumn());
 
@@ -52,7 +52,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     public DataBaseQueryPlate(QueryTarget target, Column<? extends Entity, ?, ?>[] columndaos) {
 
         Column<?, ?, ?> fielddao = columndaos[0];
-        if (fielddao == null) throw new ColumnMandatory();
+        if (fielddao == null) throw new MandatoryColumn();
         init(target, fielddao.getInstance());
 
         andColumn(fielddao);
@@ -69,7 +69,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     public DataBaseQueryPlate(QueryTarget target, List<? extends Column> columndaos) {
 
         Column<?, ?, ?> fielddao = columndaos.get(0);
-        if (fielddao == null) throw new ColumnMandatory();
+        if (fielddao == null) throw new MandatoryColumn();
         init(target, fielddao.getInstance());
         andColumn(fielddao);
 
@@ -86,7 +86,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     public DataBaseQueryPlate(String nativeQuery, QueryTarget target, Column<? extends Entity, ?, ?>[] columndaos) {
 
         Column<?, ?, ?> fielddao = columndaos[0];
-        if (fielddao == null) throw new ColumnMandatory();
+        if (fielddao == null) throw new MandatoryColumn();
         init(target, fielddao.getInstance());
         andColumn(fielddao);
 

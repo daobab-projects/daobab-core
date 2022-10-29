@@ -1,7 +1,7 @@
 package io.daobab.target.database.query;
 
 import io.daobab.error.DaobabException;
-import io.daobab.error.QueryMandatory;
+import io.daobab.error.MandatoryQuery;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
@@ -93,7 +93,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
 
     public DataBaseQueryInsert<E> select(Query<?, ?, ?> query) {
         if (query == null) {
-            throw new QueryMandatory();
+            throw new MandatoryQuery();
         }
 
         if ((!(query instanceof DataBaseQueryEntity)) && (!(query instanceof DataBaseQueryPlate)) && (!(query instanceof DataBaseQueryField))) {

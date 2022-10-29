@@ -88,7 +88,7 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
 
     //    @Override
     public <E extends Entity> E insert(DataBaseQueryInsert<E> query, Propagation propagation) {
-        if (!(this instanceof TransactionalTarget)) throw new TargetUntransactional(this);
+        if (!(this instanceof TransactionalTarget)) throw new TargetNotTransactional(this);
         if (isPropagateModifications()) {
             if (getSourceTarget() == null) throw new SourceTargetUnderBufferedTargetMissed(this.getClass());
             return handleTransactionalTarget((TransactionalTarget) this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).insert(query, transaction));

@@ -1,7 +1,7 @@
 package io.daobab.transaction;
 
 import io.daobab.error.DaobabException;
-import io.daobab.error.TargetMandatoryException;
+import io.daobab.error.MandatoryTargetException;
 import io.daobab.error.TransactionClosedException;
 import io.daobab.error.TransactionNotAllowerForPropagationNever;
 import io.daobab.target.Target;
@@ -60,7 +60,7 @@ public enum Propagation {
 
     public TransactionIndicator mayBeProceeded(Target target) {
         if (target == null) {
-            throw new TargetMandatoryException();
+            throw new MandatoryTargetException();
         }
 
         if ((this == MANDATORY || this == SUPPORTS || this == REQUIRED) && target.isTransactionActive()) {

@@ -1,7 +1,7 @@
 package io.daobab.query.marschal;
 
+import io.daobab.error.MandatoryTargetException;
 import io.daobab.error.NoEntitiesIntoTargetException;
-import io.daobab.error.TargetMandatoryException;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.*;
 import io.daobab.target.Target;
@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface Marshaller {
 
-    static <E extends Entity> Map<String, Object> marshalColumnList(List<TableColumn> columnList) {
+    static Map<String, Object> marshalColumnList(List<TableColumn> columnList) {
         Map<String, Object> rv = new HashMap<>();
         if (columnList == null) return rv;
         int counter = 0;
@@ -65,7 +65,7 @@ public interface Marshaller {
 
     static Entity fromRemote(Target target, String entity) {
         if (entity == null || entity.isEmpty()) return null;
-        if (target == null) throw new TargetMandatoryException();
+        if (target == null) throw new MandatoryTargetException();
 
         for (Entity targetentity : target.getTables()) {
             if (targetentity.getEntityName().equals(entity)) {
@@ -83,8 +83,8 @@ public interface Marshaller {
     }
 
     static List<TableColumn> unMarshallColumns(Map<String, Object> map, Target target) {
-        if (target == null) throw new TargetMandatoryException();
-        if (map == null) throw new TargetMandatoryException();
+        if (target == null) throw new MandatoryTargetException();
+        if (map == null) throw new MandatoryTargetException();
         if (target.getTables() == null || target.getTables().isEmpty()) throw new NoEntitiesIntoTargetException(target);
 
         int counter = 0;
@@ -103,7 +103,7 @@ public interface Marshaller {
     }
 
     static TableColumn unMarshallColumn(Map<String, Object> rv, Target target) {
-        if (target == null) throw new TargetMandatoryException();
+        if (target == null) throw new MandatoryTargetException();
         if (target.getTables() == null || target.getTables().isEmpty()) throw new NoEntitiesIntoTargetException(target);
         String fieldName = (String) rv.get(DictRemoteKey.FIELD);
         String entityName = (String) rv.get(DictRemoteKey.ENTITY_NAME);

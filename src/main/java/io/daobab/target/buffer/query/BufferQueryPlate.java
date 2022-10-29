@@ -1,6 +1,6 @@
 package io.daobab.target.buffer.query;
 
-import io.daobab.error.ColumnMandatory;
+import io.daobab.error.MandatoryColumn;
 import io.daobab.error.NullOrEmptyParameter;
 import io.daobab.model.*;
 import io.daobab.query.base.QueryJoin;
@@ -40,7 +40,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         }
 
         TableColumn tableColumn = columns.get(0);
-        if (tableColumn == null) throw new ColumnMandatory();
+        if (tableColumn == null) throw new MandatoryColumn();
         init(target, tableColumn.getColumn().getInstance());
         andColumn(tableColumn.getColumn());
 
@@ -61,7 +61,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         } else {
             column = columns[0];
         }
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         init(target, column.getInstance());
 
         andColumn(column);
@@ -91,7 +91,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
     public BufferQueryPlate(BufferQueryTarget target, List<? extends Column> columndaos) {
 
         Column<?, ?, ?> field = columndaos.get(0);
-        if (field == null) throw new ColumnMandatory();
+        if (field == null) throw new MandatoryColumn();
         init(target, field.getInstance());
         andColumn(field);
 

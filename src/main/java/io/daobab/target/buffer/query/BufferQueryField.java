@@ -1,6 +1,6 @@
 package io.daobab.target.buffer.query;
 
-import io.daobab.error.ColumnMandatory;
+import io.daobab.error.MandatoryColumn;
 import io.daobab.model.Column;
 import io.daobab.model.Dual;
 import io.daobab.model.Entity;
@@ -32,7 +32,7 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
     private final Map<Integer, ColumnFunction<?, ?, ?, ?>> functionMap = new HashMap<>();
 
     public BufferQueryField(BufferQueryTarget target, Column<E, F, ?> column) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         init(target, column.getInstance());
 
         if (column instanceof ColumnFunction) {

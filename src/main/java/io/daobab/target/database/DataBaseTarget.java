@@ -1,9 +1,9 @@
 package io.daobab.target.database;
 
-import io.daobab.error.ColumnMandatory;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
-import io.daobab.error.EntityMandatory;
+import io.daobab.error.MandatoryColumn;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.statement.where.WhereAnd;
@@ -186,7 +186,7 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     }
 
     public MetaColumn getMetaDataForColumn(Column<?, ?, ?> column) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         return getMetaData().select(tabMetaColumn).where(new WhereAnd()
                         .equal(tabMetaColumn.colTableName(), column.getEntityName())
                         .equal(tabMetaColumn.colColumnName(), column.getColumnName()))
@@ -194,7 +194,7 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     }
 
     public <E extends Entity> MetaTable getMetaDataForTable(E entity) {
-        if (entity == null) throw new EntityMandatory();
+        if (entity == null) throw new MandatoryEntity();
         return getMetaData().select(tabMetaTable)
                 .whereEqual(tabMetaTable.colTableName(), entity.getEntityName())
                 .findOne();

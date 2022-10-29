@@ -1,7 +1,7 @@
 package io.daobab.statement.where.base;
 
-import io.daobab.error.ColumnMandatory;
 import io.daobab.error.DaobabException;
+import io.daobab.error.MandatoryColumn;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
@@ -65,7 +65,7 @@ public abstract class WhereBase {
             if (key instanceof Map) {
                 Column<?, ?, ?> keyColumn = Marshaller.fromRemote(target, (Map<String, Object>) key);
                 if (keyColumn == null) {
-                    throw new ColumnMandatory();
+                    throw new MandatoryColumn();
                 } else {
                     rv.put(KEY + rv.getCounter(), keyColumn);
                 }

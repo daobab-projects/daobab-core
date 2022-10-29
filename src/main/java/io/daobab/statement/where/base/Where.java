@@ -417,7 +417,7 @@ public abstract class Where<W extends Where> extends WhereBase {
     }
 
     private <E1 extends Entity, E2 extends Entity, F, R extends EntityRelation> void temp(Column<E2, F, R> column, Operator operator, InnerQueryEntity<E1> select) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         if (select == null) throw new ValueCanNotBeNullException();
 
         Column<E1, F, R> col = new Column<E1, F, R>() {
@@ -472,7 +472,7 @@ public abstract class Where<W extends Where> extends WhereBase {
             throw new DaobabException("Where clause without value is allowed only for SQLOperators " + Operator.IS_NULL + "," + Operator.NOT_NULL);
         }
 
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
 
         put(KEY + getCounter(), column);
         put(RELATION + getCounter(), operator);
@@ -480,7 +480,7 @@ public abstract class Where<W extends Where> extends WhereBase {
     }
 
     private <E extends Entity, F, R extends EntityRelation> void temp(Field<E, F, R> column, Operator operator, R val) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         if (val instanceof Number) {
             put(MAY_BE_INDEXED_IN_BUFFER + getCounter(), Boolean.TRUE);
         }
@@ -488,12 +488,12 @@ public abstract class Where<W extends Where> extends WhereBase {
     }
 
     protected void tempHaving(Column column, Operator operator, Object val) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         putKeyMandatoryRelationValue(column, operator, val);
     }
 
     private <E extends Entity, F, R extends EntityRelation> void temp(Field<E, F, R> column, Operator operator, F val) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         if (val instanceof Number) {
             put(MAY_BE_INDEXED_IN_BUFFER + getCounter(), Boolean.TRUE);
         }
@@ -511,13 +511,13 @@ public abstract class Where<W extends Where> extends WhereBase {
     }
 
     private <F, R extends EntityRelation> void tempColField(Field<?, F, R> column, Operator operator, Collection<F> val) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         if (val == null) throw new ValueCanNotBeNullException();
         putKeyMandatoryRelationValue(column, operator, val);
     }
 
     private <F, R extends EntityRelation> void temp(Field<?, F, R> column, Operator operator, Collection<? extends R> val) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         if (val == null) throw new ValueCanNotBeNullException();
         List<F> lisf = val.stream().map(column::getValueOf).collect(Collectors.toList());
         putKeyMandatoryRelationValue(column, operator, lisf);
@@ -525,27 +525,27 @@ public abstract class Where<W extends Where> extends WhereBase {
 
 
     private <F, R extends EntityRelation> void temp(Field<?, F, R> column, Operator operator, F... val) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         if (val == null) throw new ValueCanNotBeNullException();
         List<F> lisf = Arrays.asList(val);
         putKeyMandatoryRelationValue(column, operator, lisf);
     }
 
     private <F, R extends EntityRelation> void temp(Field<?, F, R> column, Operator operator, R... val) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         if (val == null) throw new ValueCanNotBeNullException();
         putKeyMandatoryRelationValue(column, operator, Arrays.stream(val).map(column::getValueOf).collect(Collectors.toList()));
     }
 
 
     private <F> void temp(Field<?, F, ?> column, Operator operator, Field<?, F, ?> column2) {
-        if (column == null) throw new ColumnMandatory();
-        if (column2 == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
+        if (column2 == null) throw new MandatoryColumn();
         putKeyMandatoryRelationValue(column, operator, column2);
     }
 
     private <F, R extends EntityRelation> void tempBetween(Field<?, F, R> column, R value1, R value2) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         if (value1 == null) throw new ValueCanNotBeNullException();
         if (value2 == null) throw new ValueCanNotBeNullException();
         WhereAnd where = new WhereAnd();
@@ -556,7 +556,7 @@ public abstract class Where<W extends Where> extends WhereBase {
     }
 
     private <F, R extends EntityRelation> void tempBetween(Field<?, F, R> column, F value1, F value2) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         if (value1 == null) throw new ValueCanNotBeNullException();
         if (value2 == null) throw new ValueCanNotBeNullException();
         WhereAnd where = new WhereAnd();
@@ -575,9 +575,9 @@ public abstract class Where<W extends Where> extends WhereBase {
     }
 
     private <F, R extends EntityRelation> void temp(Field<?, F, R> column, Operator operator, InnerQueryFieldsProvider<? extends R, F> select) {
-        if (column == null) throw new ColumnMandatory();
+        if (column == null) throw new MandatoryColumn();
         if (operator == null) throw new NullOperator();
-        if (select == null) throw new InnerQueryMandatory();
+        if (select == null) throw new MandatoryInnerQuery();
         put(KEY + getCounter(), column);
         put(VALUE + getCounter(), select.innerResult());
         put(RELATION + getCounter(), operator);

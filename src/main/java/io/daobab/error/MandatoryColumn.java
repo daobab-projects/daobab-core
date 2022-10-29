@@ -3,19 +3,19 @@ package io.daobab.error;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public class ColumnMandatory extends DaobabException {
+public class MandatoryColumn extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-    public ColumnMandatory() {
+    public MandatoryColumn() {
         super("Column is mandatory");
     }
 
-    public ColumnMandatory(String msg) {
+    public MandatoryColumn(String msg) {
         super(msg);
     }
 
-    public ColumnMandatory(String msg, Throwable th) {
+    public MandatoryColumn(String msg, Throwable th) {
         super(msg, th);
     }
 

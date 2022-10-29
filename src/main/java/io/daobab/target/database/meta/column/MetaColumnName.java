@@ -14,11 +14,13 @@ public interface MetaColumnName<E extends EntityMap> extends EntityRelationMap<E
         return getColumnParam("ColumnName");
     }
 
+    @SuppressWarnings("unchecked")
     default E setColumnName(String val) {
         setColumnParam("ColumnName", val);
         return (E) this;
     }
 
+    @SuppressWarnings("rawtypes")
     default Column<E, String, MetaColumnName> colColumnName() {
         return new Column<E, String, MetaColumnName>() {
 
@@ -42,12 +44,14 @@ public interface MetaColumnName<E extends EntityMap> extends EntityRelationMap<E
                 return String.class;
             }
 
+            @SuppressWarnings("rawtypes")
             @Override
             public String getValue(MetaColumnName entity) {
                 if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ColumnName");
                 return entity.getColumnName();
             }
 
+            @SuppressWarnings("rawtypes")
             @Override
             public void setValue(MetaColumnName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ColumnName");
@@ -64,6 +68,7 @@ public interface MetaColumnName<E extends EntityMap> extends EntityRelationMap<E
                 return getEntityName() + "." + getFieldName();
             }
 
+            @SuppressWarnings("rawtypes")
             @Override
             public boolean equals(Object obj) {
                 if (this == obj) return true;

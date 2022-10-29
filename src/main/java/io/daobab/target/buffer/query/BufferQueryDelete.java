@@ -1,7 +1,7 @@
 package io.daobab.target.buffer.query;
 
 import io.daobab.error.DaobabException;
-import io.daobab.error.TargetMandatoryException;
+import io.daobab.error.MandatoryTargetException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.query.base.QueryType;
@@ -33,7 +33,7 @@ public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E
     }
 
     public BufferQueryDelete(BufferQueryTarget target, Column<E, ?, ?> column) {
-        if (column == null) throw new TargetMandatoryException();
+        if (column == null) throw new MandatoryTargetException();
         init(target, column.getEntityName());
         setFields(Collections.singletonList(getInfoColumn(column)));
     }

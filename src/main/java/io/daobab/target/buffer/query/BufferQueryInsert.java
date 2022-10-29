@@ -1,7 +1,7 @@
 package io.daobab.target.buffer.query;
 
 import io.daobab.error.DaobabException;
-import io.daobab.error.QueryMandatory;
+import io.daobab.error.MandatoryQuery;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
@@ -91,7 +91,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
 
     public BufferQueryInsert<E> select(Query<?, ?, ?> query) {
         if (query == null) {
-            throw new QueryMandatory();
+            throw new MandatoryQuery();
         }
 
         if ((!(query instanceof BufferQueryEntity)) && (!(query instanceof BufferQueryPlate)) && (!(query instanceof BufferQueryField))) {
