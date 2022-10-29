@@ -6,6 +6,7 @@ import io.daobab.model.*;
 import io.daobab.query.base.QuerySpecialParameters;
 
 import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
 import java.sql.*;
 import java.util.Calendar;
 import java.util.List;
@@ -69,9 +70,15 @@ public interface RSReader {
             if (Timestamp.class.equals(columnType)) {
                 return (F) rs.getTimestamp(colNo, Calendar.getInstance(TimeZone.getDefault()));
             } else if (columnType.isEnum()) {
-                String rd = rs.getObject(colNo, String.class);
+                String rd = rs.getString(colNo);
                 if (rd == null) return null;
                 return (F) Enum.valueOf(columnType, rd);
+            } else if (columnType.equals(BigInteger.class)) {
+                String rd = rs.getString(colNo);
+                if (rd == null) return null;
+                return (F) new BigInteger(rd);
+            } else if (columnType.equals(Object.class)) {
+                return (F) rs.getString(colNo);
             }
             return (F) rs.getObject(colNo, columnType);
         } catch (SQLException e) {

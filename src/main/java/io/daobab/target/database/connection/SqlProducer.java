@@ -263,6 +263,10 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             sb.append(CLOSED_BRACKET);
 
         } else {
+            if (base.getLimit() != null && base.getLimit().getOffset() == 0 && getDataBaseProductName().startsWith(DictDatabaseType.MicrosoftSQL)) {
+                sb.append("top(").append(base.getLimit().getLimit()).append(") ");
+            }
+
             if (base.isUnique()) {
                 sb.append("distinct ");
             }
@@ -507,9 +511,8 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             sb.append(LIMIT).append(limit.getLimit()).append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
         } else if (DictDatabaseType.H2.equals(databaseEngine)) {
             sb.append(LIMIT).append(limit.getLimit()).append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
-        } else if (databaseEngine.startsWith(DictDatabaseType.MicrosoftSQL)) {
-            sb.append(" fetch next ").append(limit.getLimit()).append(" rows only ").append(SPACE)
-                    .append(limit.getOffset() > 0 ? "offset " + (limit.getOffset() + " rows) ") : "");
+        } else if (limit.getOffset() > 0 && databaseEngine.startsWith(DictDatabaseType.MicrosoftSQL)) {
+            sb.append("offset " + (limit.getOffset() + " rows ")).append("fetch next " + limit.getLimit() + " rows only ");
         }
 
         return sb;
