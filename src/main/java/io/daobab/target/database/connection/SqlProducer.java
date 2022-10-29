@@ -512,7 +512,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         } else if (DictDatabaseType.H2.equals(databaseEngine)) {
             sb.append(LIMIT).append(limit.getLimit()).append(SPACE).append(limit.getOffset() > 0 ? "offset " + limit.getOffset() : "");
         } else if (limit.getOffset() > 0 && databaseEngine.startsWith(DictDatabaseType.MicrosoftSQL)) {
-            sb.append("offset " + (limit.getOffset() + " rows ")).append("fetch next " + limit.getLimit() + " rows only ");
+            sb.append("offset ").append(limit.getOffset()).append(" rows ").append("fetch next ").append(limit.getLimit()).append(" rows only ");
         }
 
         return sb;
