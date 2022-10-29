@@ -45,23 +45,18 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
             System.out.println("table " + tableRealName + " has no data");
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(getFinalFieldNameShortOrLong(tableCamelName))
-                .append("<")
-                .append(tableCamelName)
-                .append(">");
-        return sb.toString();
+        return getFinalFieldNameShortOrLong(tableCamelName) +
+                "<" +
+                tableCamelName +
+                ">";
     }
 
     public String getColumnInterfaceType(String tableRealName) {
 
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(getFinalFieldNameShortOrLong(tableRealName))
-                .append("<")
-                .append(tableRealName)
-                .append(">");
-        return sb.toString();
+        return getFinalFieldNameShortOrLong(tableRealName) +
+                "<" +
+                tableRealName +
+                ">";
     }
 
     public String getFinalFieldNameShortOrLong(String tableCamelName) {
@@ -140,9 +135,8 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
     }
 
     public void setFinalFieldName(String finalFieldName) {
-//        this.finalFieldName = GenerateFormatter.toUpperCaseFirstCharacter(finalFieldName);
         this.finalFieldName = finalFieldName;
-        this.interfaceName = this.finalFieldName;
+        this.interfaceName = finalFieldName;
     }
 
     public GeneratedColumnInTable getColumnInTable(String tableName) {
@@ -157,15 +151,15 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         if (tables.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
         sb.append("    /**\n");
-        for (TableAndType tt : tables) {
-            sb.append("     * ").append(tt.table).append(": ").append(tt.type).append("\n");
+        for (TableAndType tableAndType : tables) {
+            sb.append("     * ").append(tableAndType.table).append(": ").append(tableAndType.type).append("\n");
         }
         sb.append("     */\n");
 
         return sb.toString();
     }
 
-    private class TableAndType {
+    private static class TableAndType {
         private final String table;
         private final String type;
 

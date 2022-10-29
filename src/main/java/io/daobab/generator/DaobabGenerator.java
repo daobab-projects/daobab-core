@@ -241,12 +241,12 @@ public class DaobabGenerator {
         }
 
         if (generateTables) {
-            allTables.stream().filter(t -> t.getCompositeKeyName() != null).forEach(t -> writter.generateCompositeKey(t, getPath(), isOverride()));
+            allTables.stream().filter(table -> table.getCompositeKeyName() != null).forEach(t -> writter.generateCompositeKey(t, getPath(), isOverride()));
         }
 
         //oraz kolumny
         if (generateColumns) {
-            allColumns.forEach(c -> writter.generateColumn(catalog, schema, c, getPath(), isOverride()));
+            allColumns.forEach(column -> writter.generateColumn(catalog, schema, column, getPath(), isOverride()));
         }
 
         //generujemy target

@@ -21,35 +21,6 @@ public class DeveloperGenerator {
         System.out.println(s);
     }
 
-    public static String getColumnInterfaceFor(String packagename, String columnName, JdbcType type) {
-        return getColumnInterfaceFor(packagename, columnName, null, type, null);
-    }
-
-//    public static String getTableFor(String packagename, String tableName, List<Column> pk, Column... columns) {
-//
-//        GenerateColumn[] gcArray = new GenerateColumn[columns.length];
-//        for (int i = 0; i < columns.length; i++) {
-//            gcArray[i] = toGc(columns[i]);
-//        }
-//
-//        List<GenerateColumn> gclist = null;
-//        if (pk != null) {
-//            gclist = new ArrayList<>();
-//            for (Column p : pk) {
-//                gclist.add(toGc(p));
-//            }
-//        }
-//
-//        GenerateTable gt = new GenerateTable(tableName, gclist, new LinkedList<>(), gcArray);
-//        gt.setJavaPackage(packagename);
-//
-//        return generateTable(gt, packagename);
-//
-//    }
-
-//    public static String getTableFor(String packagename, String tableName, Column... columns) {
-//        return getTableFor(packagename, tableName, null, columns);
-//    }
 
     public static <F> String changeColumnFieldClass(Column<?, F, ?> column, Class<F> newFieldClass) {
         StringBuilder sb = new StringBuilder();
@@ -76,7 +47,7 @@ public class DeveloperGenerator {
         return rv;
     }
 
-    public static String getColumnInterfaceFor(String packagename, String columnName, String fieldName, JdbcType type, Class fieldClass) {
+    public static String getColumnInterfaceFor(String packageName, String columnName, String fieldName, JdbcType type, Class fieldClass) {
         Replacer replacer = new Replacer();
 
         Class clazz = fieldClass == null ? TypeConverter.convert(type.getType()) : fieldClass;
@@ -94,7 +65,7 @@ public class DeveloperGenerator {
         replacer.add(GenKeys.INTERFACE_NAME, GenerateFormatter.toCamelCase(columnName));
         replacer.add(GenKeys.FIELD_NAME, GenerateFormatter.toCamelCase(columnName));
         replacer.add(GenKeys.DB_TYPE, TypeConverter.getDbTypeName(type.getType()));
-        replacer.add(GenKeys.PACKAGE, packagename);
+        replacer.add(GenKeys.PACKAGE, packageName);
 
         return replacer.replaceAll(COLUMN_TEMPLATE);
     }

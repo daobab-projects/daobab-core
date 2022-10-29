@@ -6,6 +6,7 @@ import java.util.Locale;
 
 public class JavaPackageResolver {
 
+    //all lowercase
     static final List<String> forbiddenNames = Arrays.asList("abstract", "assert", "boolean", "break", "byte", "case",
             "catch", "char", "class", "const", "continue", "default",
             "double", "do", "else", "enum", "extends", "false",
@@ -17,7 +18,7 @@ public class JavaPackageResolver {
             "true", "try", "void", "volatile", "while",
 
             //Daobab KeyWords
-            "sequenceName", "idGeneratorType", "sqlUpdate", "entity",
+            "sequencename", "idgeneratortype", "sqlupdate", "entity",
             "id", "entityrelationmap", "entitymap", "object", "class", "field",
             //Windows forbidden
             "con", "nul", "aux", "lst", "prn", "eof", "inp", "out"
