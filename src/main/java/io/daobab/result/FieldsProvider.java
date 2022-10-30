@@ -24,9 +24,9 @@ public interface FieldsProvider<F> {
         return findMany().size();
     }
 
-//    default boolean exists() {
-//        return findFirst().isPresent();
-//    }
+    default boolean exists() {
+        return findFirst().isPresent();
+    }
 
     default F findOne() {
         return findFirst().orElse(null);
