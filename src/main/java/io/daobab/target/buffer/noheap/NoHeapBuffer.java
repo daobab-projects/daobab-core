@@ -280,11 +280,6 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
         return false;
     }
 
-    @Override
-    public boolean isLogQueriesEnabled() {
-        return false;
-    }
-
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected List<Integer> finalFilter(IndexedFilterResult rw, Query<?, ?, ?> query) {
         int counter = 0;

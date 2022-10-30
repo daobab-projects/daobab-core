@@ -20,11 +20,6 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
 
     private boolean propagateModifications = false;
 
-    @Override
-    public boolean isLogQueriesEnabled() {
-        return getSourceTarget().isLogQueriesEnabled();
-    }
-
     protected abstract DataBaseTarget getSourceTarget();
 
     @SuppressWarnings("unchecked")

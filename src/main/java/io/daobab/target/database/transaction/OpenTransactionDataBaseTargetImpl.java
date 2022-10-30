@@ -45,8 +45,13 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     }
 
     @Override
-    public boolean isLogQueriesEnabled() {
-        return db.isLogQueriesEnabled();
+    public boolean getShowSql() {
+        return db.getShowSql();
+    }
+
+    @Override
+    public void setShowSql(boolean enable) {
+        db.setShowSql(enable);
     }
 
 

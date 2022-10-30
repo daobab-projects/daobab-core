@@ -39,22 +39,22 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     private MetaDataBaseTarget metaData;
     private String schemaName;
     private String catalogName;
+    private boolean sql = false;
 
-    private boolean enabledLogQueries = false;
 
-
-//    @Override
-//    public  TransactionalTarget getSourceTarget(){
-//        return  this;
-//    }
-
-    @Override
-    public boolean isLogQueriesEnabled() {
-        return enabledLogQueries;
+    public boolean isConnectedToDatabase() {
+        return true;
     }
 
-    public void setEnabledLogQueries(boolean enable) {
-        this.enabledLogQueries = enable;
+
+    @Override
+    public boolean getShowSql() {
+        return sql;
+    }
+
+    @Override
+    public void setShowSql(boolean enable) {
+        this.sql = enable;
     }
 
 

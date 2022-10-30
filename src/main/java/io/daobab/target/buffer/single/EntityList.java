@@ -48,7 +48,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     private transient AccessProtector accessProtector = new BasicAccessProtector();
     private final Lock readLock = readWriteLock.readLock();
     private final Lock writeLock = readWriteLock.writeLock();
-    //    private final boolean transactionActive = false;
+
     private transient StatisticCollector statistic;
 
     @SuppressWarnings("unchecked")
@@ -69,11 +69,6 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     @Override
     public boolean isTransactionActive() {
         throw new TargetDoesNotSupport();
-    }
-
-    @Override
-    public boolean isLogQueriesEnabled() {
-        return false;
     }
 
     @Override

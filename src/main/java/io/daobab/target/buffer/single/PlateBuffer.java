@@ -58,11 +58,6 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     }
 
     @Override
-    public boolean isLogQueriesEnabled() {
-        return false;
-    }
-
-    @Override
     public <T> T aroundTransaction(Supplier<T> t) {
         return null;
     }

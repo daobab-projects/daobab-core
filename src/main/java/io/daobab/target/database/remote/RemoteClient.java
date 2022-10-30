@@ -28,7 +28,7 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
     protected Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     @Override
-    public boolean isLogQueriesEnabled() {
+    public boolean getShowSql() {
         return false;
     }
 

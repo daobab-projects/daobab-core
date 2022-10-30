@@ -21,6 +21,7 @@ import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.base.Where;
 import io.daobab.target.Target;
 import io.daobab.target.database.DataBaseTargetLogic;
+import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.query.DataBaseQueryBase;
 import io.daobab.target.database.query.DataBaseQueryDelete;
 import io.daobab.target.database.query.DataBaseQueryInsert;
@@ -54,7 +55,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     default <E extends Entity> String toDeleteSqlQuery(DataBaseQueryDelete<E> base) {
 
         IdentifierStorage storage = base.getIdentifierStorage();
-        Target dataBaseTarget = base.getTarget();
+        QueryTarget dataBaseTarget = base.getTarget();
         StringBuilder sb = new StringBuilder();
 
         if (toNative(base, sb)) {
@@ -106,7 +107,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
         String query = sb.toString();
-        if (dataBaseTarget.isLogQueriesEnabled() || base.isLogQueryEnabled()) {
+        if (dataBaseTarget.getShowSql() || base.isLogQueryEnabled()) {
             dataBaseTarget.getLog().info(query);
         } else {
             dataBaseTarget.getLog().debug(query);
@@ -219,7 +220,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         if (base.geNativeQuery() != null) {
             String query = base.geNativeQuery();
 
-            if (base.getTarget().isLogQueriesEnabled() || base.isLogQueryEnabled()) {
+            if (base.getTarget().getShowSql() || base.isLogQueryEnabled()) {
                 base.getTarget().getLog().info("[native query] {}", query);
             } else {
                 base.getTarget().getLog().debug("[native query] {}", query);
@@ -373,7 +374,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
         String query = sb.toString();
-        if (base.getTarget().isLogQueriesEnabled() || base.isLogQueryEnabled()) {
+        if (base.getTarget().getShowSql() || base.isLogQueryEnabled()) {
             base.getTarget().getLog().info(query);
         } else {
             base.getTarget().getLog().debug(query);
@@ -448,7 +449,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
         String query = sb.toString();
-        if (base.getTarget().isLogQueriesEnabled() || base.isLogQueryEnabled()) {
+        if (base.getTarget().getShowSql() || base.isLogQueryEnabled()) {
             base.getTarget().getLog().info(query);
         } else {
             base.getTarget().getLog().debug(query);

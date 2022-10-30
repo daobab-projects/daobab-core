@@ -20,7 +20,5 @@ public interface Target extends ILoggerBean, AccessProtectorProvider {
 
     boolean isTransactionActive();
 
-    boolean isLogQueriesEnabled();
-
 
 }

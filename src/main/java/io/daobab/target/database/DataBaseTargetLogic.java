@@ -40,9 +40,8 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
     String getDataBaseProductName();
 
-    default boolean isConnectedToDatabase() {
-        return true;
-    }
+
+    void setShowSql(boolean enable);
 
     DataSource getDataSource();
 

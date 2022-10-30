@@ -31,10 +31,6 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
 
     protected Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-    @Override
-    public boolean isLogQueriesEnabled() {
-        return false;
-    }
 
     protected abstract ResponseWrapper callEndpoint(Query<? extends Entity, ?, ?> query, boolean singleResult);
 

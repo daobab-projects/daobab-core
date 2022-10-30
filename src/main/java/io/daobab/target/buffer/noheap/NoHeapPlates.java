@@ -325,9 +325,4 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
         return false;
     }
 
-    @Override
-    public boolean isLogQueriesEnabled() {
-        return false;
-    }
-
 }

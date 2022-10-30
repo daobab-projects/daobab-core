@@ -359,12 +359,6 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
     }
 
     @Override
-    public boolean isLogQueriesEnabled() {
-        return false;
-    }
-
-
-    @Override
     public Class<E> getEntityClass() {
         return entityClass;
     }

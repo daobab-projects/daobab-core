@@ -27,6 +27,8 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
 
     OpenTransactionDataBaseTargetImpl beginTransaction();
 
+    boolean getShowSql();
+
     default <E extends Entity> DataBaseQueryInsert<E> insert(E entity) {
         return new DataBaseQueryInsert<>(this, entity);
     }

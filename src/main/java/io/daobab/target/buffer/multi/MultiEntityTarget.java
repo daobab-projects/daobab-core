@@ -43,10 +43,6 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
         }
     }
 
-    @Override
-    public boolean isLogQueriesEnabled() {
-        return false;
-    }
 
     @Override
     public OpenedTransactionBufferTarget beginTransaction() {
