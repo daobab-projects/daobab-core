@@ -2,6 +2,7 @@ package io.daobab.generator;
 
 import io.daobab.model.Composite;
 import io.daobab.model.CompositeColumns;
+import io.daobab.model.TableColumn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,6 +89,10 @@ public class GenerateTable {
         StringBuilder sb = new StringBuilder();
         for (GenerateColumn gc : getColumnList()) {
             if (gc.getFinalFieldName().equalsIgnoreCase(tableName)) continue;
+            //java.lang is always imported
+            if (gc.getPackage().startsWith("java.lang.") && gc.getPackage().lastIndexOf(".") == "java.lang.".lastIndexOf(".")) {
+                continue;
+            }
             sb.append("import ")
                     .append(gc.getPackage());
 
@@ -127,17 +132,6 @@ public class GenerateTable {
         StringBuilder sb = new StringBuilder();
 
         List<GenerateColumn> anotherCompositesColumns = new ArrayList<>();
-
-//        for (int i = 0; i < getInheritedSubCompositeKeys().size(); i++) {
-//            GenerateTable gt = getInheritedSubCompositeKeys().get(i);
-//
-//            anotherCompositesColumns.addAll(gt.getPrimaryKeys());
-//            sb.append(" ");
-//            sb.append(gt.getCompositeKeyName());
-//            sb.append("<");
-//            sb.append(tableCamelName);
-//            sb.append(">,");
-//        }
 
         boolean atLeastOneColumnAdded = false;
         for (int i = 0; i < getPrimaryKeys().size(); i++) {
@@ -207,7 +201,7 @@ public class GenerateTable {
 
         StringBuilder sb = new StringBuilder();
         sb.append("\t").append("\t").append("\t");
-        sb.append("new TableColumn(col");
+        sb.append("new ").append(TableColumn.class.getSimpleName()).append("(col");
         sb.append(gc.getInterfaceName());
         sb.append("())");
 

@@ -1,18 +1,15 @@
 package io.daobab.generator;
 
 import io.daobab.model.Column;
-import io.daobab.target.database.connection.JdbcType;
 
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import static io.daobab.generator.DaobabClassGeneratorTemplates.COLUMN_TEMPLATE;
-
 public class DeveloperGenerator {
 
-    private static final Writter writter = new Writter();
+    private static final Writer writter = new Writer();
 
     public static void main(String[] sa) {
 //        String column=DeveloperGenerator.getColumnInterfaceFor("pl.trst.test","FIRST_NAME",JdbcType.VARCHAR);
@@ -47,26 +44,26 @@ public class DeveloperGenerator {
         return rv;
     }
 
-    public static String getColumnInterfaceFor(String packageName, String columnName, String fieldName, JdbcType type, Class fieldClass) {
-        Replacer replacer = new Replacer();
-
-        Class clazz = fieldClass == null ? TypeConverter.convert(type.getType()) : fieldClass;
-        String finalFieldName = fieldName == null ? GenerateFormatter.toCamelCase(columnName) : fieldName;
-
-        boolean columnAndTypeTheSameType = clazz.getSimpleName().equalsIgnoreCase(finalFieldName);
-
-        if (byte[].class.equals(clazz) || columnAndTypeTheSameType) {
-            replacer.add(GenKeys.CLASS_FULL_NAME, "");
-        } else {
-            replacer.add(GenKeys.CLASS_FULL_NAME, "import " + clazz.getName() + ";");
-        }
-        replacer.add(GenKeys.CLASS_SIMPLE_NAME, columnAndTypeTheSameType ? clazz.getName() : clazz.getSimpleName());
-        replacer.add(GenKeys.COLUMN_NAME, columnName);
-        replacer.add(GenKeys.INTERFACE_NAME, GenerateFormatter.toCamelCase(columnName));
-        replacer.add(GenKeys.FIELD_NAME, GenerateFormatter.toCamelCase(columnName));
-        replacer.add(GenKeys.DB_TYPE, TypeConverter.getDbTypeName(type.getType()));
-        replacer.add(GenKeys.PACKAGE, packageName);
-
-        return replacer.replaceAll(COLUMN_TEMPLATE);
-    }
+//    public static String getColumnInterfaceFor(String packageName, String columnName, String fieldName, JdbcType type, Class fieldClass) {
+//        Replacer replacer = new Replacer();
+//
+//        Class clazz = fieldClass == null ? typeConverter.convert(type.getType()) : fieldClass;
+//        String finalFieldName = fieldName == null ? GenerateFormatter.toCamelCase(columnName) : fieldName;
+//
+//        boolean columnAndTypeTheSameType = clazz.getSimpleName().equalsIgnoreCase(finalFieldName);
+//
+//        if (byte[].class.equals(clazz) || columnAndTypeTheSameType) {
+//            replacer.add(GenKeys.CLASS_FULL_NAME, "");
+//        } else {
+//            replacer.add(GenKeys.CLASS_FULL_NAME, "import " + clazz.getName() + ";");
+//        }
+//        replacer.add(GenKeys.CLASS_SIMPLE_NAME, columnAndTypeTheSameType ? clazz.getName() : clazz.getSimpleName());
+//        replacer.add(GenKeys.COLUMN_NAME, columnName);
+//        replacer.add(GenKeys.INTERFACE_NAME, GenerateFormatter.toCamelCase(columnName));
+//        replacer.add(GenKeys.FIELD_NAME, GenerateFormatter.toCamelCase(columnName));
+//        replacer.add(GenKeys.DB_TYPE, TypeConverter.getDbTypeName(type.getType()));
+//        replacer.add(GenKeys.PACKAGE, packageName);
+//
+//        return replacer.replaceAll(COLUMN_TEMPLATE);
+//    }
 }

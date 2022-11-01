@@ -1,121 +1,84 @@
 package io.daobab.generator;
 
 import io.daobab.dict.DictFieldType;
+import io.daobab.error.DaobabException;
 
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public interface TypeConverter {
+public class TypeConverter {
 
-    static Class<?> convert(int type, Integer size, Integer precision) {
-        if (!isNumeric(type)) {
-            return convert(type);
-        }
+    public static final String UNKNOWN_TABLE = "%$@#$";
 
-//        if (precision==null||precision==0){
-//            switch (type) {
-//                case (Types.BIGINT):
-//                case (Types.DECIMAL):
-//                case (Types.DOUBLE):
-//                case (Types.FLOAT):
-//                case (Types.INTEGER):
-//                case (Types.NUMERIC):
-//                case (Types.SMALLINT):
-//                case (Types.REAL):
-//                case (Types.TINYINT):
-//                    return true;
-//                default:
-//                    return false;
-//            }
-//        }
+    private final Map<String, Class<?>> enforcedTypes = new HashMap<>();
+    private final Map<Integer, Class<?>> generalTypes;
 
-        return convert(type);
-    }
+    {
+        generalTypes = new HashMap<>();
 
-    static boolean isNumeric(int type) {
-        switch (type) {
-            case (Types.BIGINT):
-            case (Types.DECIMAL):
-            case (Types.DOUBLE):
-            case (Types.FLOAT):
-            case (Types.INTEGER):
-            case (Types.NUMERIC):
-            case (Types.SMALLINT):
-            case (Types.REAL):
-            case (Types.TINYINT):
-                return true;
-            default:
-                return false;
-        }
-    }
+        generalTypes.put(Types.ARRAY, Object[].class);
 
-    static Class<?> convert(int type) {
-        switch (type) {
-            case (Types.ARRAY):
-                return Object[].class;
-            case (Types.BIGINT):
-                return DictFieldType.CLASS_BIG_INTEGER;
-            case (Types.BINARY):
-            case (Types.BLOB):
-                return DictFieldType.CLASS_BYTE_ARRAY;
-            case (Types.BIT):
-            case (Types.BOOLEAN):
-                return DictFieldType.CLASS_BOOLEAN;
-            case (Types.CHAR):
-            case (Types.CLOB):
-                return DictFieldType.CLASS_STRING;
-            case (Types.DATE):
-            case (Types.TIME_WITH_TIMEZONE):
-                return Date.class;
-            case (Types.DECIMAL):
-            case (Types.FLOAT):
-            case (Types.DOUBLE):
-            case (Types.INTEGER):
-            case (Types.NUMERIC):
-                return DictFieldType.CLASS_BIG_DECIMAL;
-            case (Types.LONGNVARCHAR):
-            case (Types.LONGVARCHAR):
-            case (Types.NCHAR):
-            case (Types.NVARCHAR):
-            case (Types.VARCHAR):
-            case (Types.SQLXML):
-            case (Types.NCLOB):
-                return String.class;
-            case (Types.LONGVARBINARY):
-            case (Types.VARBINARY):
-                return byte[].class;
-            case (Types.REAL):
-                return Float.class;
-            case (Types.SMALLINT):
-            case (Types.TINYINT):
-                return Integer.class;
-            case (Types.TIME):
-                return Time.class;
-            case (Types.TIMESTAMP):
-            case (Types.TIMESTAMP_WITH_TIMEZONE):
-                return Timestamp.class;
-            case (Types.NULL):
-            case (Types.OTHER):
-            case (Types.REF):
-            case (Types.REF_CURSOR):
-            case (Types.ROWID):
-            case (Types.STRUCT):
-            case (Types.JAVA_OBJECT):
-            case (Types.DISTINCT):
-            case (Types.DATALINK):
-            default:
-                return Object.class;
-        }
+        generalTypes.put(Types.BIGINT, DictFieldType.CLASS_BIG_INTEGER);
+
+        generalTypes.put(Types.BINARY, DictFieldType.CLASS_BYTE_ARRAY);
+        generalTypes.put(Types.BLOB, DictFieldType.CLASS_BYTE_ARRAY);
+
+        generalTypes.put(Types.BIT, DictFieldType.CLASS_BOOLEAN);
+        generalTypes.put(Types.BOOLEAN, DictFieldType.CLASS_BOOLEAN);
+
+        generalTypes.put(Types.CHAR, DictFieldType.CLASS_STRING);
+        generalTypes.put(Types.CLOB, DictFieldType.CLASS_STRING);
+
+        generalTypes.put(Types.DATE, Date.class);
+        generalTypes.put(Types.TIME_WITH_TIMEZONE, Date.class);
+
+        generalTypes.put(Types.DECIMAL, DictFieldType.CLASS_BIG_DECIMAL);
+        generalTypes.put(Types.FLOAT, DictFieldType.CLASS_BIG_DECIMAL);
+        generalTypes.put(Types.DOUBLE, DictFieldType.CLASS_BIG_DECIMAL);
+        generalTypes.put(Types.INTEGER, DictFieldType.CLASS_BIG_DECIMAL);
+        generalTypes.put(Types.NUMERIC, DictFieldType.CLASS_BIG_DECIMAL);
+
+        generalTypes.put(Types.LONGNVARCHAR, String.class);
+        generalTypes.put(Types.LONGVARCHAR, String.class);
+        generalTypes.put(Types.NCHAR, String.class);
+        generalTypes.put(Types.NVARCHAR, String.class);
+        generalTypes.put(Types.VARCHAR, String.class);
+        generalTypes.put(Types.SQLXML, String.class);
+        generalTypes.put(Types.NCLOB, String.class);
+
+        generalTypes.put(Types.LONGVARBINARY, byte[].class);
+        generalTypes.put(Types.VARBINARY, byte[].class);
+
+        generalTypes.put(Types.REAL, Float.class);
+
+        generalTypes.put(Types.SMALLINT, Integer.class);
+        generalTypes.put(Types.TINYINT, Integer.class);
+
+        generalTypes.put(Types.TIME, Time.class);
+
+        generalTypes.put(Types.TIMESTAMP, Timestamp.class);
+        generalTypes.put(Types.TIMESTAMP_WITH_TIMEZONE, Timestamp.class);
+
+        generalTypes.put(Types.NULL, Object.class);
+        generalTypes.put(Types.OTHER, Object.class);
+        generalTypes.put(Types.REF, Object.class);
+        generalTypes.put(Types.REF_CURSOR, Object.class);
+        generalTypes.put(Types.ROWID, Object.class);
+        generalTypes.put(Types.STRUCT, Object.class);
+        generalTypes.put(Types.JAVA_OBJECT, Object.class);
+        generalTypes.put(Types.DISTINCT, Object.class);
+        generalTypes.put(Types.DATALINK, Object.class);
 
     }
 
-
-    static String getDbTypeName(int type) {
+    public static String getDataBaseTypeName(int type) {
         switch (type) {
             case (Types.ARRAY):
                 return "ARRAY";
@@ -201,7 +164,7 @@ public interface TypeConverter {
 
     }
 
-    static String convertToTS(Class<?> clazz) {
+    public static String convertToTS(Class<?> clazz) {
         if (clazz.equals(String.class)) return "string";
         if (Number.class.isAssignableFrom(clazz)) return "number";
         if (isOneOf(clazz, Date.class, Timestamp.class, Date.class, Time.class)) return "Date";
@@ -212,12 +175,88 @@ public interface TypeConverter {
 
     }
 
-    static boolean isOneOf(Class<?> clazz, Class... classes) {
+    public static boolean isOneOf(Class<?> clazz, Class... classes) {
         if (clazz == null || classes == null) return false;
         for (Class<?> c : classes) {
             if (clazz.equals(c)) return true;
         }
         return false;
+    }
+
+    private String getTableDotColumn(String tableName, String columnName) {
+        if (tableName == null) {
+            throw new DaobabException("table name cannot be null");
+        }
+        if (columnName == null) {
+            throw new DaobabException("column name cannot be null");
+        }
+        return tableName + "." + columnName;
+    }
+
+    public TypeConverter setEnforcedTypeFor(final String tableName, final String columnName, final Class<?> enforcedType) {
+        enforcedTypes.put(getTableDotColumn(tableName, columnName), enforcedType);
+        return this;
+    }
+
+    public TypeConverter setGeneralConversionFor(int jdbcType, final Class<?> enforcedType) {
+        generalTypes.put(jdbcType, enforcedType);
+        return this;
+    }
+
+    public Class<?> convert(String tableName, String columnName, int type, Integer size, Integer precision) {
+        String tableDotColumn = getTableDotColumn(tableName, columnName);
+
+        if (!isNumeric(type)) {
+            return convert(tableDotColumn, type);
+        }
+
+//        if (precision==null||precision==0){
+//            switch (type) {
+//                case (Types.BIGINT):
+//                case (Types.DECIMAL):
+//                case (Types.DOUBLE):
+//                case (Types.FLOAT):
+//                case (Types.INTEGER):
+//                case (Types.NUMERIC):
+//                case (Types.SMALLINT):
+//                case (Types.REAL):
+//                case (Types.TINYINT):
+//                    return true;
+//                default:
+//                    return false;
+//            }
+//        }
+
+        return convert(tableDotColumn, type);
+    }
+
+    public boolean isNumeric(int type) {
+        switch (type) {
+            case (Types.BIGINT):
+            case (Types.DECIMAL):
+            case (Types.DOUBLE):
+            case (Types.FLOAT):
+            case (Types.INTEGER):
+            case (Types.NUMERIC):
+            case (Types.SMALLINT):
+            case (Types.REAL):
+            case (Types.TINYINT):
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public Class<?> convert(String tableName, GenerateColumn generateColumn) {
+        return convert(getTableDotColumn(tableName, generateColumn.getColumnName()), generateColumn.getDataType());
+    }
+
+    public Class<?> convert(String tableDotColumn, int type) {
+        if (enforcedTypes.containsKey(tableDotColumn)) {
+            return enforcedTypes.get(tableDotColumn);
+        }
+
+        return generalTypes.computeIfAbsent(type, k -> Object.class);
     }
 
 

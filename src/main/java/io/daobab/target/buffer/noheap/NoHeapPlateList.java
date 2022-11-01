@@ -1,5 +1,6 @@
 package io.daobab.target.buffer.noheap;
 
+import io.daobab.error.TargetDoesNotSupport;
 import io.daobab.model.Plate;
 import io.daobab.model.TableColumn;
 
@@ -61,52 +62,52 @@ class NoHeapPlateList implements List<Plate> {
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public <T> T[] toArray(T[] ts) {
-        return null;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean add(Plate e) {
-        return false;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean remove(Object o) {
-        return false;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean containsAll(Collection<?> collection) {
-        return false;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean addAll(Collection<? extends Plate> collection) {
-        return false;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean addAll(int i, Collection<? extends Plate> collection) {
-        return false;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean removeAll(Collection<?> collection) {
-        return false;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public boolean retainAll(Collection<?> collection) {
-        return false;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public void clear() {
-
+        throw new TargetDoesNotSupport();
     }
 
     @Override
@@ -116,42 +117,42 @@ class NoHeapPlateList implements List<Plate> {
 
     @Override
     public Plate set(int i, Plate e) {
-        return null;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public void add(int i, Plate e) {
-
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public Plate remove(int i) {
-        return null;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public int indexOf(Object o) {
-        return 0;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public ListIterator<Plate> listIterator() {
-        return null;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public ListIterator<Plate> listIterator(int i) {
-        return null;
+        throw new TargetDoesNotSupport();
     }
 
     @Override
     public List<Plate> subList(int i, int i1) {
-        return null;
+        throw new TargetDoesNotSupport();
     }
 
 

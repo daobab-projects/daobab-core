@@ -193,7 +193,6 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
 
     public Integer getBufferPositionOfColumn(Column<?, ?, ?> column) {
         Integer columnIntoEntityPosition = getColumnIntoEntityPosition(column);
-//        if (...)
         return columnsPositionsQueue[columnIntoEntityPosition];
     }
 
@@ -280,7 +279,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
         return false;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked", "java:S3776"})
     protected List<Integer> finalFilter(IndexedFilterResult rw, Query<?, ?, ?> query) {
         int counter = 0;
         Integer[] pointers = rw == null ? null : rw.getPointers();
@@ -351,7 +350,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
         return rv;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes", "java:S3776", "java:S135"})
     //Filters provides ids or all (if list is null) for provided wrapper
     protected IndexedFilterResult filterByIndexes(List<Integer> entitiesToHandle, Where wrapper) {
 
@@ -512,7 +511,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
             }
         }
 
-        return new IndexedFilterResult(pointers.toArray(new Integer[pointers.size()]), skipSteps);
+        return new IndexedFilterResult(pointers.toArray(new Integer[0]), skipSteps);
     }
 
     @SuppressWarnings("rawtypes")

@@ -7,9 +7,8 @@ import io.daobab.model.PrimaryKey;
 import java.util.List;
 
 import static io.daobab.generator.SaveGenerated.saveGeneratedTo;
-import static io.daobab.generator.TypeConverter.getDbTypeName;
 
-public class Writter implements DaobabClassGeneratorTemplates {
+public class Writer implements DaobabClassGeneratorTemplates {
 
 
     int generatedColumnsCount = 0;
@@ -120,7 +119,7 @@ public class Writter implements DaobabClassGeneratorTemplates {
                 .add(GenKeys.INTERFACE_NAME, column.getInterfaceName())
                 .add(GenKeys.FIELD_NAME, column.getFinalFieldName())
                 .add(GenKeys.TABLES_AND_TYPE, column.getTableTypeDescription())
-                .add(GenKeys.DB_TYPE, getDbTypeName(column.getDataType()))
+                .add(GenKeys.DB_TYPE, TypeConverter.getDataBaseTypeName(column.getDataType()))
                 .add(GenKeys.PACKAGE, column.getPackage());
 
         column.setAlreadyGenerated(true);

@@ -133,9 +133,9 @@ public class BitFieldRegistry {
             list.add(i);
         }
 
-        System.out.println("index created for " + tableColumn.getColumn().getColumnName() + " keys size: " + map.size() + " total size " + entities.size());
+//        System.out.println("index created for " + tableColumn.getColumn().getColumnName() + " keys size: " + map.size() + " total size " + entities.size());
         if (map.size() == entities.size()) {
-            System.out.println("index is useless. dropped.");
+//            System.out.println("index is useless. dropped.");
 //            return Optional.empty();
         }
         return getBitIndexFor(fieldClass, tableColumn, map, nullValues);

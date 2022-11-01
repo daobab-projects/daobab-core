@@ -31,7 +31,6 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
     }
 
     public NoHeapEntities(List<E> entities, BitFieldRegistry bitFieldRegistry) {
-//        this(entities == null || entities.isEmpty() ? null : entities.get(0), entities == null ? 8 : entities.size(), bitFieldRegistry);
 
         super(bitFieldRegistry);
         E entity = entities == null || entities.isEmpty() ? null : entities.get(0);
@@ -78,7 +77,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
         for (TableColumn tableColumn : columns) {
             Optional<BitIndex> index = bitFieldRegistry.createIndex(tableColumn, entities);
             indexRepository[columnNo] = index.orElse(null);
-            System.out.println("column " + columnNo + " index: " + indexRepository[columnNo]);
+            log.debug("column " + columnNo + " index: " + indexRepository[columnNo]);
             if (indexRepository[columnNo] != null) {
                 isIndexRepositoryEmpty = false;
             }

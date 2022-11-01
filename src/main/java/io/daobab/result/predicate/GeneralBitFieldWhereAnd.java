@@ -28,6 +28,7 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
     protected List<Integer> columnsBufferPositionInWhere = new ArrayList<>();
     protected List<Integer> columnsEntityPositionInWhere = new ArrayList<>();
 
+    @SuppressWarnings({"rawtypes", "java:S135"})
     public GeneralBitFieldWhereAnd(NoHeapBuffer<E> noHeapBuffer, Where wrapperWhere, List<Integer> skipSteps) {
         this.wrapperWhere = wrapperWhere;
         this.skipSteps = skipSteps == null ? new ArrayList<>() : skipSteps;
@@ -93,6 +94,7 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
         return true;
     }
 
+    @SuppressWarnings({"rawtypes", "java:S3776"})
     private WherePredicate matchPredicate(Where wrapper, int i) {
 
         Object valueFromWrapper = wrapper.getValueForPointer(i);
@@ -112,9 +114,8 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
 
         Object keyFromWrapper = wrapper.getKeyForPointer(i);
 
-        if (keyFromWrapper instanceof Column) {
+        if (keyFromWrapper != null) {
             BitField<?> bitField = noHeapBuffer.getBifFieldForColumn((Column) keyFromWrapper);
-            System.out.println("znalazlem bit field " + bitField.getClass().getName());
             Function function = bitField.getPredicate(relation);
             return (WherePredicate) function.apply(valueFromWrapper);
         }

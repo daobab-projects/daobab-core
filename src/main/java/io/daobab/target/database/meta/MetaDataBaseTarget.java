@@ -32,6 +32,8 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
         if (catalog == null) {
             catalog = "%";
         }
+
+        TypeConverter typeConverter = new TypeConverter();
         this.source = source;
         register(MetaTable.class, MetaColumn.class);
 
@@ -77,7 +79,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
                 mc.setRemarks(rsColumn.getString("REMARKS"));
                 mc.setDatatype(JdbcType.valueOf(rsColumn.getInt("DATA_TYPE")));
                 mc.setTableName(rsColumn.getString("TABLE_NAME"));
-                mc.setFieldClass(TypeConverter.convert(rsColumn.getInt("DATA_TYPE")));
+                mc.setFieldClass(typeConverter.convert(TypeConverter.UNKNOWN_TABLE, rsColumn.getInt("DATA_TYPE")));
                 mc.setColumnDefault(rsColumn.getString(mc.colColumnDefault().getColumnName()));
                 mc.setOrdinalPosition(rsColumn.getInt(mc.colOrdinalPosition().getColumnName()));
                 mc.setTableColumnName(mc.getTableName() + "." + mc.getColumnName());

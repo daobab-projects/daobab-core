@@ -248,7 +248,6 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
         long start = System.currentTimeMillis();
         List<F> list = finalFilterField(q);
         long stop = System.currentTimeMillis();
-        System.out.println("filter result: " + list.size() + " time: " + (stop - start));
 
         return list;
     }

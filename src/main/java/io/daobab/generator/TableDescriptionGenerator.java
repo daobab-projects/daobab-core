@@ -61,7 +61,7 @@ public class TableDescriptionGenerator {
                     .append(fillGaps(c.getFieldClass().getSimpleName(), maxSizeType))
                     .append(fillGaps(String.valueOf(g == null ? 0 : g.getColumnSize()), maxSizeSize))
                     .append(fillGaps(c.getColumnName() == null ? "" : c.getColumnName(), maxSizeDBName))
-                    .append(fillGaps(TypeConverter.getDbTypeName(c.getDataType()), maxSizeDBType))
+                    .append(fillGaps(TypeConverter.getDataBaseTypeName(c.getDataType()), maxSizeDBType))
                     .append(fillGaps(g == null || g.getRemarks() == null ? "" : g.getRemarks(), maxSizeDescription));
         }
 
@@ -107,7 +107,7 @@ public class TableDescriptionGenerator {
                     currentSize = c.getColumnName() == null ? 0 : c.getColumnName().length();
                     break;
                 case DBTYPE:
-                    currentSize = TypeConverter.getDbTypeName(c.getDataType()).length();
+                    currentSize = TypeConverter.getDataBaseTypeName(c.getDataType()).length();
                     break;
                 case DESCRIPTION:
                     currentSize = g == null || g.getRemarks() == null ? 0 : g.getRemarks().length();

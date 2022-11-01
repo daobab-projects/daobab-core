@@ -1,6 +1,6 @@
 package io.daobab.target.buffer.query;
 
-import io.daobab.error.AttemptToSetWhereClaseSecondTimeException;
+import io.daobab.error.AttemptToSetWhereClauseSecondTimeException;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.error.MandatoryTargetException;
 import io.daobab.error.NullEntityException;
@@ -142,7 +142,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     public void setWhereWrapper(Where whereWrapper) {
         if (this.whereWrapper != null) {
-            throw new AttemptToSetWhereClaseSecondTimeException();
+            throw new AttemptToSetWhereClauseSecondTimeException();
         }
         this.whereWrapper = whereWrapper;
     }
