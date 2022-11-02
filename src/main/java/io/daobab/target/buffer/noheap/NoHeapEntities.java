@@ -36,8 +36,8 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
         E entity = entities == null || entities.isEmpty() ? null : entities.get(0);
         adjustForCapacity(8);//1 << pageMaxCapacityBytes;
         this.entityClass = (Class<E>) entity.getEntityClass();
-        this.columns = entity.columns();
-        List<TableColumn> columns = entity.columns();
+        this.columns = getColumnsForTable(entity);
+        List<TableColumn> columns = getColumnsForTable(entity);
         columnsOrder = new HashMap<>();
         columnsPositionsQueue = new Integer[columns.size()];
         bitFields = new BitField[columns.size()];
@@ -98,7 +98,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
         super(bitFieldRegistry);
         adjustForCapacity(capacity);//1 << pageMaxCapacityBytes;
         this.entityClass = (Class<E>) entity.getEntityClass();
-        this.columns = entity.columns();
+        this.columns = getColumnsForTable(entity);
         List<TableColumn> columns = entity.columns();
         columnsOrder = new HashMap<>();
         columnsPositionsQueue = new Integer[columns.size()];
@@ -144,7 +144,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
             return;
         }
 
-        for (TableColumn tableColumn : entityToRemove.columns()) {
+        for (TableColumn tableColumn : getColumnsForTable(entityToRemove)) {
             Column column = tableColumn.getColumn();
             int pointer = columnsOrder.get(column.getColumnName());
 
@@ -167,7 +167,7 @@ public class NoHeapEntities<E extends Entity> extends NoHeapBuffer<E> implements
             pages.add(ByteBuffer.allocateDirect(totalEntitySpace << pageMaxCapacityBytes));
         }
 
-        for (TableColumn tableColumn : entity.columns()) {
+        for (TableColumn tableColumn : getColumnsForTable(entity)) {
             Column column = tableColumn.getColumn();
             Integer pointer = columnsOrder.get(column.getColumnName());
             Object value = column.getValueOf((EntityRelation) entity);

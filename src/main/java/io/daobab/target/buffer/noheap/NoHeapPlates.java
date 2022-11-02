@@ -53,8 +53,8 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
     public NoHeapPlates(Plate entity, int capacity, BitFieldRegistry bitFieldRegistry) {
         super(bitFieldRegistry);
         adjustForCapacity(capacity);//1 << pageMaxCapacityBytes;
-        this.columns = entity.columns();
-        List<TableColumn> columns = entity.columns();
+        this.columns = getColumnsForTable(entity);
+        List<TableColumn> columns = getColumnsForTable(entity);
         columnsOrder = new HashMap<>();
         columnsPositionsQueue = new Integer[columns.size()];
         bitFields = new BitField[columns.size()];
@@ -107,7 +107,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
             return;
         }
 
-        for (TableColumn ecol : entityToRemove.columns()) {
+        for (TableColumn ecol : getColumnsForTable(entityToRemove)) {
             Column col = ecol.getColumn();
             int pointer = columnsOrder.get(col.getColumnName());
 
@@ -131,7 +131,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
             pages.add(ByteBuffer.allocateDirect(totalEntitySpace << pageMaxCapacityBytes));
         }
 
-        for (TableColumn ecol : entity.columns()) {
+        for (TableColumn ecol : getColumnsForTable(entity)) {
             Column col = ecol.getColumn();
             Integer pointer = columnsOrder.get(col.getColumnName());
             Object value = col.getValueOf((EntityRelation) entity);

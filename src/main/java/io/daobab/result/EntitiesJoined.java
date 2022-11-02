@@ -149,7 +149,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
     @SuppressWarnings("rawtypes")
     private Optional<Column> getColumnIfExists(ColumnsProvider provider, Column byColumn) {
-        return provider.columns().stream()
+        return target.getColumnsForTable(provider).stream()
                 .map(TableColumn::getColumn)
                 .filter(col -> col.getColumnName().equals(byColumn.getColumnName()))
                 .findAny();
