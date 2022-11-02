@@ -574,8 +574,8 @@ public class DaobabGenerator {
         column.setFinalFieldName(javaClassName == null ? GenerateFormatter.toCamelCase(databaseColumnName) : javaClassName);
         column.setFieldClass(javaType);
         column.setFieldName(decapitalize(column.getInterfaceName()));
-        Writer writter = new Writer();
-        writter.generateColumn(catalog, schema, column, getPath(), isOverride());
+        Writer writer = new Writer();
+        writer.generateColumn(catalog, schema, column, getPath(), isOverride());
     }
 
     public void generateOnlyTables(String... onlyAllowedTables) {

@@ -22,29 +22,21 @@ public class TypeConverter {
 
     {
         generalTypes = new HashMap<>();
-
         generalTypes.put(Types.ARRAY, Object[].class);
-
         generalTypes.put(Types.BIGINT, DictFieldType.CLASS_BIG_INTEGER);
-
         generalTypes.put(Types.BINARY, DictFieldType.CLASS_BYTE_ARRAY);
         generalTypes.put(Types.BLOB, DictFieldType.CLASS_BYTE_ARRAY);
-
         generalTypes.put(Types.BIT, DictFieldType.CLASS_BOOLEAN);
         generalTypes.put(Types.BOOLEAN, DictFieldType.CLASS_BOOLEAN);
-
         generalTypes.put(Types.CHAR, DictFieldType.CLASS_STRING);
         generalTypes.put(Types.CLOB, DictFieldType.CLASS_STRING);
-
         generalTypes.put(Types.DATE, Date.class);
         generalTypes.put(Types.TIME_WITH_TIMEZONE, Date.class);
-
         generalTypes.put(Types.DECIMAL, DictFieldType.CLASS_BIG_DECIMAL);
         generalTypes.put(Types.FLOAT, DictFieldType.CLASS_BIG_DECIMAL);
         generalTypes.put(Types.DOUBLE, DictFieldType.CLASS_BIG_DECIMAL);
         generalTypes.put(Types.INTEGER, DictFieldType.CLASS_BIG_DECIMAL);
         generalTypes.put(Types.NUMERIC, DictFieldType.CLASS_BIG_DECIMAL);
-
         generalTypes.put(Types.LONGNVARCHAR, String.class);
         generalTypes.put(Types.LONGVARCHAR, String.class);
         generalTypes.put(Types.NCHAR, String.class);
@@ -52,20 +44,14 @@ public class TypeConverter {
         generalTypes.put(Types.VARCHAR, String.class);
         generalTypes.put(Types.SQLXML, String.class);
         generalTypes.put(Types.NCLOB, String.class);
-
         generalTypes.put(Types.LONGVARBINARY, byte[].class);
         generalTypes.put(Types.VARBINARY, byte[].class);
-
         generalTypes.put(Types.REAL, Float.class);
-
         generalTypes.put(Types.SMALLINT, Integer.class);
         generalTypes.put(Types.TINYINT, Integer.class);
-
         generalTypes.put(Types.TIME, Time.class);
-
         generalTypes.put(Types.TIMESTAMP, Timestamp.class);
         generalTypes.put(Types.TIMESTAMP_WITH_TIMEZONE, Timestamp.class);
-
         generalTypes.put(Types.NULL, Object.class);
         generalTypes.put(Types.OTHER, Object.class);
         generalTypes.put(Types.REF, Object.class);
