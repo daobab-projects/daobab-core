@@ -170,7 +170,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default String getSqlUpdate(DataBaseTarget target) {
-        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) this.columns())).where(getKeyWhere(this)) + ";";
+        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) target.getColumnsForTable(this))).where(getKeyWhere(this)) + ";";
     }
 
     default String getSqlUpdate(DataBaseTarget target, Column<E, ?, ?>... columnsToUpdate) {

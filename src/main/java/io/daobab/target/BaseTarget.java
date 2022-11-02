@@ -1,8 +1,10 @@
 package io.daobab.target;
 
 import io.daobab.error.DaobabException;
+import io.daobab.model.ColumnsProvider;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityAny;
+import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.interceptor.DaobabInterceptor;
 import io.daobab.target.protection.AccessProtector;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -34,6 +37,8 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     private StatisticCollector statistic;
     private boolean statisticEnabled = false;
     private AccessProtector accessProtector;
+
+    private final Map<Class<? extends ColumnsProvider>, List<TableColumn>> columnsCache = new HashMap<>();
 
     protected BaseTarget() {
         accessProtector = new BasicAccessProtector();
@@ -168,5 +173,9 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     @Override
     public Entities<StatisticRecord> getStatistics() {
         return getStatisticCollector().getTarget();
+    }
+
+    public List<TableColumn> getColumnsForTable(final ColumnsProvider entity) {
+        return columnsCache.computeIfAbsent(entity.getClass(), e -> entity.columns());
     }
 }

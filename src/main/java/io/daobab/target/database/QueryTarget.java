@@ -29,6 +29,8 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
 
     boolean getShowSql();
 
+    List<TableColumn> getColumnsForTable(final ColumnsProvider entity);
+
     default <E extends Entity> DataBaseQueryInsert<E> insert(E entity) {
         return new DataBaseQueryInsert<>(this, entity);
     }

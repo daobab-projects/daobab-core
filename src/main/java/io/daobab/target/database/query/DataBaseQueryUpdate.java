@@ -38,7 +38,7 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
         init(target, entity);
 
         SetFields sf = new SetFields();
-        for (TableColumn ecol : entity.columns()) {
+        for (TableColumn ecol : target.getColumnsForTable(entity)) {
             Column col = ecol.getColumn();
             if (col.getColumnName().equals(entity.colID().getColumnName())) continue;
             if (col.getThisValue() == null) {

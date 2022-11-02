@@ -73,7 +73,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
             }
         }
 
-        for (TableColumn ec : entity.columns()) {
+        for (TableColumn ec : target.getColumnsForTable(entity)) {
 
             Column c = ec.getColumn();
 

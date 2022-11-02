@@ -454,7 +454,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
             return new TableColumn(column);
         }
 
-        for (TableColumn ic : column.getInstance().columns()) {
+        for (TableColumn ic : target.getColumnsForTable(column.getInstance())) {
             if (ic.getColumn().equalsColumn(column)) {
                 return ic;
             }

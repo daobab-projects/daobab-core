@@ -35,7 +35,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         }
         List<TableColumn> columns = new ArrayList<>();
         for (Entity e : entities) {
-            columns.addAll(e.columns());
+            columns.addAll(target.getColumnsForTable(e));
         }
 
         TableColumn fielddao = columns.get(0);

@@ -192,7 +192,7 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setInfoColumns((EntityRelation) this, columns().toArray(new TableColumn[0])))
+        target.update(SetFields.setInfoColumns((EntityRelation) this, target.getColumnsForTable(this).toArray(new TableColumn[0])))
                 .whereEqual(colID(), getId())
                 .execute();
         return (E) this;
@@ -204,7 +204,7 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setColumns((E) this, columns().stream()
+        target.update(SetFields.setColumns((E) this, target.getColumnsForTable(this).stream()
                         .map(TableColumn::getColumn)
                         .toArray(Column[]::new)))
                 .whereEqual(colID(), getId())
@@ -253,7 +253,7 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
 
     @SuppressWarnings("unchecked")
     default String getSqlUpdate(DataBaseTarget target) {
-        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) this.columns())).whereEqual(colID(), getId()) + ";";
+        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) target.getColumnsForTable(this))).whereEqual(colID(), getId()) + ";";
     }
 
     @SuppressWarnings("unchecked")
