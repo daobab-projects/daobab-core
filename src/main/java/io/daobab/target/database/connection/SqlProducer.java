@@ -95,15 +95,15 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
         if (base.getWhereWrapper() != null) {
-            sb.append(LINE_SEPARATOR);
-            sb.append(" where ");
-            sb.append(whereToExpression(base.getWhereWrapper(), storage));
+            sb.append(LINE_SEPARATOR)
+                    .append(" where ")
+                    .append(whereToExpression(base.getWhereWrapper(), storage));
         }
 
         if (base.getOrderBy() != null) {
-            sb.append(LINE_SEPARATOR);
-            sb.append(" order by ");
-            sb.append(orderToExpression(base.getOrderBy(), storage));
+            sb.append(LINE_SEPARATOR)
+                    .append(" order by ")
+                    .append(orderToExpression(base.getOrderBy(), storage));
         }
 
         String query = sb.toString();
@@ -125,8 +125,8 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             return rv;
         }
 
-        sb.append("insert into ");
-        sb.append(base.getEntityName());
+        sb.append("insert into ")
+                .append(base.getEntityName());
 
         boolean select = base.getSelectQuery() != null;
 
@@ -176,11 +176,11 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             sb.append(") ");
 
             if (!select) {
-                sb.append(LINE_SEPARATOR);
-                sb.append("values (");
-                sb.append(LINE_SEPARATOR);
-                sb.append(values);
-                sb.append(") ");
+                sb.append(LINE_SEPARATOR)
+                        .append("values (")
+                        .append(LINE_SEPARATOR)
+                        .append(values)
+                        .append(") ");
             }
         }
 
@@ -260,8 +260,8 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             if (base.isUnique()) {
                 sb.append("distinct ");
             }
-            sb.append(countToExpression(base.getCount(), storage.getIdentifierFor(base.getEntityName())));
-            sb.append(CLOSED_BRACKET);
+            sb.append(countToExpression(base.getCount(), storage.getIdentifierFor(base.getEntityName())))
+                    .append(CLOSED_BRACKET);
 
         } else {
             if (base.getLimit() != null && base.getLimit().getOffset() == 0 && getDataBaseProductName().startsWith(DictDatabaseType.MicrosoftSQL)) {
@@ -302,16 +302,16 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             if (!storage.isEntityInJoinClause(d)) {
                 if (valueAlready) sb.append(COMMASPACE);
                 valueAlready = true;
-                sb.append(d);
-                sb.append(SPACE);
-                sb.append(storage.getIdentifierFor(d));
+                sb.append(d)
+                        .append(SPACE)
+                        .append(storage.getIdentifierFor(d));
             }
         }
         sb.append(SPACE);
 
         for (JoinWrapper<?> joinWrapper : base.getJoins()) {
-            sb.append(LINE_SEPARATOR);
-            sb.append(joinToExpression(joinWrapper, storage));
+            sb.append(LINE_SEPARATOR)
+                    .append(joinToExpression(joinWrapper, storage));
         }
 
         boolean limitandwhereprovided = base.getWhereWrapper() != null && (base.getLimit() != null && DictDatabaseType.ORACLE.equals(getDataBaseProductName()));
@@ -357,20 +357,20 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
         if (base.getHavingWrapper() != null) {
-            sb.append(LINE_SEPARATOR);
-            sb.append(" having ");
-            sb.append(whereToExpression(base.getHavingWrapper(), storage));
+            sb.append(LINE_SEPARATOR)
+                    .append(" having ")
+                    .append(whereToExpression(base.getHavingWrapper(), storage));
         }
 
         if (base.getOrderBy() != null) {
-            sb.append(LINE_SEPARATOR);
-            sb.append(" order by ");
-            sb.append(orderToExpression(base.getOrderBy(), storage));
+            sb.append(LINE_SEPARATOR)
+                    .append(" order by ")
+                    .append(orderToExpression(base.getOrderBy(), storage));
         }
 
         if (base.getLimit() != null && !DictDatabaseType.ORACLE.equals(getDataBaseProductName())) {
-            sb.append(LINE_SEPARATOR);
-            sb.append(limitToExpression(base.getLimit()));
+            sb.append(LINE_SEPARATOR)
+                    .append(limitToExpression(base.getLimit()));
         }
 
         String query = sb.toString();
@@ -498,7 +498,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     default StringBuilder limitToExpression(Limit limit) {
-
         String databaseEngine = getDataBaseProductName();
         StringBuilder sb = new StringBuilder();
 
@@ -538,14 +537,14 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         StringBuilder sb = new StringBuilder();
 
         for (int i = 1; i < order.getCounter(); i++) {
-            Object orderedfield = order.getObjectForPointer(i);
+            Object orderedField = order.getObjectForPointer(i);
 
-            if (orderedfield instanceof String) {
-                sb.append(orderedfield);
+            if (orderedField instanceof String) {
+                sb.append(orderedField);
                 sb.append(SPACE);
                 sb.append(order.getOrderKindForPointer(i));
             } else {
-                Column<?, ?, ?> field = (Column<?, ?, ?>) orderedfield;
+                Column<?, ?, ?> field = (Column<?, ?, ?>) orderedField;
                 sb.append(storage.getIdentifierFor(field.getEntityName()));
                 sb.append(DOT);
                 sb.append(field.getColumnName());
@@ -561,7 +560,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     @SuppressWarnings("rawtypes")
-    default StringBuilder countToExpression(Count count, String daoidentifier) {
+    default StringBuilder countToExpression(Count count, String daoIdentifier) {
         StringBuilder sb = new StringBuilder();
         if (count.getCounter() == 1) {
             Object field = count.getObjectForPointer(1);
@@ -585,9 +584,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 }
 
                 if (field == null) {
-                    sb.append(daoidentifier);
+                    sb.append(daoIdentifier);
                 } else if (field instanceof Column) {
-                    sb.append(daoidentifier).append(DOT);
+                    sb.append(daoIdentifier).append(DOT);
                     sb.append(((Column) field).getColumnName());
                 } else {
                     sb.append(field);
@@ -629,7 +628,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 }
 
                 if (isDBQuery) {
-                    sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
+                    sb.append(appendKey(storage, keyFromWrapper, relation));
                     QueryExpressionProvider<?> queryExpressionProvider = (QueryExpressionProvider<?>) value;
                     sb.append(OPEN_BRACKET).append(toSqlQuery((DataBaseQueryBase<? extends Entity, ?>) queryExpressionProvider.getInnerQuery())).append(CLOSED_BRACKET);
                     continue;
@@ -646,34 +645,34 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             }
 
             if (value == null && (Operator.IS_NULL.equals(relation) || Operator.NOT_NULL.equals(relation))) {
-                sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
+                sb.append(appendKey(storage, keyFromWrapper, relation));
             } else if (value instanceof ColumnFunction<?, ?, ?, ?>) {
-                sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
+                sb.append(appendKey(storage, keyFromWrapper, relation));
                 sb.append(columnFunctionToExpression((ColumnFunction<?, ?, ?, ?>) value, storage, false));
             } else if (value instanceof Column<?, ?, ?>) {
-                sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
+                sb.append(appendKey(storage, keyFromWrapper, relation));
                 sb.append(storage.getIdentifierForColumn((Column<?, ?, ?>) value));
             } else if (value instanceof Where) {
                 Where wr = (Where) value;
                 sb.append(SPACE_OPEN_BRACKET).append(whereToExpression(wr, storage)).append(CLOSED_BRACKET);
             } else if (value instanceof InnerQueryFields) {
                 InnerQueryFields wr = (InnerQueryFields) value;
-                sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation))
+                sb.append(appendKey(storage, keyFromWrapper, relation))
                         .append(toInnerQueryExpression(storage, this, wr));
             } else if (value instanceof Collection || relation.isRelationCollectionBased()) {
                 if (value instanceof Collection) {
                     Collection<?> valueCollection = (Collection<?>) value;
-                    sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
+                    sb.append(appendKey(storage, keyFromWrapper, relation));
                     sb.append(toChain(valueCollection));
                 } else {
                     //w kolekcji moze sie znajdowac tylko jeden element wowczas typ obiektu nie bedzie collection
-                    sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
+                    sb.append(appendKey(storage, keyFromWrapper, relation));
                     sb.append("('").append(valueStringToSQL(value)).append("')");
                 }
             } else {
                 sb.append(SPACE);
-                sb.append(appendKey(storage, keyFromWrapper, databaseengine, relation));
-                sb.append(valueToSQL(storage, databaseengine, relation, value));
+                sb.append(appendKey(storage, keyFromWrapper, relation));
+                sb.append(valueToSQL(databaseengine, relation, value));
             }
 
             if (relationToNext != null && i < where.getCounter() - 1) {
@@ -684,7 +683,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     @SuppressWarnings("rawtypes")
-    default StringBuilder appendKey(IdentifierStorage storage, Column<Entity, Object, EntityRelation> keyFromWrapper, String databaseengine) {
+    default StringBuilder appendKey(IdentifierStorage storage, Column<Entity, Object, EntityRelation> keyFromWrapper) {
         StringBuilder sb = new StringBuilder();
         if (keyFromWrapper instanceof ColumnFunction) {
             ColumnFunction<?, ?, ?, ?> function = (ColumnFunction<?, ?, ?, ?>) keyFromWrapper;
@@ -696,8 +695,8 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     @SuppressWarnings("rawtypes")
-    default StringBuilder appendKey(IdentifierStorage storage, Column<Entity, Object, EntityRelation> keyFromWrapper, String databaseengine, Operator relation) {
-        StringBuilder sb = appendKey(storage, keyFromWrapper, databaseengine);
+    default StringBuilder appendKey(IdentifierStorage storage, Column<Entity, Object, EntityRelation> keyFromWrapper, Operator relation) {
+        StringBuilder sb = appendKey(storage, keyFromWrapper);
         sb.append(relation);
         return sb;
     }
@@ -745,7 +744,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
 
     @SuppressWarnings({"rawtypes", "unchecked", "java:S1872", "java:S3740"})
-    default StringBuilder columnFunctionToExpression(ColumnFunction columnFunction, IdentifierStorage storage, boolean internalfunction) {
+    default StringBuilder columnFunctionToExpression(ColumnFunction columnFunction, IdentifierStorage storage, boolean internalFunction) {
 
         if (columnFunction.getClass().getName().equals(CastColumnRelation.class.getName())) {
             CastColumnRelation function = (CastColumnRelation) columnFunction;
@@ -756,7 +755,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             ManyArgumentsFunction function = (ManyArgumentsFunction) columnFunction;
             StringBuilder sb = toManyArgumentsFunctionQueryExpression(function, storage, columnFunction.getMode());
 
-            if (!internalfunction && columnFunction.identifier != null && !columnFunction.identifier.trim().isEmpty()) {
+            if (!internalFunction && columnFunction.identifier != null && !columnFunction.identifier.trim().isEmpty()) {
                 sb.append(" as ").append(columnFunction.identifier).append(SPACE);
             }
             return sb;
@@ -802,7 +801,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
 
-        if (!internalfunction && columnFunction.identifier != null && !columnFunction.identifier.trim().isEmpty()) {
+        if (!internalFunction && columnFunction.identifier != null && !columnFunction.identifier.trim().isEmpty()) {
             sb.append(" as ").append(columnFunction.identifier).append(SPACE);
         }
         return sb;
@@ -987,34 +986,34 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         return sb;
     }
 
-    default StringBuilder toDate(String databasetype, Date value) {
+    default StringBuilder toDate(String dataBaseType, Date value) {
         if (value instanceof java.sql.Timestamp) {
-            return toTimestampDate(databasetype, value);
+            return toTimestampDate(dataBaseType, value);
         }
-        return toSQLDate(databasetype, value);
+        return toSQLDate(dataBaseType, value);
     }
 
-    default StringBuilder toSQLDate(String databasetype, Date value) {
+    default StringBuilder toSQLDate(String dataBaseType, Date value) {
         StringBuilder sb = new StringBuilder();
         String dateAsString;
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        if (DictDatabaseType.ORACLE.equals(databasetype)) {
+        if (DictDatabaseType.ORACLE.equals(dataBaseType)) {
             dateAsString = dateFormat.format(value);
             sb.append(" TO_DATE('").append(dateAsString).append("','YYYY-MM-DD HH24:MI:SS') ");
             return sb;
-        } else if (DictDatabaseType.MYSQL.equals(databasetype)) {
+        } else if (DictDatabaseType.MYSQL.equals(dataBaseType)) {
             dateAsString = dateFormat.format(value);
             sb.append(" STR_TO_DATE('").append(dateAsString).append("', '%Y-%m-%d %H:%i:%s')");
             return sb;
-        } else if (DictDatabaseType.H2.equals(databasetype)) {
+        } else if (DictDatabaseType.H2.equals(dataBaseType)) {
             dateAsString = dateFormat.format(value);
             sb.append(APOSTROPHE).append(dateAsString).append(APOSTROPHE);
             return sb;
-        } else if (DictDatabaseType.PostgreSQL.equals(databasetype)) {
+        } else if (DictDatabaseType.PostgreSQL.equals(dataBaseType)) {
             dateAsString = dateFormat.format(value);
             sb.append(" to_date('").append(dateAsString).append("', 'YYYY-MM-DD HH24:MI:SS')");
             return sb;
-        } else if (databasetype.startsWith(DictDatabaseType.MicrosoftSQL)) {
+        } else if (dataBaseType.startsWith(DictDatabaseType.MicrosoftSQL)) {
             SimpleDateFormat dateFormatMsSql = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             dateAsString = dateFormatMsSql.format(value);
             sb.append(" convert(DATETIME,'").append(dateAsString).append("')");
@@ -1026,27 +1025,27 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
     }
 
-    default StringBuilder toTimestampDate(String databasetype, Date value) {
+    default StringBuilder toTimestampDate(String dataBaseType, Date value) {
         StringBuilder sb = new StringBuilder();
         String dateAsString;
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        if (DictDatabaseType.ORACLE.equals(databasetype)) {
+        if (DictDatabaseType.ORACLE.equals(dataBaseType)) {
             dateAsString = dateFormat.format(value);
             sb.append(" TO_DATE('").append(dateAsString).append("','YYYY-MM-DD HH24:MI:SS') ");
             return sb;
-        } else if (DictDatabaseType.MYSQL.equals(databasetype)) {
+        } else if (DictDatabaseType.MYSQL.equals(dataBaseType)) {
             dateAsString = dateFormat.format(value);
             sb.append(" STR_TO_DATE('").append(dateAsString).append("', '%Y-%m-%d %H:%i:%s')");
             return sb;
-        } else if (DictDatabaseType.H2.equals(databasetype)) {
+        } else if (DictDatabaseType.H2.equals(dataBaseType)) {
             dateAsString = dateFormat.format(value);
             sb.append(APOSTROPHE).append(dateAsString).append(APOSTROPHE);
             return sb;
-        } else if (DictDatabaseType.PostgreSQL.equals(databasetype)) {
+        } else if (DictDatabaseType.PostgreSQL.equals(dataBaseType)) {
             dateAsString = dateFormat.format(value);
             sb.append(" to_date('").append(dateAsString).append("', 'YYYY-MM-DD HH24:MI:SS')");
             return sb;
-        } else if (databasetype.startsWith(DictDatabaseType.MicrosoftSQL)) {
+        } else if (dataBaseType.startsWith(DictDatabaseType.MicrosoftSQL)) {
             SimpleDateFormat dateFormatMsSql = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             dateAsString = dateFormatMsSql.format(value);
             sb.append(" convert(DATETIME,'").append(dateAsString).append("')");
@@ -1059,7 +1058,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
 
-    default StringBuilder valueToSQL(IdentifierStorage storage, String databaseengine, Operator relation, Object value) {
+    default StringBuilder valueToSQL(String dataBaseEngine, Operator relation, Object value) {
         StringBuilder sb = new StringBuilder();
 
         if (value instanceof Boolean) {
@@ -1079,7 +1078,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
         if (valueIsDate) {
-            sb.append(toDate(databaseengine, (Date) value));
+            sb.append(toDate(dataBaseEngine, (Date) value));
         } else {
             sb.append(valueStringToSQL(value));
         }

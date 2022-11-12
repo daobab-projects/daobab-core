@@ -9,6 +9,8 @@ import io.daobab.model.Entity;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.QueryHandler;
+import io.daobab.target.database.connection.JDBCResultSetReader;
+import io.daobab.target.database.connection.ResultSetReader;
 import io.daobab.target.database.meta.MetaData;
 import io.daobab.target.database.meta.MetaDataBaseTarget;
 import io.daobab.target.database.meta.MetaDataTables;
@@ -40,6 +42,8 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     private String schemaName;
     private String catalogName;
     private boolean sql = false;
+
+    private final ResultSetReader resultSetReader = new JDBCResultSetReader();
 
 
     public boolean isConnectedToDatabase() {
@@ -209,5 +213,8 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
         this.catalogName = catalogName;
     }
 
-
+    @Override
+    public ResultSetReader getResultSetReader() {
+        return resultSetReader;
+    }
 }

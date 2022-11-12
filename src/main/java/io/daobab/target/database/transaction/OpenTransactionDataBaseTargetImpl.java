@@ -11,6 +11,7 @@ import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.database.DataBaseTargetLogic;
 import io.daobab.target.database.QueryDataBaseHandler;
 import io.daobab.target.database.TransactionalTarget;
+import io.daobab.target.database.connection.ResultSetReader;
 import io.daobab.target.database.meta.MetaData;
 import io.daobab.target.database.query.*;
 import io.daobab.target.protection.AccessProtector;
@@ -96,6 +97,11 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     @Override
     public String getDataBaseProductName() {
         return db.getDataBaseProductName();
+    }
+
+    @Override
+    public ResultSetReader getResultSetReader() {
+        return db.getResultSetReader();
     }
 
     @Override

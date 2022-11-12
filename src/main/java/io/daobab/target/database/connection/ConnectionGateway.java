@@ -8,9 +8,11 @@ import java.sql.SQLException;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public interface ConnectionGateway {
+public class ConnectionGateway {
+    private ConnectionGateway() {
+    }
 
-    static void closeConnectionIfOpened(Connection conn) {
+    public static void closeConnectionIfOpened(Connection conn) {
         if (conn != null) {
             try {
                 if (!conn.isClosed()) conn.close();
