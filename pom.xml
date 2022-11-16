@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.daobab</groupId>
   <artifactId>daobab-core</artifactId>
-  <version>1.4.1</version>
+  <version>1.5</version>
     <name>Daobab</name>
     <url>http://www.daobab.io</url>
     <description>Daobab Java ORM</description>
