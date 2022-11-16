@@ -463,9 +463,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         return null;
     }
 
-    public abstract String toSqlQuery();
-
-
     public String getSentQuery() {
         return sentQuery;
     }
@@ -474,7 +471,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         this.sentQuery = sentQuery;
     }
 
-    public <E extends Entity> Q from(E entity) {
+    public <E1 extends Entity> Q from(E1 entity) {
         if (entity == null) throw new NullEntityException();
         setEntityName(entity.getEntityName());
         setEntityClass(entity.getEntityClass());
@@ -482,5 +479,9 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         setIdentifierStorage(storage);
         getIdentifierStorage().registerIdentifiers(getEntityName());
         return (Q) this;
+    }
+
+    public String toSqlQuery() {
+        return getTarget().toSqlQuery(this);
     }
 }

@@ -116,8 +116,4 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
         return QueryType.ENTITY;
     }
 
-    @Override
-    public String toSqlQuery() {
-        return getTarget().toSqlQuery(this);
-    }
 }

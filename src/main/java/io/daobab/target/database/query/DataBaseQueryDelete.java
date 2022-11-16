@@ -57,35 +57,9 @@ public final class DataBaseQueryDelete<E extends Entity> extends DataBaseQueryBa
         this.entity = entity;
     }
 
-//    @SuppressWarnings({"unchecked","rawtypes"})
-//    public QueryEntity<E> toSelect(){
-//        QueryEntity<E> query;
-//       if (getEntity()==null){
-//           if (getFields().isEmpty()){
-//               throw new DaobabException("You cannot convert delete query to select query without entity or column provided.");
-//           }
-//           query = new QueryEntity<>(getTarget(), getFields().get(0).getColumn());
-//       }else{
-//           query= new QueryEntity<>(getTarget(),getEntity());
-//       }
-//
-//        query.setWhereWrapper(getWhereWrapper());
-//        query.setJoins(getJoins());
-//        query.setLimit(getLimit());
-//        query.orderBy(getOrderBy());
-//        query.having(getHavingWrapper());
-//        query.countBy(getCount());
-//        query._groupBy = (getGroupBy());
-//        return query;
-//    }
-
     @Override
     public QueryType getQueryType() {
         return QueryType.ENTITY;
     }
 
-    @Override
-    public String toSqlQuery() {
-        return getTarget().toSqlQuery(this);
-    }
 }

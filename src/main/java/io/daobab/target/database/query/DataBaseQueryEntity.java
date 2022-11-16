@@ -3,6 +3,7 @@ package io.daobab.target.database.query;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
+import io.daobab.model.TableColumn;
 import io.daobab.query.base.QueryType;
 import io.daobab.result.EntitiesProvider;
 import io.daobab.statement.condition.Count;
@@ -12,9 +13,8 @@ import io.daobab.target.buffer.noheap.NoHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.QueryTarget;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -40,7 +40,6 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         target.getColumnsForTable(entity).forEach(e -> getFields().add(e));
     }
 
-
     public DataBaseQueryEntity(String nativeQuery, QueryTarget target, E entity) {
         this(target, entity);
         this._nativeQuery = nativeQuery;
@@ -51,9 +50,6 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         setTempCount(Count.any());
         return getTarget().count(this);
     }
-
-
-    //---- RESULT SECTION
 
     @Override
     public Entities<E> findMany() {
@@ -73,7 +69,7 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
 
     @Override
     public NoHeapEntities<E> toNoHeap() {
-        return new NoHeapEntities<E>(this.findMany());
+        return new NoHeapEntities<>(this.findMany());
     }
 
     @Override
@@ -81,9 +77,31 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         return QueryType.ENTITY;
     }
 
-    @Override
-    public String toSqlQuery() {
-        return getTarget().toSqlQuery(this);
+
+    @SuppressWarnings({"java:S2175", "rawtypes"})
+    public DataBaseQueryEntity skip(Column<E, ?, ?>... columns) {
+        if (columns == null) return this;
+        List<Column<E, ?, ?>> toRemove = new ArrayList<>();
+        List<TableColumn> tableAllColumns = getTarget().getColumnsForTable(columns[0].getInstance());
+        Collections.addAll(toRemove, columns);
+        setFields(tableAllColumns.stream()
+                .filter(t -> !toRemove.contains(t.getColumn()))
+                .filter(t -> getFields().contains(t.getColumn()))
+                .collect(Collectors.toList()));
+        return this;
+    }
+
+    @SuppressWarnings({"java:S2175", "rawtypes"})
+    public DataBaseQueryEntity only(Column<E, ?, ?>... columns) {
+        if (columns == null) return this;
+        List<Column<E, ?, ?>> toRemove = new ArrayList<>();
+        List<TableColumn> tableAllColumns = getTarget().getColumnsForTable(columns[0].getInstance());
+        Collections.addAll(toRemove, columns);
+        setFields(tableAllColumns.stream()
+                .filter(t -> toRemove.contains(t.getColumn()))
+                .filter(t -> getFields().contains(t.getColumn()))
+                .collect(Collectors.toList()));
+        return this;
     }
 
 }

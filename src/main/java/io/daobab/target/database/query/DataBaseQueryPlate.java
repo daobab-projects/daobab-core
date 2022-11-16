@@ -193,9 +193,5 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         return QueryType.PLATE;
     }
 
-    @Override
-    public String toSqlQuery() {
-        return getTarget().toSqlQuery(this);
-    }
 
 }

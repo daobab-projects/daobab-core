@@ -82,8 +82,4 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
         return QueryType.FIELD;
     }
 
-    @Override
-    public String toSqlQuery() {
-        return getTarget().toSqlQuery(this);
-    }
 }
