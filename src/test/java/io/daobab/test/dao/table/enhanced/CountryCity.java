@@ -27,7 +27,7 @@ public class CountryCity extends City implements
 
     @Override
     public <Q extends Query & QueryJoin<Q>> Q enhanceQuery(Q query) {
-        return (Q) query
+        return query
                 .join(tabCountry, colCountryId());
     }
 }

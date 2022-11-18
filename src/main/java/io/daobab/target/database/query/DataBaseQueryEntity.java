@@ -1,9 +1,6 @@
 package io.daobab.target.database.query;
 
-import io.daobab.model.Column;
-import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.query.base.QueryType;
 import io.daobab.result.EntitiesProvider;
 import io.daobab.statement.condition.Count;
@@ -80,26 +77,47 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
 
     @SuppressWarnings({"java:S2175", "rawtypes"})
     public DataBaseQueryEntity skip(Column<E, ?, ?>... columns) {
-        if (columns == null) return this;
+        if (columns == null || columns.length == 0) return this;
         List<Column<E, ?, ?>> toRemove = new ArrayList<>();
         List<TableColumn> tableAllColumns = getTarget().getColumnsForTable(columns[0].getInstance());
         Collections.addAll(toRemove, columns);
+
+        Entity entity = columns[0].getInstance();
+        boolean primaryKeyEntity = entity instanceof PrimaryKey;
+        if (primaryKeyEntity) {
+            Column pkColumn = ((PrimaryKey) entity).colID();
+            if (Arrays.stream(columns).anyMatch(c -> c.equalsColumn(pkColumn))) {
+                //PK must stay if the entity has it.
+                toRemove.remove(pkColumn);
+            }
+        }
+
         setFields(tableAllColumns.stream()
-                .filter(t -> !toRemove.contains(t.getColumn()))
-                .filter(t -> getFields().contains(t.getColumn()))
+                .filter(t -> toRemove.stream().noneMatch(c -> c.equalsColumn(t.getColumn())))
+                .filter(t -> getFields().stream().anyMatch(c -> c.getColumn().equalsColumn(t.getColumn())))
                 .collect(Collectors.toList()));
         return this;
     }
 
     @SuppressWarnings({"java:S2175", "rawtypes"})
     public DataBaseQueryEntity only(Column<E, ?, ?>... columns) {
-        if (columns == null) return this;
-        List<Column<E, ?, ?>> toRemove = new ArrayList<>();
+        if (columns == null || columns.length == 0) return this;
+        List<Column<E, ?, ?>> toLeave = new ArrayList<>();
         List<TableColumn> tableAllColumns = getTarget().getColumnsForTable(columns[0].getInstance());
-        Collections.addAll(toRemove, columns);
+        Collections.addAll(toLeave, columns);
+
+        Entity entity = columns[0].getInstance();
+        boolean primaryKeyEntity = entity instanceof PrimaryKey;
+        if (primaryKeyEntity) {
+            Column pkColumn = ((PrimaryKey) entity).colID();
+            if (Arrays.stream(columns).noneMatch(c -> c.equalsColumn(pkColumn))) {
+                //PK must stay if the entity has it.
+                toLeave.add(pkColumn);
+            }
+        }
         setFields(tableAllColumns.stream()
-                .filter(t -> toRemove.contains(t.getColumn()))
-                .filter(t -> getFields().contains(t.getColumn()))
+                .filter(t -> toLeave.stream().anyMatch(c -> c.equalsColumn(t.getColumn())))
+                .filter(t -> getFields().stream().anyMatch(c -> c.getColumn().equalsColumn(t.getColumn())))
                 .collect(Collectors.toList()));
         return this;
     }

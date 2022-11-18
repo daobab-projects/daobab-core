@@ -1,9 +1,13 @@
 package io.daobab.target.database.connection;
 
+import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
+import io.daobab.error.NoSequenceException;
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.*;
 import io.daobab.query.base.QuerySpecialParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
@@ -15,13 +19,17 @@ import java.util.TimeZone;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public class JDBCResultSetReader implements ResultSetReader {
+public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
+    protected Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @SuppressWarnings("unchecked")
     @Override
-    public Plate readPlate(ResultSet rs, List<TableColumn> col) throws SQLException {
-        Plate plate = new Plate(col);
-        for (int i = 0; i < col.size(); i++) {
-            readColumnValuePutIntoPlate(rs, i + 1, plate, col.get(i));
+    public Plate readPlate(ResultSet rs, List<TableColumn> columns) throws SQLException {
+        Plate plate = new Plate(columns);
+        for (int i = 0; i < columns.size(); i++) {
+            TableColumn tableColumn = columns.get(i);
+            plate.setValue(tableColumn, rs.getObject(i + 1, tableColumn.getColumn().getFieldClass()));
         }
         return plate;
     }
@@ -35,16 +43,11 @@ public class JDBCResultSetReader implements ResultSetReader {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void readColumnValuePutIntoPlate(ResultSet rs, int colNo, Plate e, TableColumn col) throws SQLException {
-        e.setValue(col, rs.getObject(colNo, col.getColumn().getFieldClass()));
-    }
-
-    @Override
-    @SuppressWarnings({"unchecked"})
-    public <E extends Entity> E readTableColumnsPutIntoEntity(ResultSet rs, E entity, List<TableColumn> columns) {
-        for (int i = 1; i < columns.size() + 1; i++) {
-            readColumnValuePutIntoEntity(rs, i, entity, columns.get(i).getColumn());
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <E extends Entity> E readEntity(ResultSet rs, E entity, List<TableColumn> columns) {
+        for (int i = 0; i < columns.size(); i++) {
+            Column<E, ?, EntityRelation> col = columns.get(i).getColumn();
+            col.setValue((EntityRelation) entity, readCell(rs, i + 1, col.getFieldClass()));
         }
         return entity;
     }
@@ -56,25 +59,13 @@ public class JDBCResultSetReader implements ResultSetReader {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public <E extends Entity, F, R extends EntityRelation> void readColumnValuePutIntoEntity(ResultSet rs, int colNo, E e, Column<E, F, R> col) {
-        Class<F> columnType = col.getFieldClass();
-        col.setValue((R) e, readSingleColumn(rs, colNo, columnType));
-    }
-
-    @Override
-    public <F> F readColumnValue(ResultSet rs, int colNo, Class<F> valueClazz) throws SQLException {
+    public <F> F readCellEasy(ResultSet rs, int colNo, Class<F> valueClazz) throws SQLException {
         return rs.getObject(colNo, valueClazz);
     }
 
     @Override
-    public <F> F readSingleColumnValue(ResultSet rs, int colNo, Column<?, F, ?> col) {
-        return readSingleColumn(rs, colNo, col.getFieldClass());
-    }
-
-    @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <F> F readSingleColumn(ResultSet rs, int colNo, Class columnType) {
+    public <F> F readCell(ResultSet rs, int colNo, Class columnType) {
         try {
             if (Timestamp.class.equals(columnType)) {
                 return (F) rs.getTimestamp(colNo, Calendar.getInstance(TimeZone.getDefault()));
@@ -98,14 +89,10 @@ public class JDBCResultSetReader implements ResultSetReader {
     @Override
     public void closeStatement(Statement stmt, ILoggerBean loggerBean) {
         try {
-            if (stmt == null) {
-                loggerBean.getLog().debug("Cannot close null statement");
+            if (stmt == null || stmt.isClosed()) {
+                log.debug("Cannot close the statement");
             } else {
-                if (stmt.isClosed()) {
-                    loggerBean.getLog().debug("Cannot close already closed statement");
-                } else {
-                    stmt.close();
-                }
+                stmt.close();
             }
         } catch (SQLException e) {
             throw new DaobabSQLException(e);
@@ -155,7 +142,7 @@ public class JDBCResultSetReader implements ResultSetReader {
             stmt.executeUpdate();
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next() && pk != null) {
-                return readColumnValue(rs, 1, pk.getFieldClass());
+                return readCellEasy(rs, 1, pk.getFieldClass());
             }
             return null;
 
@@ -167,4 +154,30 @@ public class JDBCResultSetReader implements ResultSetReader {
     }
 
 
+    @Override
+    public <F> F getSequenceNextId(Connection conn, String sequenceName, Class<F> fieldClazz) {
+        if (sequenceName == null || sequenceName.isEmpty()) throw new NoSequenceException();
+        log.debug("Getting the sequence = {}", sequenceName);
+        PreparedStatement stmt = null;
+        try {
+            stmt = conn.prepareStatement("select " + sequenceName + ".nextval from dual");
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                F rv = readCellEasy(rs, 1, fieldClazz);
+                log.debug("Took the sequence = {} value: {}", sequenceName, rv);
+                return rv;
+            } else {
+                throw new DaobabException("Getting the sequence '{}' value failed. Database does not return anything. Is the name of the sequence correct?", sequenceName);
+            }
+        } catch (SQLException e) {
+            throw new DaobabSQLException("Error during generation of ID for object type = " + sequenceName, e);
+        } finally {
+            closeStatement(stmt, this);
+        }
+    }
+
+    @Override
+    public Logger getLog() {
+        return log;
+    }
 }

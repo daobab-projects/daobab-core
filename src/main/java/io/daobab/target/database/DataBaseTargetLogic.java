@@ -1,6 +1,9 @@
 package io.daobab.target.database;
 
-import io.daobab.error.*;
+import io.daobab.error.DaobabEntityCreationException;
+import io.daobab.error.DaobabException;
+import io.daobab.error.DaobabSQLException;
+import io.daobab.error.MandatoryWhere;
 import io.daobab.model.*;
 import io.daobab.parser.ParserNumber;
 import io.daobab.query.base.QuerySpecialParameters;
@@ -99,27 +102,6 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         }
     }
 
-    default <F> F getNextId(Connection conn, String sequenceName, Class<F> fieldClazz) {
-        if (sequenceName == null || sequenceName.isEmpty()) throw new NoSequenceException();
-        getLog().debug(format("Start getNextId (conn = %s, sequenceName =%s)", conn, sequenceName));
-        PreparedStatement stmt = null;
-        try {
-            stmt = conn.prepareStatement("select " + sequenceName + ".nextval from dual");
-            getLog().debug("Executing statement");
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return getResultSetReader().readColumnValue(rs, 1, fieldClazz);
-            } else {
-                throw new DaobabException("No data from result set");
-            }
-        } catch (SQLException e) {
-            throw new DaobabSQLException("Error during generation of ID for object type = " + sequenceName, e);
-        } finally {
-            getResultSetReader().closeStatement(stmt, this);
-            getLog().debug("Finish getNextId");
-        }
-    }
-
 
     default <E extends Entity> int delete(DataBaseQueryDelete<E> query, boolean transaction) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.DELETE);
@@ -189,7 +171,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (query.isPkResolved()) {
                 pk = (PrimaryKey) query.getEntity();
                 if (pk.getIdGeneratorType().equals(IdGeneratorType.SEQUENCE)) {
-                    query.setPkNo(getNextId(conn, query.getSequenceName(), pk.colID().getFieldClass()));
+                    query.setPkNo(getResultSetReader().getSequenceNextId(conn, query.getSequenceName(), pk.colID().getFieldClass()));
                 }
             }
 
@@ -203,7 +185,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 query.setPkNo(getResultSetReader().executeInsert(insertQueryParameters, conn, this, query.isPkResolved() ? ((PrimaryKey) query.getEntity()).colID() : null));
             }
 
-            if (query.isPkResolved()) {
+            if (query.isPkResolved() && pk != null) {
                 pk.setId(query.getPkNo());
             }
 
@@ -224,7 +206,6 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 if (transaction) {
                     conn.commit();
                 }
-
                 if (!conn.isClosed()) conn.close();
 
             } catch (SQLException e) {
@@ -240,7 +221,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         }
     }
 
-    @SuppressWarnings({"unchecked", "java:S3776"})
+    @SuppressWarnings({"java:S3776"})
     @Override
     default <E extends Entity, F> F readField(DataBaseQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
@@ -249,18 +230,18 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 throw new DaobabException("Query points no column to return");
             }
 
+            ResultSetReader rsReader = getResultSetReader();
             PreparedStatement stmt = null;
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
             try {
                 String sqlQuery = toSqlQuery(s);
                 query.setSentQuery(sqlQuery);
                 stmt = conn.prepareStatement(sqlQuery);
-
                 ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
-                    return (F) getResultSetReader().readSingleColumnValue(rs, 1, s.getFields().get(0).getColumn());
+                    return rsReader.readCell(rs, 1, s.getFields().get(0).getColumn().getFieldClass());
                 }
                 if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
                 return null;
@@ -268,13 +249,11 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
                 throw new DaobabSQLException(e);
             } finally {
-                getResultSetReader().closeStatement(stmt, this);
-
+                rsReader.closeStatement(stmt, this);
             }
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default <E extends Entity, F> List<F> readFieldList(DataBaseQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
@@ -285,18 +264,19 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 throw new DaobabException("Query points no column to return");
             }
 
+            ResultSetReader rsReader = getResultSetReader();
             PreparedStatement stmt = null;
             List<F> rv = new ArrayList<>();
             try {
                 String sqlQuery = toSqlQuery(s);
                 query.setSentQuery(sqlQuery);
                 stmt = conn.prepareStatement(sqlQuery);
-                ResultSet rs = stmt.executeQuery();
+                ResultSet rs = stmt.executeQuery(sqlQuery);
 
                 Column<?, ?, ?> column = s.getFields().get(0).getColumn();
 
                 while (rs.next()) {
-                    rv.add((F) getResultSetReader().readSingleColumnValue(rs, 1, column));
+                    rv.add(rsReader.readCell(rs, 1, column.getFieldClass()));
                 }
                 if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, rv.size());
                 return rv;
@@ -304,7 +284,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
                 throw new DaobabSQLException(e);
             } finally {
-                getResultSetReader().closeStatement(stmt, this);
+                rsReader.closeStatement(stmt, this);
             }
 
         });
@@ -321,6 +301,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             Class<E> clazz = entityQuery.getEntityClass();
             PreparedStatement stmt = null;
             List<E> rv = new ArrayList<>();
+            ResultSetReader rsReader = getResultSetReader();
             try {
                 String sqlQuery = toSqlQuery(entityQuery);
                 entityQuery.setSentQuery(sqlQuery);
@@ -329,7 +310,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
                 while (rs.next()) {
                     E entity = clazz.getDeclaredConstructor().newInstance();
-                    getResultSetReader().readTableColumnsPutIntoEntity(rs, entity, entityQuery.getFields());
+                    rsReader.readEntity(rs, entity, entityQuery.getFields());
                     entity.afterSelect(this);
                     rv.add(entity);
                 }
@@ -342,7 +323,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e1);
                 throw new DaobabEntityCreationException(clazz, e1);
             } finally {
-                getResultSetReader().closeStatement(stmt, this);
+                rsReader.closeStatement(stmt, this);
 
             }
         });
@@ -357,6 +338,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         return doSthOnConnection(query, (queryEntity, conn) -> {
 
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(queryEntity);
+            ResultSetReader rsReader = getResultSetReader();
             Class<E> clazz = queryEntity.getEntityClass();
             PreparedStatement stmt = null;
             try {
@@ -368,7 +350,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
                 if (rs.next()) {
                     E entity = clazz.getDeclaredConstructor().newInstance();
-                    getResultSetReader().readTableColumnsPutIntoEntity(rs, entity, queryEntity.getFields());
+                    rsReader.readEntity(rs, entity, queryEntity.getFields());
                     entity.afterSelect(this);
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(queryEntity, 1);
                     return entity;
@@ -382,7 +364,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 if (isStatisticCollectingEnabled()) getStatisticCollector().error(queryEntity, e1);
                 throw new DaobabEntityCreationException(clazz, e1);
             } finally {
-                getResultSetReader().closeStatement(stmt, this);
+                rsReader.closeStatement(stmt, this);
             }
         });
     }
@@ -404,6 +386,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (queryPlate, conn) -> {
             PreparedStatement stmt = null;
+            ResultSetReader rsReader = getResultSetReader();
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(queryPlate);
             try {
                 String sqlQuery = toSqlQuery(queryPlate);
@@ -413,7 +396,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
-                    Plate plate = getResultSetReader().readPlate(rs, queryPlate.getFields());
+                    Plate plate = rsReader.readPlate(rs, queryPlate.getFields());
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(queryPlate, 1);
                     return plate;
                 }
@@ -423,7 +406,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 if (isStatisticCollectingEnabled()) getStatisticCollector().error(queryPlate, e);
                 throw new DaobabSQLException(e);
             } finally {
-                getResultSetReader().closeStatement(stmt, this);
+                rsReader.closeStatement(stmt, this);
             }
         });
     }
@@ -438,6 +421,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         PreparedStatement stmt = null;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         List<Plate> rv = new ArrayList<>();
+        ResultSetReader rsReader = getResultSetReader();
         try {
             conn = this.getConnection();
             String sqlQuery = toSqlQuery(query);
@@ -448,7 +432,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             getLog().debug(format("readPlateList executed statement: %s", sqlQuery));
 
             while (rs.next()) {
-                rv.add(getResultSetReader().readPlate(rs, fields));
+                rv.add(rsReader.readPlate(rs, fields));
             }
 
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, rv.size());
@@ -457,7 +441,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
             throw new DaobabSQLException(e);
         } finally {
-            getResultSetReader().closeStatement(stmt, this);
+            rsReader.closeStatement(stmt, this);
             this.closeConnection(conn);
             getLog().debug("Finish readPlateList");
         }
@@ -488,7 +472,6 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             getResultSetReader().closeStatement(stmt, query);
             this.closeConnection(conn);
             getLog().debug("Finish count");
-
         }
     }
 

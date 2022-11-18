@@ -13,23 +13,14 @@ public interface ResultSetReader {
 
     <O extends ProcedureParameters> O readProcedure(ResultSet rs, O out) throws SQLException;
 
-    @SuppressWarnings("unchecked")
-    void readColumnValuePutIntoPlate(ResultSet rs, int colNo, Plate e, TableColumn col) throws SQLException;
-
-    @SuppressWarnings({"unchecked"})
-    <E extends Entity> E readTableColumnsPutIntoEntity(ResultSet rs, E entity, List<TableColumn> columns);
+    <E extends Entity> E readEntity(ResultSet rs, E entity, List<TableColumn> columns);
 
     Timestamp toTimeZone(Timestamp timestamp, TimeZone timeZone);
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    <E extends Entity, F, R extends EntityRelation> void readColumnValuePutIntoEntity(ResultSet rs, int colNo, E e, Column<E, F, R> col);
+    <F> F readCellEasy(ResultSet rs, int colNo, Class<F> valueClazz) throws SQLException;
 
-    <F> F readColumnValue(ResultSet rs, int colNo, Class<F> valueClazz) throws SQLException;
-
-    <F> F readSingleColumnValue(ResultSet rs, int colNo, Column<?, F, ?> col);
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    <F> F readSingleColumn(ResultSet rs, int colNo, Class columnType);
+    @SuppressWarnings({"rawtypes"})
+    <F> F readCell(ResultSet rs, int colNo, Class columnType);
 
     void closeStatement(Statement stmt, ILoggerBean loggerBean);
 
@@ -39,4 +30,6 @@ public interface ResultSetReader {
 
     @SuppressWarnings("rawtypes")
     <E extends Entity, F, R extends EntityRelation> F executeInsert(QuerySpecialParameters insertQueryParameters, Connection conn, ILoggerBean loggerBean, Column<E, F, R> pk);
+
+    <F> F getSequenceNextId(Connection conn, String sequenceName, Class<F> fieldClazz);
 }
