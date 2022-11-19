@@ -51,12 +51,10 @@ public interface QueryHaving<Q extends Query> {
         return (Q) this;
     }
 
-
     default <E extends Entity, F extends Number, R extends EntityRelation> Q havingIfNotNull(ColumnFunction<E, F, R, F> column, F val) {
         if (val != null) setHavingWrapper(new Having().ifNotNull(column, val));
         return (Q) this;
     }
-
 
     default <F extends Number> Q havingIsNull(ColumnFunction<?, F, ?, F> column) {
         setHavingWrapper(new Having().isNull(column));
@@ -194,7 +192,6 @@ public interface QueryHaving<Q extends Query> {
         return (Q) this;
     }
 
-
     default <F extends Number> Q havingBetween(ColumnFunction<?, F, ?, F> column, F valueFrom, F valueTo) {
         setHavingWrapper(new Having(new WhereAnd().between(column, valueFrom, valueTo)));
         return (Q) this;
@@ -234,7 +231,6 @@ public interface QueryHaving<Q extends Query> {
         havingNotEqual(new ColumnHaving(column), val);
         return (Q) this;
     }
-
 
     default <F extends Number, R extends EntityRelation> Q havingEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().equal(column, val)));

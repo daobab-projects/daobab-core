@@ -13,7 +13,6 @@ public interface QueryOrder<Q extends Query> {
 
     Q orderBy(Order orderBy);
 
-
     default Q orderBy(Supplier<Order> order) {
         return orderBy(order.get());
     }

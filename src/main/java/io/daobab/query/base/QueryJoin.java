@@ -46,7 +46,6 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-
     default <E extends Entity> Q joinByFlag2(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2) {
         List<Column<?, ?, ?>> columns = new ArrayList<>();
         if (enableTFK1) columns.add(joinByColumn1);
@@ -64,7 +63,6 @@ public interface QueryJoin<Q extends Query> {
         }
         return (Q) this;
     }
-
 
     default <E extends Entity> Q joinByFlag3(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, boolean enableTFK3, Column<?, ?, ?> joinByColumn3) {
         List<Column<?, ?, ?>> columns = new ArrayList<>();
@@ -85,7 +83,6 @@ public interface QueryJoin<Q extends Query> {
         }
         return (Q) this;
     }
-
 
     default <E extends Entity> Q joinByFlag4(E joinedTable, boolean enableTFK1, Column<?, ?, ?> joinByColumn1, boolean enableTFK2, Column<?, ?, ?> joinByColumn2, boolean enableTFK3, Column<?, ?, ?> joinByColumn3, boolean enableTFK4, Column<?, ?, ?> joinByColumn4) {
         List<Column<?, ?, ?>> columns = new ArrayList<>();
@@ -113,7 +110,6 @@ public interface QueryJoin<Q extends Query> {
         return joinThrough(JoinType.INNER, totables, throughTables);
     }
 
-
     default <E extends Entity, R extends EntityRelation> Q joinRoute(E queryEntity, R... joinedTables) {
         return joinRoute(JoinType.INNER, queryEntity, joinedTables);
     }
@@ -121,7 +117,6 @@ public interface QueryJoin<Q extends Query> {
     default <E extends Entity> Q join(E joinedTable, Column<?, ?, ?> one, Column<?, ?, ?> two) {
         return join(JoinType.INNER, one, two, false);
     }
-
 
     default <E extends Entity> Q join(JoinType type, E joinedTable, Column<?, ?, ?> one, Column<?, ?, ?> two) {
         return join(type, one, two, false);
@@ -160,7 +155,6 @@ public interface QueryJoin<Q extends Query> {
         return join(JoinType.INNER, joinedTable, where);
     }
 
-
     default <E extends Entity> Q join(E joinedTable, JoinOn<E, ?, ?> on, Where where) {
         return join(JoinType.INNER, joinedTable, on, where);
     }
@@ -172,7 +166,6 @@ public interface QueryJoin<Q extends Query> {
     default <E extends Entity> Q join(E joinedTable, Where where, Column<?, ?, ?>... joinByColumn) {
         return join(JoinType.INNER, joinedTable, where, joinByColumn);
     }
-
 
     default <R extends EntityRelation> Q joinWhere(R joinedTable, Where where) {
         return joinWhere(JoinType.INNER, joinedTable, where);
@@ -186,7 +179,6 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-
     default <R extends EntityRelation> Q joinThrough(JoinType type, Set<String> totables, R... throughTables) {
         if (throughTables == null) return (Q) this;
         Set<String> src = new HashSet<>();
@@ -195,7 +187,6 @@ public interface QueryJoin<Q extends Query> {
         setJoins(JoinTracker.calculateThrougth(getTarget().getTables(), src, totables, getJoins(), tables));
         return (Q) this;
     }
-
 
     default <E extends Entity, R extends EntityRelation> Q joinRoute(JoinType type, E queryEntity, R... joinedTables) {
         if (queryEntity == null || joinedTables == null) return (Q) this;
@@ -226,7 +217,6 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-
     default <E extends Entity> Q join(JoinType type, E joinedTable, List<Column<?, ?, ?>> joinByColumns) {
         if (joinByColumns.size() == 1) {
             getJoins().add(new JoinWrapper(type, joinedTable, joinByColumns.get(0)));
@@ -242,7 +232,6 @@ public interface QueryJoin<Q extends Query> {
 
         return (Q) this;
     }
-
 
     default <E extends Entity> Q join(JoinType type, E joinedTable, List<Column<?, ?, ?>> joinByColumns, Where where) {
         if (joinByColumns.size() == 1) {
@@ -271,7 +260,6 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-
     default <E extends Entity> Q join(JoinType type, E joinedTable, JoinOn<E, ?, ?> on, Where where) {
         getJoins().add(new JoinWrapper(type, joinedTable, on.getRight(), where));
         return (Q) this;
@@ -299,7 +287,6 @@ public interface QueryJoin<Q extends Query> {
 
         return (Q) this;
     }
-
 
     default <R extends EntityRelation> Q joinWhere(JoinType type, R joinedTable, Where where) {
         getJoins().add(new JoinWrapper(type, joinedTable, where));

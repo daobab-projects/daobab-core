@@ -356,7 +356,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
 
         //if indexRepository is empty, don't even use the index logic
         if (wrapper == null || isIndexRepositoryEmpty || !mayBeIndexed(wrapper)) {
-            return new IndexedFilterResult(entitiesToHandle.toArray(new Integer[entitiesToHandle.size()]), Collections.emptyList());
+            return new IndexedFilterResult(entitiesToHandle.toArray(new Integer[0]), Collections.emptyList());
         }
 
         if (wrapper.getCounter() == 2 && wrapper.getKeyForPointer(1) != null) {
@@ -364,7 +364,7 @@ public abstract class NoHeapBuffer<E> extends BaseTarget implements BufferQueryT
 
             BitBufferIndexBase index = indexRepository[getColumnIntoEntityPosition(column1)];
             if (index == null) {
-                return new IndexedFilterResult(entitiesToHandle.toArray(new Integer[entitiesToHandle.size()]), Collections.emptyList());
+                return new IndexedFilterResult(entitiesToHandle.toArray(new Integer[0]), Collections.emptyList());
             }
             Operator operator1 = wrapper.getRelationForPointer(1);
             Object val1 = wrapper.getValueForPointer(1);

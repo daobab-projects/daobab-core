@@ -38,8 +38,8 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     default <E extends Entity> boolean insertAll(Collection<E> entities) {
         OpenedTransactionDataBaseTarget transactionTarget = this.beginTransaction();
         for (E entity : entities) {
-            DataBaseQueryInsert q = new DataBaseQueryInsert<>(transactionTarget, entity);
-            q.execute(false);
+            DataBaseQueryInsert queryInsert = new DataBaseQueryInsert<>(transactionTarget, entity);
+            queryInsert.execute(false);
         }
         transactionTarget.commit();
         return true;
@@ -120,11 +120,11 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     }
 
     default <E extends Entity & PrimaryCompositeKey<E, K>, K extends Composite> E findOneByPk(E entity, K key) {
-        return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.keyColumns(), key).findOne();
+        return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.colCompositeId(), key).findOne();
     }
 
     default <E extends Entity & PrimaryCompositeKey<E, K>, K extends Composite> Entities<E> findManyByPk(E entity, K key) {
-        return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.keyColumns(), key).findMany();
+        return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.colCompositeId(), key).findMany();
     }
 
     default <E extends EntityMap & PrimaryKey<E, F, ?>, F> E findFieldsByPk(F id, Column<E, ?, ?>... columns) {
@@ -135,7 +135,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
 
     default <E extends EntityMap & PrimaryCompositeKey<E, K>, K extends Composite> E findFieldsByPk(K key, Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) throw new MandatoryColumn();
-        DataBaseQueryPlate query = new DataBaseQueryPlate(this, columns).whereEqual(columns[0].getInstance().keyColumns(), key);
+        DataBaseQueryPlate query = new DataBaseQueryPlate(this, columns).whereEqual(columns[0].getInstance().colCompositeId(), key);
         return query.findOneAs(columns[0].getEntityClass());
     }
 

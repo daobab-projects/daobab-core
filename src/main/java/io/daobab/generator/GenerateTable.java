@@ -34,7 +34,6 @@ public class GenerateTable {
     private String javaPackage;
     private boolean alreadyGenerated;
 
-
     private boolean view = false;
 
     public GenerateTable(String tableName, List<GenerateColumn> primaryKey, List<GenerateColumn> allColumns, GenerateColumn... columns) {
@@ -80,7 +79,6 @@ public class GenerateTable {
     }
 
     public GenerateTable() {
-
     }
 
 
@@ -135,14 +133,6 @@ public class GenerateTable {
                 sb.append(gc.getColumnInterfaceType(tableCamelName));
             }
         }
-
-        if (language == KOTLIN) {
-//            for (GenerateColumn gc: getPrimaryKeys()) {
-//                sb.append(" , ");
-//                sb.append(gc.getColumnInterfaceType(tableCamelName));
-//            }
-        }
-
         return sb.toString();
     }
 

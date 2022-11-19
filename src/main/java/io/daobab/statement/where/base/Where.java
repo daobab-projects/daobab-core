@@ -387,13 +387,8 @@ public abstract class Where<W extends Where> extends WhereBase {
     }
 
     @SuppressWarnings("java:S1221")
-    public final <K extends Composite<?>> W equal(CompositeColumns key, K val) {
-        temp(key, EQ, val);
-        return (W) this;
-    }
-
-    public final <K extends Composite<?>> W notEqual(CompositeColumns key, K val) {
-        temp(key, NOT_EQ, val);
+    public final <K extends Composite, K1 extends Composite> W equal(CompositeColumns<K> key, K1 val) {
+        temp(key.getWhere(val));
         return (W) this;
     }
 
@@ -500,12 +495,12 @@ public abstract class Where<W extends Where> extends WhereBase {
         putKeyMandatoryRelationValue(column, operator, val);
     }
 
-    private <K extends Composite> void temp(CompositeColumns<K> keys, Operator operator, K val) {
+    private <K extends Composite, K1 extends Composite> void temp(CompositeColumns<K> keys, Operator operator, K1 val) {
         WhereAnd whereAnd = new WhereAnd();
 
-        for (TableColumn tcol : keys) {
-            Column col = tcol.getColumn();
-            temp(col, operator, col.getValue((EntityRelation) val));
+        for (TableColumn tableColumn : keys) {
+            Column column = tableColumn.getColumn();
+            temp(column, operator, column.getValue((EntityRelation) val));
         }
         temp(whereAnd);
     }

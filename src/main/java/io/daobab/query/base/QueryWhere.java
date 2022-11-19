@@ -27,7 +27,6 @@ public interface QueryWhere<Q extends Query> {
         return (Q) this;
     }
 
-
     default Q whereAnd(UnaryOperator<WhereAnd> condition) {
         WhereAnd and = new WhereAnd();
         and = condition.apply(and);
@@ -303,12 +302,12 @@ public interface QueryWhere<Q extends Query> {
         return (Q) this;
     }
 
-    default <K extends Composite> Q whereEqual(CompositeColumns key, K val) {
+    default <K extends Composite, K1 extends Composite> Q whereEqual(CompositeColumns<K> key, K1 val) {
         setWhereWrapper(new WhereAnd().equal(key, val));
         return (Q) this;
     }
 
-    default <K extends Composite> Q whereNotEqual(CompositeColumns key, K val) {
+    default <K extends Composite, K1 extends Composite> Q whereNotEqual(CompositeColumns<K> key, K1 val) {
         setWhereWrapper(new WhereAnd().equal(key, val));
         return (Q) this;
     }

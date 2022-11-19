@@ -217,7 +217,7 @@ public abstract class WhereBase {
                 counter++;
             }
         }
-        optimisationWage = Collections.min(map.keySet());
+        optimisationWage = map.isEmpty() ? 0 : Collections.min(map.keySet());
     }
 
     public <W extends Where> W add(Object wrapper, Object key, Object val, Object relation) {

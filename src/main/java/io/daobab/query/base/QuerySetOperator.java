@@ -10,24 +10,20 @@ public interface QuerySetOperator<Q extends Query> {
 
     void addSetOperator(SetOperator union);
 
-
     default Q union(Query<?, ?, ?> query) {
         this.addSetOperator(new SetOperator(SetOperator.UNION, query));
         return (Q) this;
     }
-
 
     default Q unionAll(Query<?, ?, ?> query) {
         this.addSetOperator(new SetOperator(SetOperator.UNION_ALL, query));
         return (Q) this;
     }
 
-
     default Q except(Query<?, ?, ?> query) {
         this.addSetOperator(new SetOperator(SetOperator.EXCEPT, query));
         return (Q) this;
     }
-
 
     default Q exceptAll(Query<?, ?, ?> query) {
         this.addSetOperator(new SetOperator(SetOperator.EXCEPT_ALL, query));
