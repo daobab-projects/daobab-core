@@ -481,6 +481,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         return (Q) this;
     }
 
+    @SuppressWarnings("unused")
     public String toSqlQuery() {
         return getTarget().toSqlQuery(this);
     }

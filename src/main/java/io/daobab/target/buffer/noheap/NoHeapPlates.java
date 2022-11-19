@@ -96,6 +96,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
 
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void remove(int position) {
         Plate entityToRemove = get(position);
         int entityLocation = locations.get(position);
@@ -107,20 +108,20 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
             return;
         }
 
-        for (TableColumn ecol : getColumnsForTable(entityToRemove)) {
-            Column col = ecol.getColumn();
-            int pointer = columnsOrder.get(col.getColumnName());
+        for (TableColumn tableColumn : getColumnsForTable(entityToRemove)) {
+            Column column = tableColumn.getColumn();
+            int pointer = columnsOrder.get(column.getColumnName());
 
             BitBufferIndexBase index = indexRepository[pointer];
             if (index != null) {
-                index.removeValue(col.getValueOf((EntityRelation) entityToRemove), position);
+                index.removeValue(column.getValueOf((EntityRelation) entityToRemove), position);
             }
         }
 
         totalBufferActiveElements.decrementAndGet();
     }
 
-    //    @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public boolean add(Plate entity) {
         int entityLocation = getNextFreeLocation();
 
@@ -131,13 +132,13 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
             pages.add(ByteBuffer.allocateDirect(totalEntitySpace << pageMaxCapacityBytes));
         }
 
-        for (TableColumn ecol : getColumnsForTable(entity)) {
-            Column col = ecol.getColumn();
-            Integer pointer = columnsOrder.get(col.getColumnName());
-            Object value = col.getValueOf((EntityRelation) entity);
+        for (TableColumn tableColumn : getColumnsForTable(entity)) {
+            Column column = tableColumn.getColumn();
+            Integer pointer = columnsOrder.get(column.getColumnName());
+            Object value = column.getValueOf((EntityRelation) entity);
             if (pointer == null) {
                 Map<String, Object> additionalValues = additionalParameters.getOrDefault(entityLocation, new HashMap<>());
-                additionalValues.put(col.toString(), value);
+                additionalValues.put(column.toString(), value);
                 continue;
             }
             int posCol = rowAtPage * totalEntitySpace + columnsPositionsQueue[pointer];
@@ -155,6 +156,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
         return true;
     }
 
+    @Override
     public Plate getPlate(int i, Collection<TableColumn> chosenColumns) {
         Plate rv = new Plate();
 
@@ -180,6 +182,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
         return rv;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Plate get(int i) {
         Plate rv = new Plate();
 
@@ -189,19 +192,19 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
         int posEntity = rowAtPage * totalEntitySpace;
         int cnt = 0;
         ByteBuffer pageBuffer = pages.get(page);
-        for (TableColumn ecol : columns) {
-            Column col = ecol.getColumn();
+        for (TableColumn tableColumn : columns) {
+            Column column = tableColumn.getColumn();
             Integer posCol = columnsPositionsQueue[cnt];
             if (posCol == null) {
                 HashMap<String, Object> additionalValues = additionalParameters.get(entityLocation);
                 if (additionalValues != null) {
-                    col.setValue((EntityRelation) rv, additionalValues.get(col.toString()));
+                    column.setValue((EntityRelation) rv, additionalValues.get(column.toString()));
                 }
                 cnt++;
                 continue;
             }
             pageBuffer.position(0);
-            col.setValue((EntityRelation) rv, bitFields[cnt].readValue(pageBuffer, posEntity + posCol));
+            column.setValue((EntityRelation) rv, bitFields[cnt].readValue(pageBuffer, posEntity + posCol));
             cnt++;
         }
         return rv;
@@ -213,6 +216,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
         return rv;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public <E extends Entity> E readEntity(BufferQueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
@@ -233,6 +237,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
                 .collect(Collectors.toList()), query.getEntityClass());
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public <E extends Entity, F> F readField(BufferQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
@@ -240,6 +245,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
         return (F) finalFilterField(q).get(0);
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public <E extends Entity, F> List<F> readFieldList(BufferQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
@@ -258,6 +264,7 @@ public class NoHeapPlates extends NoHeapBuffer<Plate> {
         return readPlateList(query).get(0);
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Plates readPlateList(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);

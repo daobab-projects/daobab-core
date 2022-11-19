@@ -27,40 +27,37 @@ public interface EntityCloneable<E extends Entity> extends Entity {
             e.printStackTrace();
         }
 
-        for (TableColumn ecol : this.columns()) {
-
-            Column col = ecol.getColumn();
-
-            Class<?> columnClass = col.getFieldClass();
-
-            Object val = col.getThisValue();
-            if (val == null) continue;
+        for (TableColumn tableColumn : this.columns()) {
+            Column column = tableColumn.getColumn();
+            Class<?> columnClass = column.getFieldClass();
+            Object value = column.getThisValue();
+            if (value == null) continue;
             if (columnClass.equals(DictFieldType.CLASS_BIG_DECIMAL)) {
-                col.setValue((EntityRelation) clone, new BigDecimal(val.toString()));
+                column.setValue((EntityRelation) clone, new BigDecimal(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_STRING)) {
-                col.setValue((EntityRelation) clone, val.toString());
+                column.setValue((EntityRelation) clone, value.toString());
             } else if (columnClass.equals(DictFieldType.CLASS_DATE_UTIL)) {
-                col.setValue((EntityRelation) clone, new Date(((Date) val).getTime()));
+                column.setValue((EntityRelation) clone, new Date(((Date) value).getTime()));
             } else if (columnClass.equals(DictFieldType.CLASS_DATE_SQL)) {
-                col.setValue((EntityRelation) clone, new java.sql.Date(((java.sql.Date) val).getTime()));
+                column.setValue((EntityRelation) clone, new java.sql.Date(((java.sql.Date) value).getTime()));
             } else if (columnClass.equals(DictFieldType.CLASS_TIMESTAMP_SQL)) {
-                col.setValue((EntityRelation) clone, new Timestamp(((Timestamp) val).getTime()));
+                column.setValue((EntityRelation) clone, new Timestamp(((Timestamp) value).getTime()));
             } else if (columnClass.equals(DictFieldType.CLASS_TIME_SQL)) {
-                col.setValue((EntityRelation) clone, new Time(((Time) val).getTime()));
+                column.setValue((EntityRelation) clone, new Time(((Time) value).getTime()));
             } else if (columnClass.equals(DictFieldType.CLASS_BOOLEAN)) {
-                col.setValue((EntityRelation) clone, val);
+                column.setValue((EntityRelation) clone, value);
             } else if (columnClass.equals(DictFieldType.CLASS_BIG_INTEGER)) {
-                col.setValue((EntityRelation) clone, new BigInteger(val.toString()));
+                column.setValue((EntityRelation) clone, new BigInteger(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_DOUBLE)) {
-                col.setValue((EntityRelation) clone, Double.parseDouble(val.toString()));
+                column.setValue((EntityRelation) clone, Double.parseDouble(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_FLOAT)) {
-                col.setValue((EntityRelation) clone, Float.parseFloat(val.toString()));
+                column.setValue((EntityRelation) clone, Float.parseFloat(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_LONG)) {
-                col.setValue((EntityRelation) clone, Long.parseLong(val.toString()));
+                column.setValue((EntityRelation) clone, Long.parseLong(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_INTEGER)) {
-                col.setValue((EntityRelation) clone, Integer.parseInt(val.toString()));
+                column.setValue((EntityRelation) clone, Integer.parseInt(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_BYTE_ARRAY)) {
-                col.setValue((EntityRelation) clone, ((byte[]) val).clone());
+                column.setValue((EntityRelation) clone, ((byte[]) value).clone());
             }
         }
 

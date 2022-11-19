@@ -43,7 +43,6 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
         }
     }
 
-
     @Override
     public OpenedTransactionBufferTarget beginTransaction() {
         return null;

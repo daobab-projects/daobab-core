@@ -66,6 +66,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         setSingleEntity(entities.size() == 1);
     }
 
+    @SuppressWarnings("rawtypes")
     public DataBaseQueryPlate(QueryTarget target, List<? extends Column> columndaos) {
 
         Column<?, ?, ?> fielddao = columndaos.get(0);
@@ -128,7 +129,6 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Plates findMany() {
         return getTarget().readPlateList(modifyQuery(this));
     }
@@ -192,6 +192,5 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     public QueryType getQueryType() {
         return QueryType.PLATE;
     }
-
 
 }

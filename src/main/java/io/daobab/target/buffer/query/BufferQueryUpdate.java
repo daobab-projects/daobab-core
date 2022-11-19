@@ -37,13 +37,13 @@ public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E
         init(target, entity);
 
         SetFields sf = new SetFields();
-        for (TableColumn ecol : entity.columns()) {
-            Column col = ecol.getColumn();
-            if (col.getColumnName().equals(entity.colID().getColumnName())) continue;
-            if (col.getThisValue() == null) {
-                sf.setNull(col);
+        for (TableColumn tableColumn : entity.columns()) {
+            Column column = tableColumn.getColumn();
+            if (column.getColumnName().equals(entity.colID().getColumnName())) continue;
+            if (column.getThisValue() == null) {
+                sf.setNull(column);
             } else {
-                sf.setValue((Column<?, Object, ?>) col, col.getThisValue());
+                sf.setValue((Column<?, Object, ?>) column, column.getThisValue());
             }
         }
         set(sf);

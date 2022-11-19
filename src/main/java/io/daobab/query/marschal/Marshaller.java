@@ -110,10 +110,10 @@ public interface Marshaller {
 
         Entity ent = fromRemote(target, entityName);
         if (ent == null) return null;
-        for (TableColumn ec : ent.columns()) {
-            Column<?, ?, ?> c = ec.getColumn();
-            if (c.getFieldName().equals(fieldName)) {
-                return ec;
+        for (TableColumn tableColumn : ent.columns()) {
+            Column<?, ?, ?> column = tableColumn.getColumn();
+            if (column.getFieldName().equals(fieldName)) {
+                return tableColumn;
             }
         }
         //TODO: throw

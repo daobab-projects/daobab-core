@@ -75,7 +75,6 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
     @Override
     public List<F> findMany() {
         return getTarget().readFieldList(modifyQuery(this));
-//        return (List<F>) new BufferFunctionManager().applyFunctionsField(rv, functionMap);
     }
 
     @Override

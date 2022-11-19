@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
+@SuppressWarnings("unused")
 public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBase<E, DataBaseQueryEntity<E>> implements InnerQueryEntity<E>, EntitiesProvider<E> {
 
     @SuppressWarnings("unused")
@@ -58,6 +59,7 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         return Optional.ofNullable(getTarget().readEntity(modifyQuery(this)));
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public <E1 extends Entity, F, R extends EntityRelation> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> column) {
         DataBaseQueryField<E1, F> dataBaseQueryField = new DataBaseQueryField<>(getTarget(), column);
@@ -75,7 +77,7 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
     }
 
 
-    @SuppressWarnings({"java:S2175", "rawtypes"})
+    @SuppressWarnings({"java:S2175", "rawtypes", "unchecked"})
     public DataBaseQueryEntity skip(Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) return this;
         List<Column<E, ?, ?>> toRemove = new ArrayList<>();
@@ -99,7 +101,7 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         return this;
     }
 
-    @SuppressWarnings({"java:S2175", "rawtypes"})
+    @SuppressWarnings({"java:S2175", "rawtypes", "unchecked"})
     public DataBaseQueryEntity only(Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) return this;
         List<Column<E, ?, ?>> toLeave = new ArrayList<>();

@@ -76,7 +76,6 @@ public enum Operator {
 
     public boolean isRelationCollectionBased() {
         return Operator.IN.equals(this)
-                || Operator.NOT_IN.equals(this)
-                ;
+                || Operator.NOT_IN.equals(this);
     }
 }

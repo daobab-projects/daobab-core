@@ -25,19 +25,19 @@ public interface EntityMap extends Entity, Map<String, Object>, MapParameterHand
 
 
     default void fixSerialisation() {
-        for (TableColumn ecol : columns()) {
-            Column<?, ?, ?> col = ecol.getColumn();
-            Object val = getColumnParam(col.getFieldName());
-            if (val == null) continue;
+        for (TableColumn tableColumn : columns()) {
+            Column<?, ?, ?> column = tableColumn.getColumn();
+            Object value = getColumnParam(column.getFieldName());
+            if (value == null) continue;
 
-            if (col.getFieldClass().equals(BigDecimal.class)) {
-                if (val instanceof BigDecimal) continue;
-                setColumnParam(col.getFieldName(), ParserNumber.toBigDecimal((Number) val));
-            } else if (col.getFieldClass().equals(Timestamp.class)) {
-                if (val instanceof Timestamp) continue;
-                setColumnParam(col.getFieldName(), new Timestamp((long) val));
-            } else if (val instanceof EntityMap) {
-                EntityMap em = (EntityMap) val;
+            if (column.getFieldClass().equals(BigDecimal.class)) {
+                if (value instanceof BigDecimal) continue;
+                setColumnParam(column.getFieldName(), ParserNumber.toBigDecimal((Number) value));
+            } else if (column.getFieldClass().equals(Timestamp.class)) {
+                if (value instanceof Timestamp) continue;
+                setColumnParam(column.getFieldName(), new Timestamp((long) value));
+            } else if (value instanceof EntityMap) {
+                EntityMap em = (EntityMap) value;
                 em.fixSerialisation();
             }
         }

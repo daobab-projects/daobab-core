@@ -212,19 +212,19 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
     public EntityList<E> calculateIndexes() {
         E entity = entities.get(0);
         List<TableColumn> columns = entity.columns();
-        for (TableColumn ecol : columns) {
+        for (TableColumn tableColumn : columns) {
 
-            Column<E, ?, EntityRelation> col = (Column<E, ?, EntityRelation>) ecol.getColumn();
+            Column<E, ?, EntityRelation> column = (Column<E, ?, EntityRelation>) tableColumn.getColumn();
             Index index;
-            if (Number.class.isAssignableFrom(col.getFieldClass())) {
-                index = new IndexNumber<>(col, this);
-                if (!index.isWorthless()) indexRepository.put(col.getColumnName(), index);
-            } else if (String.class.isAssignableFrom(col.getFieldClass()) || col.getFieldClass().isEnum()) {
-                index = new IndexString<>(col, this);
-                if (!index.isWorthless()) indexRepository.put(col.getColumnName(), index);
-            } else if (Date.class.isAssignableFrom(col.getFieldClass())) {
-                index = new IndexDate<>(col, this);
-                if (!index.isWorthless()) indexRepository.put(col.getColumnName(), index);
+            if (Number.class.isAssignableFrom(column.getFieldClass())) {
+                index = new IndexNumber<>(column, this);
+                if (!index.isWorthless()) indexRepository.put(column.getColumnName(), index);
+            } else if (String.class.isAssignableFrom(column.getFieldClass()) || column.getFieldClass().isEnum()) {
+                index = new IndexString<>(column, this);
+                if (!index.isWorthless()) indexRepository.put(column.getColumnName(), index);
+            } else if (Date.class.isAssignableFrom(column.getFieldClass())) {
+                index = new IndexDate<>(column, this);
+                if (!index.isWorthless()) indexRepository.put(column.getColumnName(), index);
             }
         }
         return (EntityList<E>) this;

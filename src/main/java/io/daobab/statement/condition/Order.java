@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class Order {
 
-    private HashMap<String, Object> orderMap = new HashMap<>();
+    private Map<String, Object> orderMap = new HashMap<>();
     private int counter = 1;
 
     public static Order ASC(Column<?, ?, ?> col) {
@@ -30,24 +30,28 @@ public class Order {
         return o.desc(col);
     }
 
+    @SuppressWarnings("java:S1845")
     public Order asc(Column<?, ?, ?> col) {
         getOrderMap().put(OrderDirection.ORDERASC + getCounter(), col);
         setCounter(getCounter() + 1);
         return this;
     }
 
+    @SuppressWarnings("java:S1845")
     public Order desc(Column<?, ?, ?> col) {
         getOrderMap().put(OrderDirection.ORDERDESC + getCounter(), col);
         setCounter(getCounter() + 1);
         return this;
     }
 
+    @SuppressWarnings("java:S1845")
     public Order asc(String identifier) {
         getOrderMap().put(OrderDirection.ORDERASC + getCounter(), identifier);
         setCounter(getCounter() + 1);
         return this;
     }
 
+    @SuppressWarnings("java:S1845")
     public Order desc(String identifier) {
         getOrderMap().put(OrderDirection.ORDERDESC + getCounter(), identifier);
         setCounter(getCounter() + 1);
@@ -78,6 +82,7 @@ public class Order {
         return null;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     //Warning. If query is related to in-memory buffers, this order may skip string based arguments.
     public List<OrderField> toOrderFieldList() {
         List<OrderField> rv = new ArrayList<>();
@@ -92,24 +97,24 @@ public class Order {
         return rv;
     }
 
-    public HashMap<String, Object> getOrderMap() {
+    public Map<String, Object> getOrderMap() {
         return orderMap;
     }
 
-    public void setOrderMap(HashMap<String, Object> orderMap) {
+    public void setOrderMap(Map<String, Object> orderMap) {
         this.orderMap = orderMap;
     }
 
     public Map<String, Object> toMap() {
         Map<String, Object> rv = new HashMap<>();
-        for (String key : orderMap.keySet()) {
-            Object val = orderMap.get(key);
+        for (Map.Entry<String, Object> entry : orderMap.entrySet()) {
+            Object val = entry.getValue();
             if (val instanceof Entity) {
-                rv.put(key, Marshaller.marshalEntity((Entity) val));
+                rv.put(entry.getKey(), Marshaller.marshalEntity((Entity) val));
             } else if (val instanceof TableColumn) {
-                rv.put(key, Marshaller.marshallColumnToString((TableColumn) val));
+                rv.put(entry.getKey(), Marshaller.marshallColumnToString((TableColumn) val));
             } else {
-                rv.put(key, val);
+                rv.put(entry.getKey(), val);
             }
         }
         return rv;
