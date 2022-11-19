@@ -22,10 +22,7 @@ import io.daobab.target.statistic.StatisticCollectorProvider;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -231,13 +228,13 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             }
 
             ResultSetReader rsReader = getResultSetReader();
-            PreparedStatement stmt = null;
+            Statement stmt = null;
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
             try {
                 String sqlQuery = toSqlQuery(s);
                 query.setSentQuery(sqlQuery);
-                stmt = conn.prepareStatement(sqlQuery);
-                ResultSet rs = stmt.executeQuery();
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlQuery);
 
                 if (rs.next()) {
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
@@ -265,14 +262,13 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             }
 
             ResultSetReader rsReader = getResultSetReader();
-            PreparedStatement stmt = null;
+            Statement stmt = null;
             List<F> rv = new ArrayList<>();
             try {
                 String sqlQuery = toSqlQuery(s);
                 query.setSentQuery(sqlQuery);
-                stmt = conn.prepareStatement(sqlQuery);
+                stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlQuery);
-
                 Column<?, ?, ?> column = s.getFields().get(0).getColumn();
 
                 while (rs.next()) {
@@ -299,14 +295,14 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(entityQuery);
             Class<E> clazz = entityQuery.getEntityClass();
-            PreparedStatement stmt = null;
+            Statement stmt = null;
             List<E> rv = new ArrayList<>();
             ResultSetReader rsReader = getResultSetReader();
             try {
                 String sqlQuery = toSqlQuery(entityQuery);
                 entityQuery.setSentQuery(sqlQuery);
-                stmt = conn.prepareStatement(sqlQuery);
-                ResultSet rs = stmt.executeQuery();
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlQuery);
 
                 while (rs.next()) {
                     E entity = clazz.getDeclaredConstructor().newInstance();
@@ -340,13 +336,12 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(queryEntity);
             ResultSetReader rsReader = getResultSetReader();
             Class<E> clazz = queryEntity.getEntityClass();
-            PreparedStatement stmt = null;
+            Statement stmt = null;
             try {
                 String sqlQuery = toSqlQuery(queryEntity);
                 queryEntity.setSentQuery(sqlQuery);
-                stmt = conn.prepareStatement(sqlQuery);
-
-                ResultSet rs = stmt.executeQuery();
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlQuery);
 
                 if (rs.next()) {
                     E entity = clazz.getDeclaredConstructor().newInstance();
@@ -385,15 +380,14 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
     default Plate readPlate(DataBaseQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (queryPlate, conn) -> {
-            PreparedStatement stmt = null;
+            Statement stmt = null;
             ResultSetReader rsReader = getResultSetReader();
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(queryPlate);
             try {
                 String sqlQuery = toSqlQuery(queryPlate);
                 queryPlate.setSentQuery(sqlQuery);
-                stmt = conn.prepareStatement(sqlQuery);
-
-                ResultSet rs = stmt.executeQuery();
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlQuery);
 
                 if (rs.next()) {
                     Plate plate = rsReader.readPlate(rs, queryPlate.getFields());
@@ -418,7 +412,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
         getLog().debug("Start readPlateList");
         Connection conn = null;
-        PreparedStatement stmt = null;
+        Statement stmt = null;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         List<Plate> rv = new ArrayList<>();
         ResultSetReader rsReader = getResultSetReader();
@@ -426,9 +420,8 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             conn = this.getConnection();
             String sqlQuery = toSqlQuery(query);
             query.setSentQuery(sqlQuery);
-            stmt = conn.prepareStatement(sqlQuery);
-
-            ResultSet rs = stmt.executeQuery();
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlQuery);
             getLog().debug(format("readPlateList executed statement: %s", sqlQuery));
 
             while (rs.next()) {
