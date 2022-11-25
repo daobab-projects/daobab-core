@@ -1,11 +1,14 @@
 package io.daobab.target.database.connection;
 
+import io.daobab.converter.TypeConverter;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.NoSequenceException;
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.*;
 import io.daobab.query.base.QuerySpecialParameters;
+import io.daobab.target.database.DataBaseTarget;
+import io.daobab.target.database.QueryTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,11 +28,11 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Plate readPlate(ResultSet rs, List<TableColumn> columns) throws SQLException {
-        Plate plate = new Plate(columns);
-        for (int i = 0; i < columns.size(); i++) {
-            TableColumn tableColumn = columns.get(i);
-            plate.setValue(tableColumn, rs.getObject(i + 1, tableColumn.getColumn().getFieldClass()));
+    public Plate readPlate(ResultSet rs, List<TableColumn> fields, TypeConverter<?>[] typeConverters) throws SQLException {
+        Plate plate = new Plate(fields);
+        for (int i = 0; i < fields.size(); i++) {
+            TableColumn tableColumn = fields.get(i);
+            plate.setValue(tableColumn, readCell(typeConverters[i], rs, i + 1, tableColumn.getColumn()));
         }
         return plate;
     }
@@ -44,10 +47,27 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <E extends Entity> E readEntity(ResultSet rs, E entity, List<TableColumn> columns) {
+    public <E extends Entity> E readEntity(QueryTarget target, ResultSet rs, E entity, List<TableColumn> columns) {
+
+        Column[] columnsArr = new Column[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
-            Column<E, ?, EntityRelation> col = columns.get(i).getColumn();
-            col.setValue((EntityRelation) entity, readCell(rs, i + 1, col.getFieldClass()));
+            columnsArr[i] = columns.get(i).getColumn();
+        }
+        TypeConverter<?>[] typeConvertersArr = new TypeConverter[columns.size()];
+
+        for (int i = 0; i < columns.size(); i++) {
+            typeConvertersArr[i] = target.getConverterManager().getConverter(columnsArr[i]).orElse(null);
+        }
+
+        for (int i = 0; i < columns.size(); i++) {
+            columnsArr[i].setValue((EntityRelation) entity, readCell(typeConvertersArr[i], rs, i + 1, columnsArr[i]));
+        }
+        return entity;
+    }
+
+    public <E extends Entity> E readEntity(DataBaseTarget target, ResultSet rs, E entity, Column[] columnsArr, TypeConverter<?>[] typeConverters) {
+        for (int i = 0; i < columnsArr.length; i++) {
+            columnsArr[i].setValue((EntityRelation) entity, readCell(typeConverters[i], rs, i + 1, columnsArr[i]));
         }
         return entity;
     }
@@ -59,28 +79,31 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
     }
 
     @Override
-    public <F> F readCellEasy(ResultSet rs, int colNo, Class<F> valueClazz) throws SQLException {
-        return rs.getObject(colNo, valueClazz);
+    public <F> F readCellEasy(ResultSet rs, int columnIndex, Class<F> valueClazz) throws SQLException {
+        return rs.getObject(columnIndex, valueClazz);
     }
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <F> F readCell(ResultSet rs, int colNo, Class columnType) {
+    public <F> F readCell(TypeConverter<?> cellTypeConverter, ResultSet rs, int columnIndex, Column column) {
+        Class columnType = column.getFieldClass();
         try {
-            if (Timestamp.class.equals(columnType)) {
-                return (F) rs.getTimestamp(colNo, Calendar.getInstance(TimeZone.getDefault()));
+            if (cellTypeConverter != null) {
+                return (F) cellTypeConverter.convertReadingTarget(rs.getString(columnIndex));
+            } else if (Timestamp.class.equals(columnType)) {
+                return (F) rs.getTimestamp(columnIndex, Calendar.getInstance(TimeZone.getDefault()));
             } else if (columnType.isEnum()) {
-                String rd = rs.getString(colNo);
+                String rd = rs.getString(columnIndex);
                 if (rd == null) return null;
                 return (F) Enum.valueOf(columnType, rd);
             } else if (columnType.equals(BigInteger.class)) {
-                String rd = rs.getString(colNo);
+                String rd = rs.getString(columnIndex);
                 if (rd == null) return null;
                 return (F) new BigInteger(rd);
             } else if (columnType.equals(Object.class)) {
-                return (F) rs.getString(colNo);
+                return (F) rs.getString(columnIndex);
             }
-            return (F) rs.getObject(colNo, columnType);
+            return (F) rs.getObject(columnIndex, columnType);
         } catch (SQLException e) {
             throw new DaobabSQLException(e);
         }
@@ -158,10 +181,10 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
     public <F> F getSequenceNextId(Connection conn, String sequenceName, Class<F> fieldClazz) {
         if (sequenceName == null || sequenceName.isEmpty()) throw new NoSequenceException();
         log.debug("Getting the sequence = {}", sequenceName);
-        PreparedStatement stmt = null;
+        Statement stmt = null;
         try {
-            stmt = conn.prepareStatement("select " + sequenceName + ".nextval from dual");
-            ResultSet rs = stmt.executeQuery();
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("select " + sequenceName + ".nextval from dual");
             if (rs.next()) {
                 F rv = readCellEasy(rs, 1, fieldClazz);
                 log.debug("Took the sequence = {} value: {}", sequenceName, rv);

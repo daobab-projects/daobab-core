@@ -1,5 +1,6 @@
 package io.daobab.target.database.transaction;
 
+import io.daobab.converter.ConverterManager;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.TransactionAlreadyOpened;
 import io.daobab.error.TransactionClosedException;
@@ -48,6 +49,11 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     @Override
     public boolean getShowSql() {
         return db.getShowSql();
+    }
+
+    @Override
+    public ConverterManager getConverterManager() {
+        return db.getConverterManager();
     }
 
     @Override

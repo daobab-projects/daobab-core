@@ -1,5 +1,6 @@
 package io.daobab.target.database;
 
+import io.daobab.converter.ConverterManager;
 import io.daobab.error.DaobabException;
 import io.daobab.error.MandatoryColumn;
 import io.daobab.model.*;
@@ -28,6 +29,8 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     OpenTransactionDataBaseTargetImpl beginTransaction();
 
     boolean getShowSql();
+
+    ConverterManager getConverterManager();
 
     List<TableColumn> getColumnsForTable(final ColumnsProvider entity);
 
@@ -87,7 +90,6 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     default <E extends Entity, F> DataBaseQueryField<E, F> select(Column<E, F, ?> col) {
         return new DataBaseQueryField<>(this, col);
     }
-
 
     //=====  FIELD LIST ======
     default <E extends Entity> DataBaseQueryEntity<E> select(E entity) {

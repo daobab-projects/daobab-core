@@ -1,26 +1,28 @@
 package io.daobab.target.database.connection;
 
+import io.daobab.converter.TypeConverter;
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.*;
 import io.daobab.query.base.QuerySpecialParameters;
+import io.daobab.target.database.QueryTarget;
 
 import java.sql.*;
 import java.util.List;
 import java.util.TimeZone;
 
 public interface ResultSetReader {
-    Plate readPlate(ResultSet rs, List<TableColumn> col) throws SQLException;
+    Plate readPlate(ResultSet rs, List<TableColumn> fields, TypeConverter<?>[] typeConverters) throws SQLException;
 
     <O extends ProcedureParameters> O readProcedure(ResultSet rs, O out) throws SQLException;
 
-    <E extends Entity> E readEntity(ResultSet rs, E entity, List<TableColumn> columns);
+    <E extends Entity> E readEntity(QueryTarget target, ResultSet rs, E entity, List<TableColumn> columns);
 
     Timestamp toTimeZone(Timestamp timestamp, TimeZone timeZone);
 
     <F> F readCellEasy(ResultSet rs, int colNo, Class<F> valueClazz) throws SQLException;
 
     @SuppressWarnings({"rawtypes"})
-    <F> F readCell(ResultSet rs, int colNo, Class columnType);
+    <F> F readCell(TypeConverter<?> cellTypeConverter, ResultSet rs, int colNo, Column column);
 
     void closeStatement(Statement stmt, ILoggerBean loggerBean);
 

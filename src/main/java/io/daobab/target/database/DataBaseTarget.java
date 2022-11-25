@@ -1,5 +1,6 @@
 package io.daobab.target.database;
 
+import io.daobab.converter.ConverterManager;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.MandatoryColumn;
@@ -42,8 +43,14 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     private String schemaName;
     private String catalogName;
     private boolean sql = false;
+    private final ConverterManager converterManager;
 
-    private final ResultSetReader resultSetReader = new JDBCResultSetReader();
+    private final ResultSetReader resultSetReader;
+
+    protected DataBaseTarget() {
+        converterManager = new ConverterManager(this);
+        resultSetReader = new JDBCResultSetReader();
+    }
 
 
     public boolean isConnectedToDatabase() {
@@ -216,5 +223,10 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     @Override
     public ResultSetReader getResultSetReader() {
         return resultSetReader;
+    }
+
+    @Override
+    public ConverterManager getConverterManager() {
+        return converterManager;
     }
 }

@@ -1,5 +1,6 @@
 package io.daobab.target.database;
 
+import io.daobab.converter.TypeConverter;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
@@ -236,9 +237,12 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlQuery);
 
+                Column column = s.getFields().get(0).getColumn();
+                TypeConverter<?> typeConverter = query.getTarget().getConverterManager().getConverter(column).orElse(null);
+
                 if (rs.next()) {
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
-                    return rsReader.readCell(rs, 1, s.getFields().get(0).getColumn().getFieldClass());
+                    return rsReader.readCell(typeConverter, rs, 1, column);
                 }
                 if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
                 return null;
@@ -271,8 +275,10 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 ResultSet rs = stmt.executeQuery(sqlQuery);
                 Column<?, ?, ?> column = s.getFields().get(0).getColumn();
 
+                TypeConverter<?> optype = query.getTarget().getConverterManager().getConverter(column).orElse(null);
+
                 while (rs.next()) {
-                    rv.add(rsReader.readCell(rs, 1, column.getFieldClass()));
+                    rv.add(rsReader.readCell(optype, rs, 1, column));
                 }
                 if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, rv.size());
                 return rv;
@@ -282,7 +288,6 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             } finally {
                 rsReader.closeStatement(stmt, this);
             }
-
         });
     }
 
@@ -304,9 +309,24 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlQuery);
 
+                List<TableColumn> columns = entityQuery.getFields();
+                Column[] columnsArray = new Column[columns.size()];
+                for (int i = 0; i < columns.size(); i++) {
+                    columnsArray[i] = columns.get(i).getColumn();
+                }
+                TypeConverter<?>[] typeConvertersArr = new TypeConverter<?>[columns.size()];
+
+                for (int i = 0; i < columns.size(); i++) {
+                    typeConvertersArr[i] = query.getTarget().getConverterManager().getConverter(columnsArray[i]).orElse(null);
+                }
+
                 while (rs.next()) {
                     E entity = clazz.getDeclaredConstructor().newInstance();
-                    rsReader.readEntity(rs, entity, entityQuery.getFields());
+
+                    for (int i = 0; i < columns.size(); i++) {
+                        columnsArray[i].setValue((EntityRelation) entity, rsReader.readCell(typeConvertersArr[i], rs, i + 1, columnsArray[i]));
+                    }
+
                     entity.afterSelect(this);
                     rv.add(entity);
                 }
@@ -345,7 +365,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
                 if (rs.next()) {
                     E entity = clazz.getDeclaredConstructor().newInstance();
-                    rsReader.readEntity(rs, entity, queryEntity.getFields());
+                    rsReader.readEntity(query.getTarget(), rs, entity, queryEntity.getFields());
                     entity.afterSelect(this);
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(queryEntity, 1);
                     return entity;
@@ -383,6 +403,13 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             Statement stmt = null;
             ResultSetReader rsReader = getResultSetReader();
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(queryPlate);
+
+            TypeConverter<?>[] typeConverters = new TypeConverter<?>[queryPlate.getFields().size()];
+
+            for (int i = 0; i < queryPlate.getFields().size(); i++) {
+                typeConverters[i] = query.getTarget().getConverterManager().getConverter(queryPlate.getFields().get(i).getColumn()).orElse(null);
+            }
+
             try {
                 String sqlQuery = toSqlQuery(queryPlate);
                 queryPlate.setSentQuery(sqlQuery);
@@ -390,7 +417,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 ResultSet rs = stmt.executeQuery(sqlQuery);
 
                 if (rs.next()) {
-                    Plate plate = rsReader.readPlate(rs, queryPlate.getFields());
+                    Plate plate = rsReader.readPlate(rs, queryPlate.getFields(), typeConverters);
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(queryPlate, 1);
                     return plate;
                 }
@@ -416,6 +443,17 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         List<Plate> rv = new ArrayList<>();
         ResultSetReader rsReader = getResultSetReader();
+
+        Column[] columnsArray = new Column[fields.size()];
+        for (int i = 0; i < fields.size(); i++) {
+            columnsArray[i] = fields.get(i).getColumn();
+        }
+        TypeConverter<?>[] typeConvertersArr = new TypeConverter<?>[fields.size()];
+
+        for (int i = 0; i < fields.size(); i++) {
+            typeConvertersArr[i] = query.getTarget().getConverterManager().getConverter(columnsArray[i]).orElse(null);
+        }
+
         try {
             conn = this.getConnection();
             String sqlQuery = toSqlQuery(query);
@@ -425,7 +463,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             getLog().debug(format("readPlateList executed statement: %s", sqlQuery));
 
             while (rs.next()) {
-                rv.add(rsReader.readPlate(rs, fields));
+                rv.add(rsReader.readPlate(rs, fields, typeConvertersArr));
             }
 
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, rv.size());
@@ -443,13 +481,13 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
     default long count(DataBaseQueryBase<?, ?> query) {
         getLog().debug("Start count ");
         Connection conn = null;
-        PreparedStatement stmt = null;
+        Statement stmt = null;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         try {
             conn = this.getConnection();
-            stmt = conn.prepareStatement(toSqlQuery(query));
+            stmt = conn.createStatement();
 
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = stmt.executeQuery(toSqlQuery(query));
 
             if (rs.next()) {
                 long cnt = rs.getLong(1);
