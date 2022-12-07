@@ -61,6 +61,9 @@ public class DatabaseConverterManager {
             if (rv == null) {
                 rv = typeConverters.get(column.getFieldClass());
             }
+            if (rv == null && column.getFieldClass().isEnum()) {
+                rv = new StandardTypeConverterEnum(column.getFieldClass());
+            }
 
             return Optional.ofNullable(rv);
         });

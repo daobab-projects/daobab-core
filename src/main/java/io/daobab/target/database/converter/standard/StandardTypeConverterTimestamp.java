@@ -27,6 +27,6 @@ public class StandardTypeConverterTimestamp implements TypeConverterTimestampBas
 
     @Override
     public String convertWritingTarget(Timestamp to) {
-        return target.getDatabaseDateConverter().toTimestampDate(to);
+        return target.getDatabaseDateConverter().toDatabaseTimestamp(to);
     }
 }

@@ -19,7 +19,6 @@ import io.daobab.statement.inner.InnerQueryFields;
 import io.daobab.statement.join.JoinTracker;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.base.Where;
-import io.daobab.target.Target;
 import io.daobab.target.database.DataBaseTargetLogic;
 import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
@@ -29,7 +28,8 @@ import io.daobab.target.database.query.DataBaseQueryDelete;
 import io.daobab.target.database.query.DataBaseQueryInsert;
 import io.daobab.target.database.query.DataBaseQueryUpdate;
 
-import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -162,19 +162,14 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
                     if (value == null) {
                         values.append(NULL);
-                    } else if (typeConverter != null) {
-                        values.append(typeConverter.convertWritingTarget(value));
-                    } else if (value instanceof Date) {
-                        values.append(base.getTarget().getDatabaseDateConverter().toDate((Date) value));
-                    } else if (value instanceof byte[]) {
-                        values.append("?");
-                        rv.getSpecialParameters().put(rv.getCounter(), value);
-                        rv.setCounter(rv.getCounter() + 1);
                     } else {
-                        values.append(APOSTROPHE)
-                                .append(valueStringToSQL(value))
-                                .append(APOSTROPHE);
+                        values.append(typeConverter.convertWritingTarget(value));
+                        if (typeConverter.needParameterConversion()) {
+                            rv.getSpecialParameters().put(rv.getCounter(), value);
+                            rv.setCounter(rv.getCounter() + 1);
+                        }
                     }
+
                     if (i < base.getSetFields().getCounter() - 1) {
                         sb.append(COMMA);
                         values.append(COMMA);
@@ -201,11 +196,13 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     //no need TypeConverter here
-    default StringBuilder toSQL(Object val, StringBuilder values, QueryTarget target) {
+    default StringBuilder toProcedureSQL(Object val, StringBuilder values, QueryTarget target) {
         if (val == null) {
             values.append(NULL);
+        } else if (val instanceof Timestamp) {
+            values.append(target.getDatabaseDateConverter().toDatabaseTimestamp((Timestamp) val));
         } else if (val instanceof Date) {
-            values.append(target.getDatabaseDateConverter().toDate((Date) val));
+            values.append(target.getDatabaseDateConverter().toDatabaseDate((Date) val));
         } else if (val instanceof byte[]) {
             values.append("?");
 //            rv.getSpecialParameters().put(rv.getCounter(), val);
@@ -214,6 +211,8 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             values.append(APOSTROPHE)
                     .append(valueStringToSQL(val))
                     .append(APOSTROPHE);
+        } else if (val instanceof Time) {
+            values.append(target.getDatabaseDateConverter().toDatabaseTimestamp((Time) val));
         } else {
             values.append(val);
         }
@@ -483,24 +482,17 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
             sb.append(storage.getIdentifierFor(field.getEntityName()))
                     .append(DOT)
-                    .append(field.getColumnName());
-
-            if (value != null) sb.append(" = ");
+                    .append(field.getColumnName())
+                    .append(" = ");
 
             if (value == null) {
-                sb.append(" = ").append(NULL).append(" ");
-            } else if (typeConverter != null) {
-                sb.append(typeConverter.convertWritingTarget(value));
-            } else if (value instanceof Date) {
-                sb.append(target.getDatabaseDateConverter().toDate((Date) value));
-            } else if (value instanceof byte[]) {
-                sb.append("?");
-                rv.getSpecialParameters().put(rv.getCounter(), value);
-                rv.setCounter(rv.getCounter() + 1);
+                sb.append(NULL).append(" ");
             } else {
-                sb.append(APOSTROPHE);
-                sb.append(valueStringToSQL(value));
-                sb.append(APOSTROPHE);
+                sb.append(typeConverter.convertWritingTarget(value));
+                if (typeConverter.needParameterConversion()) {
+                    rv.getSpecialParameters().put(rv.getCounter(), value);
+                    rv.setCounter(rv.getCounter() + 1);
+                }
             }
 
             if (i < setFields.getCounter() - 1) {
@@ -679,21 +671,17 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 if (value instanceof Collection) {
                     Collection<?> valueCollection = (Collection<?>) value;
                     appendKey(sb, storage, keyFromWrapper, relation);
-                    sb.append(toChain(valueCollection));
+                    sb.append(convertCollection(valueCollection, typeConverter));
                 } else {
                     //w kolekcji moze sie znajdowac tylko jeden element wowczas typ obiektu nie bedzie collection
                     appendKey(sb, storage, keyFromWrapper, relation);
-                    if (typeConverter != null) {
-                        sb.append("('").append(valueStringToSQL(typeConverter.convertWritingTarget(value))).append("')");
-                    } else {
-                        sb.append("('").append(valueStringToSQL(value)).append("')");
-                    }
+                    sb.append("(").append(typeConverter.convertWritingTarget(value)).append(")");
                 }
             } else {
                 DatabaseTypeConverter typeConverter = target.getConverterManager().getConverter(keyFromWrapper).orElse(null);
                 sb.append(SPACE);
                 appendKey(sb, storage, keyFromWrapper, relation);
-                valueToSQL(typeConverter, sb, relation, value, target.getDatabaseDateConverter());
+                valueToSQL(typeConverter, sb, value, target.getDatabaseDateConverter());
             }
 
             if (relationToNext != null && i < where.getCounter() - 1) {
@@ -719,7 +707,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         sb.append(relation);
     }
 
-    default StringBuilder toChain(Collection<?> list) {
+    default StringBuilder convertCollection(Collection<?> list, DatabaseTypeConverter databaseTypeConverter) {
         StringBuilder sb = new StringBuilder();
         if (list == null || list.isEmpty()) {
             sb.append("('')");
@@ -727,16 +715,10 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
         int counter = 0;
         sb.append(OPEN_BRACKET);
-        boolean needApostrophe = list.iterator().next() instanceof String;
-        for (Object o : list) {
-            if (o != null) {
-                if (needApostrophe) {
-                    sb.append(APOSTROPHE)
-                            .append(o)
-                            .append(APOSTROPHE);
-                } else {
-                    sb.append(o);
-                }
+
+        for (Object value : list) {
+            if (value != null) {
+                sb.append(databaseTypeConverter.convertWritingTarget(value));
             }
             counter++;
             if (counter < list.size()) {
@@ -748,7 +730,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         return sb;
     }
 
-    default <E extends Entity, F> StringBuilder toInnerQueryExpression(IdentifierStorage storage, Target target, InnerQueryFields<E, F> innerQuery) {
+    default <E extends Entity, F> StringBuilder toInnerQueryExpression(IdentifierStorage storage, QueryTarget target, InnerQueryFields<E, F> innerQuery) {
         if (innerQuery.getInnerQuery() != null && target.getClass().getName().equals(innerQuery.getInnerQuery().getTarget().getClass().getName())) {
             StringBuilder sb = new StringBuilder();
             sb.append(OPEN_BRACKET)
@@ -756,7 +738,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                     .append(CLOSED_BRACKET);
             return sb;
         } else {
-            return toChain(innerQuery.findMany());
+            return convertCollection(innerQuery.findMany(), target.getConverterManager().getConverter(innerQuery.getInnerQuery().getSelectedColumn().getColumn()).orElse(null));
         }
     }
 
@@ -994,37 +976,10 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     @SuppressWarnings("rawtypes")
-    default void valueToSQL(DatabaseTypeConverter typeConverter, StringBuilder sb, Operator relation, Object value, DatabaseDateConverter databaseDateConverter) {
+    default void valueToSQL(DatabaseTypeConverter typeConverter, StringBuilder sb, Object value, DatabaseDateConverter databaseDateConverter) {
 
-        if (typeConverter != null) {
-            sb.append(APOSTROPHE);
-            sb.append(valueStringToSQL(typeConverter.convertWritingTarget(value)));
-            sb.append(APOSTROPHE);
-            return;
-        }
+        sb.append(typeConverter.convertWritingTarget(value));
 
-        if (value instanceof Boolean) {
-            value = new BigDecimal(Boolean.TRUE.equals(value) ? 1L : 0L);
-        }
-
-        boolean valueIsDate = value instanceof Date;
-        boolean valueIsNumeric = value instanceof Number;
-
-        boolean needApostrophe = !relation.isRelationCollectionBased() && !valueIsDate && !valueIsNumeric;
-
-        if (needApostrophe) {
-            sb.append(APOSTROPHE);
-        }
-
-        if (valueIsDate) {
-            sb.append(databaseDateConverter.toDate((Date) value));
-        } else {
-            sb.append(valueStringToSQL(value));
-        }
-
-        if (needApostrophe) {
-            sb.append(APOSTROPHE);
-        }
     }
 
     default StringBuilder valueStringToSQL(Object value) {
@@ -1047,7 +1002,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     //TODO: check null
     default String toCallProcedureSqlQuery(String procedureName, ProcedureParameters input, QueryTarget target) {
         return "call " + procedureName + SPACE + OPEN_BRACKET +
-                input.getValues().stream().map(o -> toSQL(o, new StringBuilder(), target).toString()).collect(Collectors.joining(",")) +
+                input.getValues().stream().map(o -> toProcedureSQL(o, new StringBuilder(), target).toString()).collect(Collectors.joining(",")) +
                 CLOSED_BRACKET;
     }
 

@@ -10,12 +10,9 @@ public interface DatabaseDateConverter {
     SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
+    String toDatabaseDate(Date value);
 
-    String toDate(Date value);
+    String toDatabaseTimestamp(Date value);
 
-    String toSQLDate(Date value);
-
-    String toTimestampDate(Date value);
-
-    String toTimeDate(Date value);
+    String toDatabaseTime(Date value);
 }

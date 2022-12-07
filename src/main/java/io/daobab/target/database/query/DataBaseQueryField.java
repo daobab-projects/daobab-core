@@ -1,10 +1,7 @@
 package io.daobab.target.database.query;
 
 import io.daobab.error.MandatoryColumn;
-import io.daobab.model.Column;
-import io.daobab.model.Dual;
-import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.*;
 import io.daobab.model.dummy.DummyColumnTemplate;
 import io.daobab.query.base.QueryExpressionProvider;
 import io.daobab.query.base.QueryType;
@@ -80,6 +77,10 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
     @Override
     public QueryType getQueryType() {
         return QueryType.FIELD;
+    }
+
+    public TableColumn getSelectedColumn() {
+        return fields.get(0);
     }
 
 }

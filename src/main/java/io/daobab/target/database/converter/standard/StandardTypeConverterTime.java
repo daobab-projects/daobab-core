@@ -27,6 +27,6 @@ public class StandardTypeConverterTime implements TypeConverterTimeBased<Time> {
 
     @Override
     public String convertWritingTarget(Time to) {
-        return target.getDatabaseDateConverter().toTimeDate(to);
+        return target.getDatabaseDateConverter().toDatabaseTime(to);
     }
 }

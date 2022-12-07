@@ -27,6 +27,6 @@ public class StandardTypeConverterUtilDate implements TypeConverterUtilDateBased
 
     @Override
     public String convertWritingTarget(Date to) {
-        return target.getDatabaseDateConverter().toSQLDate(to);
+        return target.getDatabaseDateConverter().toDatabaseDate(to);
     }
 }

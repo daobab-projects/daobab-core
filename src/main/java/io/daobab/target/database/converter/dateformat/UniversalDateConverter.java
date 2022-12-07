@@ -10,13 +10,6 @@ public class UniversalDateConverter {
     private final static String APOSTROPHE = "'";
 
 
-    public static StringBuilder toDate(String dataBaseType, Date value) {
-        if (value instanceof java.sql.Timestamp) {
-            return toTimestampDate(dataBaseType, value);
-        }
-        return toSQLDate(dataBaseType, value);
-    }
-
     public static StringBuilder toSQLDate(String dataBaseType, Date value) {
         StringBuilder sb = new StringBuilder();
         String dateAsString;

@@ -1,5 +1,6 @@
 package io.daobab.target.database.converter.standard;
 
+import io.daobab.error.SqlInjectionDetected;
 import io.daobab.target.database.converter.type.TypeConverterStringBased;
 
 import java.sql.ResultSet;
@@ -19,6 +20,25 @@ public class StandardTypeConverterString implements TypeConverterStringBased<Str
 
     @Override
     public String convertWritingTarget(String to) {
-        return to;
+        return valueStringToSQL(to);
+    }
+
+
+    private String valueStringToSQL(Object value) {
+        StringBuilder sb = new StringBuilder();
+        if (value == null) {
+            return "";// do sth??
+        }
+        String valStr = value.toString();
+        String valStrLower = value.toString().toLowerCase();
+        if (valStr.contains(";")
+                && (valStr.contains("'") || valStr.contains("\""))
+                && (valStrLower.contains("table") || valStrLower.contains("insert") || valStrLower.contains("update") || valStrLower.contains("delete"))) {
+            throw new SqlInjectionDetected(valStr);
+        }
+        sb.append(value.toString().replace("'", "''"));
+
+        sb.append("'");
+        return "'" + sb;
     }
 }

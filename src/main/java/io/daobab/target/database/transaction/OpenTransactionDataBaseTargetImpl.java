@@ -169,7 +169,7 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
 
     @Override
     public <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> query) {
-        return db.toSqlQuery(query);
+        return query.toSqlQuery();
     }
 
     @Override

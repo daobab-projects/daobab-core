@@ -19,6 +19,6 @@ public class StandardTypeConverterBoolean implements TypeConverterBooleanBased<B
 
     @Override
     public String convertWritingTarget(Boolean to) {
-        return to == null ? null : String.valueOf(to);
+        return to == null ? null : (Boolean.TRUE.equals(to) ? "true" : "false");
     }
 }
