@@ -1,6 +1,5 @@
 package io.daobab.target.database.transaction;
 
-import io.daobab.converter.ConverterManager;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.TransactionAlreadyOpened;
 import io.daobab.error.TransactionClosedException;
@@ -11,8 +10,11 @@ import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.database.DataBaseTargetLogic;
 import io.daobab.target.database.QueryDataBaseHandler;
+import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.TransactionalTarget;
 import io.daobab.target.database.connection.ResultSetReader;
+import io.daobab.target.database.converter.DatabaseConverterManager;
+import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
 import io.daobab.target.database.meta.MetaData;
 import io.daobab.target.database.query.*;
 import io.daobab.target.protection.AccessProtector;
@@ -52,8 +54,13 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     }
 
     @Override
-    public ConverterManager getConverterManager() {
+    public DatabaseConverterManager getConverterManager() {
         return db.getConverterManager();
+    }
+
+    @Override
+    public DatabaseDateConverter getDatabaseDateConverter() {
+        return db.getDatabaseDateConverter();
     }
 
     @Override
@@ -205,8 +212,8 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     }
 
     @Override
-    public String toCallProcedureSqlQuery(String procedureName, ProcedureParameters input) {
-        return db.toCallProcedureSqlQuery(procedureName, input);
+    public String toCallProcedureSqlQuery(String procedureName, ProcedureParameters input, QueryTarget queryTarget) {
+        return db.toCallProcedureSqlQuery(procedureName, input, queryTarget);
     }
 
 

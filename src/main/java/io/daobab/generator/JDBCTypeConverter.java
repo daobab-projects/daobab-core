@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public class TypeConverter {
+public class JDBCTypeConverter {
 
     public static final String UNKNOWN_TABLE = "%$@#$";
 
@@ -179,12 +179,12 @@ public class TypeConverter {
         return tableName + "." + columnName;
     }
 
-    public TypeConverter setEnforcedTypeFor(final String tableName, final String columnName, final Class<?> enforcedType) {
+    public JDBCTypeConverter setEnforcedTypeFor(final String tableName, final String columnName, final Class<?> enforcedType) {
         enforcedTypes.put(getTableDotColumn(tableName, columnName), enforcedType);
         return this;
     }
 
-    public TypeConverter setGeneralConversionFor(int jdbcType, final Class<?> enforcedType) {
+    public JDBCTypeConverter setGeneralConversionFor(int jdbcType, final Class<?> enforcedType) {
         generalTypes.put(jdbcType, enforcedType);
         return this;
     }

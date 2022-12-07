@@ -48,7 +48,7 @@ public class DaobabGenerator {
 
     private TemplateLanguage language = generateLanguage;
 
-    private final TypeConverter typeConverter = new TypeConverter();
+    private final JDBCTypeConverter typeConverter = new JDBCTypeConverter();
 
     public DaobabGenerator() {
 
@@ -332,7 +332,7 @@ public class DaobabGenerator {
     private GenerateColumn getUniqueColumn(List<GenerateColumn> allColumns, String tableName, String columnName, int datatype, String size, String digits) {
         for (GenerateColumn g : allColumns) {
             if (columnName.equalsIgnoreCase(g.getColumnName()) && typeConverter.convert(tableName, columnName, datatype, ParserString.toInteger(size), ParserString.toInteger(digits)).equals(g.getFieldClass())) {
-                g.addTableUsage(tableName, TypeConverter.getDataBaseTypeName(datatype));
+                g.addTableUsage(tableName, JDBCTypeConverter.getDataBaseTypeName(datatype));
                 return g;
             }
         }
@@ -340,7 +340,7 @@ public class DaobabGenerator {
         rv.setColumnName(columnName);
         rv.setDataType(datatype);
         rv.setFieldClass(typeConverter.convert(tableName, rv));
-        rv.addTableUsage(tableName, TypeConverter.getDataBaseTypeName(datatype));
+        rv.addTableUsage(tableName, JDBCTypeConverter.getDataBaseTypeName(datatype));
         allColumns.add(rv);
         return rv;
     }

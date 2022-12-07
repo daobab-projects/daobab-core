@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta;
 
-import io.daobab.generator.TypeConverter;
+import io.daobab.generator.JDBCTypeConverter;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.target.buffer.multi.AboveMultiEntityTarget;
@@ -33,7 +33,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
             catalog = "%";
         }
 
-        TypeConverter typeConverter = new TypeConverter();
+        JDBCTypeConverter typeConverter = new JDBCTypeConverter();
         this.source = source;
         register(MetaTable.class, MetaColumn.class);
 
@@ -79,7 +79,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
                 mc.setRemarks(rsColumn.getString("REMARKS"));
                 mc.setDatatype(JdbcType.valueOf(rsColumn.getInt("DATA_TYPE")));
                 mc.setTableName(rsColumn.getString("TABLE_NAME"));
-                mc.setFieldClass(typeConverter.convert(TypeConverter.UNKNOWN_TABLE, rsColumn.getInt("DATA_TYPE")));
+                mc.setFieldClass(typeConverter.convert(JDBCTypeConverter.UNKNOWN_TABLE, rsColumn.getInt("DATA_TYPE")));
                 mc.setColumnDefault(rsColumn.getString(mc.colColumnDefault().getColumnName()));
                 mc.setOrdinalPosition(rsColumn.getInt(mc.colOrdinalPosition().getColumnName()));
                 mc.setTableColumnName(mc.getTableName() + "." + mc.getColumnName());

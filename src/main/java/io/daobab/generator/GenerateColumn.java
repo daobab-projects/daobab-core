@@ -83,10 +83,10 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         this.dataType = dataType;
     }
 
-    public void setDataType(String dataType, TypeConverter typeConverter) {
+    public void setDataType(String dataType, JDBCTypeConverter typeConverter) {
         if (dataType == null) return;
         this.dataType = Integer.parseInt(dataType);
-        setFieldClass(typeConverter.convert(TypeConverter.UNKNOWN_TABLE, this));
+        setFieldClass(typeConverter.convert(JDBCTypeConverter.UNKNOWN_TABLE, this));
     }
 
     public Class getFieldClass() {

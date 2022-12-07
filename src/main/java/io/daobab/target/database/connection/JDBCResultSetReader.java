@@ -1,6 +1,5 @@
 package io.daobab.target.database.connection;
 
-import io.daobab.converter.TypeConverter;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.NoSequenceException;
@@ -9,6 +8,7 @@ import io.daobab.model.*;
 import io.daobab.query.base.QuerySpecialParameters;
 import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +26,8 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Plate readPlate(ResultSet rs, List<TableColumn> fields, TypeConverter<?>[] typeConverters) throws SQLException {
+    public Plate readPlate(ResultSet rs, List<TableColumn> fields, DatabaseTypeConverter<?, ?>[] typeConverters) throws SQLException {
         Plate plate = new Plate(fields);
         for (int i = 0; i < fields.size(); i++) {
             TableColumn tableColumn = fields.get(i);
@@ -53,7 +52,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
         for (int i = 0; i < columns.size(); i++) {
             columnsArr[i] = columns.get(i).getColumn();
         }
-        TypeConverter<?>[] typeConvertersArr = new TypeConverter[columns.size()];
+        DatabaseTypeConverter<?, ?>[] typeConvertersArr = new DatabaseTypeConverter[columns.size()];
 
         for (int i = 0; i < columns.size(); i++) {
             typeConvertersArr[i] = target.getConverterManager().getConverter(columnsArr[i]).orElse(null);
@@ -65,7 +64,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
         return entity;
     }
 
-    public <E extends Entity> E readEntity(DataBaseTarget target, ResultSet rs, E entity, Column[] columnsArr, TypeConverter<?>[] typeConverters) {
+    public <E extends Entity> E readEntity(DataBaseTarget target, ResultSet rs, E entity, Column[] columnsArr, DatabaseTypeConverter<?, ?>[] typeConverters) {
         for (int i = 0; i < columnsArr.length; i++) {
             columnsArr[i].setValue((EntityRelation) entity, readCell(typeConverters[i], rs, i + 1, columnsArr[i]));
         }
@@ -85,11 +84,16 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <F> F readCell(TypeConverter<?> cellTypeConverter, ResultSet rs, int columnIndex, Column column) {
+    public <F> F readCell(DatabaseTypeConverter<?, ?> typeConverter, ResultSet rs, int columnIndex, Column column) {
         Class columnType = column.getFieldClass();
         try {
-            if (cellTypeConverter != null) {
-                return (F) cellTypeConverter.convertReadingTarget(rs.getString(columnIndex));
+            if (typeConverter != null) {
+                try {
+                    log.info("converter: " + column + " " + typeConverter.getClass().getName());
+                    return (F) typeConverter.readAndConvert(rs, columnIndex);
+                } catch (ClassCastException e) {
+                    throw new DaobabException("Problem during reading column " + column + " using TypeConverter: " + typeConverter.getClass().getName(), e);
+                }
             } else if (Timestamp.class.equals(columnType)) {
                 return (F) rs.getTimestamp(columnIndex, Calendar.getInstance(TimeZone.getDefault()));
             } else if (columnType.isEnum()) {

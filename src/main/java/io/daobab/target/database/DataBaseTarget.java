@@ -1,6 +1,6 @@
 package io.daobab.target.database;
 
-import io.daobab.converter.ConverterManager;
+import io.daobab.dict.DictDatabaseType;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.MandatoryColumn;
@@ -12,6 +12,8 @@ import io.daobab.target.BaseTarget;
 import io.daobab.target.QueryHandler;
 import io.daobab.target.database.connection.JDBCResultSetReader;
 import io.daobab.target.database.connection.ResultSetReader;
+import io.daobab.target.database.converter.DatabaseConverterManager;
+import io.daobab.target.database.converter.dateformat.*;
 import io.daobab.target.database.meta.MetaData;
 import io.daobab.target.database.meta.MetaDataBaseTarget;
 import io.daobab.target.database.meta.MetaDataTables;
@@ -43,13 +45,15 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     private String schemaName;
     private String catalogName;
     private boolean sql = false;
-    private final ConverterManager converterManager;
+    private final DatabaseConverterManager converterManager;
+    private DatabaseDateConverter databaseDateConverter;
 
     private final ResultSetReader resultSetReader;
 
     protected DataBaseTarget() {
-        converterManager = new ConverterManager(this);
+        converterManager = new DatabaseConverterManager(this);
         resultSetReader = new JDBCResultSetReader();
+
     }
 
 
@@ -111,6 +115,29 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
             setDataBaseMajorVersion(meta.getDatabaseMajorVersion());
             setDataBaseMinorVersion("" + meta.getDatabaseMinorVersion());
 
+            switch (meta.getDatabaseProductName()) {
+                case DictDatabaseType.ORACLE: {
+                    setDatabaseDateConverter(new DatabaseDateConverterOracle());
+                    break;
+                }
+                case DictDatabaseType.MicrosoftSQL: {
+                    setDatabaseDateConverter(new DatabaseDateConverterMicrosoftSql());
+                    break;
+                }
+                case DictDatabaseType.MYSQL: {
+                    setDatabaseDateConverter(new DatabaseDateConverterMySql());
+                    break;
+                }
+                case DictDatabaseType.H2: {
+                    setDatabaseDateConverter(new DatabaseDateConverterH2());
+                    break;
+                }
+                default: {
+                    log.error("No data converter for a database type: {}. Set the correct DatabaseDateConverter!", meta.getDatabaseProductName());
+                    setDatabaseDateConverter(new DatabaseDateConverterH2());
+                    break;
+                }
+            }
 
         }
         return dataSource;
@@ -226,7 +253,15 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     }
 
     @Override
-    public ConverterManager getConverterManager() {
+    public DatabaseConverterManager getConverterManager() {
         return converterManager;
+    }
+
+    public DatabaseDateConverter getDatabaseDateConverter() {
+        return databaseDateConverter;
+    }
+
+    public void setDatabaseDateConverter(DatabaseDateConverter databaseDateConverter) {
+        this.databaseDateConverter = databaseDateConverter;
     }
 }

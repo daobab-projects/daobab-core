@@ -118,7 +118,7 @@ public class Writer {
             for (GenerateColumn column : ecolumns) {
                 sb.append(" ")
                         .append(column.getFinalFieldName()).append(": ")
-                        .append(TypeConverter.convertToTS(column.getFieldClass()))
+                        .append(JDBCTypeConverter.convertToTS(column.getFieldClass()))
                         .append(";\n");
             }
 
@@ -146,7 +146,7 @@ public class Writer {
                 .add(GenKeys.INTERFACE_NAME, column.getInterfaceName())
                 .add(GenKeys.FIELD_NAME, column.getFinalFieldName())
                 .add(GenKeys.TABLES_AND_TYPE, column.getTableTypeDescription())
-                .add(GenKeys.DB_TYPE, TypeConverter.getDataBaseTypeName(column.getDataType()))
+                .add(GenKeys.DB_TYPE, JDBCTypeConverter.getDataBaseTypeName(column.getDataType()))
                 .add(GenKeys.PACKAGE, column.getPackage());
 
         column.setAlreadyGenerated(true);

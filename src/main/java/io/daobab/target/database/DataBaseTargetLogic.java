@@ -1,6 +1,5 @@
 package io.daobab.target.database;
 
-import io.daobab.converter.TypeConverter;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
@@ -14,6 +13,7 @@ import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.database.connection.ConnectionGateway;
 import io.daobab.target.database.connection.QueryResolverTransmitter;
 import io.daobab.target.database.connection.ResultSetReader;
+import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import io.daobab.target.database.meta.MetaData;
 import io.daobab.target.database.query.*;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
@@ -238,7 +238,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 ResultSet rs = stmt.executeQuery(sqlQuery);
 
                 Column column = s.getFields().get(0).getColumn();
-                TypeConverter<?> typeConverter = query.getTarget().getConverterManager().getConverter(column).orElse(null);
+                DatabaseTypeConverter<?, ?> typeConverter = query.getTarget().getConverterManager().getConverter(column).orElse(null);
 
                 if (rs.next()) {
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
@@ -275,7 +275,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 ResultSet rs = stmt.executeQuery(sqlQuery);
                 Column<?, ?, ?> column = s.getFields().get(0).getColumn();
 
-                TypeConverter<?> optype = query.getTarget().getConverterManager().getConverter(column).orElse(null);
+                DatabaseTypeConverter<?, ?> optype = query.getTarget().getConverterManager().getConverter(column).orElse(null);
 
                 while (rs.next()) {
                     rv.add(rsReader.readCell(optype, rs, 1, column));
@@ -314,7 +314,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 for (int i = 0; i < columns.size(); i++) {
                     columnsArray[i] = columns.get(i).getColumn();
                 }
-                TypeConverter<?>[] typeConvertersArr = new TypeConverter<?>[columns.size()];
+                DatabaseTypeConverter<?, ?>[] typeConvertersArr = new DatabaseTypeConverter<?, ?>[columns.size()];
 
                 for (int i = 0; i < columns.size(); i++) {
                     typeConvertersArr[i] = query.getTarget().getConverterManager().getConverter(columnsArray[i]).orElse(null);
@@ -404,10 +404,10 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             ResultSetReader rsReader = getResultSetReader();
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(queryPlate);
 
-            TypeConverter<?>[] typeConverters = new TypeConverter<?>[queryPlate.getFields().size()];
+            DatabaseTypeConverter<?, ?>[] typeConverters = new DatabaseTypeConverter<?, ?>[queryPlate.getFields().size()];
 
             for (int i = 0; i < queryPlate.getFields().size(); i++) {
-                typeConverters[i] = query.getTarget().getConverterManager().getConverter(queryPlate.getFields().get(i).getColumn()).orElse(null);
+                typeConverters[i] = queryPlate.getTarget().getConverterManager().getConverter(queryPlate.getFields().get(i).getColumn()).orElse(null);
             }
 
             try {
@@ -448,7 +448,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         for (int i = 0; i < fields.size(); i++) {
             columnsArray[i] = fields.get(i).getColumn();
         }
-        TypeConverter<?>[] typeConvertersArr = new TypeConverter<?>[fields.size()];
+        DatabaseTypeConverter<?, ?>[] typeConvertersArr = new DatabaseTypeConverter<?, ?>[fields.size()];
 
         for (int i = 0; i < fields.size(); i++) {
             typeConvertersArr[i] = query.getTarget().getConverterManager().getConverter(columnsArray[i]).orElse(null);
@@ -529,7 +529,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
     default <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O outEmpty) {
         List<Column> columns = new ArrayList<>(outEmpty.getColumns());
         getAccessProtector().removeViolatedColumns(columns, OperationType.READ);
-        String query = toCallProcedureSqlQuery(name, in);
+        String query = toCallProcedureSqlQuery(name, in, this);
 
         return doSthOnConnection(query, (procedureSql, conn) -> {
             PreparedStatement stmt = null;

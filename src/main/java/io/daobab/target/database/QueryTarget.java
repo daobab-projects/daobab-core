@@ -1,6 +1,5 @@
 package io.daobab.target.database;
 
-import io.daobab.converter.ConverterManager;
 import io.daobab.error.DaobabException;
 import io.daobab.error.MandatoryColumn;
 import io.daobab.model.*;
@@ -8,6 +7,8 @@ import io.daobab.statement.condition.SetField;
 import io.daobab.statement.condition.SetFields;
 import io.daobab.target.Target;
 import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.database.converter.DatabaseConverterManager;
+import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
 import io.daobab.target.database.query.*;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
@@ -30,7 +31,9 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
 
     boolean getShowSql();
 
-    ConverterManager getConverterManager();
+    default DatabaseConverterManager getConverterManager() {
+        return null;
+    }
 
     List<TableColumn> getColumnsForTable(final ColumnsProvider entity);
 
@@ -187,6 +190,8 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     default <E extends Entity> DataBaseIdGeneratorSupplier getPrimaryKeyGenerator(E entity) {
         throw new DaobabException("Provide a getPrimaryKeyGenerator() method into " + this.getClass().getName());
     }
+
+    DatabaseDateConverter getDatabaseDateConverter();
 
 
 }
