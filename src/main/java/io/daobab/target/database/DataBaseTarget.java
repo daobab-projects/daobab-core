@@ -115,29 +115,21 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
             setDataBaseMajorVersion(meta.getDatabaseMajorVersion());
             setDataBaseMinorVersion("" + meta.getDatabaseMinorVersion());
 
-            switch (meta.getDatabaseProductName()) {
-                case DictDatabaseType.ORACLE: {
-                    setDatabaseDateConverter(new DatabaseDateConverterOracle());
-                    break;
-                }
-                case DictDatabaseType.MicrosoftSQL: {
-                    setDatabaseDateConverter(new DatabaseDateConverterMicrosoftSql());
-                    break;
-                }
-                case DictDatabaseType.MYSQL: {
-                    setDatabaseDateConverter(new DatabaseDateConverterMySql());
-                    break;
-                }
-                case DictDatabaseType.H2: {
-                    setDatabaseDateConverter(new DatabaseDateConverterH2());
-                    break;
-                }
-                default: {
-                    log.error("No data converter for a database type: {}. Set the correct DatabaseDateConverter!", meta.getDatabaseProductName());
-                    setDatabaseDateConverter(new DatabaseDateConverterH2());
-                    break;
-                }
+            if (DictDatabaseType.ORACLE.equals(meta.getDatabaseProductName())) {
+                setDatabaseDateConverter(new DatabaseDateConverterOracle());
+            } else if (meta.getDatabaseProductName().startsWith(DictDatabaseType.MicrosoftSQL)) {
+                setDatabaseDateConverter(new DatabaseDateConverterMicrosoftSql());
+            } else if (DictDatabaseType.ORACLE.equals(meta.getDatabaseProductName())) {
+                setDatabaseDateConverter(new DatabaseDateConverterMySql());
+            } else if (DictDatabaseType.PostgreSQL.equals(meta.getDatabaseProductName())) {
+                setDatabaseDateConverter(new DatabaseDateConverterPostgreSql());
+            } else if (DictDatabaseType.H2.equals(meta.getDatabaseProductName())) {
+                setDatabaseDateConverter(new DatabaseDateConverterH2());
+            } else {
+                log.error("No data converter for a database type: {}. Set the correct DatabaseDateConverter!", meta.getDatabaseProductName());
+                setDatabaseDateConverter(new DatabaseDateConverterH2());
             }
+
 
         }
         return dataSource;
