@@ -13,7 +13,10 @@ import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.database.connection.ConnectionGateway;
 import io.daobab.target.database.connection.QueryResolverTransmitter;
 import io.daobab.target.database.connection.ResultSetReader;
+import io.daobab.target.database.converter.EntityConverter;
+import io.daobab.target.database.converter.TypeConverterPrimaryKeyToOneCache;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
+import io.daobab.target.database.converter.type.TypeConverterPKBased;
 import io.daobab.target.database.meta.MetaData;
 import io.daobab.target.database.query.*;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
@@ -311,25 +314,48 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
                 List<TableColumn> columns = entityQuery.getFields();
                 Column[] columnsArray = new Column[columns.size()];
+
                 for (int i = 0; i < columns.size(); i++) {
                     columnsArray[i] = columns.get(i).getColumn();
                 }
                 DatabaseTypeConverter<?, ?>[] typeConvertersArr = new DatabaseTypeConverter<?, ?>[columns.size()];
 
                 for (int i = 0; i < columns.size(); i++) {
-                    typeConvertersArr[i] = query.getTarget().getConverterManager().getConverter(columnsArray[i]).orElse(null);
+                    DatabaseTypeConverter<?, ?> typeConverter = query.getTarget().getConverterManager().getConverter(columnsArray[i]).orElse(null);
+                    if (typeConverter instanceof TypeConverterPKBased) {
+                        typeConvertersArr[i] = new TypeConverterPrimaryKeyToOneCache((TypeConverterPKBased) typeConverter);
+                    } else {
+                        typeConvertersArr[i] = typeConverter;
+                    }
+
+
                 }
 
                 while (rs.next()) {
                     E entity = clazz.getDeclaredConstructor().newInstance();
 
                     for (int i = 0; i < columns.size(); i++) {
-                        columnsArray[i].setValue((EntityRelation) entity, rsReader.readCell(typeConvertersArr[i], rs, i + 1, columnsArray[i]));
+                        Column col = columnsArray[i];
+                        if (typeConvertersArr[i].isEntityConverter()) {
+                            rsReader.readCell((TypeConverterPrimaryKeyToOneCache) typeConvertersArr[i], rs, i + 1, columnsArray[i], e -> col.setValue((EntityRelation) entity, e));
+                        } else {
+                            columnsArray[i].setValue((EntityRelation) entity, rsReader.readCell(typeConvertersArr[i], rs, i + 1, columnsArray[i]));
+                        }
+//                        columnsArray[i].setValue((EntityRelation) entity, rsReader.readCell(typeConvertersArr[i], rs, i + 1, columnsArray[i]));
+//                        rsReader.readCell(typeConvertersArr[i], rs, i + 1, columnsArray[i],e->col.setValue((EntityRelation) entity,e));
                     }
 
                     entity.afterSelect(this);
                     rv.add(entity);
                 }
+
+                for (int i = 0; i < columns.size(); i++) {
+                    if (!typeConvertersArr[i].isEntityConverter()) continue;
+                    EntityConverter entityConverter = (EntityConverter) typeConvertersArr[i];
+                    entityConverter.readEntities();
+                    entityConverter.applyEntities();
+                }
+
                 if (isStatisticCollectingEnabled()) getStatisticCollector().received(entityQuery, rv.size());
                 return new EntityList<>(rv, clazz);
             } catch (SQLException e) {

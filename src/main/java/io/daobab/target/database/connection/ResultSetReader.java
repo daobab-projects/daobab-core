@@ -4,11 +4,13 @@ import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.*;
 import io.daobab.query.base.QuerySpecialParameters;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.converter.TypeConverterPrimaryKeyToOneCache;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 
 import java.sql.*;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 
 public interface ResultSetReader {
     Plate readPlate(ResultSet rs, List<TableColumn> fields, DatabaseTypeConverter<?, ?>[] typeConverters) throws SQLException;
@@ -23,6 +25,10 @@ public interface ResultSetReader {
 
     @SuppressWarnings({"rawtypes"})
     <F> F readCell(DatabaseTypeConverter<?, ?> cellTypeConverter, ResultSet rs, int colNo, Column column);
+
+
+    @SuppressWarnings({"rawtypes"})
+    <E extends Entity & PrimaryKey<E, F, ?>, F> void readCell(TypeConverterPrimaryKeyToOneCache<F, E> typeConverter, ResultSet rs, int columnIndex, Column column, Consumer<E> consumer);
 
     void closeStatement(Statement stmt, ILoggerBean loggerBean);
 

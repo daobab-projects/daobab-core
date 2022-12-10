@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 
-public interface TypeConverterTimeBased<F> extends DatabaseTypeConverter<F, Time> {
+public interface TypeConverterTimeBased<T> extends DatabaseTypeConverter<Time, T> {
 
 
     default Time readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {

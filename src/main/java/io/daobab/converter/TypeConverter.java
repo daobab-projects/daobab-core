@@ -3,9 +3,9 @@ package io.daobab.converter;
 
 public interface TypeConverter<F, T> {
 
-    F convertReadingTarget(T from);
+    T convertReadingTarget(F from);
 
-    String convertWritingTarget(F to);
+    String convertWritingTarget(T to);
 
 
 }

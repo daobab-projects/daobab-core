@@ -5,11 +5,12 @@ import io.daobab.converter.TypeConverter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
-public interface DatabaseTypeConverter<F, T> extends TypeConverter<F, T> {
+public interface DatabaseTypeConverterList<F, T> extends TypeConverter<F, List<T>> {
 
 
-    default T readAndConvert(ResultSet rs, int columnIndex) throws SQLException {
+    default List<T> readAndConvert(ResultSet rs, int columnIndex) throws SQLException {
         return convertReadingTarget(readFromResultSet(rs, columnIndex));
     }
 

@@ -5,7 +5,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public interface TypeConverterSqlDateBased<F> extends DatabaseTypeConverter<F, Date> {
+public interface TypeConverterSqlDateBased<T> extends DatabaseTypeConverter<Date, T> {
 
 
     default Date readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {

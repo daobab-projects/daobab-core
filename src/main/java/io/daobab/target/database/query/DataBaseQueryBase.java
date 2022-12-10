@@ -52,6 +52,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     private String identifier;
     private String sentQuery;
     private List<SetOperator> setOperatorList;
+    private int deep = 1;
 
     protected DataBaseQueryBase() {
     }
@@ -485,4 +486,14 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     public String toSqlQuery() {
         return getTarget().toSqlQuery(this);
     }
+
+    public Q deepness(int deep) {
+        this.deep = deep;
+        return (Q) this;
+    }
+
+    public int getDeepness() {
+        return deep;
+    }
+
 }

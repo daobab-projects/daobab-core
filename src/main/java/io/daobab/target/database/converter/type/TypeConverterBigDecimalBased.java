@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public interface TypeConverterBigDecimalBased<F> extends DatabaseTypeConverter<F, BigDecimal> {
+public interface TypeConverterBigDecimalBased<T> extends DatabaseTypeConverter<BigDecimal, T> {
 
     default BigDecimal readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
         return rs.getBigDecimal(columnIndex);

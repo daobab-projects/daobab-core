@@ -8,6 +8,7 @@ import io.daobab.model.*;
 import io.daobab.query.base.QuerySpecialParameters;
 import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.converter.TypeConverterPrimaryKeyToOneCache;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import java.sql.*;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
@@ -89,7 +91,6 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
         try {
             if (typeConverter != null) {
                 try {
-                    log.info("converter: " + column + " " + typeConverter.getClass().getName());
                     return (F) typeConverter.readAndConvert(rs, columnIndex);
                 } catch (ClassCastException e) {
                     throw new DaobabException("Problem during reading column " + column + " using TypeConverter: " + typeConverter.getClass().getName(), e);
@@ -108,6 +109,19 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
                 return (F) rs.getString(columnIndex);
             }
             return (F) rs.getObject(columnIndex, columnType);
+        } catch (SQLException e) {
+            throw new DaobabSQLException(e);
+        }
+    }
+
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <E extends Entity & PrimaryKey<E, F, ?>, F> void readCell(TypeConverterPrimaryKeyToOneCache<F, E> typeConverter, ResultSet rs, int columnIndex, Column column, Consumer<E> consumer) {
+        try {
+            F key = typeConverter.readFromResultSet(rs, columnIndex);
+            typeConverter.addKey(key, consumer);
+
         } catch (SQLException e) {
             throw new DaobabSQLException(e);
         }

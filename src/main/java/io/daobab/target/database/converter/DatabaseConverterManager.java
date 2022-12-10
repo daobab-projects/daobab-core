@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,7 +46,12 @@ public class DatabaseConverterManager {
         for (Entity entity : target.getTables()) {
             if (entity instanceof PrimaryKey) {
                 Class pkFieldType = ((PrimaryKey) entity).colID().getFieldClass();
-                registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntity(target, typeConverters.get(pkFieldType), entity));
+                if (Collection.class.isAssignableFrom(pkFieldType)) {
+                    registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntity(target, typeConverters.get(pkFieldType), entity));
+                } else {
+                    registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntity(target, typeConverters.get(pkFieldType), entity));
+                }
+
             }
         }
     }
