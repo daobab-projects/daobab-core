@@ -137,6 +137,17 @@ public interface QueryWhere<Q extends Query> {
         return (Q) this;
     }
 
+
+    default <E extends Entity, F, R extends EntityRelation> Q whereInCollection(Column<E, F, R> column, Collection<F> val) {
+        setWhereWrapper(new WhereAnd().inFields(column, val));
+        return (Q) this;
+    }
+
+    default <E extends Entity, F, R extends EntityRelation> Q whereNotInCollection(Column<E, F, R> column, Collection<F> val) {
+        setWhereWrapper(new WhereAnd().notInFields(column, val));
+        return (Q) this;
+    }
+
     default <E extends Entity, F, R extends EntityRelation> Q whereInFields(Column<E, F, R> column, Collection<F> val) {
         setWhereWrapper(new WhereAnd().inFields(column, val));
         return (Q) this;
