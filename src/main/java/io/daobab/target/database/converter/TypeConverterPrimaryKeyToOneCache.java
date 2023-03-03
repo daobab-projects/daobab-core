@@ -36,18 +36,18 @@ public class TypeConverterPrimaryKeyToOneCache<F, E extends Entity & PrimaryKey<
     @Override
     public void readEntities() {
         E tab = rootConverter.getTable();
-        F[] fields = (F[]) keyConsumerMap.keySet().toArray();
-        target.select(tab).whereIn(tab.colID(), fields).findMany().forEach(e -> keyEntityMap.put(e.getId(), e));
-
+        target.select(tab)
+                .whereInCollection(tab.colID(), keyConsumerMap.keySet())
+                .findMany()
+                .forEach(e -> keyEntityMap.put(e.getId(), e));
 
     }
 
     @Override
     public void applyEntities() {
         for (Map.Entry<F, E> entry : keyEntityMap.entrySet()) {
-            if (entry.getValue() == null) continue;
             Consumer<E> consumer = keyConsumerMap.get(entry.getKey());
-            if (consumer == null) continue;
+            if (consumer == null || entry.getValue() == null) continue;
             consumer.accept(entry.getValue());
         }
     }

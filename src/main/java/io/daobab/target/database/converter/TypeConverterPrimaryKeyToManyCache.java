@@ -38,12 +38,15 @@ public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey
     @SuppressWarnings("unchecked")
     @Override
     public void readEntities() {
+
         E rootTable = rootConverter.getTable();
         E tab = rootConverter.getTable();
         F[] fields = (F[]) keyConsumerMap.keySet().toArray();
-        relations = target.select(rootTable.colID(), tab.colID()).from(rootConverter.getTable())
+        relations = target.select(rootTable.colID(), tab.colID())
+//                .from(rootConverter.getTable())
                 .join(tab, rootTable.colID())
-                .whereIn(tab.colID(), fields).findMany().stream()
+                .whereIn(tab.colID(), fields)
+                .findMany().stream()
                 .map(p -> new TwoKeys<>(p.getValue(rootTable.colID()), p.getValue(tab.colID())))
                 .collect(Collectors.toList());
 
