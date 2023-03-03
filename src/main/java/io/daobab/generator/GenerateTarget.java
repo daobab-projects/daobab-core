@@ -1,5 +1,7 @@
 package io.daobab.generator;
 
+import io.daobab.generator.template.TemplateLanguage;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +80,6 @@ public class GenerateTarget {
         return sb.toString();
     }
 
-
     public String getTableArray() {
         if (getTableList() == null || getTableList().isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
@@ -89,27 +90,48 @@ public class GenerateTarget {
             sb.append("\t\t\t")
                     .append(gc.isView() ? "view" : "tab")
                     .append(GenerateFormatter.toCamelCase(gc.getTableName()));
-            if (i < getTableList().size() - 1) sb.append(",");
+            if (i < getTableList().size() - 1){
+                sb.append(",");
+            }
             sb.append("\n");
         }
         return sb.toString();
     }
 
-    public String getTablesInitiation() {
+    public String getTablesInitiation(TemplateLanguage language) {
         if (getTableList() == null || getTableList().isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
-        for (GenerateTable gc : getTableList()) {
-            sb.append(TableDescriptionGenerator.getTableDescription(gc))
-                    .append("\t")
-                    .append(GenerateFormatter.toCamelCase(gc.getTableName()))
-                    .append(" ")
-                    .append(gc.isView() ? "view" : "tab")
-                    .append(GenerateFormatter.toCamelCase(gc.getTableName()))
-                    .append("= new ")
-                    .append(GenerateFormatter.toCamelCase(gc.getTableName()))
-                    .append("()")
-                    .append(";")
-                    .append("\n");
+
+        if (language == TemplateLanguage.JAVA) {
+            for (GenerateTable gc : getTableList()) {
+                String tableNameCamel = GenerateFormatter.toCamelCase(gc.getTableName());
+                sb.append(TableDescriptionGenerator.getTableDescription(gc))
+                        .append("\t")
+                        .append(tableNameCamel)
+                        .append(" ")
+                        .append(gc.isView() ? "view" : "tab")
+                        .append(tableNameCamel)
+                        .append(" = new ")
+                        .append(tableNameCamel)
+                        .append("();");
+            }
+            sb.append("\n");
+        } else if (language == TemplateLanguage.KOTLIN) {
+            for (GenerateTable gc : getTableList()) {
+                String tableNameCamel = GenerateFormatter.toCamelCase(gc.getTableName());
+                String tableNameCamelStartLower = GenerateFormatter.toCamelCaseStartLower(gc.getTableName());
+                sb.append(TableDescriptionGenerator.getTableDescription(gc))
+                        .append("\t")
+                        .append("fun ")
+                        .append(gc.isView() ? "view" : "tab")
+                        .append(tableNameCamel)
+                        .append("(): ")
+                        .append(tableNameCamel)
+                        .append(" = ")
+                        .append(tableNameCamel)
+                        .append("()");
+            }
+            sb.append("\n");
         }
         return sb.toString();
     }

@@ -1,4 +1,4 @@
-package io.daobab.generator;
+package io.daobab.generator.template;
 
 public interface GenKeys {
 

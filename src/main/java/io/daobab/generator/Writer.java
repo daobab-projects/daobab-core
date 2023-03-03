@@ -1,5 +1,8 @@
 package io.daobab.generator;
 
+import io.daobab.generator.template.GenKeys;
+import io.daobab.generator.template.TemplateLanguage;
+import io.daobab.generator.template.TemplateProvider;
 import io.daobab.model.CompositeColumns;
 import io.daobab.model.PrimaryCompositeKey;
 import io.daobab.model.PrimaryKey;
@@ -7,14 +10,27 @@ import io.daobab.model.PrimaryKey;
 import java.util.List;
 
 import static io.daobab.generator.SaveGenerated.saveGeneratedTo;
+import static io.daobab.generator.template.TemplateLanguage.KOTLIN;
+import static io.daobab.generator.template.TemplateLanguage.TYPE_SCRIPT;
+import static io.daobab.generator.template.TemplateType.*;
 
-public class Writer implements DaobabClassGeneratorTemplates {
+public class Writer {
 
 
     int generatedColumnsCount = 0;
     int generatedTablesCount = 0;
     int generatedCompositesCount = 0;
     int generatedTargetsCount = 0;
+
+    private TemplateLanguage language;
+
+    public Writer(TemplateLanguage language) {
+        this.language = language;
+    }
+
+    public void setLanguage(TemplateLanguage language) {
+        this.language = language;
+    }
 
     private static boolean isCompositeKeyNameWithSuffixFree(String tableNameWithSuffix, int counter, List<GenerateTable> allTables) {
         for (GenerateTable generateTable : allTables) {
@@ -38,7 +54,16 @@ public class Writer implements DaobabClassGeneratorTemplates {
         return tableNameWithKeySuffix + counter;
     }
 
-    void generateCompositeKey(GenerateTable table, String path, boolean override) {
+    void generateCompositeKey(TemplateLanguage language, GenerateTable table, String path, boolean override) {
+        switch (language){
+            case JAVA: {
+                generateJavaCompositeKey(table,path,override);
+                break;
+            }
+        }
+    }
+
+    void generateJavaCompositeKey(GenerateTable table, String path, boolean override) {
 
         String tableNameCamel = GenerateFormatter.toCamelCase(table.getTableName());
 
@@ -46,21 +71,21 @@ public class Writer implements DaobabClassGeneratorTemplates {
 
         replacer.add(GenKeys.COLUMN_IMPORTS, table.getColumnImport(tableNameCamel))
                 .add(GenKeys.TABLE_PACKAGE, table.getJavaPackage())
-                .add(GenKeys.COMPOSITE_KEY_COLUMN_TYPE_INTERFACES, table.getCompositeKeyInterfaces("E"))
-                .add(GenKeys.COMPOSITE_KEY_COLUMN_INTERFACES, table.getCompositeKeyInterfaces2("E"))
-                .add(GenKeys.COMPOSITE_KEY_METHOD, table.getCompositeMethod(table.getCompositeKeyName()))
+                .add(GenKeys.COMPOSITE_KEY_COLUMN_TYPE_INTERFACES, table.getCompositeKeyInterfaces("E", language))
+                .add(GenKeys.COMPOSITE_KEY_COLUMN_INTERFACES, table.getCompositeKeyInterfaces2("E", language))
+                .add(GenKeys.COMPOSITE_KEY_METHOD, table.getCompositeMethod(table.getCompositeKeyName(), language))
                 .add(GenKeys.COMPOSITE_NAME, table.getCompositeKeyName());
-        saveGeneratedTo(replacer.replaceAll(COMPOSITE_KEY_TEMP), path, table.getCatalogName(), table.getSchemaName(), (table.isView() ? "view" : "table"), table.getCompositeKeyName(), FileType.JAVA, override);
+        saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, COMPOSITE_KEY_TEMP)), path, table.getCatalogName(), table.getSchemaName(), (table.isView() ? "view" : "table"), table.getCompositeKeyName(), language, override);
         generatedCompositesCount++;
     }
 
-    void generateTarget(String catalog, String schema, List<GenerateTable> tables, String javapackageName, String path, boolean override) {
+    void generateJavaTarget(String catalog, String schema, List<GenerateTable> tables, String javaPackageName, String path, boolean override) {
         GenerateTarget target = new GenerateTarget();
         target.setSchemaName(schema);
         target.setCatalogName(catalog);
         target.setTableList(tables);
 
-        StringBuilder javaPackage = JavaPackageResolver.resolve(javapackageName, catalog, schema);
+        StringBuilder javaPackage = JavaPackageResolver.resolve(javaPackageName, catalog, schema);
         target.setJavaPackage(javaPackage.toString());
 
         Replacer replacer = new Replacer();
@@ -70,17 +95,17 @@ public class Writer implements DaobabClassGeneratorTemplates {
                 .add(GenKeys.TARGET_TABLES_INTERFACE, target.getTargetTablesInterfaceName())
                 .add(GenKeys.TARGET_PACKAGE, target.getJavaPackage() + ";");
 
-        saveGeneratedTo(replacer.replaceAll(targettemp), path, catalog, schema, null, target.getTargetClassName(), FileType.JAVA, override);
+        saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, DATA_BASE_TARGET_CLASS)), path, catalog, schema, null, target.getTargetClassName(), language, override);
         generatedTargetsCount++;
 
         replacer.clear();
 
         replacer.add(GenKeys.TABLES_INTERFACE_NAME, target.getTargetTablesInterfaceName())
                 .add(GenKeys.TAB_IMPORTS, target.getTableImports())
-                .add(GenKeys.TABLES_INITIATED, target.getTablesInitiation())
+                .add(GenKeys.TABLES_INITIATED, target.getTablesInitiation(language))
                 .add(GenKeys.TARGET_PACKAGE, target.getJavaPackage() + ";");
 
-        saveGeneratedTo(replacer.replaceAll(TABLESINTERFACETEMP), path, catalog, schema, null, target.getTargetTablesInterfaceName(), FileType.JAVA, override);
+        saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, DATABASE_TABLES_INTERFACE)), path, catalog, schema, null, target.getTargetTablesInterfaceName(), language, override);
     }
 
     void createTypeScriptTables(String catalog, String schema, List<GenerateTable> entities, String path, boolean override) {
@@ -97,19 +122,21 @@ public class Writer implements DaobabClassGeneratorTemplates {
                         .append(";\n");
             }
 
-            String str = "\n\n" + DaobabClassGeneratorTemplates.typeScriptTabletemp.replaceAll(GenKeys.TABLE_CAMEL_NAME, GenerateFormatter.toCamelCase(entity.getTableName())).replaceAll(GenKeys.FIELDS, sb.toString()) + "\n\n";
+            String str = "\n\n" + TemplateProvider.getTemplate(TYPE_SCRIPT, TABLE_CLASS).replaceAll(GenKeys.TABLE_CAMEL_NAME, GenerateFormatter.toCamelCase(entity.getTableName())).replaceAll(GenKeys.FIELDS, sb.toString()) + "\n\n";
 
-            saveGeneratedTo(str, path, catalog, schema, "typescript", GenerateFormatter.toTypeScriptCase(entity.getTableName()), FileType.TYPESCRIPT, override);
+            saveGeneratedTo(str, path, catalog, schema, "typescript", GenerateFormatter.toTypeScriptCase(entity.getTableName()), TYPE_SCRIPT, override);
         }
     }
 
-    void generateColumn(String catalog, String schema, GenerateColumn column, String path, boolean override) {
+    void generateJavaColumn(String catalog, String schema, GenerateColumn column, String path, boolean override) {
 
         Replacer replacer = new Replacer();
 
         boolean columnAndTypeTheSameType = column.getFieldClass().getSimpleName().equalsIgnoreCase(column.getFinalFieldName());
 
         if (byte[].class.equals(column.getFieldClass()) || columnAndTypeTheSameType) {
+            replacer.add(GenKeys.CLASS_FULL_NAME, "");
+        } else if (column.getFieldClass().getName().startsWith("java.lang.")) {
             replacer.add(GenKeys.CLASS_FULL_NAME, "");
         } else {
             replacer.add(GenKeys.CLASS_FULL_NAME, "import " + column.getFieldClass().getName() + ";");
@@ -124,11 +151,11 @@ public class Writer implements DaobabClassGeneratorTemplates {
 
         column.setAlreadyGenerated(true);
 
-        saveGeneratedTo(replacer.replaceAll(COLUMN_TEMPLATE), path, catalog, schema, "column", column.getFinalFieldName(), FileType.JAVA, override);
+        saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, COLUMN_INTERFACE)), path, catalog, schema, "column", column.getFinalFieldName(), language, override);
         generatedColumnsCount++;
     }
 
-    void generateTable(String catalog, String schema, GenerateTable table, List<GenerateTable> allTables, String javaackage, String path, boolean override, boolean schemaIntoTable) {
+    void generateJavaTable(String catalog, String schema, GenerateTable table, List<GenerateTable> allTables, String javaackage, String path, boolean override, boolean schemaIntoTable) {
         String tableName = table.getTableName();
         String tableNameCamel = GenerateFormatter.toCamelCase(table.getTableName());
         boolean pkExist = table.getPrimaryKeys() != null;
@@ -159,15 +186,22 @@ public class Writer implements DaobabClassGeneratorTemplates {
                 .add(GenKeys.COLUMN_INTERFACES, table.getColumnInterfaces(compositeKeyName, tableNameCamel))
                 .add(GenKeys.TABLE_NAME, schemaIntoTable ? (schema + "." + tableName) : tableName)
                 .add(GenKeys.TABLE_CAMEL_NAME, tableNameCamel)
-                .add(GenKeys.COLUMN_METHODS, table.getColumnMethods())
+                .add(GenKeys.COLUMN_METHODS, table.getColumnMethods(language))
                 .add(GenKeys.TABLE_PACKAGE, table.getJavaPackage());
         if (pkExist) {
             if (table.getPrimaryKeys().size() == 1) {
-                replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + tableNameCamel + "," + table.getPrimaryKeys().get(0).getFieldClass().getSimpleName() + "," + table.getPrimaryKeys().get(0).getFinalFieldNameShortOrLong(tableNameCamel) + ">");
-                replacer.add(GenKeys.PK_ID_METHOD, table.getPkIdMethod());
+                if (language == KOTLIN) {
+                    replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + tableNameCamel + "," + table.getPrimaryKeys().get(0).getFieldClass().getSimpleName() + "," + table.getPrimaryKeys().get(0).getFinalFieldNameShortOrLong(tableNameCamel) + "<*>>");
+                    replacer.add(GenKeys.PK_ID_METHOD, table.getPkIdMethod(language));
+                } else {
+                    //Java
+                    replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + tableNameCamel + "," + table.getPrimaryKeys().get(0).getFieldClass().getSimpleName() + "," + table.getPrimaryKeys().get(0).getFinalFieldNameShortOrLong(tableNameCamel) + ">");
+                    replacer.add(GenKeys.PK_ID_METHOD, table.getPkIdMethod(language));
+                }
+
             } else {
                 replacer.add(GenKeys.PK_INTERFACE, PrimaryCompositeKey.class.getSimpleName() + "<" + tableNameCamel + "," + compositeKeyName + "<" + tableNameCamel + ">>");
-                replacer.add(GenKeys.PK_ID_METHOD, table.getPkKeyMethod(compositeKeyName));
+                replacer.add(GenKeys.PK_ID_METHOD, table.getPkKeyMethod(compositeKeyName, language));
 
 //                generateCompositeKey(compositeKeyName, table);
                 table.setCompositeKeyName(compositeKeyName);
@@ -179,7 +213,7 @@ public class Writer implements DaobabClassGeneratorTemplates {
 
         table.setAlreadyGenerated(true);
 
-        saveGeneratedTo(replacer.replaceAll(tabtemp), path, catalog, schema, (table.isView() ? "view" : "table"), tableNameCamel, FileType.JAVA, override);
+        saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, TABLE_CLASS)), path, catalog, schema, (table.isView() ? "view" : "table"), tableNameCamel, language, override);
         generatedTablesCount++;
 
     }

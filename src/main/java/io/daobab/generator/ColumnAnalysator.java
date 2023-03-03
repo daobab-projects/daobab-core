@@ -17,9 +17,7 @@ public class ColumnAnalysator {
         if (JavaPackageResolver.forbiddenNames.contains(col.getFinalFieldName().toLowerCase())) {
             col.setFinalFieldName(col.getFinalFieldName() + "Column");
         }
-
     }
-
 
     static void compileNames(List<GenerateColumn> storage) {
         storage.stream()
@@ -57,7 +55,6 @@ public class ColumnAnalysator {
                 counter++;
                 c.setFinalFieldName(c.getFinalFieldName() + counter);
             }
-
         }
 
         storage.forEach(ColumnAnalysator::fixColumnName);

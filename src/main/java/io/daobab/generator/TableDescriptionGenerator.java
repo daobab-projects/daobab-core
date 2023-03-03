@@ -1,7 +1,6 @@
 package io.daobab.generator;
 
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,8 +29,6 @@ public class TableDescriptionGenerator {
         sb.append("\r/**\n");
         sb.append("\r * Comment:").append(table.getRemarks()).append("<br>\n");
         sb.append("\r * <pre>\n");
-//        sb.append("\r * <pre>\n");
-
 
         int maxSizeName = getMaxSizeFor(NAME, table);
         int maxSizeType = getMaxSizeFor(TYPE, table);
@@ -53,16 +50,16 @@ public class TableDescriptionGenerator {
                 .append(fillGaps(labelDescription, maxSizeDescription))
                 .append("</u>");
 
-        Collections.sort(tableColumns, new ComparatorByFinalFieldName());
+        tableColumns.sort(new ComparatorByFinalFieldName());
         for (GenerateColumn c : tableColumns) {
             GeneratedColumnInTable g = c.getColumnInTable(table.getTableName());
             sb.append("\r * ")
                     .append(fillGaps(g.isPk() ? (c.getFinalFieldName() + "(PK)") : c.getFinalFieldName(), maxSizeName))
                     .append(fillGaps(c.getFieldClass().getSimpleName(), maxSizeType))
-                    .append(fillGaps(String.valueOf(g == null ? 0 : g.getColumnSize()), maxSizeSize))
+                    .append(fillGaps(String.valueOf(g.getColumnSize()), maxSizeSize))
                     .append(fillGaps(c.getColumnName() == null ? "" : c.getColumnName(), maxSizeDBName))
                     .append(fillGaps(TypeConverter.getDataBaseTypeName(c.getDataType()), maxSizeDBType))
-                    .append(fillGaps(g == null || g.getRemarks() == null ? "" : g.getRemarks(), maxSizeDescription));
+                    .append(fillGaps(g.getRemarks() == null ? "" : g.getRemarks(), maxSizeDescription));
         }
 
         sb.append("\r * </pre>\n");

@@ -1,6 +1,8 @@
 package io.daobab.generator;
 
 import io.daobab.error.DaobabException;
+import io.daobab.generator.template.TemplateLanguage;
+import io.daobab.generator.template.TemplateProvider;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,7 +16,7 @@ import java.nio.file.Paths;
 public interface SaveGenerated {
 
 
-    static void saveGeneratedTo(String fileContent, String fpath, String catalog, String schema, String subfolder, String filename, FileType type, boolean override) {
+    static void saveGeneratedTo(String fileContent, String fpath, String catalog, String schema, String subfolder, String filename, TemplateLanguage type, boolean override) {
         if (type == null) throw new DaobabException("File type must be provided");
 
         StringBuilder sbfol = new StringBuilder();
@@ -50,7 +52,7 @@ public interface SaveGenerated {
 
 
         Charset charset = StandardCharsets.UTF_8;
-        Path p = Paths.get(sbfol.append(filename).append(type.getExtension()).toString());
+        Path p = Paths.get(sbfol.append(filename).append(TemplateProvider.getFileExtension(type)).toString());
 
         if (Files.exists(p) && !override) {
             System.out.println("File: " + p.getFileName() + " already exists and can't be overridden. Set setOverride(true) or delete the file.");

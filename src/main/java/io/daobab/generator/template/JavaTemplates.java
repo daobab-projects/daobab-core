@@ -1,4 +1,4 @@
-package io.daobab.generator;
+package io.daobab.generator.template;
 
 import io.daobab.clone.EntityDuplicator;
 import io.daobab.error.AttemptToReadFromNullEntityException;
@@ -17,19 +17,12 @@ import java.util.Objects;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public interface DaobabClassGeneratorTemplates {
+class JavaTemplates {
 
 
-    String typeScriptTabletemp = "export class " + GenKeys.TABLE_CAMEL_NAME + " {" +
-            "\n" +
-            "\n" +
-            GenKeys.FIELDS + " \n" +
-            "\n" +
-            "\n" +
-            "}";
 
 
-    String TABLESINTERFACETEMP = "package " + GenKeys.TARGET_PACKAGE + "\n" +
+    static final String DATABASE_TABLES_INTERFACE_TEMP = "package " + GenKeys.TARGET_PACKAGE + "\n" +
             "\n" +
             "import " + ParserGeneral.class.getName() + ";\n" +
             "import " + QueryWhisperer.class.getName() + ";\n" +
@@ -41,7 +34,7 @@ public interface DaobabClassGeneratorTemplates {
             "\n" +
             "}";
 
-    String targettemp = "package " + GenKeys.TARGET_PACKAGE + "\n" +
+    static final String DATA_BASE_TARGET_CLASS_TEMP = "package " + GenKeys.TARGET_PACKAGE + "\n" +
             "\n" +
             "\n" +
             "import " + Entity.class.getName() + ";\n" +
@@ -72,7 +65,7 @@ public interface DaobabClassGeneratorTemplates {
             "\n" +
             "}";
 
-    String tabtemp = "package " + GenKeys.TABLE_PACKAGE + ";\n" +
+    static final String TABLE_CLASS_TEMP = "package " + GenKeys.TABLE_PACKAGE + ";\n" +
             "\n" +
             "import com.fasterxml.jackson.annotation.JsonAutoDetect;\n" +
             "import com.fasterxml.jackson.annotation.JsonInclude;\n" +
@@ -124,7 +117,7 @@ public interface DaobabClassGeneratorTemplates {
             "}";
 
 
-    String COLUMN_TEMPLATE = "package " + GenKeys.PACKAGE + ";\n" +
+    static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE + ";\n" +
             "\n" +
             "import " + AttemptToReadFromNullEntityException.class.getName() + ";\n" +
             "import " + AttemptToWriteIntoNullEntityException.class.getName() + ";\n" +
@@ -205,7 +198,7 @@ public interface DaobabClassGeneratorTemplates {
             "\n" +
             "}";
 
-    String COMPOSITE_KEY_TEMP = "package " + GenKeys.TABLE_PACKAGE + ";\n" +
+    static final String COMPOSITE_KEY_TEMP = "package " + GenKeys.TABLE_PACKAGE + ";\n" +
             "\n" +
             GenKeys.COLUMN_IMPORTS + "\n" +
             "import " + CompositeColumns.class.getName() + ";\n" +
@@ -221,6 +214,39 @@ public interface DaobabClassGeneratorTemplates {
             "\t" + GenKeys.COMPOSITE_KEY_METHOD + "\n" +
             "\n" +
             "\n" +
-
             "}";
+
+    public static String PK_COL_METHOD_TEMP=
+            "@Override\n" +
+                "\tpublic Column<" + GenKeys.TABLE_NAME + "," + GenKeys.PK_TYPE_IMPORT + "," + GenKeys.CLASS_SIMPLE_NAME + "> colID() {\n" +
+                "\t\treturn col" + GenKeys.INTERFACE_NAME + "();\n" +
+                "\t}" +
+                "\n" +
+                "\n" +
+                "\t@Override\n" +
+                "\tpublic int hashCode() {\n" +
+                "\t\treturn Objects.hashCode(getId());\n" +
+                "\t}\n" +
+                "\n" +
+                "\t@Override\n" +
+                "\tpublic boolean equals(Object obj) {\n" +
+                "\t\tif (this == obj)return true;\n" +
+                "\t\tif (obj == null)return false;\n" +
+                "\t\tif (getClass() != obj.getClass())return false;\n" +
+                "\t\tPrimaryKey<?,?,?> other = (PrimaryKey<?,?,?>) obj;\n" +
+                "\t\treturn Objects.equals(getId(), other.getId());\n" +
+                "\t}\n" +
+                "\n";
+
+    public static String COMPOSITE_PK_KEY_METHOD_TEMP ="@Override\n" +
+            "\tpublic " + CompositeColumns.class.getSimpleName() + "<" + GenKeys.COMPOSITE_KEY_METHOD + "<" + GenKeys.TABLE_NAME + ">>" + " keyColumns() {\n" +
+            "\t\treturn " + " composite" + GenKeys.COMPOSITE_KEY_METHOD + "();\n\t\t}";
+
+    public static String COMPOSITE_METHOD_TEMP =
+        "default "+CompositeColumns.class.getSimpleName()+"<"+GenKeys.COMPOSITE_NAME+"<E>>  composite"+GenKeys.COMPOSITE_NAME+"() {\n" +
+                "\t" +
+                "return new "+CompositeColumns.class.getSimpleName()+"<>(\n"
+                +GenKeys.COMPOSITE_KEY_METHOD+
+
+                ");\n\t\t}";
 }

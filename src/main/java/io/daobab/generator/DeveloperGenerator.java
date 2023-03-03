@@ -1,5 +1,6 @@
 package io.daobab.generator;
 
+import io.daobab.generator.template.TemplateLanguage;
 import io.daobab.model.Column;
 
 import java.awt.*;
@@ -9,7 +10,7 @@ import java.io.IOException;
 
 public class DeveloperGenerator {
 
-    private static final Writer writter = new Writer();
+    private static final Writer writter = new Writer(TemplateLanguage.JAVA);
 
     public static void main(String[] sa) {
 //        String column=DeveloperGenerator.getColumnInterfaceFor("pl.trst.test","FIRST_NAME",JdbcType.VARCHAR);
