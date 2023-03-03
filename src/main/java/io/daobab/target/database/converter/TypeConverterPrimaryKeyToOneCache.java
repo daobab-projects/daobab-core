@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class TypeConverterPrimaryKeyToOneCache<F, E extends Entity & PrimaryKey<E, F, ?>> implements EntityConverter<F, E>, TypeConverterPKBased<F, E> {
+public class TypeConverterPrimaryKeyToOneCache<F, E extends Entity & PrimaryKey<E, F, ?>> implements EntityConverter<F, E>, TypeConverterPKBased<F, E>, KeyableCache<F, E> {
 
     private final TypeConverterPKBased<F, E> rootConverter;
     private final DataBaseTarget target;

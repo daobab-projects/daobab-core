@@ -24,4 +24,8 @@ public interface DatabaseTypeConverter<F, T> extends TypeConverter<F, T> {
         return false;
     }
 
+    default boolean isEntityListConverter() {
+        return false;
+    }
+
 }

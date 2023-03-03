@@ -21,6 +21,10 @@ public class StandardTypeConverterPrimaryKeyEntity<F, E extends Entity & Primary
         this.dataBaseTarget = dataBaseTarget;
     }
 
+    public StandardTypeConverterPrimaryKeyEntityList toMany() {
+        return new StandardTypeConverterPrimaryKeyEntityList(dataBaseTarget, pkTypeConverter, table);
+    }
+
     @Override
     public F readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
         return pkTypeConverter.readFromResultSet(rs, columnIndex);

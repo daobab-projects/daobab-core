@@ -8,7 +8,7 @@ import io.daobab.model.*;
 import io.daobab.query.base.QuerySpecialParameters;
 import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.database.QueryTarget;
-import io.daobab.target.database.converter.TypeConverterPrimaryKeyToOneCache;
+import io.daobab.target.database.converter.KeyableCache;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +66,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
         return entity;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <E extends Entity> E readEntity(DataBaseTarget target, ResultSet rs, E entity, Column[] columnsArr, DatabaseTypeConverter<?, ?>[] typeConverters) {
         for (int i = 0; i < columnsArr.length; i++) {
             columnsArr[i].setValue((EntityRelation) entity, readCell(typeConverters[i], rs, i + 1, columnsArr[i]));
@@ -80,8 +81,8 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
     }
 
     @Override
-    public <F> F readCellEasy(ResultSet rs, int columnIndex, Class<F> valueClazz) throws SQLException {
-        return rs.getObject(columnIndex, valueClazz);
+    public <F> F readCellEasy(ResultSet rs, int columnIndex, Class valueClazz) throws SQLException {
+        return rs.getObject(columnIndex, (Class<F>) valueClazz);
     }
 
     @Override
@@ -117,10 +118,10 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <E extends Entity & PrimaryKey<E, F, ?>, F> void readCell(TypeConverterPrimaryKeyToOneCache<F, E> typeConverter, ResultSet rs, int columnIndex, Column column, Consumer<E> consumer) {
+    public void readCell(KeyableCache typeConverter, ResultSet rs, int columnIndex, Column column, Consumer consumer) {
         try {
-            F key = typeConverter.readFromResultSet(rs, columnIndex);
-            typeConverter.addKey(key, consumer);
+//            F key = typeConverter.readFromResultSet(rs, columnIndex);
+            typeConverter.addKey(typeConverter.readFromResultSet(rs, columnIndex), consumer);
 
         } catch (SQLException e) {
             throw new DaobabSQLException(e);

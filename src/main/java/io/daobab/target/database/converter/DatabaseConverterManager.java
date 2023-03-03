@@ -11,8 +11,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,14 +46,26 @@ public class DatabaseConverterManager {
         for (Entity entity : target.getTables()) {
             if (entity instanceof PrimaryKey) {
                 Class pkFieldType = ((PrimaryKey) entity).colID().getFieldClass();
-                if (Collection.class.isAssignableFrom(pkFieldType)) {
-                    registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntity(target, typeConverters.get(pkFieldType), entity));
-                } else {
-                    registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntity(target, typeConverters.get(pkFieldType), entity));
-                }
+
+                registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntity(target, typeConverters.get(pkFieldType), entity));
+
 
             }
         }
+
+//        for (Entity entity : target.getTables()) {
+//            if (entity instanceof PrimaryKey) {
+//                Class pkFieldType = ((PrimaryKey) entity).colID().getFieldClass();
+//                if (Entities.class.isAssignableFrom(pkFieldType)) {
+//                    System.out.println(">>> "+pkFieldType.getName());
+//                    registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntityList(target, typeConverters.get(pkFieldType), entity));
+//                } else {
+//                    registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntity(target, typeConverters.get(pkFieldType), entity));
+//                }
+//
+//            }
+//        }
+
     }
 
     private DataBaseTarget getTarget() {
@@ -65,11 +77,32 @@ public class DatabaseConverterManager {
 
             DatabaseTypeConverter<?, ?> rv = columnConverters.get(tableColumn);
             if (rv == null) {
-                rv = typeConverters.get(column.getFieldClass());
+                if (column.getColumnName() == null) {
+                    if (List.class.isAssignableFrom(column.getFieldClass())) {
+                        rv = new StandardTypeConverterVoid(getTarget());
+                    } else {
+                        rv = new StandardTypeConverterVoid(getTarget());
+                    }
+
+                } else {
+                    rv = typeConverters.get(column.getFieldClass());
+                }
+            }
+            System.out.println(">>> column: " + column + " type: " + column.getFieldClass());
+            if (rv == null && List.class.isAssignableFrom(column.getFieldClass())) {
+                DatabaseTypeConverter<?, ?> entityConvert = typeConverters.get(column.getInstance().getClass());
+                if (entityConvert instanceof StandardTypeConverterPrimaryKeyEntity) {
+                    System.out.println(">>> standart type converter list for " + column);
+                    StandardTypeConverterPrimaryKeyEntity<?, ?> standardTypeConverterPrimaryKeyEntity = (StandardTypeConverterPrimaryKeyEntity<?, ?>) entityConvert;
+                    rv = standardTypeConverterPrimaryKeyEntity.toMany();
+
+                }
             }
             if (rv == null && column.getFieldClass().isEnum()) {
                 rv = new StandardTypeConverterEnum(column.getFieldClass());
             }
+            System.out.println(">>> typeconverter: " + rv.getClass().getName());
+
 
             return Optional.ofNullable(rv);
         });

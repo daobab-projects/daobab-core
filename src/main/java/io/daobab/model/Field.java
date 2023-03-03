@@ -12,7 +12,11 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
         return getInstance().getEntityName();
     }
 
-    Class<F> getFieldClass();
+    Class getFieldClass();
+
+    default Class getInnerTypeClass() {
+        return null;
+    }
 
     default Class<E> getEntityClass() {
         return (Class<E>) getInstance().getClass();
@@ -48,6 +52,11 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
             @Override
             public Class<F> getFieldClass() {
                 return this.getFieldClass();
+            }
+
+            @Override
+            public Class<F> getInnerTypeClass() {
+                return this.getInnerTypeClass();
             }
 
             @Override

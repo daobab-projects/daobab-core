@@ -142,10 +142,12 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             sb.append(LINE_SEPARATOR).append(OPEN_BRACKET);
             for (int i = 1; i < base.getSetFields().getCounter(); i++) {
                 Column<?, ?, ?> column = base.getSetFields().getFieldForPointer(i);
+                String columnName = column.getColumnName();
+
                 DatabaseTypeConverter typeConverter = base.getTarget().getConverterManager().getConverter(column).orElse(null);
                 Object value;
 
-                if (base.isPkResolved() && column.getColumnName().equals(base.getPkColumnName()) && base.getDictIdGenerator().equals(IdGeneratorType.SEQUENCE)) {
+                if (base.isPkResolved() && columnName != null && columnName.equals(base.getPkColumnName()) && base.getDictIdGenerator().equals(IdGeneratorType.SEQUENCE)) {
                     value = base.getPkNo();
                 } else {
                     value = base.getSetFields().getValueForPointer(i);
@@ -153,20 +155,22 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 }
 
                 if (select) {
-                    sb.append(column.getColumnName());
+                    sb.append(columnName);
                     if (i < base.getSetFields().getCounter() - 1) {
                         sb.append(COMMA);
                     }
                 } else if (column != null) {
-                    sb.append(column.getColumnName());
+                    if (columnName != null) {
+                        sb.append(columnName);
 
-                    if (value == null) {
-                        values.append(NULL);
-                    } else {
-                        values.append(typeConverter.convertWritingTarget(value));
-                        if (typeConverter.needParameterConversion()) {
-                            rv.getSpecialParameters().put(rv.getCounter(), value);
-                            rv.setCounter(rv.getCounter() + 1);
+                        if (value == null) {
+                            values.append(NULL);
+                        } else {
+                            values.append(typeConverter.convertWritingTarget(value));
+                            if (typeConverter.needParameterConversion()) {
+                                rv.getSpecialParameters().put(rv.getCounter(), value);
+                                rv.setCounter(rv.getCounter() + 1);
+                            }
                         }
                     }
 
@@ -284,16 +288,19 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             } else {
                 for (Iterator<TableColumn> it = base.getFields().iterator(); it.hasNext(); ) {
 
-                    Column<E, ?, ?> cc = it.next().getColumn();
+                    Column<E, ?, ?> column = it.next().getColumn();
+                    boolean fakeColumn = column.getColumnName() == null;
 
-                    if (cc instanceof ColumnFunction) {
-                        ColumnFunction db = (ColumnFunction) cc;
+                    if (column instanceof ColumnFunction) {
+                        ColumnFunction db = (ColumnFunction) column;
                         sb.append(columnFunctionToExpression(db, storage, false));
                     } else {
-                        sb.append(storage.getIdentifierForColumn(cc));
+                        if (!fakeColumn) {
+                            sb.append(storage.getIdentifierForColumn(column));
+                        }
                     }
 
-                    if (it.hasNext()) sb.append(COMMA);
+                    if (it.hasNext() && !fakeColumn) sb.append(COMMA);
                 }
             }
         }

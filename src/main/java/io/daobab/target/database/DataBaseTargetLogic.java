@@ -13,10 +13,10 @@ import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.database.connection.ConnectionGateway;
 import io.daobab.target.database.connection.QueryResolverTransmitter;
 import io.daobab.target.database.connection.ResultSetReader;
-import io.daobab.target.database.converter.EntityConverter;
-import io.daobab.target.database.converter.TypeConverterPrimaryKeyToOneCache;
+import io.daobab.target.database.converter.*;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import io.daobab.target.database.converter.type.TypeConverterPKBased;
+import io.daobab.target.database.converter.type.TypeConverterPKBasedList;
 import io.daobab.target.database.meta.MetaData;
 import io.daobab.target.database.query.*;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
@@ -303,6 +303,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(entityQuery);
             Class<E> clazz = entityQuery.getEntityClass();
+
             Statement stmt = null;
             List<E> rv = new ArrayList<>();
             ResultSetReader rsReader = getResultSetReader();
@@ -311,6 +312,8 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 entityQuery.setSentQuery(sqlQuery);
                 stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlQuery);
+
+                E entityInstance = clazz.newInstance();
 
                 List<TableColumn> columns = entityQuery.getFields();
                 Column[] columnsArray = new Column[columns.size()];
@@ -322,8 +325,11 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
                 for (int i = 0; i < columns.size(); i++) {
                     DatabaseTypeConverter<?, ?> typeConverter = query.getTarget().getConverterManager().getConverter(columnsArray[i]).orElse(null);
+
                     if (typeConverter instanceof TypeConverterPKBased) {
                         typeConvertersArr[i] = new TypeConverterPrimaryKeyToOneCache((TypeConverterPKBased) typeConverter);
+                    } else if (typeConverter instanceof TypeConverterPKBasedList) {
+                        typeConvertersArr[i] = new TypeConverterPrimaryKeyToManyCache(this, (TypeConverterPKBasedList) typeConverter, entityInstance, (Entity) columnsArray[i].getInnerTypeClass().newInstance());
                     } else {
                         typeConvertersArr[i] = typeConverter;
                     }
@@ -337,12 +343,10 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                     for (int i = 0; i < columns.size(); i++) {
                         Column col = columnsArray[i];
                         if (typeConvertersArr[i].isEntityConverter()) {
-                            rsReader.readCell((TypeConverterPrimaryKeyToOneCache) typeConvertersArr[i], rs, i + 1, columnsArray[i], e -> col.setValue((EntityRelation) entity, e));
+                            rsReader.readCell((KeyableCache) typeConvertersArr[i], rs, i + 1, columnsArray[i], e -> col.setValue((EntityRelation) entity, e));
                         } else {
                             columnsArray[i].setValue((EntityRelation) entity, rsReader.readCell(typeConvertersArr[i], rs, i + 1, columnsArray[i]));
                         }
-//                        columnsArray[i].setValue((EntityRelation) entity, rsReader.readCell(typeConvertersArr[i], rs, i + 1, columnsArray[i]));
-//                        rsReader.readCell(typeConvertersArr[i], rs, i + 1, columnsArray[i],e->col.setValue((EntityRelation) entity,e));
                     }
 
                     entity.afterSelect(this);
@@ -350,10 +354,17 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 }
 
                 for (int i = 0; i < columns.size(); i++) {
-                    if (!typeConvertersArr[i].isEntityConverter()) continue;
-                    EntityConverter entityConverter = (EntityConverter) typeConvertersArr[i];
-                    entityConverter.readEntities();
-                    entityConverter.applyEntities();
+                    if (typeConvertersArr[i].isEntityConverter()) {
+                        EntityConverter entityConverter = (EntityConverter) typeConvertersArr[i];
+                        entityConverter.readEntities();
+                        entityConverter.applyEntities();
+                    } else if (typeConvertersArr[i].isEntityListConverter()) {
+                        EntityListConverter entityConverter = (EntityListConverter) typeConvertersArr[i];
+                        entityConverter.readEntities(rv);
+                        entityConverter.applyEntities();
+                    }
+
+
                 }
 
                 if (isStatisticCollectingEnabled()) getStatisticCollector().received(entityQuery, rv.size());

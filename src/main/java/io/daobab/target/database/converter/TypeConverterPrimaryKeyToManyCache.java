@@ -1,28 +1,50 @@
 package io.daobab.target.database.converter;
 
+import io.daobab.model.Column;
 import io.daobab.model.Entity;
+import io.daobab.model.EntityRelation;
 import io.daobab.model.PrimaryKey;
+import io.daobab.query.base.QueryWhisperer;
+import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.buffer.single.EntityList;
 import io.daobab.target.database.DataBaseTarget;
-import io.daobab.target.database.converter.type.TypeConverterPKBased;
+import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.converter.type.TypeConverterPKBasedList;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey<E, F, ?>> implements EntityConverter<F, List<E>>, TypeConverterPKBased<F, E> {
+//E (SRC)- this entity with PK
+//E2 (DEST)- other Entity with FK to this entity. Many to One relation
+public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey<E, F, ?>, E2 extends Entity & PrimaryKey<E2, F, ?>> implements EntityListConverter<F, E2>, TypeConverterPKBasedList<F, E2>, KeyableCache<F, List<E2>>, QueryWhisperer {
 
-    private final TypeConverterPKBased<F, E> rootConverter;
-    private final DataBaseTarget target;
-    private final Map<F, List<F>> keyEntityMap = new HashMap<>();
-    private final Map<F, Consumer<List<E>>> keyConsumerMap = new HashMap<>();
-    private final Map<F, E> secondTableEntityMap = new HashMap<>();
-    private List<TwoKeys> relations;
+    private final TypeConverterPKBasedList<F, E2> rootConverter;
+    private final QueryTarget target;
+    private final Map<F, List<E2>> keyEntityMap = new HashMap<>();
 
-    public TypeConverterPrimaryKeyToManyCache(TypeConverterPKBased<F, E> rootConverter) {
+    //storeId,Consumer<List<store>>
+    private final Map<F, Consumer<List<E2>>> destKeyConsumerMap = new HashMap<>();
+    private final Map<F, E2> secondTableEntityMap = new HashMap<>();
+    private final E2 destEntity;
+    private final Column<E, F, EntityRelation> srcFkColumnToDest;
+    private final Column<E2, F, EntityRelation> destColumn;
+    private final E srcEntity;
+
+    public TypeConverterPrimaryKeyToManyCache(QueryTarget target, TypeConverterPKBasedList<F, E2> rootConverter, E srcEntity, E2 destEntity) {
+        System.out.println(">>> srcEntity: " + srcEntity.getEntityName());
+        System.out.println(">>> dstEntity: " + destEntity.getEntityName());
         this.rootConverter = rootConverter;
-        this.target = rootConverter.getDataBaseTarget();
+        this.target = target;
+        this.srcEntity = srcEntity;
+        this.srcFkColumnToDest = (Column<E, F, EntityRelation>) destEntity.colID().transformTo(srcEntity);
+        this.destEntity = destEntity;
+        this.destColumn = (Column<E2, F, EntityRelation>) destEntity.colID();
     }
 
     @Override
@@ -31,64 +53,69 @@ public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey
     }
 
     @Override
-    public void addKey(F key, Consumer<List<E>> consumer) {
-        keyConsumerMap.put(key, consumer);
+    public void addKey(F key, Consumer<List<E2>> consumer) {
+        destKeyConsumerMap.put(key, consumer);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void readEntities() {
+    public void readEntities(List<E2> entities) {
+        if (destKeyConsumerMap.isEmpty()) {
+            return;
+        }
 
-        E rootTable = rootConverter.getTable();
-        E tab = rootConverter.getTable();
-        F[] fields = (F[]) keyConsumerMap.keySet().toArray();
-        relations = target.select(rootTable.colID(), tab.colID())
-//                .from(rootConverter.getTable())
-                .join(tab, rootTable.colID())
-                .whereIn(tab.colID(), fields)
+        F[] fields = (F[]) destKeyConsumerMap.keySet().toArray();
+        List<F> srcPks = entities.stream().map(PrimaryKey::getId).collect(Collectors.toList());
+        System.out.println(">>> fields length " + fields.length);
+
+        Entities<E2> fkEntities = target.select(destEntity).whereInFields(destEntity.colID(), destKeyConsumerMap.keySet()).findMany();
+
+        List<TwoKeys> relations = target.select(srcEntity.colID(), destEntity.colID())
+                //.join(destEntity, destEntity.colID(),srcFkColumnToDest)
+                .where(and().in(destEntity.colID(), fields).inFields(srcEntity.colID(), srcPks))
                 .findMany().stream()
-                .map(p -> new TwoKeys<>(p.getValue(rootTable.colID()), p.getValue(tab.colID())))
+                .map(p -> new TwoKeys<>(p.getValue(srcEntity.colID()), p.getValue(destEntity.colID())))
                 .collect(Collectors.toList());
 
         relations.stream()
                 .collect(Collectors.groupingBy(TwoKeys::getKeyTab1))
-                .forEach((key, value) -> keyEntityMap.put((F) key, (List<F>) value));
+                .forEach((key, value) -> keyEntityMap.put((F) key, fkEntities.select(destEntity).whereInFields(destEntity.colID(), (List<F>) value).findMany()));
 
-        Set<F> secondTableKeys = (Set<F>) relations.stream().map(TwoKeys::getKeyTab2).collect(Collectors.toSet());
-        F[] secondTableFields = (F[]) secondTableKeys.toArray();
-        target.select(tab).whereIn(tab.colID(), secondTableFields).findMany().forEach(e -> secondTableEntityMap.put(e.getId(), e));
-
+//        entities.forEach(e->{
+//            F srcfk=srcFkColumnToDest.getValue(e);
+//            destKeyConsumerMap.get(srcfk).accept(keyEntityMap.get(srcfk));
+//        });
     }
 
     @Override
     public void applyEntities() {
-        for (Map.Entry<F, List<F>> entry : keyEntityMap.entrySet()) {
+        for (Map.Entry<F, List<E2>> entry : keyEntityMap.entrySet()) {
             if (entry.getValue() == null) continue;
 
-            List<E> relatedEntities = new ArrayList<>(entry.getValue().size());
-            for (F secondTableKey : entry.getValue()) {
-                E secondTableEntity = secondTableEntityMap.get(secondTableKey);
+            List<E2> relatedEntities = new ArrayList<>(entry.getValue().size());
+            for (E2 secondTableEntity : entry.getValue()) {
+//                E2 secondTableEntity = secondTableEntityMap.get(secondTableKey);
                 relatedEntities.add(secondTableEntity);
             }
 
-            Consumer<List<E>> consumer = keyConsumerMap.get(entry.getKey());
+            Consumer<List<E2>> consumer = destKeyConsumerMap.get(entry.getKey());
             if (consumer == null) continue;
-            consumer.accept(relatedEntities);
+            consumer.accept(new EntityList<>(relatedEntities, destEntity));
         }
     }
 
     @Override
-    public E convertReadingTarget(F from) {
-        return rootConverter.convertReadingTarget(from);
+    public List<E2> convertReadingTarget(F from) {
+        return getDataBaseTarget().select(destEntity).whereEqual(destEntity.colID(), from).findMany();
     }
 
     @Override
-    public String convertWritingTarget(E to) {
+    public String convertWritingTarget(List<E2> to) {
         return rootConverter.convertWritingTarget(to);
     }
 
     @Override
-    public E getTable() {
+    public E2 getTable() {
         return rootConverter.getTable();
     }
 
@@ -98,7 +125,7 @@ public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey
     }
 
     @Override
-    public boolean isEntityConverter() {
+    public boolean isEntityListConverter() {
         return true;
     }
 
@@ -109,6 +136,8 @@ public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey
         public TwoKeys(F key, F value) {
             this.setKeyTab1(key);
             this.setKeyTab2(value);
+
+            System.out.println("firstKey " + key + " list of second keys " + value);
         }
 
         public F getKeyTab1() {

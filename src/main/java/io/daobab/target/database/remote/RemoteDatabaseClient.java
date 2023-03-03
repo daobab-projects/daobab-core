@@ -10,6 +10,7 @@ import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
 import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
 import io.daobab.target.database.query.*;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.transaction.Propagation;
@@ -23,7 +24,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
  */
-public abstract class RemoteClient extends BaseTarget implements QueryTarget {
+public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTarget {
 
     protected Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -116,10 +117,10 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
         if (Integer.parseInt(response.getStatus()) < 0) {
             throw new RemoteDaobabException(response);
         }
-        List<Map<String, Map<String, Object>>> listmap = (List<Map<String, Map<String, Object>>>) response.getContent();
+        List<Map<String, Map<String, Object>>> listMap = (List<Map<String, Map<String, Object>>>) response.getContent();
         List<Plate> rv = new ArrayList<>();
         try {
-            for (Map<String, Map<String, Object>> map : listmap) {
+            for (Map<String, Map<String, Object>> map : listMap) {
                 Plate entity = new Plate();
                 entity.putAll(map);
                 rv.add(entity);
@@ -218,5 +219,10 @@ public abstract class RemoteClient extends BaseTarget implements QueryTarget {
     @Override
     public long count(DataBaseQueryBase<?, ?> query) {
         throw new RemoteTargetCanNotHandleOpenedTransactionException();
+    }
+
+    @Override
+    public DatabaseDateConverter getDatabaseDateConverter() {
+        return null;
     }
 }
