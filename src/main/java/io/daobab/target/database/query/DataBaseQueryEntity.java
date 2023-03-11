@@ -78,7 +78,7 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
 
 
     @SuppressWarnings({"java:S2175", "rawtypes", "unchecked"})
-    public DataBaseQueryEntity skip(Column<E, ?, ?>... columns) {
+    public DataBaseQueryEntity<E> skip(Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) return this;
         List<Column<E, ?, ?>> toRemove = new ArrayList<>();
         List<TableColumn> tableAllColumns = getTarget().getColumnsForTable(columns[0].getInstance());
@@ -102,7 +102,7 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
     }
 
     @SuppressWarnings({"java:S2175", "rawtypes", "unchecked"})
-    public DataBaseQueryEntity only(Column<E, ?, ?>... columns) {
+    public DataBaseQueryEntity<E> only(Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) return this;
         List<Column<E, ?, ?>> toLeave = new ArrayList<>();
         List<TableColumn> tableAllColumns = getTarget().getColumnsForTable(columns[0].getInstance());
