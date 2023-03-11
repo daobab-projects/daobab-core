@@ -147,13 +147,11 @@ class KotlinTemplates {
             "                return " + GenKeys.CLASS_SIMPLE_NAME + "::class.java\n" +
             "            }\n" +
             "\n" +
-            "            override fun getValue(entity: " + GenKeys.INTERFACE_NAME + "<*>?): " + GenKeys.CLASS_SIMPLE_NAME + "? {\n" +
-            "                if (entity == null) throw AttemptToReadFromNullEntityException(entityClass,\"" + GenKeys.FIELD_NAME + "\")\n" +
+            "            override fun getValue(entity: " + GenKeys.INTERFACE_NAME + "<*>): " + GenKeys.CLASS_SIMPLE_NAME + "? {\n" +
             "                return entity.get" + GenKeys.INTERFACE_NAME + "()\n" +
             "            }\n" +
             "\n" +
-            "            override fun setValue(entity: " + GenKeys.INTERFACE_NAME + "<*>?, value: " + GenKeys.CLASS_SIMPLE_NAME + "?){\n" +
-            "                if (entity == null) throw AttemptToWriteIntoNullEntityException(entityClass,\"" + GenKeys.FIELD_NAME + "\")\n" +
+            "            override fun setValue(entity: " + GenKeys.INTERFACE_NAME + "<*>, value: " + GenKeys.CLASS_SIMPLE_NAME + "?){\n" +
             "                entity.set" + GenKeys.INTERFACE_NAME + "(value)\n" +
             "            }\n" +
             "\n" +
