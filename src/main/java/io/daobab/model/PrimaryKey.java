@@ -7,6 +7,7 @@ import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.query.DataBaseQueryDelete;
+import io.daobab.target.database.query.DataBaseQueryPlate;
 import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
 import io.daobab.transaction.Propagation;
 
@@ -87,10 +88,17 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
         return target.select((T) entityRV.getEntity()).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findOne();
     }
 
+//    @SuppressWarnings({"unchecked", "Duplicates"})
+//    default <R1 extends EntityRelation<E1>, M extends Entity, T extends EntityMap & PrimaryKey<E1, F, R1>, E1 extends Entity> List<T> findRelatedManyByCross(QueryTarget target, M cross, Column<T, ?, ?>... columns) {
+//        T entityRV = columns[0].getInstance();
+//        return target.select(columns).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findManyAs(columns[0].getEntityClass());
+//    }
+
     @SuppressWarnings({"unchecked", "Duplicates"})
-    default <R1 extends EntityRelation<E1>, M extends Entity, T extends EntityMap & PrimaryKey<E1, F, R1>, E1 extends Entity> List<T> findRelatedManyByCross(QueryTarget target, M cross, Column<T, ?, ?>... columns) {
+    default <M extends Entity, T extends Entity & PrimaryKey> List<T> findRelatedManyByCross(QueryTarget target, M cross, Column<T, ?, ?>... columns) {
         T entityRV = columns[0].getInstance();
-        return target.select(columns).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findManyAs(columns[0].getEntityClass());
+        DataBaseQueryPlate dataBaseQueryPlate = target.select(columns).from(entityRV).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId());
+        return (List<T>) dataBaseQueryPlate.findManyAs((Class<? extends EntityMap>) columns[0].getEntityClass());
     }
 
     @SuppressWarnings({"unchecked", "Duplicates"})

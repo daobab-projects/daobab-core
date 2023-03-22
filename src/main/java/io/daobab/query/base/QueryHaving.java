@@ -202,62 +202,62 @@ public interface QueryHaving<Q extends Query> {
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingEqual(String column, Object val) {
+    default Q havingEqual(String column, Object val) {
         havingEqual(new ColumnHaving(column), val);
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingGreater(String column, Object val) {
+    default Q havingGreater(String column, Object val) {
         havingGreater(new ColumnHaving(column), val);
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingGreaterOrEqual(String column, Object val) {
+    default Q havingGreaterOrEqual(String column, Object val) {
         havingGreaterOrEqual(new ColumnHaving(column), val);
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingLess(String column, Object val) {
+    default Q havingLess(String column, Object val) {
         havingLess(new ColumnHaving(column), val);
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingLessOrEqual(String column, Object val) {
+    default Q havingLessOrEqual(String column, Object val) {
         havingLessOrEqual(new ColumnHaving(column), val);
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingNotEqual(String column, Object val) {
+    default Q havingNotEqual(String column, Object val) {
         havingNotEqual(new ColumnHaving(column), val);
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
+    default Q havingEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().equal(column, val)));
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingGreater(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
+    default Q havingGreater(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().greater(column, val)));
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingGreaterOrEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
+    default Q havingGreaterOrEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().greaterOrEqual(column, val)));
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingLess(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
+    default Q havingLess(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().less(column, val)));
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingLessOrEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
+    default Q havingLessOrEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().lessOrEqual(column, val)));
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingNotEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
+    default Q havingNotEqual(Column<?, ?, ?> column, InnerQueryFieldsProvider val) {
         setHavingWrapper(new Having(new WhereAnd().notEqual(column, val)));
         return (Q) this;
     }

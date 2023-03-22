@@ -586,7 +586,7 @@ public interface FunctionWhispererH2 {
         return concat(upper(substring(column, 0, 1)), lower(substring(column, 2, length(column))));
     }
 
-    default <C extends Number, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> sum(ColumnOrQuery<E, F, R> columnOrQuery) {
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, ?> sum(ColumnOrQuery<E, F, R> columnOrQuery) {
         return new ColumnFunction<>(columnOrQuery, DictFunctionH2.SUM);
     }
 
@@ -611,11 +611,11 @@ public interface FunctionWhispererH2 {
         return new ManyArgumentsFunction<>(DictFunctionH2.SUB2, "-", columns);
     }
 
-    default <C extends Number, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> count(ColumnOrQuery<E, F, R> columnOrQuery, Class<C> clazz) {
+    default <C extends Number, E extends Entity & EntityRelation> ColumnFunction<E, Long, E, C> count(ColumnOrQuery<E, Long, E> columnOrQuery, Class<C> clazz) {
         return new ColumnFunction<>(columnOrQuery, DictFunctionH2.COUNT, clazz);
     }
 
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Long> count(E entity) {
+    default <E extends Entity & EntityRelation> ColumnFunction<E, Long, E, Long> count(E entity) {
         return new ColumnFunction<>(DictFunctionH2.COUNT, Long.class, entity);
     }
 

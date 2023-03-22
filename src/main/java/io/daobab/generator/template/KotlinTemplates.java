@@ -1,8 +1,6 @@
 package io.daobab.generator.template;
 
 import io.daobab.clone.EntityDuplicator;
-import io.daobab.error.AttemptToReadFromNullEntityException;
-import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.*;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.query.base.QueryWhisperer;
@@ -12,7 +10,6 @@ import io.daobab.target.database.connection.SqlProducer;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
@@ -110,12 +107,9 @@ class KotlinTemplates {
 
     public static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE + ";\n" +
             "\n" +
-            "import " + AttemptToReadFromNullEntityException.class.getName() + ";\n" +
-            "import " + AttemptToWriteIntoNullEntityException.class.getName() + ";\n" +
             "import " + Column.class.getName() + ";\n" +
             "import " + EntityRelationMap.class.getName() + ";\n" +
             "import " + EntityMap.class.getName() + ";\n" +
-            "import " + Objects.class.getName() + ";\n" +
             "\n" +
             GenKeys.CLASS_FULL_NAME + "\n" +
             "\n" +

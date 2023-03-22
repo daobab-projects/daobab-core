@@ -242,11 +242,19 @@ public class GenerateTable {
 
         return new Replacer()
                 .add(GenKeys.TABLE_NAME, GenerateFormatter.toCamelCase(getTableName()))
-                .add(GenKeys.PK_TYPE_IMPORT, pk.getFieldClass().getSimpleName())
+                .add(GenKeys.PK_TYPE_IMPORT, getPkTypeSimpleName(language, pk))
                 .add(GenKeys.CLASS_SIMPLE_NAME, pk.getFinalFieldNameShortOrLong(tableName))
                 .add(GenKeys.INTERFACE_NAME, pk.getInterfaceName())
                 .replaceAll(TemplateProvider.getTemplate(language, PK_COL_METHOD));
+    }
 
+    String getPkTypeSimpleName(TemplateLanguage language, GenerateColumn pk) {
+        if (language == KOTLIN) {
+            String simpleName = pk.getFieldClass().getSimpleName();
+            return simpleName.equals("Integer") ? "Int" : simpleName;
+        } else {
+            return pk.getFieldClass().getSimpleName();
+        }
     }
 
 

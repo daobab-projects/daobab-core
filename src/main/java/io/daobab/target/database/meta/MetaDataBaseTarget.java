@@ -25,6 +25,13 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
     private final HashMap<String, MetaTable> quickAccessMetaTable = new HashMap<>();
     private final HashMap<String, MetaColumn> quickAccessMetaColumn = new HashMap<>();
 
+    public MetaSchema tabMetaSchema = new MetaSchema();
+    public MetaTable tabMetaTable = new MetaTable();
+    public MetaColumn tabMetaColumn = new MetaColumn();
+    public MetaPrimaryKey tabMetaPrimaryKey = new MetaPrimaryKey();
+    public MetaForeignKey tabMetaForeignKey = new MetaForeignKey();
+    public MetaIndex tabMetaIndex = new MetaIndex();
+
     public MetaDataBaseTarget(String catalog, String schema, DataBaseTarget source) throws SQLException {
         if (schema == null) {
             schema = "%";

@@ -18,6 +18,12 @@ public class WhereOr extends Where<WhereOr> {
         }
     }
 
+//    public WhereOr or(UnaryOperator<WhereOr> condition) {
+//        WhereOr or = new WhereOr();
+//        or = condition.apply(or);
+//        return or;
+//    }
+
     public static WhereOr or() {
         return new WhereOr();
     }
