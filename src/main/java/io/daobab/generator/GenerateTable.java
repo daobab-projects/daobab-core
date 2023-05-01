@@ -9,6 +9,7 @@ import io.daobab.model.TableColumn;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.daobab.generator.template.TemplateLanguage.JAVA;
@@ -91,7 +92,7 @@ public class GenerateTable {
         return "name:" + tableName + ",schema:" + schemaName + ",type:" + type + ",remarks:" + remarks + ", PK:" + (getPrimaryKeys() == null ? "NO" : primaryKeysSB.toString());
     }
 
-    public String getColumnImport(String tableName) {
+    public String getColumnImport(String tableName, String endImport) {
         StringBuilder sb = new StringBuilder();
         for (GenerateColumn gc : getColumnList()) {
             if (gc.getFinalFieldName().equalsIgnoreCase(tableName)
@@ -103,7 +104,7 @@ public class GenerateTable {
             sb.append("import ")
                     .append(gc.getPackage())
                     .append(".").append(gc.getFinalFieldName())
-                    .append(";")
+                    .append(endImport)
                     .append("\n");
         }
         return sb.toString();
@@ -254,7 +255,8 @@ public class GenerateTable {
 
         return replacer
                 .add(GenKeys.TABLE_NAME, GenerateFormatter.toCamelCase(getTableName()))
-                .add(GenKeys.PK_TYPE_IMPORT, getPkTypeSimpleName(language, pk))
+                .add(GenKeys.PK_TYPE_IMPORT, pk.getFieldClass().getSimpleName())
+                .add(GenKeys.TYPE_IMPORTS, getPkTypeSimpleName(language, pk))
                 .add(GenKeys.INTERFACE_NAME, pk.getFinalFieldNameShortOrLong(tableName))
                 .add(GenKeys.CLASS_SIMPLE_NAME, pk.getCorrectClassSimpleNameForLanguage(replacer, language))
                 .add(GenKeys.INTERFACE_NAME, pk.getInterfaceName())
@@ -409,5 +411,18 @@ public class GenerateTable {
 
     public void setCatalogName(String catalogName) {
         this.catalogName = catalogName;
+    }
+
+
+    public Set<Class> getColumnTypes() {
+        return columnList.stream()
+                .map(GenerateColumn::getFieldClass)
+                .filter(c -> !c.getName().startsWith("java.lang"))
+                .collect(Collectors.toSet());
+    }
+
+    public String getTypeImports(TemplateLanguage language) {
+        String endimport = language == JAVA ? ";" : "";
+        return getColumnTypes().stream().map(c -> "import " + c.getName() + endimport).collect(Collectors.joining("\n"));
     }
 }

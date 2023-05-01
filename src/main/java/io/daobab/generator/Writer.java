@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static io.daobab.generator.SaveGenerated.saveGeneratedTo;
-import static io.daobab.generator.template.TemplateLanguage.KOTLIN;
-import static io.daobab.generator.template.TemplateLanguage.TYPE_SCRIPT;
+import static io.daobab.generator.template.TemplateLanguage.*;
 import static io.daobab.generator.template.TemplateType.*;
 
 public class Writer {
@@ -64,10 +63,11 @@ public class Writer {
     void generateJavaCompositeKey(GenerateTable table, String path, boolean override) {
 
         String tableNameCamel = GenerateFormatter.toCamelCase(table.getTableName());
+        String endImport = language == JAVA ? ";" : "";
 
         Replacer replacer = new Replacer();
 
-        replacer.add(GenKeys.COLUMN_IMPORTS, table.getColumnImport(tableNameCamel))
+        replacer.add(GenKeys.COLUMN_IMPORTS, table.getColumnImport(tableNameCamel, endImport))
                 .add(GenKeys.TABLE_PACKAGE, table.getJavaPackage())
                 .add(GenKeys.COMPOSITE_KEY_COLUMN_TYPE_INTERFACES, table.getCompositeKeyInterfaces("E", language))
                 .add(GenKeys.COMPOSITE_KEY_COLUMN_INTERFACES, table.getCompositeKeyInterfaces2(replacer, "E", language))
@@ -161,14 +161,14 @@ public class Writer {
         table.setJavaPackage(javaPackage.toString());
 
         Replacer replacer = new Replacer();
-
+        String endImport = language == JAVA ? ";" : "";
 
         if (pkExist) {
             if (table.getPrimaryKeys().size() == 1) {
-                replacer.add(GenKeys.PK_IMPORT, "import " + PrimaryKey.class.getName() + ";")
-                        .add(GenKeys.PK_TYPE_IMPORT, "import " + table.getPrimaryKeys().get(0).getFieldClass().getName() + ";\n");
+                replacer.add(GenKeys.PK_IMPORT, "import " + PrimaryKey.class.getName() + endImport)
+                        .add(GenKeys.PK_TYPE_IMPORT, "import " + table.getPrimaryKeys().get(0).getFieldClass().getName() + endImport + "\n");
             } else {
-                replacer.add(GenKeys.PK_IMPORT, "import " + PrimaryCompositeKey.class.getName() + ";\n" + "import " + CompositeColumns.class.getName() + ";")
+                replacer.add(GenKeys.PK_IMPORT, "import " + PrimaryCompositeKey.class.getName() + endImport + "\n" + "import " + CompositeColumns.class.getName() + endImport)
                         .add(GenKeys.PK_TYPE_IMPORT, "");
             }
         } else {
@@ -176,7 +176,8 @@ public class Writer {
                     .add(GenKeys.PK_TYPE_IMPORT, "");
         }
 
-        replacer.add(GenKeys.COLUMN_IMPORTS, table.getColumnImport(tableNameCamel))
+        replacer.add(GenKeys.COLUMN_IMPORTS, table.getColumnImport(tableNameCamel, endImport))
+                .add(GenKeys.TYPE_IMPORTS, table.getTypeImports(language))
                 .add(GenKeys.COLUMN_INTERFACES, table.getColumnInterfaces(replacer, language, compositeKeyName, tableNameCamel))
                 .add(GenKeys.TABLE_NAME, schemaIntoTable ? (schema + "." + tableName) : tableName)
                 .add(GenKeys.TABLE_CAMEL_NAME, tableNameCamel)

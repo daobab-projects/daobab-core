@@ -1,16 +1,25 @@
 package io.daobab.generator.template;
 
+import java.util.Objects;
+
 public class TemplateProvider {
 
-    public static String getTemplate(TemplateLanguage language,TemplateType type){
-        switch (language){
+    private TemplateProvider() {
+    }
+
+    public static String getTemplate(TemplateLanguage language, TemplateType type) {
+        switch (language) {
             default:
-            case JAVA:{
-                switch (type){
-                    case TABLE_CLASS: return JavaTemplates.TABLE_CLASS_TEMP;
-                    case COLUMN_INTERFACE: return JavaTemplates.COLUMN_INTERFACE_TEMP;
-                    case DATABASE_TABLES_INTERFACE: return JavaTemplates.DATABASE_TABLES_INTERFACE_TEMP;
-                    case DATA_BASE_TARGET_CLASS: return JavaTemplates.DATA_BASE_TARGET_CLASS_TEMP;
+            case JAVA: {
+                switch (type) {
+                    case TABLE_CLASS:
+                        return JavaTemplates.TABLE_CLASS_TEMP;
+                    case COLUMN_INTERFACE:
+                        return JavaTemplates.COLUMN_INTERFACE_TEMP;
+                    case DATABASE_TABLES_INTERFACE:
+                        return JavaTemplates.DATABASE_TABLES_INTERFACE_TEMP;
+                    case DATA_BASE_TARGET_CLASS:
+                        return JavaTemplates.DATA_BASE_TARGET_CLASS_TEMP;
                     case COMPOSITE_KEY_TEMP: return JavaTemplates.COMPOSITE_KEY_TEMP;
                     case PK_COL_METHOD: return JavaTemplates.PK_COL_METHOD_TEMP;
                     case COMPOSITE_PK_KEY_METHOD: return JavaTemplates.COMPOSITE_PK_KEY_METHOD_TEMP;
@@ -32,12 +41,10 @@ public class TemplateProvider {
                 }
             }
             case TYPE_SCRIPT: {
-                switch (type) {
-                    case TABLE_CLASS:
-                        return TypeScriptTemplates.typeScriptTabletemp;
-                    default:
-                        return "";
+                if (Objects.requireNonNull(type) == TemplateType.TABLE_CLASS) {
+                    return TypeScriptTemplates.typeScriptTabletemp;
                 }
+                return "";
             }
         }
     }

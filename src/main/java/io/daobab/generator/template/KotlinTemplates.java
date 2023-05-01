@@ -29,7 +29,6 @@ class KotlinTemplates {
             "}";
     public static final String DATA_BASE_TARGET_CLASS_TEMP = "package " + GenKeys.TARGET_PACKAGE + "\n" +
             "\n" +
-            "\n" +
             "import " + Entity.class.getName() + "\n" +
             "import " + DataBaseTarget.class.getName() + "\n" +
             "import " + SqlProducer.class.getName() + "\n" +
@@ -46,13 +45,10 @@ class KotlinTemplates {
             "    }\n" +
             "\n" +
             "\n" +
-            "    override fun initTables(): List<Entity> {\n" +
-            "        return listOf(\n" +
+            "    override fun initTables(): List<Entity> =\n" +
+            "        listOf(\n" +
             GenKeys.TAB_ARRAY + "\n" +
             "        )\n" +
-            "    }\n" +
-            "\n" +
-            "\n" +
             "\n" +
             GenKeys.TABLES_INITIATED + "\n" +
             "\n" +
@@ -68,10 +64,8 @@ class KotlinTemplates {
             GenKeys.COLUMN_IMPORTS + "\n" +
             "import " + Table.class.getName() + "\n" +
             "\n" +
-            GenKeys.PK_TYPE_IMPORT + "\n" +
-            "import java.util.Arrays\n" +
-            "import java.util.List\n" +
-            "import java.util.Objects\n" +
+            GenKeys.TYPE_IMPORTS + "\n" +
+            "import java.util.*\n" +
             "\n" +
             "import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY\n" +
             "import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE\n" +
@@ -86,10 +80,10 @@ class KotlinTemplates {
             "\n" +
             "\toverride fun getEntityName() = \"" + GenKeys.TABLE_NAME + "\"\n" +
             "\n" +
-            "    override fun columns() = \n" +
-            "        listOf(\n" +
+            "\toverride fun columns() = \n" +
+            "\t\tlistOf(\n" +
             GenKeys.COLUMN_METHODS +
-            "        )\n" +
+            "\t\t)\n" +
 
             "\n" +
             "\toverride fun clone(): " + GenKeys.TABLE_CAMEL_NAME + "  {\n" +
@@ -156,7 +150,7 @@ class KotlinTemplates {
             "\n" +
             "}";
     public static final String PK_COL_METHOD_TEMP =
-            "override fun colID(): col" + GenKeys.INTERFACE_NAME + "() \n" +
+            "override fun colID() = col" + GenKeys.INTERFACE_NAME + "() \n" +
                     "\n" +
                     "\toverride fun hashCode() = Objects.hashCode(id)\n" +
                     "\n" +

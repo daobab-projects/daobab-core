@@ -154,7 +154,7 @@ class JavaTemplates {
             GenKeys.COLUMN_IMPORTS + "\n" +
             "import " + Table.class.getName() + ";\n" +
             "\n" +
-            GenKeys.PK_TYPE_IMPORT + "\n" +
+            GenKeys.TYPE_IMPORTS + "\n" +
             "import java.util.Arrays;\n" +
             "import java.util.List;\n" +
             "import java.util.Objects;\n" +
