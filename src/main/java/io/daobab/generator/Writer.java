@@ -70,7 +70,7 @@ public class Writer {
         replacer.add(GenKeys.COLUMN_IMPORTS, table.getColumnImport(tableNameCamel))
                 .add(GenKeys.TABLE_PACKAGE, table.getJavaPackage())
                 .add(GenKeys.COMPOSITE_KEY_COLUMN_TYPE_INTERFACES, table.getCompositeKeyInterfaces("E", language))
-                .add(GenKeys.COMPOSITE_KEY_COLUMN_INTERFACES, table.getCompositeKeyInterfaces2("E", language))
+                .add(GenKeys.COMPOSITE_KEY_COLUMN_INTERFACES, table.getCompositeKeyInterfaces2(replacer, "E", language))
                 .add(GenKeys.COMPOSITE_KEY_METHOD, table.getCompositeMethod(table.getCompositeKeyName(), language))
                 .add(GenKeys.COMPOSITE_NAME, table.getCompositeKeyName());
         saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, COMPOSITE_KEY_TEMP)), path, table.getCatalogName(), table.getSchemaName(), (table.isView() ? "view" : "table"), table.getCompositeKeyName(), language, override);
@@ -90,6 +90,7 @@ public class Writer {
 
         replacer.add(GenKeys.TARGET_CLASS_NAME, target.getTargetClassName())
                 .add(GenKeys.TAB_ARRAY, target.getTableArray())
+                .add(GenKeys.TABLES_INITIATED, target.getTablesInitiation(language))
                 .add(GenKeys.TARGET_TABLES_INTERFACE, target.getTargetTablesInterfaceName())
                 .add(GenKeys.TARGET_PACKAGE, target.getJavaPackage() + ";");
 
@@ -103,6 +104,10 @@ public class Writer {
                 .add(GenKeys.TABLES_INITIATED, target.getTablesInitiation(language))
                 .add(GenKeys.TARGET_PACKAGE, target.getJavaPackage() + ";");
 
+        if (language == KOTLIN) {
+            //do not generate it for Kotlin
+            return;
+        }
         saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, DATABASE_TABLES_INTERFACE)), path, catalog, schema, null, target.getTargetTablesInterfaceName(), language, override);
     }
 
@@ -129,9 +134,7 @@ public class Writer {
     void generateJavaColumn(String catalog, String schema, GenerateColumn column, String path, boolean override) {
 
         Replacer replacer = new Replacer();
-
-
-        replacer.add(GenKeys.CLASS_SIMPLE_NAME, getCorrectClassSimpleNameForLanguage(replacer, language, column))
+        replacer.add(GenKeys.CLASS_SIMPLE_NAME, column.getCorrectClassSimpleNameForLanguage(replacer, language))
                 .add(GenKeys.COLUMN_NAME, column.getColumnName())
                 .add(GenKeys.INTERFACE_NAME, column.getInterfaceName())
                 .add(GenKeys.FIELD_NAME, column.getFinalFieldName())
@@ -145,45 +148,6 @@ public class Writer {
         generatedColumnsCount++;
     }
 
-    private String getCorrectClassSimpleNameForLanguage(Replacer replacer, TemplateLanguage language, GenerateColumn column) {
-        if (language == KOTLIN) {
-            String longName = column.getFieldClass().getName();
-            String shortName = column.getFieldClass().getSimpleName();
-
-            if (column.getFieldClass().equals(Integer.class)) {
-                longName = "";
-                shortName = "Int";
-            } else if (byte[].class.equals(column.getFieldClass())) {
-                longName = "";
-                shortName = "ByteArray";
-            }
-
-            boolean columnAndTypeTheSameType = shortName.equalsIgnoreCase(column.getFinalFieldName());
-
-            if (byte[].class.equals(column.getFieldClass()) || columnAndTypeTheSameType) {
-                replacer.add(GenKeys.CLASS_FULL_NAME, "");
-            } else if (column.getFieldClass().getName().startsWith("java.lang.")) {
-                replacer.add(GenKeys.CLASS_FULL_NAME, "");
-            } else {
-                replacer.add(GenKeys.CLASS_FULL_NAME, "import " + longName + ";");
-            }
-
-            return columnAndTypeTheSameType && !longName.isEmpty() ? longName : shortName;
-
-        } else {
-            boolean columnAndTypeTheSameType = column.getFieldClass().getSimpleName().equalsIgnoreCase(column.getFinalFieldName());
-
-            if (byte[].class.equals(column.getFieldClass()) || columnAndTypeTheSameType) {
-                replacer.add(GenKeys.CLASS_FULL_NAME, "");
-            } else if (column.getFieldClass().getName().startsWith("java.lang.")) {
-                replacer.add(GenKeys.CLASS_FULL_NAME, "");
-            } else {
-                replacer.add(GenKeys.CLASS_FULL_NAME, "import " + column.getFieldClass().getName() + ";");
-            }
-
-            return columnAndTypeTheSameType ? column.getFieldClass().getName() : column.getFieldClass().getSimpleName();
-        }
-    }
 
     void generateJavaTable(String catalog, String schema, GenerateTable table, List<GenerateTable> allTables, String javaackage, String path, boolean override, boolean schemaIntoTable) {
         String tableName = table.getTableName();
@@ -213,7 +177,7 @@ public class Writer {
         }
 
         replacer.add(GenKeys.COLUMN_IMPORTS, table.getColumnImport(tableNameCamel))
-                .add(GenKeys.COLUMN_INTERFACES, table.getColumnInterfaces(compositeKeyName, tableNameCamel))
+                .add(GenKeys.COLUMN_INTERFACES, table.getColumnInterfaces(replacer, language, compositeKeyName, tableNameCamel))
                 .add(GenKeys.TABLE_NAME, schemaIntoTable ? (schema + "." + tableName) : tableName)
                 .add(GenKeys.TABLE_CAMEL_NAME, tableNameCamel)
                 .add(GenKeys.COLUMN_METHODS, table.getColumnMethods(language))
@@ -221,9 +185,10 @@ public class Writer {
         if (pkExist) {
             if (table.getPrimaryKeys().size() == 1) {
                 GenerateColumn pkCol = table.getPrimaryKeys().get(0);
+                GeneratedColumnInTable git = pkCol.getColumnInTableOrCreate(tableName);
                 String pkColSimpleName = table.getPkTypeSimpleName(language, pkCol);
                 if (language == KOTLIN) {
-                    replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + tableNameCamel + "," + pkColSimpleName + "," + table.getPrimaryKeys().get(0).getFinalFieldNameShortOrLong(tableNameCamel) + "<*>>");
+                    replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + tableNameCamel + "," + pkColSimpleName + "," + pkCol.getFinalFieldNameShortOrLong(tableNameCamel) + "<*, " + pkCol.getCorrectClassSimpleNameForLanguage(replacer, language) + (git.isNullable() ? "?" : "") + ">>");
                     replacer.add(GenKeys.PK_ID_METHOD, table.getPkIdMethod(language));
                 } else {
                     //Java
@@ -242,8 +207,6 @@ public class Writer {
             replacer.add(GenKeys.PK_INTERFACE, "")
                     .add(GenKeys.PK_ID_METHOD, "");
         }
-
-        table.setAlreadyGenerated(true);
 
         saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, TABLE_CLASS)), path, catalog, schema, (table.isView() ? "view" : "table"), tableNameCamel, language, override);
         generatedTablesCount++;

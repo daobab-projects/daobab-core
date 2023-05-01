@@ -19,8 +19,86 @@ import java.util.Objects;
  */
 class JavaTemplates {
 
-
-
+    static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE + ";\n" +
+            "\n" +
+            "import " + AttemptToReadFromNullEntityException.class.getName() + ";\n" +
+            "import " + AttemptToWriteIntoNullEntityException.class.getName() + ";\n" +
+            "import " + Column.class.getName() + ";\n" +
+            "import " + EntityRelationMap.class.getName() + ";\n" +
+            "import " + EntityMap.class.getName() + ";\n" +
+            "import " + Objects.class.getName() + ";\n" +
+            "\n" +
+            GenKeys.CLASS_FULL_NAME + "\n" +
+            "\n" +
+            "public interface " + GenKeys.INTERFACE_NAME + "<E extends EntityMap> extends EntityRelationMap<E> {\n" +
+            "\n" +
+            "\n" +
+            "    default " + GenKeys.CLASS_SIMPLE_NAME + " get" + GenKeys.INTERFACE_NAME + "(){return getColumnParam(\"" + GenKeys.FIELD_NAME + "\");}\n" +
+            "    @SuppressWarnings(\"unchecked\")" +
+            "\n" +
+            "    default E set" + GenKeys.INTERFACE_NAME + "(" + GenKeys.CLASS_SIMPLE_NAME + " val){setColumnParam(\"" + GenKeys.FIELD_NAME + "\",val); return (E)this;}\n" +
+            "\n" +
+            "    @SuppressWarnings(\"rawtypes\")" +
+            "\n" +
+            GenKeys.TABLES_AND_TYPE + "\n" +
+            "    default Column<E," + GenKeys.CLASS_SIMPLE_NAME + "," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){\n" +
+            "        return new Column<E," + GenKeys.CLASS_SIMPLE_NAME + "," + GenKeys.INTERFACE_NAME + ">() {\n" +
+            "\n" +
+            "            @Override\n" +
+            "            public String getColumnName() {\n" +
+            "                return \"" + GenKeys.COLUMN_NAME + "\";\n" +
+            "            }\n" +
+            "\n" +
+            "            @Override\n" +
+            "            public String getFieldName() {\n" +
+            "                return \"" + GenKeys.FIELD_NAME + "\";\n" +
+            "            }\n" +
+            "\n" +
+            "            @Override\n" +
+            "            public E getInstance(){\n" +
+            "                return getEntity();\n" +
+            "            }\n" +
+            "\n" +
+            "            @Override\n" +
+            "            public Class<" + GenKeys.CLASS_SIMPLE_NAME + "> getFieldClass(){\n" +
+            "                return  " + GenKeys.CLASS_SIMPLE_NAME + ".class;\n" +
+            "            }\n" +
+            "\n" +
+            "            @Override\n" +
+            "            public " + GenKeys.CLASS_SIMPLE_NAME + " getValue(" + GenKeys.INTERFACE_NAME + " entity){\n" +
+            "                if (entity==null) throw new AttemptToReadFromNullEntityException(getEntityClass(),\"" + GenKeys.FIELD_NAME + "\");\n" +
+            "                return  entity.get" + GenKeys.INTERFACE_NAME + "();\n" +
+            "            }\n" +
+            "\n" +
+            "            @Override\n" +
+            "            public void setValue(" + GenKeys.INTERFACE_NAME + " entity, " + GenKeys.CLASS_SIMPLE_NAME + " param){\n" +
+            "                if (entity==null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(),\"" + GenKeys.FIELD_NAME + "\");\n" +
+            "                entity.set" + GenKeys.INTERFACE_NAME + "(param);\n" +
+            "            }\n" +
+            "\n" +
+            "            @Override\n" +
+            "            public int hashCode() {\n" +
+            "                return toString().hashCode();\n" +
+            "            }\n" +
+            "\n" +
+            "            @Override\n" +
+            "            public String toString(){\n" +
+            "                return getEntityName()+\".\"+getFieldName();\n" +
+            "            }" +
+            "\n" +
+            "\n" +
+            "            @Override\n" +
+            "            public boolean equals(Object obj) {\n" +
+            "                if (this == obj)return true;\n" +
+            "                if (obj == null)return false;\n" +
+            "                if (getClass() != obj.getClass())return false;\n" +
+            "                Column other = (Column) obj;\n" +
+            "                return Objects.equals(hashCode(), other.hashCode());\n" +
+            "            }\n" +
+            "        };\n" +
+            "    }\n" +
+            "\n" +
+            "}";
 
     static final String DATABASE_TABLES_INTERFACE_TEMP = "package " + GenKeys.TARGET_PACKAGE + "\n" +
             "\n" +
@@ -117,86 +195,8 @@ class JavaTemplates {
             "}";
 
 
-    static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE + ";\n" +
-            "\n" +
-            "import " + AttemptToReadFromNullEntityException.class.getName() + ";\n" +
-            "import " + AttemptToWriteIntoNullEntityException.class.getName() + ";\n" +
-            "import " + Column.class.getName() + ";\n" +
-            "import " + EntityRelationMap.class.getName() + ";\n" +
-            "import " + EntityMap.class.getName() + ";\n" +
-            "import " + Objects.class.getName() + ";\n" +
-            "\n" +
-            GenKeys.CLASS_FULL_NAME + "\n" +
-            "\n" +
-            "public interface " + GenKeys.INTERFACE_NAME + "<E extends EntityMap> extends EntityRelationMap<E> {\n" +
-            "\n" +
-            "\n" +
-            "" + GenKeys.TABLES_AND_TYPE +
-            "    default " + GenKeys.CLASS_SIMPLE_NAME + " get" + GenKeys.INTERFACE_NAME + "(){return getColumnParam(\"" + GenKeys.FIELD_NAME + "\");}\n" +
-            "    @SuppressWarnings(\"unchecked\")" +
-            "\n" +
-            "    default E set" + GenKeys.INTERFACE_NAME + "(" + GenKeys.CLASS_SIMPLE_NAME + " val){setColumnParam(\"" + GenKeys.FIELD_NAME + "\",val); return (E)this;}\n" +
-            "\n" +
-            "    @SuppressWarnings(\"rawtypes\")" +
-            "\n" +
-            "    default Column<E," + GenKeys.CLASS_SIMPLE_NAME + "," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){\n" +
-            "        return new Column<E," + GenKeys.CLASS_SIMPLE_NAME + "," + GenKeys.INTERFACE_NAME + ">() {\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public String getColumnName() {\n" +
-            "                return \"" + GenKeys.COLUMN_NAME + "\";\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public String getFieldName() {\n" +
-            "                return \"" + GenKeys.FIELD_NAME + "\";\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public E getInstance(){\n" +
-            "                return getEntity();\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public Class<" + GenKeys.CLASS_SIMPLE_NAME + "> getFieldClass(){\n" +
-            "                return  " + GenKeys.CLASS_SIMPLE_NAME + ".class;\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public " + GenKeys.CLASS_SIMPLE_NAME + " getValue(" + GenKeys.INTERFACE_NAME + " entity){\n" +
-            "                if (entity==null) throw new AttemptToReadFromNullEntityException(getEntityClass(),\"" + GenKeys.FIELD_NAME + "\");\n" +
-            "                return  entity.get" + GenKeys.INTERFACE_NAME + "();\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public void setValue(" + GenKeys.INTERFACE_NAME + " entity, " + GenKeys.CLASS_SIMPLE_NAME + " param){\n" +
-            "                if (entity==null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(),\"" + GenKeys.FIELD_NAME + "\");\n" +
-            "                entity.set" + GenKeys.INTERFACE_NAME + "(param);\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public int hashCode() {\n" +
-            "                return toString().hashCode();\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public String toString(){\n" +
-            "                return getEntityName()+\".\"+getFieldName();\n" +
-            "            }" +
-            "\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public boolean equals(Object obj) {\n" +
-            "                if (this == obj)return true;\n" +
-            "                if (obj == null)return false;\n" +
-            "                if (getClass() != obj.getClass())return false;\n" +
-            "                Column other = (Column) obj;\n" +
-            "                return Objects.equals(hashCode(), other.hashCode());\n" +
-            "            }\n" +
-            "        };\n" +
-            "    }\n" +
-            "\n" +
-            "}";
+    private JavaTemplates() {
+    }
 
     static final String COMPOSITE_KEY_TEMP = "package " + GenKeys.TABLE_PACKAGE + ";\n" +
             "\n" +

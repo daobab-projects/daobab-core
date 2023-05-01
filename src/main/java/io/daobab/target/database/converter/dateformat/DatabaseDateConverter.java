@@ -1,6 +1,10 @@
 package io.daobab.target.database.converter.dateformat;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public interface DatabaseDateConverter {
@@ -15,4 +19,12 @@ public interface DatabaseDateConverter {
     String toDatabaseTimestamp(Date value);
 
     String toDatabaseTime(Date value);
+
+    String toDatabaseLocalTime(LocalTime value);
+
+    String toDatabaseLocalDate(LocalDate value);
+
+    String toDatabaseLocalDateTime(LocalDateTime value);
+
+    String toDatabaseZonedDateTime(ZonedDateTime value);
 }

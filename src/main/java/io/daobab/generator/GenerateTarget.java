@@ -122,10 +122,10 @@ public class GenerateTarget {
                 String tableNameCamelStartLower = GenerateFormatter.toCamelCaseStartLower(gc.getTableName());
                 sb.append(TableDescriptionGenerator.getTableDescription(gc))
                         .append("\t")
-                        .append("fun ")
+                        .append("val ")
                         .append(gc.isView() ? "view" : "tab")
                         .append(tableNameCamel)
-                        .append("(): ")
+                        .append(": ")
                         .append(tableNameCamel)
                         .append(" = ")
                         .append(tableNameCamel)

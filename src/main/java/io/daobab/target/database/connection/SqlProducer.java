@@ -21,7 +21,6 @@ import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.base.Where;
 import io.daobab.target.database.DataBaseTargetLogic;
 import io.daobab.target.database.QueryTarget;
-import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import io.daobab.target.database.query.DataBaseQueryBase;
 import io.daobab.target.database.query.DataBaseQueryDelete;
@@ -220,7 +219,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         } else {
             values.append(val);
         }
-
         return values;
     }
 
@@ -430,9 +428,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 default:
                     break;
             }
-            sb.append(OPEN_BRACKET);
-            sb.append(toSqlQuery((DataBaseQueryBase<?, ?>) setOperator.getQuery(), new IdentifierStorage()));
-            sb.append(CLOSED_BRACKET);
+            sb.append(OPEN_BRACKET)
+                    .append(toSqlQuery((DataBaseQueryBase<?, ?>) setOperator.getQuery(), new IdentifierStorage()))
+                    .append(CLOSED_BRACKET);
         });
 
         return sb;
@@ -449,11 +447,11 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
         IdentifierStorage storage = base.getIdentifierStorage();
 
-        sb.append("update ");
-        sb.append(base.getEntityName());
-        sb.append(SPACE);
-        sb.append(storage.getIdentifierFor(base.getEntityName()));
-        sb.append(" set ");
+        sb.append("update ")
+                .append(base.getEntityName())
+                .append(SPACE)
+                .append(storage.getIdentifierFor(base.getEntityName()))
+                .append(" set ");
 
         if (base.getSetFields() != null) {
             rv = toQuerySpecialParametersExpression(base.getTarget(), base.getSetFields(), storage);
@@ -533,18 +531,14 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     default StringBuilder joinToExpression(QueryTarget target, JoinWrapper<?> joinWrapper, IdentifierStorage storage) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(joinWrapper.getType().toString());
-        sb.append(SPACE);
-        sb.append(joinWrapper.getTable().getEntityName());
-        sb.append(SPACE);
-        sb.append(storage.getIdentifierFor(joinWrapper.getTable().getEntityName()));
-        sb.append(" on ");
-
-        sb.append(whereToExpression(target, joinWrapper.getWhere(), storage));
-
-        return sb;
+        return new StringBuilder()
+                .append(joinWrapper.getType().toString())
+                .append(SPACE)
+                .append(joinWrapper.getTable().getEntityName())
+                .append(SPACE)
+                .append(storage.getIdentifierFor(joinWrapper.getTable().getEntityName()))
+                .append(" on ")
+                .append(whereToExpression(target, joinWrapper.getWhere(), storage));
     }
 
     default StringBuilder orderToExpression(Order order, IdentifierStorage storage) {
@@ -554,9 +548,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             Object orderedField = order.getObjectForPointer(i);
 
             if (orderedField instanceof String) {
-                sb.append(orderedField);
-                sb.append(SPACE);
-                sb.append(order.getOrderKindForPointer(i));
+                sb.append(orderedField)
+                        .append(SPACE)
+                        .append(order.getOrderKindForPointer(i));
             } else {
                 Column<?, ?, ?> field = (Column<?, ?, ?>) orderedField;
                 sb.append(storage.getIdentifierFor(field.getEntityName()));
@@ -600,8 +594,8 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 if (field == null) {
                     sb.append(daoIdentifier);
                 } else if (field instanceof Column) {
-                    sb.append(daoIdentifier).append(DOT);
-                    sb.append(((Column) field).getColumnName());
+                    sb.append(daoIdentifier).append(DOT)
+                            .append(((Column) field).getColumnName());
                 } else {
                     sb.append(field);
                 }
@@ -617,7 +611,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     @SuppressWarnings({"rawtypes", "unchecked", "java:S3776"})
     default StringBuilder whereToExpression(QueryTarget target, Where where, IdentifierStorage storage) {
         StringBuilder sb = new StringBuilder();
-        String dataBaseEngine = getDataBaseProductName();
         String relationToNext = where.getRelationBetweenExpressions();
 
         for (int i = 1; i < where.getCounter(); i++) {
@@ -688,7 +681,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 DatabaseTypeConverter typeConverter = target.getConverterManager().getConverter(keyFromWrapper).orElse(null);
                 sb.append(SPACE);
                 appendKey(sb, storage, keyFromWrapper, relation);
-                valueToSQL(typeConverter, sb, value, target.getDatabaseDateConverter());
+                sb.append(typeConverter.convertWritingTarget(value));
             }
 
             if (relationToNext != null && i < where.getCounter() - 1) {
@@ -710,7 +703,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         } else {
             sb.append(storage.getIdentifierForColumn(keyFromWrapper));
         }
-
         sb.append(relation);
     }
 
@@ -963,8 +955,8 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         String separator = (String) sdb.getKeyValue(ColumnFunction.KEY_ARGUMENT);
         List<Object> objects = (List<Object>) sdb.getKeyValue(ColumnFunction.KEY_VALUES);
 
-        int objsize = objects.size();
-        for (int i = 0; i < objsize; i++) {
+        int objSize = objects.size();
+        for (int i = 0; i < objSize; i++) {
             Object obj = objects.get(i);
             if (obj instanceof ColumnFunction) {
                 sb.append(columnFunctionToExpression((ColumnFunction) obj, storage, true));
@@ -973,20 +965,13 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             } else {
                 sb.append(objectToSomeInFunctions(obj, storage));
             }
-            if (i < objsize - 1) {
+            if (i < objSize - 1) {
                 sb.append(separator);
             }
         }
 
         sb.append(CLOSED_BRACKET).append(SPACE);
         return sb;
-    }
-
-    @SuppressWarnings("rawtypes")
-    default void valueToSQL(DatabaseTypeConverter typeConverter, StringBuilder sb, Object value, DatabaseDateConverter databaseDateConverter) {
-
-        sb.append(typeConverter.convertWritingTarget(value));
-
     }
 
     default StringBuilder valueStringToSQL(Object value) {

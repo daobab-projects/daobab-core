@@ -4,6 +4,7 @@ import io.daobab.model.*;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.statement.where.WhereAnd;
+import io.daobab.statement.where.WhereNot;
 import io.daobab.statement.where.WhereOr;
 import io.daobab.statement.where.base.Where;
 import io.daobab.target.buffer.single.Entities;
@@ -44,6 +45,19 @@ public interface QueryWhere<Q extends Query> {
         WhereOr or = new WhereOr();
         or = condition.apply(or);
         setWhereWrapper(or);
+        return (Q) this;
+    }
+
+    default Q whereNOT(Supplier<WhereNot> wrapper) {
+        setWhereWrapper(wrapper.get());
+        return (Q) this;
+    }
+
+    @SuppressWarnings("java:S1845")
+    default Q whereNot(UnaryOperator<WhereNot> condition) {
+        WhereNot not = new WhereNot();
+        not = condition.apply(not);
+        setWhereWrapper(not);
         return (Q) this;
     }
 

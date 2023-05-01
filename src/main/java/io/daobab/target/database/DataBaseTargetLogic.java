@@ -117,9 +117,9 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 conn.setAutoCommit(false);
             }
             if (query.getEntity() != null) query.getEntity().beforeDelete(this);
-            String sqlquery = toDeleteSqlQuery(query);
-            query.setSentQuery(sqlquery);
-            int rv = getResultSetReader().execute(sqlquery, conn, this);
+            String sqlQuery = toDeleteSqlQuery(query);
+            query.setSentQuery(sqlQuery);
+            int rv = getResultSetReader().execute(sqlQuery, conn, this);
             if (query.getEntity() != null) query.getEntity().afterDelete(this);
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
             return rv;
@@ -542,7 +542,6 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             getLog().debug("Finish count");
         }
     }
-
 
     default DaobabDataBaseMetaData getDataBaseMetaData() {
         return doSthOnConnection("", (nothing, c) -> {

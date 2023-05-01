@@ -1,8 +1,13 @@
 package io.daobab.generator;
 
+import io.daobab.generator.template.GenKeys;
+import io.daobab.generator.template.TemplateLanguage;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static io.daobab.generator.template.TemplateLanguage.KOTLIN;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
@@ -38,17 +43,29 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
     }
 
 
-    public String getColumnInterface(String tableCamelName, String tableRealName) {
+    public String getColumnInterface(Replacer replacer, TemplateLanguage language, String tableCamelName, String tableRealName) {
 
         GeneratedColumnInTable g = getColumnInTable(tableRealName);
         if (g == null) {
             System.out.println("table " + tableRealName + " has no data");
+            return "error";
         }
 
-        return getFinalFieldNameShortOrLong(tableCamelName) +
-                "<" +
-                tableCamelName +
-                ">";
+        if (TemplateLanguage.JAVA.equals(language)) {
+            return getFinalFieldNameShortOrLong(tableCamelName) +
+                    "<" +
+                    tableCamelName +
+                    ">";
+        } else if (TemplateLanguage.KOTLIN.equals(language)) {
+            String type = getCorrectClassSimpleNameForLanguage(replacer, language);
+            return getFinalFieldNameShortOrLong(tableCamelName) +
+                    "<" +
+                    tableCamelName + ", " + type + ("1".equalsIgnoreCase(g.getNullable()) ? "?" : "") +
+                    ">";
+        } else {
+            throw new RuntimeException("Unknown language: " + language);
+        }
+
     }
 
     public String getColumnInterfaceType(String tableRealName) {
@@ -150,11 +167,22 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
     public String getTableTypeDescription() {
         if (tables.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
+
         sb.append("    /**\n");
         for (TableAndType tableAndType : tables) {
-            sb.append("     * ").append(tableAndType.table).append(": ").append(tableAndType.type).append("\n");
+            GeneratedColumnInTable git = get(tableAndType.table);
+            sb.append("     * ")
+                    .append("table:")
+                    .append(tableAndType.table)
+                    .append(",type:")
+                    .append(tableAndType.type)
+                    .append(",size:")
+                    .append(git.getColumnSize())
+                    .append(",nullable:")
+                    .append(git.getNullable().equals("1") ? "true" : "false")
+                    .append("\n");
         }
-        sb.append("     */\n");
+        sb.append("     */");
 
         return sb.toString();
     }
@@ -168,5 +196,46 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
             this.type = type;
         }
     }
+
+    public String getCorrectClassSimpleNameForLanguage(Replacer replacer, TemplateLanguage language) {
+        if (language == KOTLIN) {
+            String longName = getFieldClass().getName();
+            String shortName = getFieldClass().getSimpleName();
+
+            if (getFieldClass().equals(Integer.class)) {
+                longName = "";
+                shortName = "Int";
+            } else if (byte[].class.equals(getFieldClass())) {
+                longName = "";
+                shortName = "ByteArray";
+            }
+
+            boolean columnAndTypeTheSameType = shortName.equalsIgnoreCase(getFinalFieldName());
+
+            if (byte[].class.equals(getFieldClass()) || columnAndTypeTheSameType) {
+                replacer.add(GenKeys.CLASS_FULL_NAME, "");
+            } else if (getFieldClass().getName().contains("java.lang.")) {
+                replacer.add(GenKeys.CLASS_FULL_NAME, "");
+            } else {
+                replacer.add(GenKeys.CLASS_FULL_NAME, "import " + longName);
+            }
+
+            return columnAndTypeTheSameType && !longName.isEmpty() ? longName : shortName;
+
+        } else {
+            boolean columnAndTypeTheSameType = getFieldClass().getSimpleName().equalsIgnoreCase(getFinalFieldName());
+
+            if (byte[].class.equals(getFieldClass()) || columnAndTypeTheSameType) {
+                replacer.add(GenKeys.CLASS_FULL_NAME, "");
+            } else if (getFieldClass().getName().startsWith("java.lang.")) {
+                replacer.add(GenKeys.CLASS_FULL_NAME, "");
+            } else {
+                replacer.add(GenKeys.CLASS_FULL_NAME, "import " + getFieldClass().getName() + ";");
+            }
+
+            return columnAndTypeTheSameType ? getFieldClass().getName() : getFieldClass().getSimpleName();
+        }
+    }
+
 
 }

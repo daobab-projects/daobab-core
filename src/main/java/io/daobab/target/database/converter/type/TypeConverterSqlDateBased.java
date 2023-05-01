@@ -12,5 +12,4 @@ public interface TypeConverterSqlDateBased<T> extends DatabaseTypeConverter<Date
         return rs.getDate(columnIndex);
     }
 
-
 }

@@ -85,4 +85,8 @@ public class GeneratedColumnInTable {
         this.dataType = dataType;
         return this;
     }
+
+    public boolean isNullable() {
+        return "1".equals(getNullable());
+    }
 }

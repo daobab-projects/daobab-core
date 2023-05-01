@@ -7,6 +7,10 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +24,7 @@ public class JDBCTypeConverter {
     private final Map<String, Class<?>> enforcedTypes = new HashMap<>();
     private final Map<Integer, Class<?>> generalTypes;
 
-    {
+    public JDBCTypeConverter() {
         generalTypes = new HashMap<>();
         generalTypes.put(Types.ARRAY, Object[].class);
         generalTypes.put(Types.BIGINT, DictFieldType.CLASS_BIG_INTEGER);
@@ -30,8 +34,8 @@ public class JDBCTypeConverter {
         generalTypes.put(Types.BOOLEAN, DictFieldType.CLASS_BOOLEAN);
         generalTypes.put(Types.CHAR, DictFieldType.CLASS_STRING);
         generalTypes.put(Types.CLOB, DictFieldType.CLASS_STRING);
-        generalTypes.put(Types.DATE, Date.class);
-        generalTypes.put(Types.TIME_WITH_TIMEZONE, Date.class);
+        generalTypes.put(Types.DATE, LocalDate.class);
+        generalTypes.put(Types.TIME_WITH_TIMEZONE, LocalTime.class);
         generalTypes.put(Types.DECIMAL, DictFieldType.CLASS_BIG_DECIMAL);
         generalTypes.put(Types.FLOAT, DictFieldType.CLASS_BIG_DECIMAL);
         generalTypes.put(Types.DOUBLE, DictFieldType.CLASS_BIG_DECIMAL);
@@ -49,9 +53,9 @@ public class JDBCTypeConverter {
         generalTypes.put(Types.REAL, Float.class);
         generalTypes.put(Types.SMALLINT, Integer.class);
         generalTypes.put(Types.TINYINT, Integer.class);
-        generalTypes.put(Types.TIME, Time.class);
-        generalTypes.put(Types.TIMESTAMP, Timestamp.class);
-        generalTypes.put(Types.TIMESTAMP_WITH_TIMEZONE, Timestamp.class);
+        generalTypes.put(Types.TIME, LocalTime.class);
+        generalTypes.put(Types.TIMESTAMP, LocalDateTime.class);
+        generalTypes.put(Types.TIMESTAMP_WITH_TIMEZONE, ZonedDateTime.class);
         generalTypes.put(Types.NULL, Object.class);
         generalTypes.put(Types.OTHER, Object.class);
         generalTypes.put(Types.REF, Object.class);

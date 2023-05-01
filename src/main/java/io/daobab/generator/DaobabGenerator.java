@@ -127,7 +127,7 @@ public class DaobabGenerator {
     }
 
     public void reverseEngineering(DaobabDataBaseMetaData rv) {
-        rv.setDatabaseMajorVersion("" + rv.getDatabaseMajorVersion());
+        rv.setDatabaseMajorVersion(rv.getDatabaseMajorVersion());
         rv.setDatabaseProductName(rv.getDatabaseProductName());
         rv.setDriverName(rv.getDriverName());
         rv.setDriverVersion(rv.getDriverVersion());
@@ -147,7 +147,7 @@ public class DaobabGenerator {
 
             DaobabDataBaseMetaData rv = new DaobabDataBaseMetaData();
 
-            rv.setDatabaseMajorVersion("" + c.getMetaData().getDatabaseMajorVersion());
+            rv.setDatabaseMajorVersion(String.valueOf(c.getMetaData().getDatabaseMajorVersion()));
             rv.setDatabaseProductName(c.getMetaData().getDatabaseProductName());
             rv.setDriverName(c.getMetaData().getDriverName());
             rv.setDriverVersion(c.getMetaData().getDriverVersion());
@@ -457,7 +457,7 @@ public class DaobabGenerator {
                     genTable.getColumnList().add(col);
                     //Printing results
 
-                    System.out.println("... column:" + col.getColumnName() + ", " + JdbcType.valueOf(col.getDataType()).toString() + getSizeInfo(Integer.parseInt(columnSize == null ? "0" : columnSize)) + (genColumnInTable.isPk() ? ",PrimaryKey" : "") + ", class:" + col.getFieldClass().getSimpleName());
+                    System.out.println("... column:" + col.getColumnName() + ", " + JdbcType.valueOf(col.getDataType()).toString() + getSizeInfo(Integer.parseInt(columnSize == null ? "0" : columnSize)) + ("Nullable:" + genColumnInTable.getNullable() + " ") + (genColumnInTable.isPk() ? ",PrimaryKey" : "") + ", class:" + col.getFieldClass().getSimpleName());
                 }
             }
             return tables;

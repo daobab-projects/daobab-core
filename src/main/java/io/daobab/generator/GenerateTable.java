@@ -32,7 +32,6 @@ public class GenerateTable {
     private List<GenerateColumn> columnList = new ArrayList<>();
 
     private String javaPackage;
-    private boolean alreadyGenerated;
 
     private boolean view = false;
 
@@ -95,9 +94,10 @@ public class GenerateTable {
     public String getColumnImport(String tableName) {
         StringBuilder sb = new StringBuilder();
         for (GenerateColumn gc : getColumnList()) {
-            if (gc.getFinalFieldName().equalsIgnoreCase(tableName) ||
+            if (gc.getFinalFieldName().equalsIgnoreCase(tableName)
                     //java.lang is always imported
-                    (gc.getPackage().startsWith("java.lang.") && gc.getPackage().lastIndexOf(".") == "java.lang.".lastIndexOf("."))) {
+                    || (gc.getPackage().startsWith("java.lang.") && gc.getPackage().lastIndexOf(".") == "java.lang.".lastIndexOf("."))
+            ) {
                 continue;
             }
             sb.append("import ")
@@ -136,47 +136,63 @@ public class GenerateTable {
         return sb.toString();
     }
 
-    public String getCompositeKeyInterfaces2(String tableCamelName, TemplateLanguage language) {
+    public String getCompositeKeyInterfaces2(Replacer replacer, String tableCamelName, TemplateLanguage language) {
         StringBuilder sb = new StringBuilder();
 
-//        if (language==JAVA){
-        boolean atLeastOneColumnAdded = false;
-        for (int i = 0; i < getPrimaryKeys().size(); i++) {
-            GenerateColumn primKeyColumn = getPrimaryKeys().get(i);
-            atLeastOneColumnAdded = true;
-            sb.append(" ");
-            sb.append(primKeyColumn.getColumnInterfaceType(tableCamelName));
-            if (i < getPrimaryKeys().size() - 1) sb.append(",");
-        }
+        if (language == JAVA) {
+            boolean atLeastOneColumnAdded = false;
+            for (int i = 0; i < getPrimaryKeys().size(); i++) {
+                GenerateColumn primKeyColumn = getPrimaryKeys().get(i);
+                atLeastOneColumnAdded = true;
+                sb.append(" ");
+                sb.append(primKeyColumn.getColumnInterfaceType(tableCamelName));
+                if (i < getPrimaryKeys().size() - 1) sb.append(",");
+            }
 
-        if (!getInheritedSubCompositeKeys().isEmpty() && !atLeastOneColumnAdded) {
-            sb.append(",");
-        }
+            if (!getInheritedSubCompositeKeys().isEmpty() && !atLeastOneColumnAdded) {
+                sb.append(",");
+            }
 
-        sb.append(format(", %s<%s>", Composite.class.getSimpleName(), tableCamelName));
-//        }else if (language==KOTLIN){
-//
-//        }
+            sb.append(format(", %s<%s>", Composite.class.getSimpleName(), tableCamelName));
+        } else if (language == KOTLIN) {
+            boolean atLeastOneColumnAdded = false;
+            for (int i = 0; i < getPrimaryKeys().size(); i++) {
+                GenerateColumn primKeyColumn = getPrimaryKeys().get(i);
+                GeneratedColumnInTable git = primKeyColumn.getColumnInTableOrCreate(tableName);
+                atLeastOneColumnAdded = true;
+                sb.append(" ")
+                        .append(primKeyColumn.getFinalFieldNameShortOrLong(tableCamelName))
+                        .append("<")
+                        .append(tableCamelName)
+                        .append(", ")
+                        .append(primKeyColumn.getCorrectClassSimpleNameForLanguage(replacer, language))
+                        .append(">")
+                        .append(git.isNullable() ? "?" : "");
+                if (i < getPrimaryKeys().size() - 1) sb.append(",");
+            }
+
+            if (!getInheritedSubCompositeKeys().isEmpty() && !atLeastOneColumnAdded) {
+                sb.append(",");
+            }
+
+            sb.append(format(", %s<%s>", Composite.class.getSimpleName(), tableCamelName));
+        }
 
 
         return sb.toString();
     }
 
-    public String getColumnInterfaces(String compositeKeyName, String tableCamelName) {
+    public String getColumnInterfaces(Replacer replacer, TemplateLanguage language, String compositeKeyName, String tableCamelName) {
         StringBuilder sb = new StringBuilder();
 
         if (getPrimaryKeys() != null && getPrimaryKeys().size() > 1) {
-            sb.append("\t")
-                    .append(compositeKeyName)
-                    .append("<")
-                    .append(tableCamelName)
-                    .append(">,\n");
+            sb.append(format("\t%s<%s>,%n", compositeKeyName, tableCamelName));
         }
 
         for (int i = 0; i < getColumnList().size(); i++) {
             GenerateColumn gc = getColumnList().get(i);
             sb.append("\t");
-            sb.append(gc.getColumnInterface(tableCamelName, this.getTableName()));
+            sb.append(gc.getColumnInterface(replacer, language, tableCamelName, this.getTableName()));
             if (i < getColumnList().size() - 1) sb.append(",\n");
         }
 
@@ -206,9 +222,7 @@ public class GenerateTable {
             sb.append("new ");
         }
 
-        sb.append(TableColumn.class.getSimpleName()).append("(col");
-        sb.append(gc.getInterfaceName());
-        sb.append("())");
+        sb.append(TableColumn.class.getSimpleName()).append(format("(col%s())", gc.getInterfaceName()));
 
         if (generatedColumnInTable.isPk()) {
             sb.append(".primaryKey()");
@@ -217,15 +231,11 @@ public class GenerateTable {
         if (generatedColumnInTable.getColumnSize() == 2147483647) {
             sb.append(".lob()");
         } else if (generatedColumnInTable.getColumnSize() > 0) {
-            sb.append(".size(");
-            sb.append(generatedColumnInTable.getColumnSize());
-            sb.append(")");
+            sb.append(format(".size(%s)", generatedColumnInTable.getColumnSize()));
         }
 
         if (generatedColumnInTable.getDecimalDigits() != null && !generatedColumnInTable.getDecimalDigits().trim().isEmpty() && !"0".equals(generatedColumnInTable.getDecimalDigits())) {
-            sb.append(".scale(");
-            sb.append(generatedColumnInTable.getDecimalDigits());
-            sb.append(")");
+            sb.append(format(".scale(%s)", generatedColumnInTable.getDecimalDigits()));
         }
 
         if ("yes" .equalsIgnoreCase(generatedColumnInTable.getNullable())) {
@@ -240,10 +250,13 @@ public class GenerateTable {
 
         GenerateColumn pk = getPrimaryKeys().get(0);
 
-        return new Replacer()
+        Replacer replacer = new Replacer();
+
+        return replacer
                 .add(GenKeys.TABLE_NAME, GenerateFormatter.toCamelCase(getTableName()))
                 .add(GenKeys.PK_TYPE_IMPORT, getPkTypeSimpleName(language, pk))
-                .add(GenKeys.CLASS_SIMPLE_NAME, pk.getFinalFieldNameShortOrLong(tableName))
+                .add(GenKeys.INTERFACE_NAME, pk.getFinalFieldNameShortOrLong(tableName))
+                .add(GenKeys.CLASS_SIMPLE_NAME, pk.getCorrectClassSimpleNameForLanguage(replacer, language))
                 .add(GenKeys.INTERFACE_NAME, pk.getInterfaceName())
                 .replaceAll(TemplateProvider.getTemplate(language, PK_COL_METHOD));
     }
@@ -257,7 +270,6 @@ public class GenerateTable {
         }
     }
 
-
     public String getPkKeyMethod(String compositeKeyName, TemplateLanguage language) {
         if (getPrimaryKeys() == null || getPrimaryKeys().isEmpty()) return "";
         return new Replacer()
@@ -265,7 +277,6 @@ public class GenerateTable {
                 .add(GenKeys.COMPOSITE_KEY_METHOD, compositeKeyName)
                 .replaceAll(TemplateProvider.getTemplate(language, COMPOSITE_PK_KEY_METHOD));
     }
-
 
     public String getCompositeMethod(String compositeKeyName, TemplateLanguage language) {
         if (getPrimaryKeys() == null) return "";
@@ -275,7 +286,6 @@ public class GenerateTable {
                 .add(GenKeys.COMPOSITE_KEY_METHOD, getPrimaryKeys().stream().map(s -> getTableColumn(s, language)).collect(Collectors.joining(",\n")))
                 .replaceAll(TemplateProvider.getTemplate(language, COMPOSITE_METHOD));
     }
-
 
     public String getTableName() {
         return tableName;
@@ -339,14 +349,6 @@ public class GenerateTable {
 
     public void setJavaPackage(String javaPackage) {
         this.javaPackage = javaPackage;
-    }
-
-    public boolean isAlreadyGenerated() {
-        return alreadyGenerated;
-    }
-
-    public void setAlreadyGenerated(boolean alreadyGenerated) {
-        this.alreadyGenerated = alreadyGenerated;
     }
 
     public boolean isView() {
