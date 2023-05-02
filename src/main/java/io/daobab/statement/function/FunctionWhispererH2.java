@@ -19,7 +19,6 @@ import java.sql.Timestamp;
 @SuppressWarnings({"rawtypes", "unused"})
 public interface FunctionWhispererH2 {
 
-
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> ascii(ColumnOrQuery<E, F, R> columnOrQuery) {
         return new ColumnFunction<>(columnOrQuery, DictFunctionH2.ASCII, Integer.class);
     }
@@ -582,7 +581,7 @@ public interface FunctionWhispererH2 {
     }
 
 
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, String, R, String> camel(ColumnOrQuery<E, String, R> column) {
+    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, String> camel(ColumnOrQuery<E, String, R> column) {
         return concat(upper(substring(column, 0, 1)), lower(substring(column, 2, length(column))));
     }
 
@@ -595,12 +594,11 @@ public interface FunctionWhispererH2 {
     }
 
     @SuppressWarnings("unchecked")
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> sumRows(ColumnOrQuery column, ColumnOrQuery... columns) {
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> sumRows(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, ?, ?>... columns) {
         if (column == null) throw new MandatoryFunctionParameter(DictFunctionH2.SUM2);
         return new ManyArgumentsFunction<>(DictFunctionH2.SUM2, "+", column, columns);
     }
 
-    @SuppressWarnings("unchecked")
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> sub(ColumnOrQuery column) {
         return new ManyArgumentsFunction<>(DictFunctionH2.SUB2);
     }

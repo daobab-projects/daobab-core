@@ -628,7 +628,7 @@ public interface FunctionWhispererPostgreSql {
     }
 
 
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, String, R, String> camel(Column<E, String, R> column) {
+    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, String> camel(Column<E, String, R> column) {
         return concat(upper(substring(column, 0, 1)), lower(substring(column, 2, length(column))));
     }
 

@@ -123,12 +123,12 @@ class KotlinTemplates {
             "            override fun setValue(entity: " + GenKeys.INTERFACE_NAME + "<*, F>, value: F){\n" +
             "                entity.set" + GenKeys.INTERFACE_NAME + "(value)\n" +
             "            }\n" +
-            "            override fun equals(obj: Any?): Boolean {\n" +
-            "                if (this === obj) return true\n" +
-            "                if (obj == null) return false\n" +
-            "                if (javaClass != obj.javaClass) return false\n" +
-            "                val other = obj as Column<*, *, *>\n" +
-            "                return hashCode() == other.hashCode()\n" +
+            "            override fun equals(other: Any?): Boolean {\n" +
+            "                if (this === other) return true\n" +
+            "                if (other == null) return false\n" +
+            "                if (javaClass != other.javaClass) return false\n" +
+            "                val otherColumn = other as Column<*, *, *>\n" +
+            "                return hashCode() == otherColumn.hashCode()\n" +
             "            }\n" +
             "        }\n" +
             "    }\n";
