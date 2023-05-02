@@ -1,13 +1,13 @@
 package io.daobab.result.predicate;
 
 import io.daobab.statement.where.base.Where;
-import io.daobab.target.buffer.noheap.NoHeapBuffer;
+import io.daobab.target.buffer.nonheap.NonHeapBuffer;
 
 import java.util.List;
 
 public class GeneralBitFieldWhereOr<E> extends GeneralBitFieldWhereAnd<E> {
 
-    public GeneralBitFieldWhereOr(NoHeapBuffer<E> bufferEntityPointer, Where wrapperWhere, List<Integer> skipSteps) {
+    public GeneralBitFieldWhereOr(NonHeapBuffer<E> bufferEntityPointer, Where wrapperWhere, List<Integer> skipSteps) {
         super(bufferEntityPointer, wrapperWhere, skipSteps);
     }
 
@@ -21,7 +21,7 @@ public class GeneralBitFieldWhereOr<E> extends GeneralBitFieldWhereAnd<E> {
             }
 
             //if at least one record into OR clause is true, entity is matched
-            if (predicates.get(i).bitTest(noHeapBuffer, entityPointer, columnsEntityPositionInWhere.get(i), columnsBufferPositionInWhere.get(i)))
+            if (predicates.get(i).bitTest(nonHeapBuffer, entityPointer, columnsEntityPositionInWhere.get(i), columnsBufferPositionInWhere.get(i)))
                 return true;
         }
 
@@ -30,7 +30,7 @@ public class GeneralBitFieldWhereOr<E> extends GeneralBitFieldWhereAnd<E> {
 
 
     @Override
-    public boolean bitTest(NoHeapBuffer buffer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
+    public boolean bitTest(NonHeapBuffer buffer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
 
         for (int i = 0; i < predicates.size(); i++) {
 

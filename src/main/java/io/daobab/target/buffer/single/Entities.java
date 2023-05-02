@@ -8,7 +8,7 @@ import io.daobab.target.Target;
 import io.daobab.target.buffer.BufferQueryTarget;
 import io.daobab.target.buffer.multi.MultiEntityTarget;
 import io.daobab.target.buffer.multi.SimpleMultiTarget;
-import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.nonheap.NonHeapEntities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,8 +31,8 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
     Class<E> getEntityClass();
 
     @Override
-    default NoHeapEntities<E> toNoHeap() {
-        return new NoHeapEntities<>(this);
+    default NonHeapEntities<E> toNonHeap() {
+        return new NonHeapEntities<>(this);
     }
 
     Entities<E> copy();

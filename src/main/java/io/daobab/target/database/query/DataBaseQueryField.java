@@ -52,7 +52,6 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
         return new DummyColumnRelation<>(this, DummyColumnTemplate.createDummyColumn(new Dual(), clazz, asName));
     }
 
-
     @Override
     public InnerQueryFields<E, F> innerResult() {
         return new InnerQueryFields<>(this);

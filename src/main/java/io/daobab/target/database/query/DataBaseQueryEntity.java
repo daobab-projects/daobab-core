@@ -6,7 +6,7 @@ import io.daobab.result.EntitiesProvider;
 import io.daobab.statement.condition.Count;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
-import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.nonheap.NonHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.QueryTarget;
 
@@ -67,8 +67,8 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
     }
 
     @Override
-    public NoHeapEntities<E> toNoHeap() {
-        return new NoHeapEntities<>(this.findMany());
+    public NonHeapEntities<E> toNonHeap() {
+        return new NonHeapEntities<>(this.findMany());
     }
 
     @Override

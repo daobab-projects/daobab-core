@@ -5,6 +5,7 @@ import io.daobab.target.database.converter.type.TypeConverterStringBased;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@SuppressWarnings("rawtypes")
 public class StandardTypeConverterEnum<E extends Enum> implements TypeConverterStringBased<E> {
 
     private final Class<E> enumClass;
@@ -20,6 +21,7 @@ public class StandardTypeConverterEnum<E extends Enum> implements TypeConverterS
         return convertReadingTarget(value);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public E convertReadingTarget(String from) {
         return (E) Enum.valueOf(enumClass, from);

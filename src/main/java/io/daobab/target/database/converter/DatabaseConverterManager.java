@@ -65,33 +65,21 @@ public class DatabaseConverterManager {
                 registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntity(target, typeConverters.get(pkFieldType), entity));
             }
         }
-
-//        for (Entity entity : target.getTables()) {
-//            if (entity instanceof PrimaryKey) {
-//                Class pkFieldType = ((PrimaryKey) entity).colID().getFieldClass();
-//                if (Entities.class.isAssignableFrom(pkFieldType)) {
-//                    System.out.println(">>> "+pkFieldType.getName());
-//                    registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntityList(target, typeConverters.get(pkFieldType), entity));
-//                } else {
-//                    registerTypeConverter(entity.getClass(), new StandardTypeConverterPrimaryKeyEntity(target, typeConverters.get(pkFieldType), entity));
-//                }
-//
-//            }
-//        }
-
     }
 
     private DataBaseTarget getTarget() {
         return target;
     }
 
-    public Optional<DatabaseTypeConverter<?, ?>> getConverter(Column column) {
+    @SuppressWarnings({"java:S1452", "java:S3776"})
+    public Optional<DatabaseTypeConverter<?, ?>> getConverter(Column<?, ?, ?> column) {
         return cache.computeIfAbsent(column.getEntityName() + column.getFieldName(), tableColumn -> {
 
             DatabaseTypeConverter<?, ?> rv = columnConverters.get(tableColumn);
             if (rv == null) {
                 if (column.getColumnName() == null) {
                     if (List.class.isAssignableFrom(column.getFieldClass())) {
+                        //TODO: list?
                         rv = new StandardTypeConverterVoid(getTarget());
                     } else {
                         rv = new StandardTypeConverterVoid(getTarget());
@@ -106,7 +94,6 @@ public class DatabaseConverterManager {
                 if (entityConvert instanceof StandardTypeConverterPrimaryKeyEntity) {
                     StandardTypeConverterPrimaryKeyEntity<?, ?> standardTypeConverterPrimaryKeyEntity = (StandardTypeConverterPrimaryKeyEntity<?, ?>) entityConvert;
                     rv = standardTypeConverterPrimaryKeyEntity.toMany();
-
                 }
             }
             if (rv == null && column.getFieldClass().isEnum()) {

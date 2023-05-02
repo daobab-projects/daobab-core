@@ -355,7 +355,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         if (joins != null && !joins.isEmpty()) {
             Map<String, Object> joinMap = new HashMap<>();
             for (int i = 0; i < joins.size(); i++) {
-                joinMap.put("" + i, joins.get(i).toMap());
+                joinMap.put(String.valueOf(i), joins.get(i).toMap());
             }
             rv.put(DictRemoteKey.JOINS, joinMap);
         }
@@ -455,13 +455,12 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
             return new TableColumn(column);
         }
 
-        for (TableColumn ic : target.getColumnsForTable(column.getInstance())) {
-            if (ic.getColumn().equalsColumn(column)) {
-                return ic;
-            }
-        }
+        return target.getColumnsForTable(column.getInstance())
+                .stream()
+                .filter(tableColumn -> tableColumn.getColumn().equalsColumn(column))
+                .findFirst()
+                .orElse(null);
 
-        return null;
     }
 
     public String getSentQuery() {
@@ -476,8 +475,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         if (entity == null) throw new NullEntityException();
         setEntityName(entity.getEntityName());
         setEntityClass(entity.getEntityClass());
-        IdentifierStorage storage = new IdentifierStorage();
-        setIdentifierStorage(storage);
+        setIdentifierStorage(new IdentifierStorage());
         getIdentifierStorage().registerIdentifiers(getEntityName());
         return (Q) this;
     }

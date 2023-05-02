@@ -8,7 +8,7 @@ import io.daobab.result.EntitiesProvider;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.buffer.BufferQueryTarget;
-import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.nonheap.NonHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 
 import java.util.ArrayList;
@@ -64,8 +64,8 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
     }
 
     @Override
-    public NoHeapEntities<E> toNoHeap() {
-        return new NoHeapEntities<>(this.findMany());
+    public NonHeapEntities<E> toNonHeap() {
+        return new NonHeapEntities<>(this.findMany());
     }
 
     @Override

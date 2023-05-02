@@ -706,6 +706,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         sb.append(relation);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     default StringBuilder convertCollection(Collection<?> list, DatabaseTypeConverter databaseTypeConverter) {
         StringBuilder sb = new StringBuilder();
         if (list == null || list.isEmpty()) {
