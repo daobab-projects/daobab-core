@@ -125,13 +125,13 @@ public class GenerateTable {
         return sb.toString();
     }
 
-    public String getCompositeKeyInterfaces(String tableCamelName, TemplateLanguage language) {
+    public String getCompositeKeyInterfaces(Replacer replacer, String tableCamelName, TemplateLanguage language) {
         StringBuilder sb = new StringBuilder();
 
         if (language == JAVA) {
             for (GenerateColumn gc : getPrimaryKeys()) {
-                sb.append(" & ");
-                sb.append(gc.getColumnInterfaceType(tableCamelName));
+                sb.append(" & ")
+                        .append(gc.getColumnInterfaceType(replacer, language, tableCamelName));
             }
         }
         return sb.toString();
@@ -146,7 +146,7 @@ public class GenerateTable {
                 GenerateColumn primKeyColumn = getPrimaryKeys().get(i);
                 atLeastOneColumnAdded = true;
                 sb.append(" ");
-                sb.append(primKeyColumn.getColumnInterfaceType(tableCamelName));
+                sb.append(primKeyColumn.getColumnInterfaceType(replacer, language, tableCamelName));
                 if (i < getPrimaryKeys().size() - 1) sb.append(",");
             }
 
@@ -245,7 +245,6 @@ public class GenerateTable {
         return sb;
     }
 
-
     public String getPkIdMethod(TemplateLanguage language) {
         if (getPrimaryKeys() == null || getPrimaryKeys().isEmpty()) return "";
 
@@ -258,8 +257,6 @@ public class GenerateTable {
                 .add(GenKeys.PK_TYPE_IMPORT, pk.getFieldClass().getSimpleName())
                 .add(GenKeys.TYPE_IMPORTS, getPkTypeSimpleName(language, pk))
                 .add(GenKeys.INTERFACE_NAME, pk.getFinalFieldNameShortOrLong(tableName))
-                .add(GenKeys.CLASS_SIMPLE_NAME, pk.getCorrectClassSimpleNameForLanguage(replacer, language))
-                .add(GenKeys.INTERFACE_NAME, pk.getInterfaceName())
                 .replaceAll(TemplateProvider.getTemplate(language, PK_COL_METHOD));
     }
 
@@ -418,6 +415,7 @@ public class GenerateTable {
         return columnList.stream()
                 .map(GenerateColumn::getFieldClass)
                 .filter(c -> !c.getName().startsWith("java.lang"))
+                .filter(c -> !c.equals(byte[].class))
                 .collect(Collectors.toSet());
     }
 

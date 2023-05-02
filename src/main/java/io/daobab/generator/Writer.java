@@ -69,7 +69,7 @@ public class Writer {
 
         replacer.add(GenKeys.COLUMN_IMPORTS, table.getColumnImport(tableNameCamel, endImport))
                 .add(GenKeys.TABLE_PACKAGE, table.getJavaPackage())
-                .add(GenKeys.COMPOSITE_KEY_COLUMN_TYPE_INTERFACES, table.getCompositeKeyInterfaces("E", language))
+                .add(GenKeys.COMPOSITE_KEY_COLUMN_TYPE_INTERFACES, table.getCompositeKeyInterfaces(replacer, "E", language))
                 .add(GenKeys.COMPOSITE_KEY_COLUMN_INTERFACES, table.getCompositeKeyInterfaces2(replacer, "E", language))
                 .add(GenKeys.COMPOSITE_KEY_METHOD, table.getCompositeMethod(table.getCompositeKeyName(), language))
                 .add(GenKeys.COMPOSITE_NAME, table.getCompositeKeyName());

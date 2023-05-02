@@ -70,7 +70,6 @@ class KotlinTemplates {
             "import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY\n" +
             "import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE\n" +
             "\n" +
-            "\n" +
             "@JsonInclude(JsonInclude.Include.NON_NULL)\n" +
             "@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)\n" +
             "class " + GenKeys.TABLE_CAMEL_NAME + " : Table(), \n" +
@@ -102,7 +101,7 @@ class KotlinTemplates {
             "\n" +
             GenKeys.CLASS_FULL_NAME + "\n" +
             "\n" +
-            "interface " + GenKeys.INTERFACE_NAME + "<E : " + EntityMap.class.getSimpleName() + ",F> : " + EntityRelationMap.class.getSimpleName() + "<E> {\n" +
+            "interface " + GenKeys.INTERFACE_NAME + "<E : " + EntityMap.class.getSimpleName() + ", F> : " + EntityRelationMap.class.getSimpleName() + "<E> {\n" +
             "\n" +
             "    fun get" + GenKeys.INTERFACE_NAME + "(): F = getColumnParam(\"" + GenKeys.FIELD_NAME + "\")" +
             "\n" +

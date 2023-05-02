@@ -30,19 +30,19 @@ class JavaTemplates {
             "\n" +
             GenKeys.CLASS_FULL_NAME + "\n" +
             "\n" +
-            "public interface " + GenKeys.INTERFACE_NAME + "<E extends EntityMap> extends EntityRelationMap<E> {\n" +
+            "public interface " + GenKeys.INTERFACE_NAME + "<E extends EntityMap, F> extends EntityRelationMap<E> {\n" +
             "\n" +
             "\n" +
-            "    default " + GenKeys.CLASS_SIMPLE_NAME + " get" + GenKeys.INTERFACE_NAME + "(){return getColumnParam(\"" + GenKeys.FIELD_NAME + "\");}\n" +
+            "    default F get" + GenKeys.INTERFACE_NAME + "(){return getColumnParam(\"" + GenKeys.FIELD_NAME + "\");}\n" +
             "    @SuppressWarnings(\"unchecked\")" +
             "\n" +
-            "    default E set" + GenKeys.INTERFACE_NAME + "(" + GenKeys.CLASS_SIMPLE_NAME + " val){setColumnParam(\"" + GenKeys.FIELD_NAME + "\",val); return (E)this;}\n" +
+            "    default E set" + GenKeys.INTERFACE_NAME + "(F val){setColumnParam(\"" + GenKeys.FIELD_NAME + "\",val); return (E)this;}\n" +
             "\n" +
             "    @SuppressWarnings(\"rawtypes\")" +
             "\n" +
             GenKeys.TABLES_AND_TYPE + "\n" +
-            "    default Column<E," + GenKeys.CLASS_SIMPLE_NAME + "," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){\n" +
-            "        return new Column<E," + GenKeys.CLASS_SIMPLE_NAME + "," + GenKeys.INTERFACE_NAME + ">() {\n" +
+            "    default Column<E, F," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){\n" +
+            "        return new Column<E, F," + GenKeys.INTERFACE_NAME + ">() {\n" +
             "\n" +
             "            @Override\n" +
             "            public String getColumnName() {\n" +
@@ -60,18 +60,18 @@ class JavaTemplates {
             "            }\n" +
             "\n" +
             "            @Override\n" +
-            "            public Class<" + GenKeys.CLASS_SIMPLE_NAME + "> getFieldClass(){\n" +
+            "            public Class getFieldClass(){\n" +
             "                return  " + GenKeys.CLASS_SIMPLE_NAME + ".class;\n" +
             "            }\n" +
             "\n" +
             "            @Override\n" +
-            "            public " + GenKeys.CLASS_SIMPLE_NAME + " getValue(" + GenKeys.INTERFACE_NAME + " entity){\n" +
+            "            public F getValue(" + GenKeys.INTERFACE_NAME + " entity){\n" +
             "                if (entity==null) throw new AttemptToReadFromNullEntityException(getEntityClass(),\"" + GenKeys.FIELD_NAME + "\");\n" +
-            "                return  entity.get" + GenKeys.INTERFACE_NAME + "();\n" +
+            "                return (F)entity.get" + GenKeys.INTERFACE_NAME + "();\n" +
             "            }\n" +
             "\n" +
             "            @Override\n" +
-            "            public void setValue(" + GenKeys.INTERFACE_NAME + " entity, " + GenKeys.CLASS_SIMPLE_NAME + " param){\n" +
+            "            public void setValue(" + GenKeys.INTERFACE_NAME + " entity, F param){\n" +
             "                if (entity==null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(),\"" + GenKeys.FIELD_NAME + "\");\n" +
             "                entity.set" + GenKeys.INTERFACE_NAME + "(param);\n" +
             "            }\n" +
@@ -218,17 +218,17 @@ class JavaTemplates {
 
     public static String PK_COL_METHOD_TEMP=
             "@Override\n" +
-                "\tpublic Column<" + GenKeys.TABLE_NAME + "," + GenKeys.PK_TYPE_IMPORT + "," + GenKeys.CLASS_SIMPLE_NAME + "> colID() {\n" +
-                "\t\treturn col" + GenKeys.INTERFACE_NAME + "();\n" +
-                "\t}" +
-                "\n" +
-                "\n" +
-                "\t@Override\n" +
-                "\tpublic int hashCode() {\n" +
-                "\t\treturn Objects.hashCode(getId());\n" +
-                "\t}\n" +
-                "\n" +
-                "\t@Override\n" +
+                    "\tpublic Column<" + GenKeys.TABLE_NAME + "," + GenKeys.PK_TYPE_IMPORT + "," + GenKeys.INTERFACE_NAME + "> colID() {\n" +
+                    "\t\treturn col" + GenKeys.INTERFACE_NAME + "();\n" +
+                    "\t}" +
+                    "\n" +
+                    "\n" +
+                    "\t@Override\n" +
+                    "\tpublic int hashCode() {\n" +
+                    "\t\treturn Objects.hashCode(getId());\n" +
+                    "\t}\n" +
+                    "\n" +
+                    "\t@Override\n" +
                 "\tpublic boolean equals(Object obj) {\n" +
                 "\t\tif (this == obj)return true;\n" +
                 "\t\tif (obj == null)return false;\n" +
@@ -238,8 +238,8 @@ class JavaTemplates {
                 "\t}\n" +
                 "\n";
 
-    public static String COMPOSITE_PK_KEY_METHOD_TEMP ="@Override\n" +
-            "\tpublic " + CompositeColumns.class.getSimpleName() + "<" + GenKeys.COMPOSITE_KEY_METHOD + "<" + GenKeys.TABLE_NAME + ">>" + " keyColumns() {\n" +
+    public static String COMPOSITE_PK_KEY_METHOD_TEMP = "@Override\n" +
+            "\tpublic " + CompositeColumns.class.getSimpleName() + "<" + GenKeys.COMPOSITE_KEY_METHOD + "<" + GenKeys.TABLE_NAME + ">>" + " colCompositeId() {\n" +
             "\t\treturn " + " composite" + GenKeys.COMPOSITE_KEY_METHOD + "();\n\t\t}";
 
     public static String COMPOSITE_METHOD_TEMP =

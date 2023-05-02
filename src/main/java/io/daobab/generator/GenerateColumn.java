@@ -50,14 +50,15 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
             System.out.println("table " + tableRealName + " has no data");
             return "error";
         }
+        String type = getCorrectClassSimpleNameForLanguage(replacer, language);
 
         if (TemplateLanguage.JAVA.equals(language)) {
             return getFinalFieldNameShortOrLong(tableCamelName) +
                     "<" +
-                    tableCamelName +
+                    tableCamelName + ", " + type +
                     ">";
         } else if (TemplateLanguage.KOTLIN.equals(language)) {
-            String type = getCorrectClassSimpleNameForLanguage(replacer, language);
+//            String type = getCorrectClassSimpleNameForLanguage(replacer, language);
             return getFinalFieldNameShortOrLong(tableCamelName) +
                     "<" +
                     tableCamelName + ", " + type + ("1".equalsIgnoreCase(g.getNullable()) ? "?" : "") +
@@ -68,11 +69,13 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
 
     }
 
-    public String getColumnInterfaceType(String tableRealName) {
+    public String getColumnInterfaceType(Replacer replacer, TemplateLanguage language, String tableRealName) {
 
         return getFinalFieldNameShortOrLong(tableRealName) +
                 "<" +
                 tableRealName +
+                ", " +
+                getCorrectClassSimpleNameForLanguage(replacer, language) +
                 ">";
     }
 
