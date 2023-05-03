@@ -4,6 +4,9 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.target.protection.OperationType;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class AccessDenied extends DaobabException {
 
     public AccessDenied(Entity entity, OperationType operation) {

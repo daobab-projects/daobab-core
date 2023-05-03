@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQueryBase<E, DataBaseQueryField<E, F>> implements InnerQueryFieldsProvider<E, F>, QueryExpressionProvider<E>, FieldsProvider<F>, ColumnOrQuery<E, F, EntityRelation> {
 

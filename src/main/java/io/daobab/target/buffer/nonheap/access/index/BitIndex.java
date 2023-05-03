@@ -12,6 +12,9 @@ import io.daobab.target.buffer.nonheap.index.BitBufferIndexCounterBase;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B, I>> implements BitBufferIndexBase<K>, BitBufferIndexCounterBase<K> {
 
     final BitArrayBaseNotNull<Integer, ?> bitIntArray;

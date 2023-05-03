@@ -5,6 +5,9 @@ import io.daobab.dict.DictDatabaseType;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class UniversalDateConverter {
 
     private final static String APOSTROPHE = "'";

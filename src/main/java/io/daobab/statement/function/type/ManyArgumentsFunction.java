@@ -10,6 +10,9 @@ import io.daobab.target.database.query.DataBaseQueryField;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class ManyArgumentsFunction<E extends Entity, F, R extends EntityRelation, C> extends ColumnFunction<E, F, R, C> {
 
     public ManyArgumentsFunction(String mode, Class<C> functionClass) {

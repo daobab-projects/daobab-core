@@ -14,8 +14,10 @@ import static io.daobab.generator.SaveGenerated.saveGeneratedTo;
 import static io.daobab.generator.template.TemplateLanguage.*;
 import static io.daobab.generator.template.TemplateType.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class Writer {
-
 
     int generatedColumnsCount = 0;
     int generatedTablesCount = 0;

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import static io.daobab.statement.condition.Operator.*;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes", "unused", "UnusedReturnValue"})
 public abstract class Where<W extends Where> extends WhereBase {

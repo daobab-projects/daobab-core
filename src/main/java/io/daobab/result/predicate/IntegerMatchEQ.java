@@ -5,6 +5,9 @@ import io.daobab.target.buffer.nonheap.access.field.BitFieldInteger;
 
 import java.nio.ByteBuffer;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class IntegerMatchEQ implements WherePredicate<Integer> {
 
     protected final int valueToCompare;

@@ -5,6 +5,9 @@ import io.daobab.result.predicate.WherePredicate;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class MatchINComparable<V extends Comparable<V>> implements WherePredicate<V> {
 
     protected final Collection<V> valueToCompare;

@@ -1,5 +1,8 @@
 package io.daobab.converter;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface JsonEscape {
 
     static String quote(String string) {

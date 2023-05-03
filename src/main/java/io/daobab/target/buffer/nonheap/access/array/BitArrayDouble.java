@@ -5,6 +5,9 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.nonheap.access.field.BitFieldDouble;
 import io.daobab.target.buffer.nonheap.access.field.BitSize;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitArrayDouble extends BitArrayBase<Double, BitFieldDouble> {
 
     private final BitFieldDouble instance;

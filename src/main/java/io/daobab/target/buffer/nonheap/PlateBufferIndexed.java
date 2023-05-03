@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.function.Predicate;
 
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public abstract class PlateBufferIndexed {
 
     protected final List<Plate> plateList;

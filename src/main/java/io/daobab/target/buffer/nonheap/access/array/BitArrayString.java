@@ -5,6 +5,9 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.nonheap.access.field.BitFieldString;
 import io.daobab.target.buffer.nonheap.access.field.BitSize;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitArrayString extends BitArrayBase<String, BitFieldString> {
 
     private final BitFieldString instance;

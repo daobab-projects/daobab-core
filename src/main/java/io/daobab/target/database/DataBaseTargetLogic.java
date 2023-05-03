@@ -34,7 +34,7 @@ import java.util.function.BiFunction;
 import static java.lang.String.format;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarget, TransactionalTarget, StatisticCollectorProvider {
 

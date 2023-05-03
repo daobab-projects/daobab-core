@@ -2,6 +2,9 @@ package io.daobab.result;
 
 import io.daobab.model.Entity;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class FakePkEntity<F extends Number, E extends Entity> {
 
     private F pk;

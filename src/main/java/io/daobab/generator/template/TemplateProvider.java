@@ -2,6 +2,9 @@ package io.daobab.generator.template;
 
 import java.util.Objects;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class TemplateProvider {
 
     private TemplateProvider() {

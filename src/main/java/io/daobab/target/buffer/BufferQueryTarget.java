@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"rawtypes", "unused"})
 public interface BufferQueryTarget extends Target, BufferQueryHandler {
 

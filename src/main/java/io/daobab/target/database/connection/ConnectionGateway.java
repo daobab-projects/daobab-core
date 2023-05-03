@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class ConnectionGateway {
     private ConnectionGateway() {

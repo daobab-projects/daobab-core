@@ -2,6 +2,9 @@ package io.daobab.result;
 
 import io.daobab.model.Column;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 class ColumnAndPointer {
 
     private final Column column;

@@ -4,6 +4,9 @@ import io.daobab.target.buffer.nonheap.NonHeapBuffer;
 
 import java.util.function.Predicate;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface WherePredicate<O> extends Predicate<O> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})

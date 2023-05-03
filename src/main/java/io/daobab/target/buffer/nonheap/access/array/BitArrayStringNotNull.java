@@ -4,6 +4,9 @@ package io.daobab.target.buffer.nonheap.access.array;
 import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.nonheap.access.field.BitFieldStringNotNull;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitArrayStringNotNull extends BitArrayBaseNotNull<String, BitFieldStringNotNull> {
 
     private final BitFieldStringNotNull instance;

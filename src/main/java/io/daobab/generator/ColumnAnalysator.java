@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import static io.daobab.generator.GenerateFormatter.toUpperCaseFirstCharacter;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class ColumnAnalysator {
 

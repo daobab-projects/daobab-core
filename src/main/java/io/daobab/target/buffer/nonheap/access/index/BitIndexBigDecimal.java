@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitIndexBigDecimal extends BitIndex<BigDecimal, BitFieldBigDecimalNotNull, BitIndexBigDecimal> {
 
     public BitIndexBigDecimal(final TableColumn tableColumn, SortedMap<BigDecimal, Collection<Integer>> valueIndex, List<Integer> nullValues) {

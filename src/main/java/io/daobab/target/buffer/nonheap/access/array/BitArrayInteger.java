@@ -5,6 +5,9 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.nonheap.access.field.BitFieldInteger;
 import io.daobab.target.buffer.nonheap.access.field.BitSize;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitArrayInteger extends BitArrayBase<Integer, BitFieldInteger> {
 
     private final BitFieldInteger instance;

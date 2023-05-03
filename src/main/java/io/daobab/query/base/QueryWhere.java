@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryWhere<Q extends Query> {

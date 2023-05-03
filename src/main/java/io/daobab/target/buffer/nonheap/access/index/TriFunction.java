@@ -3,6 +3,9 @@ package io.daobab.target.buffer.nonheap.access.index;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @FunctionalInterface
 public interface TriFunction<A, B, C, R> {
 

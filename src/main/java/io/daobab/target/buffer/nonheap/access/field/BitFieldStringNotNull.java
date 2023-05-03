@@ -6,6 +6,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldStringNotNull extends BitFieldComparable<String> {
 
     private final int length;

@@ -1,5 +1,8 @@
 package io.daobab.target.buffer.nonheap.access.datatypes;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitBoolean {
 
     public static final int TRUE=1;

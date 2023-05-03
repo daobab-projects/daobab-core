@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitIndexDate extends BitIndex<Date, BitFieldDateNotNull, BitIndexDate> {
 
     public BitIndexDate(final TableColumn tableColumn, SortedMap<Date, Collection<Integer>> valueIndex, List<Integer> nullValues) {

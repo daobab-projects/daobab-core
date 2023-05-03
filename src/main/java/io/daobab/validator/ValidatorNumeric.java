@@ -4,7 +4,7 @@ package io.daobab.validator;
 import io.daobab.error.ValidationException;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")
 public interface ValidatorNumeric {

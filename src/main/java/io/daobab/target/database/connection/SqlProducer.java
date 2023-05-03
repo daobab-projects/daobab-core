@@ -32,6 +32,9 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLogic {
 
     String LINE_SEPARATOR = System.getProperty("line.separator");

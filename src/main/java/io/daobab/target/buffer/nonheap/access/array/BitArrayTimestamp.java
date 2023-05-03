@@ -7,6 +7,9 @@ import io.daobab.target.buffer.nonheap.access.field.BitSize;
 
 import java.sql.Timestamp;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitArrayTimestamp extends BitArrayBase<Timestamp, BitFieldTimestamp> {
 
     private final BitFieldTimestamp instance;

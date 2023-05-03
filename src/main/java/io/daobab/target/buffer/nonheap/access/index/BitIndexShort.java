@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitIndexShort extends BitIndex<Short, BitFieldShortNotNull, BitIndexShort> {
 
     public BitIndexShort(final TableColumn tableColumn, SortedMap<Short, Collection<Integer>> valueIndex, List<Integer> nullValues) {

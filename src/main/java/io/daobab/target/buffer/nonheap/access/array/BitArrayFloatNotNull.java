@@ -5,6 +5,9 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.nonheap.access.field.BitFieldFloatNotNull;
 import io.daobab.target.buffer.nonheap.access.field.BitSize;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitArrayFloatNotNull extends BitArrayBaseNotNull<Float, BitFieldFloatNotNull> {
 
     private final BitFieldFloatNotNull instance;

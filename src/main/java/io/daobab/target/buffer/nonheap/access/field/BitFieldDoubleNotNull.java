@@ -5,6 +5,9 @@ import io.daobab.model.TableColumn;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldDoubleNotNull extends BitFieldComparable<Double> {
 
     public BitFieldDoubleNotNull(TableColumn tableColumn) {

@@ -12,6 +12,9 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.function.Function;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public abstract class BitArrayBase<T, B extends BitField<T>> implements BitArray<T, B> {
 
 

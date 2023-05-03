@@ -4,6 +4,9 @@ import io.daobab.target.buffer.single.Entities;
 
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface TargetCacheRefreshener {
 
     default void add(Entities<?> daocached) {

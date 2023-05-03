@@ -10,7 +10,7 @@ import java.util.List;
 import static io.daobab.generator.template.TemplateLanguage.KOTLIN;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
 

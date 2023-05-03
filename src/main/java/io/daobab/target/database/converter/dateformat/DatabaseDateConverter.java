@@ -7,6 +7,9 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface DatabaseDateConverter {
 
     String APOSTROPHE = "'";

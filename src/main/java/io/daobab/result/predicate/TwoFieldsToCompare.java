@@ -4,6 +4,9 @@ import io.daobab.target.buffer.nonheap.access.field.BitField;
 
 import java.nio.ByteBuffer;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class TwoFieldsToCompare<F> {
 
     private Integer fieldOnePosition;

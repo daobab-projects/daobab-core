@@ -8,6 +8,9 @@ import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.function.Function;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldBlob implements BitField<byte[]> {
 
     public BitFieldBlob(TableColumn tableColumn) {

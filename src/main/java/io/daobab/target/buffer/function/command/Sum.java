@@ -14,7 +14,9 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class Sum extends BufferFunction<Object> {
 
 

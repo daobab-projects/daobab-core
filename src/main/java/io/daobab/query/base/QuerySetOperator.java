@@ -3,7 +3,7 @@ package io.daobab.query.base;
 import io.daobab.statement.condition.SetOperator;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QuerySetOperator<Q extends Query> {

@@ -22,6 +22,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implements EntitiesProvider<E> {
 
     protected Class<E> entityClass;

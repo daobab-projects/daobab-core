@@ -8,6 +8,9 @@ import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.function.Function;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface BitField<T> {
 
     void writeValue(ByteBuffer byteBuffer, Integer position, T value);

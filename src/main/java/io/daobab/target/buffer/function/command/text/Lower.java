@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class Lower extends BufferFunction<String> {
 
     @SuppressWarnings({"rawtypes", "unchecked"})

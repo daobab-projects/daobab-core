@@ -15,7 +15,9 @@ import io.daobab.statement.function.type.NoParamFunction;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"rawtypes", "unused"})
 public interface FunctionWhispererH2 {
 

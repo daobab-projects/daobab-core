@@ -1,5 +1,8 @@
 package io.daobab.generator;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class ReplaceWrapper {
 
     private String key;

@@ -4,6 +4,9 @@ import io.daobab.error.DaobabException;
 
 import java.util.Set;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public enum OperationType {
     READ,
     INSERT,

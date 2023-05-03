@@ -10,6 +10,9 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.function.Function;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldTimestampNotNull implements BitField<Timestamp> {
 
     public BitFieldTimestampNotNull(TableColumn tableColumn) {

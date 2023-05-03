@@ -5,6 +5,9 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.nonheap.access.field.BitFieldUnsignedIntegerNotNull;
 import io.daobab.target.buffer.nonheap.access.field.BitSize;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitArrayUnsignedIntegerNotNull extends BitArrayBaseNotNull<Integer, BitFieldUnsignedIntegerNotNull> {
 
     private final BitFieldUnsignedIntegerNotNull instance;

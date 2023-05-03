@@ -1,6 +1,8 @@
 package io.daobab.result.predicate;
 
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class NumberMatchLTEQ extends NumberMatchEQ {
 
     public NumberMatchLTEQ(Object valueToCompare) {

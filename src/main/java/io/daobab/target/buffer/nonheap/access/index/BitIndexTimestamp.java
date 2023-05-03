@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitIndexTimestamp extends BitIndex<Timestamp, BitFieldTimestampNotNull, BitIndexTimestamp> {
 
     public BitIndexTimestamp(TableColumn tableColumn, SortedMap<Timestamp, Collection<Integer>> valueIndex, List<Integer> nullValues) {

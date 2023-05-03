@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface ResultSetReader {
     Plate readPlate(ResultSet rs, List<TableColumn> fields, DatabaseTypeConverter<?, ?>[] typeConverters) throws SQLException;
 

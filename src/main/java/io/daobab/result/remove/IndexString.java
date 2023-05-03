@@ -8,6 +8,9 @@ import io.daobab.statement.condition.Operator;
 
 import java.util.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class IndexString<E extends Entity, F extends String> extends Index<E, F> {
 
     private IndexString(Column<E, ?, EntityRelation> indexedColumn, Map<F, List<E>> oneToManySubMap, List<E> nullValuesAsPK) {

@@ -2,6 +2,9 @@ package io.daobab.target.database.connection;
 
 import java.sql.Types;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public enum JdbcType {
 
     BIT(Types.BIT),

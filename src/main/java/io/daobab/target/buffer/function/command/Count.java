@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class Count extends BufferFunction<Object> {
 
     @SuppressWarnings({"rawtypes", "unchecked"})

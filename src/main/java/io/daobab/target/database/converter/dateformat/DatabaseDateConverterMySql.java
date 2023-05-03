@@ -6,6 +6,9 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class DatabaseDateConverterMySql implements DatabaseDateConverter {
 
 

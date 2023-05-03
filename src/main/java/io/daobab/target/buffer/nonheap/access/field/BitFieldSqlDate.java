@@ -9,6 +9,9 @@ import java.sql.Date;
 import java.util.Comparator;
 import java.util.function.Function;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldSqlDate implements BitField<Date> {
 
     public BitFieldSqlDate(TableColumn tableColumn) {

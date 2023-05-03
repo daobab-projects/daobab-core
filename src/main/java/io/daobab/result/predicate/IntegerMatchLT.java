@@ -3,6 +3,9 @@ package io.daobab.result.predicate;
 
 import io.daobab.target.buffer.nonheap.NonHeapEntities;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class IntegerMatchLT extends IntegerMatchEQ {
 
     public IntegerMatchLT(int valueToCompare) {

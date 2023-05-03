@@ -5,6 +5,9 @@ import io.daobab.target.buffer.nonheap.NonHeapBuffer;
 
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class GeneralBitFieldWhereOr<E> extends GeneralBitFieldWhereAnd<E> {
 
     public GeneralBitFieldWhereOr(NonHeapBuffer<E> bufferEntityPointer, Where wrapperWhere, List<Integer> skipSteps) {

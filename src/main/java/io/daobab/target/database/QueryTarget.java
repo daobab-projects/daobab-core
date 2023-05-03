@@ -18,6 +18,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ *
+ * <p>
+ * <p>
  * Enriches the target by all necessary and useful methods like select,find,insert,update etc...
  * May be implemented by DataBaseTarget only.
  * Provides all basic CRUD methods which are being available as a target methods

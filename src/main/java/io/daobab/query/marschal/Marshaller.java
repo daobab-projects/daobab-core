@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface Marshaller {
 
@@ -21,7 +21,7 @@ public interface Marshaller {
         if (columnList == null) return rv;
         int counter = 0;
         for (TableColumn col : columnList) {
-            rv.put("" + counter, marshallColumnToString(col.getColumn()));
+            rv.put(String.valueOf(counter), marshallColumnToString(col.getColumn()));
             counter++;
         }
         return rv;
@@ -91,7 +91,7 @@ public interface Marshaller {
         List<TableColumn> rv = new ArrayList<>();
 
         while (true) {
-            Object o = map.get("" + counter);
+            Object o = map.get(String.valueOf(counter));
             counter++;
             if (o == null) return rv;
             TableColumn col = unMarshallColumn((Map<String, Object>) o, target);

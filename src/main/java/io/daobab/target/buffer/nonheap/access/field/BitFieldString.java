@@ -11,6 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.function.Function;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldString extends BitFieldComparable<String> {
 
     public BitFieldString(TableColumn tableColumn) {

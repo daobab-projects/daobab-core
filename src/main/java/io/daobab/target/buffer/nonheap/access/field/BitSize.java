@@ -2,6 +2,9 @@ package io.daobab.target.buffer.nonheap.access.field;
 
 import io.daobab.model.TableColumn;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitSize {
     public static final int NULL = 1;
     public static final int SHORT = 2;

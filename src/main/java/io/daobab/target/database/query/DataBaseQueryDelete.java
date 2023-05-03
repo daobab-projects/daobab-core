@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public final class DataBaseQueryDelete<E extends Entity> extends DataBaseQueryBase<E, DataBaseQueryDelete<E>> {
 

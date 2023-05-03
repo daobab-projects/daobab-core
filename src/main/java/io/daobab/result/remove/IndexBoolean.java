@@ -8,6 +8,9 @@ import io.daobab.statement.condition.Operator;
 
 import java.util.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class IndexBoolean<E extends Entity, F extends Boolean> extends Index<E, F> {
 
     @SuppressWarnings("rawtypes")

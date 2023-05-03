@@ -5,6 +5,9 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.model.TableColumn;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class EmptyTableColumn extends TableColumn {
     public EmptyTableColumn() {
         super(new Column<Entity, Object, EntityRelation>() {

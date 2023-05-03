@@ -7,6 +7,9 @@ import io.daobab.target.buffer.nonheap.access.field.BitSize;
 
 import java.util.Date;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitArrayDateNotNull extends BitArrayBaseNotNull<Date, BitFieldDateNotNull> {
 
     private final BitFieldDateNotNull instance;

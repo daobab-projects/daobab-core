@@ -17,6 +17,9 @@ import java.util.function.Function;
 
 import static io.daobab.statement.where.base.WhereBase.OR;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
 
     protected final NonHeapBuffer<E> nonHeapBuffer;

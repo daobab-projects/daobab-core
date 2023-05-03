@@ -17,7 +17,7 @@ import static io.daobab.model.IdGeneratorType.*;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBase<E, DataBaseQueryInsert<E>> {
 

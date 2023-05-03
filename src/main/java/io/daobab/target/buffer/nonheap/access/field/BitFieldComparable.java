@@ -6,6 +6,9 @@ import io.daobab.statement.condition.Operator;
 
 import java.util.function.Function;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public abstract class BitFieldComparable<V extends Comparable<V>> implements BitField<V> {
 
 

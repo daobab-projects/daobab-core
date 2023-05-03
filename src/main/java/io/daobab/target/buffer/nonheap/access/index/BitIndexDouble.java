@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitIndexDouble extends BitIndex<Double, BitFieldDoubleNotNull, BitIndexDouble> {
 
     public BitIndexDouble(final TableColumn tableColumn, SortedMap<Double, Collection<Integer>> valueIndex, List<Integer> nullValues) {

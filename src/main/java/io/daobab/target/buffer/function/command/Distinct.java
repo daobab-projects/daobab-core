@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class Distinct extends BufferFunction<Object> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})

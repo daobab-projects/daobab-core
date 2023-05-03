@@ -11,6 +11,9 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKey<E, ?, ?>, F, R extends EntityRelation> extends OptimisticConcurrencyIndicator<E>, ParserGeneral {
 

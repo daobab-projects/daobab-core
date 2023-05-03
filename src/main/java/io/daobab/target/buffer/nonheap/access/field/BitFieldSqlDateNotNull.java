@@ -10,6 +10,9 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.function.Function;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldSqlDateNotNull implements BitField<Date> {
 
     public BitFieldSqlDateNotNull(TableColumn tableColumn) {

@@ -5,6 +5,9 @@ import io.daobab.target.buffer.single.Entities;
 
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class SimpleMultiTarget extends MultiEntityTarget {
 
     public SimpleMultiTarget() {

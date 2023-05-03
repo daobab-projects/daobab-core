@@ -8,6 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class ListProxy<T> implements List<T> {
 
     protected Logger log = LoggerFactory.getLogger(this.getClass());

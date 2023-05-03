@@ -7,6 +7,9 @@ import io.daobab.target.buffer.nonheap.access.field.BitSize;
 
 import java.math.BigDecimal;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitArrayBigDecimal extends BitArrayBase<BigDecimal, BitFieldBigDecimal> {
 
     private final BitFieldBigDecimal instance;

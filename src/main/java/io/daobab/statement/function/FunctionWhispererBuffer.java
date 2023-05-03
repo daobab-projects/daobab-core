@@ -5,6 +5,9 @@ import io.daobab.model.EntityRelation;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.statement.function.type.ColumnFunction;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"rawtypes", "unused"})
 public interface FunctionWhispererBuffer {
 

@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")
 public interface EntitiesProvider<E extends Entity> {

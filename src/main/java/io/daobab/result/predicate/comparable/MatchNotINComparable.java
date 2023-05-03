@@ -1,5 +1,8 @@
 package io.daobab.result.predicate.comparable;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 
 public class MatchNotINComparable<V extends Comparable<V>> extends MatchINComparable<V> {
 

@@ -1,5 +1,8 @@
 package io.daobab.property;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class PropertyReader {
     private PropertyReader() {
     }

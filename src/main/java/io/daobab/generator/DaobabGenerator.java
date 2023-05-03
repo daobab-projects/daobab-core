@@ -22,7 +22,7 @@ import static io.daobab.generator.GenerateFormatter.decapitalize;
 import static java.lang.String.join;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"java:S106", "java:S1192", "java:S1144", "unused"})
 public class DaobabGenerator {

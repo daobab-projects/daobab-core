@@ -5,6 +5,9 @@ import io.daobab.model.TableColumn;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldUnsignedByteNotNull extends BitFieldComparable<Integer> {
 
     public BitFieldUnsignedByteNotNull() {
@@ -17,9 +20,11 @@ public class BitFieldUnsignedByteNotNull extends BitFieldComparable<Integer> {
     public void writeNullInformation(ByteBuffer byteBuffer, Integer position) {
         writeValue(byteBuffer, position, 0);
     }
+
     public void writeNotNullInformation(ByteBuffer byteBuffer, Integer position) {
         writeValue(byteBuffer,position,1);
     }
+
     @Override
     public void writeValue(ByteBuffer byteBuffer, Integer position, Integer val) {
         byteBuffer.position(position);
@@ -29,6 +34,7 @@ public class BitFieldUnsignedByteNotNull extends BitFieldComparable<Integer> {
     public boolean isNull(ByteBuffer byteBuffer, Integer position) {
         return (byteBuffer.get(position) & 0xFF) == 0;
     }
+
     @Override
     public Integer readValue(ByteBuffer byteBuffer, Integer position) {
         return byteBuffer.get(position) & 0xFF;

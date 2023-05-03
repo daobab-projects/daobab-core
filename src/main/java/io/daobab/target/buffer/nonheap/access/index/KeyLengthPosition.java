@@ -1,5 +1,8 @@
 package io.daobab.target.buffer.nonheap.access.index;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class KeyLengthPosition<K> {
 
     private K key;

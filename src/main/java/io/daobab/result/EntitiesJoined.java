@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
     private final MultiEntityTarget target;

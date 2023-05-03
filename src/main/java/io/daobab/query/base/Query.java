@@ -16,7 +16,7 @@ import java.util.Map;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"rawtypes", "unused"})
 public interface Query<E extends Entity, T extends Target & QueryHandler, Q extends Query> extends ILoggerBean {

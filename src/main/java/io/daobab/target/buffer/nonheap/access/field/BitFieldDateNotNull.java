@@ -7,6 +7,9 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.Date;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldDateNotNull extends BitFieldComparable<Date> {
 
     public BitFieldDateNotNull(TableColumn tableColumn) {

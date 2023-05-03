@@ -8,7 +8,9 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings("unused")
 public class Max extends Sum {
 

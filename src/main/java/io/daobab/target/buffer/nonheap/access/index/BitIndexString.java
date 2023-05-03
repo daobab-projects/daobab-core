@@ -12,6 +12,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitIndexString extends BitIndex<String, BitFieldStringNotNull, BitIndexString> {
 
     private final int length;

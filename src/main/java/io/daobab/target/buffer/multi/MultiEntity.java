@@ -3,6 +3,9 @@ package io.daobab.target.buffer.multi;
 import io.daobab.model.Entity;
 import io.daobab.target.buffer.single.Entities;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings("unused")
 public interface MultiEntity {
 

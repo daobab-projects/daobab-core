@@ -3,7 +3,9 @@ package io.daobab.model;
 import java.util.Collections;
 import java.util.List;
 
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public final class EntityAny implements Entity {
 
     @Override

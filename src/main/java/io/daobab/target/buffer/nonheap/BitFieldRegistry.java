@@ -10,7 +10,9 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Function;
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings("unchecked")
 public class BitFieldRegistry {
 

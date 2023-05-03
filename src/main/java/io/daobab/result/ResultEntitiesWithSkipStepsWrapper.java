@@ -5,6 +5,9 @@ import io.daobab.model.Entity;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class ResultEntitiesWithSkipStepsWrapper<E extends Entity> {
 
     private List<E> entities;

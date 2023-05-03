@@ -5,6 +5,9 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.statement.function.base.CastType;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class CastColumnRelation<E extends Entity, F, R extends EntityRelation, C> extends ColumnFunction<E, F, R, C> {
 
     public final CastType type;

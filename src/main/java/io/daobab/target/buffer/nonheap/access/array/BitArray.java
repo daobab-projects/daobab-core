@@ -5,6 +5,9 @@ import io.daobab.target.buffer.nonheap.access.field.BitField;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface BitArray<T, B extends BitField<T>> extends BitField<T[]> {
 
     void writeValue(ByteBuffer byteBuffer, Integer position, Collection<T> list);

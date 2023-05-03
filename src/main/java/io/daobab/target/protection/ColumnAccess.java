@@ -2,6 +2,9 @@ package io.daobab.target.protection;
 
 import io.daobab.model.Entity;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class ColumnAccess {
 
     private Entity entity;

@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Provides cached (in memory) entities
  *
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface Entities<E extends Entity> extends EntitiesProvider<E>, Serializable, List<E>, Target, Cloneable, JsonHandler, BufferQueryTarget {
 

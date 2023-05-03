@@ -11,6 +11,9 @@ import io.daobab.statement.function.type.ColumnFunction;
 
 import java.util.Date;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"rawtypes", "unused"})
 public interface FunctionWhispererBuffer {
 

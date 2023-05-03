@@ -22,7 +22,7 @@ import java.util.TimeZone;
 import java.util.function.Consumer;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 

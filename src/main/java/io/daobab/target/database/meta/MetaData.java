@@ -12,6 +12,9 @@ import io.daobab.target.database.meta.table.*;
 
 import java.util.Optional;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"rawtypes", "unused"})
 public interface MetaData extends MultiEntity, BufferQueryTarget {
 

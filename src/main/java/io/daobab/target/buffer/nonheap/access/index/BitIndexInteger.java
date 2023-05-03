@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitIndexInteger extends BitIndex<Integer, BitFieldIntegerNotNull, BitIndexInteger> {
 
     public BitIndexInteger(final TableColumn tableColumn, SortedMap<Integer, Collection<Integer>> valueIndex, List<Integer> nullValues) {

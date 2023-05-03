@@ -1,5 +1,8 @@
 package io.daobab.generator.template;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface GenKeys {
 
     String TARGET_CLASS_NAME = "__TARGET_CLASS_NAME";

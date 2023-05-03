@@ -4,7 +4,7 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class JoinOn<E1 extends Entity, E2 extends Entity, F> {
 

@@ -6,6 +6,9 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldBigIntegerNotNull extends BitFieldComparable<BigInteger> {
 
     public BitFieldBigIntegerNotNull(TableColumn tableColumn) {

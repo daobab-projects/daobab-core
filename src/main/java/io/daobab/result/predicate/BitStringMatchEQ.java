@@ -6,6 +6,9 @@ import io.daobab.target.buffer.nonheap.NonHeapEntities;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitStringMatchEQ extends MatchEQ {
     private final NonHeapEntities bufferEntityPointer;
 

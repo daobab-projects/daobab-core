@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldUnsignedIntegerShortNotNull extends BitFieldComparable<Integer> {
 
     public BitFieldUnsignedIntegerShortNotNull() {

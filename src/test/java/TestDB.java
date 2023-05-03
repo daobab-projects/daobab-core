@@ -6,10 +6,11 @@ import io.daobab.target.database.connection.SqlProducer;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class TestDB extends DataBaseTarget implements SqlProducer {//implements MyTables{
 
@@ -36,10 +37,7 @@ public class TestDB extends DataBaseTarget implements SqlProducer {//implements 
 
     @Override
     public List<Entity> initTables() {
-        return Arrays.asList(
-
-
-        );
+        return Collections.emptyList();
     }
 
 

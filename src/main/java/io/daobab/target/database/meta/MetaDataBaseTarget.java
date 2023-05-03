@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaData, MetaDataTables {
 
     private final DataBaseTarget source;

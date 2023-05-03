@@ -2,6 +2,9 @@ package io.daobab.target.protection;
 
 import io.daobab.error.DaobabException;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface AccessProtectorProvider {
 
     default AccessProtector getAccessProtector() {

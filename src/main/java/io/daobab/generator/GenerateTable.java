@@ -18,7 +18,7 @@ import static io.daobab.generator.template.TemplateType.*;
 import static java.lang.String.format;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class GenerateTable {
 

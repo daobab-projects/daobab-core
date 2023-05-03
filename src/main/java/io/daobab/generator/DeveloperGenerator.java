@@ -7,7 +7,9 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class DeveloperGenerator {
 
     private static final Writer writter = new Writer(TemplateLanguage.JAVA);

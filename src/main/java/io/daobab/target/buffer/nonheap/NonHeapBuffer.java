@@ -32,7 +32,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 import static io.daobab.statement.where.base.WhereBase.*;
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQueryTarget, MemoryUsageMonitor {
 
     public int pageMaxCapacityBytes = 2;

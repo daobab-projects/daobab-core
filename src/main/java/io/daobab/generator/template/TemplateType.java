@@ -1,5 +1,9 @@
 package io.daobab.generator.template;
 
+
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public enum TemplateType {
 
     DATABASE_TABLES_INTERFACE,

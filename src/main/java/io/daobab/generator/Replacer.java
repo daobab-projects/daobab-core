@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class Replacer {
     private final List<ReplaceWrapper> repl = new ArrayList<>();
 

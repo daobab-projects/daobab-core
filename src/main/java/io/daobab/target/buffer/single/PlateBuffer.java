@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * Buffered Plates collection.
  *
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class PlateBuffer extends PlateBufferIndexed implements Plates, StatisticCollectorProvider, StatisticProvider {
 

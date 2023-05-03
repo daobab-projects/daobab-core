@@ -8,7 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 class NonHeapEntityList<E extends Entity> implements List<E> {
 
     private final NonHeapEntities<E> buffer;

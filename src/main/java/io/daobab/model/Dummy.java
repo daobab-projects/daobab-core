@@ -5,6 +5,9 @@ import io.daobab.error.AttemptToWriteIntoNullEntityException;
 
 import java.util.Objects;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface Dummy<E extends EntityMap> extends EntityRelationMap<E> {
 
     /**

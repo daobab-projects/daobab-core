@@ -7,6 +7,9 @@ import io.daobab.statement.where.base.Where;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class CompositeColumns<K extends Composite> extends ArrayList<TableColumn> {
 
     public CompositeColumns(TableColumn... columns) {

@@ -32,7 +32,7 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public abstract class DataBaseTarget extends BaseTarget implements DataBaseTargetLogic, MetaDataTables {
 
@@ -113,7 +113,7 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
 
             setDataBaseProductName(meta.getDatabaseProductName());
             setDataBaseMajorVersion(meta.getDatabaseMajorVersion());
-            setDataBaseMinorVersion("" + meta.getDatabaseMinorVersion());
+            setDataBaseMinorVersion(String.valueOf(meta.getDatabaseMinorVersion()));
 
             if (DictDatabaseType.ORACLE.equals(meta.getDatabaseProductName())) {
                 setDatabaseDateConverter(new DatabaseDateConverterOracle());

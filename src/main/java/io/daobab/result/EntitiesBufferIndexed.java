@@ -19,6 +19,9 @@ import java.util.function.Predicate;
 
 import static io.daobab.statement.where.base.WhereBase.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<E> {
 
     private final TreeMap<Number, FakePkEntity<Number, E>> valueMap = new TreeMap<>();

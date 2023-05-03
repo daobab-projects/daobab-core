@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitIndexLong extends BitIndex<Long, BitFieldLongNotNull, BitIndexLong> {
 
     public BitIndexLong(SortedMap<Long, Collection<Integer>> valueIndex, List<Integer> nullValues) {

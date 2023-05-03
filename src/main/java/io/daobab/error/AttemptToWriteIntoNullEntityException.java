@@ -3,7 +3,7 @@ package io.daobab.error;
 import io.daobab.model.Entity;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class AttemptToWriteIntoNullEntityException extends DaobabException {
 

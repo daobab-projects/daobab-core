@@ -19,6 +19,9 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class NonHeapPlates extends NonHeapBuffer<Plate> {
 
     public NonHeapPlates(List<Plate> plates) {

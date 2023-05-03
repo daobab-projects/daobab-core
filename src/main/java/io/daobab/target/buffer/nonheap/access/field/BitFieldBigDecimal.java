@@ -9,6 +9,9 @@ import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitFieldBigDecimal extends BitFieldComparable<BigDecimal> {
 
     public BitFieldBigDecimal(TableColumn tableColumn) {

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 class JavaTemplates {
 
@@ -88,12 +88,12 @@ class JavaTemplates {
             "\n" +
             "\n" +
             "            @Override\n" +
-            "            public boolean equals(Object obj) {\n" +
-            "                if (this == obj)return true;\n" +
-            "                if (obj == null)return false;\n" +
-            "                if (getClass() != obj.getClass())return false;\n" +
-            "                Column other = (Column) obj;\n" +
-            "                return Objects.equals(hashCode(), other.hashCode());\n" +
+            "            public boolean equals(Object other) {\n" +
+            "                if (this == other)return true;\n" +
+            "                if (other == null)return false;\n" +
+            "                if (getClass() != other.getClass())return false;\n" +
+            "                Column otherColumn = (Column) other;\n" +
+            "                return Objects.equals(hashCode(), otherColumn.hashCode());\n" +
             "            }\n" +
             "        };\n" +
             "    }\n" +

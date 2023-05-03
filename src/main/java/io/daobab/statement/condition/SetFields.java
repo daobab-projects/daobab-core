@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"rawtypes", "unchecked", "unused"})
 public class SetFields {

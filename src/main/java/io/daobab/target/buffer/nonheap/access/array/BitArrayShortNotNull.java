@@ -5,6 +5,9 @@ import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.nonheap.access.field.BitFieldShortNotNull;
 import io.daobab.target.buffer.nonheap.access.field.BitSize;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitArrayShortNotNull extends BitArrayBaseNotNull<Short, BitFieldShortNotNull> {
 
     private final BitFieldShortNotNull instance;

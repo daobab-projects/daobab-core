@@ -2,6 +2,9 @@ package io.daobab.statement.condition;
 
 import io.daobab.query.base.Query;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class SetOperator {
 
     public static final int UNION = 0;
