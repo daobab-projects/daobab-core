@@ -254,7 +254,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     @Override
     public boolean isJoin() {
-        return _unique;
+        return _calcJoins;
     }
 
     @Override

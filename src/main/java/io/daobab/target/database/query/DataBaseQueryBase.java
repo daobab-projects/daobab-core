@@ -283,7 +283,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
     @Override
     public boolean isJoin() {
-        return _unique;
+        return _calcJoins;
     }
 
     @Override

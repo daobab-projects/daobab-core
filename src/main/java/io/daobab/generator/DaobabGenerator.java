@@ -72,7 +72,7 @@ public class DaobabGenerator {
         Driver driverInstance;
         try {
             if (driver != null) {
-                driverInstance = driver.newInstance();
+                driverInstance = driver.getDeclaredConstructor().newInstance();
                 DriverManager.registerDriver(driverInstance);
             }
             long startTime = System.currentTimeMillis();
@@ -139,7 +139,7 @@ public class DaobabGenerator {
         Driver driverInstance;
         try {
             if (driver != null) {
-                driverInstance = driver.newInstance();
+                driverInstance = driver.getDeclaredConstructor().newInstance();
                 DriverManager.registerDriver(driverInstance);
             }
             c = DriverManager.getConnection(url, user, pass);

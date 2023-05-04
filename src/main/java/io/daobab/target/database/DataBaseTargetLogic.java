@@ -329,7 +329,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                     if (typeConverter instanceof TypeConverterPKBased) {
                         typeConvertersArr[i] = new TypeConverterPrimaryKeyToOneCache((TypeConverterPKBased) typeConverter);
                     } else if (typeConverter instanceof TypeConverterPKBasedList) {
-                        typeConvertersArr[i] = new TypeConverterPrimaryKeyToManyCache(this, (TypeConverterPKBasedList) typeConverter, entityInstance, (Entity) columnsArray[i].getInnerTypeClass().newInstance());
+                        typeConvertersArr[i] = new TypeConverterPrimaryKeyToManyCache(this, (TypeConverterPKBasedList) typeConverter, entityInstance, (Entity) columnsArray[i].getInnerTypeClass().getDeclaredConstructor().newInstance());
                     } else {
                         typeConvertersArr[i] = typeConverter;
                     }

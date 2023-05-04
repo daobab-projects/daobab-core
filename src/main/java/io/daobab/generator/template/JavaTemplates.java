@@ -38,7 +38,7 @@ class JavaTemplates {
             "\n" +
             "    default E set" + GenKeys.INTERFACE_NAME + "(F val){setColumnParam(\"" + GenKeys.FIELD_NAME + "\",val); return (E)this;}\n" +
             "\n" +
-            "    @SuppressWarnings(\"rawtypes\")" +
+            "    @SuppressWarnings({\"rawtypes\",\"unchecked\"})" +
             "\n" +
             GenKeys.TABLES_AND_TYPE + "\n" +
             "    default Column<E, F," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){\n" +

@@ -368,8 +368,9 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
     @Override
     public Entities<E> findMany() {
         try {
-            return findAll(this.entityClass.newInstance());
-        } catch (InstantiationException | IllegalAccessException e) {
+            return findAll(this.entityClass.getDeclaredConstructor().newInstance());
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new DaobabEntityCreationException(this.entityClass, e);
         }
     }

@@ -171,7 +171,7 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         if (tables.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
 
-        sb.append("    /**\n");
+        sb.append("    /*\n");
         for (TableAndType tableAndType : tables) {
             GeneratedColumnInTable git = get(tableAndType.table);
             sb.append("     * ")
