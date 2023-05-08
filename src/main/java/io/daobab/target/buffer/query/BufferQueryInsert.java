@@ -17,7 +17,7 @@ import static io.daobab.model.IdGeneratorType.*;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E, BufferQueryInsert<E>> {
 
@@ -33,7 +33,6 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
     private BufferQueryInsert() {
     }
 
-
     public BufferQueryInsert(BufferQueryTarget target, Map<String, Object> remote) {
         fromRemote(target, remote);
     }
@@ -46,9 +45,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         setFields(new LinkedList<>());
 
         SetFields sd = new SetFields();
-
         entity.beforeInsert(target);
-
         boolean entityIsPk = entity instanceof PrimaryKey;
         IdGeneratorType idgeneratorType = null;
         if (entityIsPk) {
@@ -74,17 +71,17 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         }
 
 
-        for (TableColumn ec : entity.columns()) {
-            Column c = ec.getColumn();
+        for (TableColumn tableColumn : entity.columns()) {
+            Column column = tableColumn.getColumn();
             @SuppressWarnings("unchecked")
-            Object oo = ((Column<E, Object, EntityRelation>) c).getValueOf((EntityRelation) entity);
+            Object value = ((Column<E, Object, EntityRelation>) column).getValueOf((EntityRelation) entity);
 
             // no PK column into SEQUENCE,AUTO_INCREMENT
-            if (entityIsPk && ((PrimaryKey) entity).colID().equals(c) && (SEQUENCE.equals(idgeneratorType) || AUTO_INCREMENT.equals(idgeneratorType))) {
+            if (entityIsPk && ((PrimaryKey) entity).colID().equals(column) && (SEQUENCE.equals(idgeneratorType) || AUTO_INCREMENT.equals(idgeneratorType))) {
                 continue;
             }
-            getFields().add(getInfoColumn(c));
-            sd.setValue(c, oo);
+            getFields().add(getInfoColumn(column));
+            sd.setValue(column, value);
         }
         set(sd);
     }

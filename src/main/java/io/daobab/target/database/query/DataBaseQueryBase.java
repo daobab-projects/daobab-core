@@ -27,7 +27,7 @@ import java.util.function.UnaryOperator;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQueryBase> implements Query<E, QueryTarget, Q>, QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, QueryGroupBy<Q>, RemoteQuery<Q>, ILoggerBean {
@@ -52,6 +52,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     private String identifier;
     private String sentQuery;
     private List<SetOperator> setOperatorList;
+    private int deep = 1;
 
     protected DataBaseQueryBase() {
     }
@@ -282,7 +283,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
     @Override
     public boolean isJoin() {
-        return _unique;
+        return _calcJoins;
     }
 
     @Override
@@ -354,7 +355,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         if (joins != null && !joins.isEmpty()) {
             Map<String, Object> joinMap = new HashMap<>();
             for (int i = 0; i < joins.size(); i++) {
-                joinMap.put("" + i, joins.get(i).toMap());
+                joinMap.put(String.valueOf(i), joins.get(i).toMap());
             }
             rv.put(DictRemoteKey.JOINS, joinMap);
         }
@@ -454,17 +455,13 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
             return new TableColumn(column);
         }
 
-        for (TableColumn ic : target.getColumnsForTable(column.getInstance())) {
-            if (ic.getColumn().equalsColumn(column)) {
-                return ic;
-            }
-        }
+        return target.getColumnsForTable(column.getInstance())
+                .stream()
+                .filter(tableColumn -> tableColumn.getColumn().equalsColumn(column))
+                .findFirst()
+                .orElse(null);
 
-        return null;
     }
-
-    public abstract String toSqlQuery();
-
 
     public String getSentQuery() {
         return sentQuery;
@@ -474,13 +471,27 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         this.sentQuery = sentQuery;
     }
 
-    public <E extends Entity> Q from(E entity) {
+    public <E1 extends Entity> Q from(E1 entity) {
         if (entity == null) throw new NullEntityException();
         setEntityName(entity.getEntityName());
         setEntityClass(entity.getEntityClass());
-        IdentifierStorage storage = new IdentifierStorage();
-        setIdentifierStorage(storage);
+        setIdentifierStorage(new IdentifierStorage());
         getIdentifierStorage().registerIdentifiers(getEntityName());
         return (Q) this;
     }
+
+    @SuppressWarnings("unused")
+    public String toSqlQuery() {
+        return getTarget().toSqlQuery(this);
+    }
+
+    public Q deepness(int deep) {
+        this.deep = deep;
+        return (Q) this;
+    }
+
+    public int getDeepness() {
+        return deep;
+    }
+
 }

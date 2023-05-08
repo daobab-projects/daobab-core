@@ -2,7 +2,7 @@ package io.daobab.model;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface Field<E extends Entity, F, R extends EntityRelation> {
 
@@ -12,7 +12,11 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
         return getInstance().getEntityName();
     }
 
-    Class<F> getFieldClass();
+    Class getFieldClass();
+
+    default Class getInnerTypeClass() {
+        return null;
+    }
 
     default Class<E> getEntityClass() {
         return (Class<E>) getInstance().getClass();
@@ -51,6 +55,11 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
             }
 
             @Override
+            public Class<F> getInnerTypeClass() {
+                return this.getInnerTypeClass();
+            }
+
+            @Override
             public F getValue(R entity) {
                 return this.getValue(entity);
             }
@@ -70,7 +79,8 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
     default boolean equalsField(Field another) {
         return
                 getEntityName().equals(another.getEntityName())
-                        && getEntityClass().equals(another.getEntityClass());
+                        && getEntityClass().equals(another.getEntityClass())
+                        && getFieldName().equals(another.getFieldName());
     }
 
 

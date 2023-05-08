@@ -20,6 +20,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"rawtypes", "unused"})
 public interface FunctionWhispererMySql {
 
@@ -1207,8 +1210,8 @@ public interface FunctionWhispererMySql {
     }
 
 
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, String, R, String> camel(Column<E, String, R> column) {
-        return concat(upper(substring(column, 0, 1)), lower(substring(column, 1, length(column))));
+    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, String> camel(Column<E, String, R> column) {
+        return concat(upper(substring(column, 0, 1)), lower(substring(column, 2, length(column))));
     }
 
     default <C extends Number, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> sum(ColumnOrQuery<E, F, R> columnOrQuery) {

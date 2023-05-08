@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecord> implements StatisticCollector, ParserGeneral {
 
@@ -151,12 +151,12 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
     @Override
     public void errorProcedure(String procedureName, String identifier, String query, Throwable result) {
         boolean daobabException = result instanceof DaobabException;
-        String couse = "";
+        String cause;
         if (daobabException) {
             DaobabException daobabException1 = (DaobabException) result;
-            couse = daobabException1.getStatusDesc();
+            cause = daobabException1.getStatusDesc();
         } else {
-            couse = result.getMessage();
+            cause = result.getMessage();
         }
         StatisticRecord statisticRecord = get(identifier);
         if (statisticRecord == null) {
@@ -164,7 +164,7 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
             put(identifier, statisticRecord);
         }
         statisticRecord.setStatus(CallStatus.ERROR)
-                .setErrorDesc(couse);
+                .setErrorDesc(cause);
         long executionTime = statisticRecord.getResponseDate().getTime() - statisticRecord.getRequestDate().getTime();
         if (executionTime < ignoreBelowMilliseconds) {
             remove(identifier);

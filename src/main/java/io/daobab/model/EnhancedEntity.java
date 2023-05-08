@@ -6,6 +6,9 @@ import io.daobab.query.base.QueryJoin;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings("rawtypes")
 public interface EnhancedEntity extends ColumnsProvider {
 

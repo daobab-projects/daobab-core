@@ -3,8 +3,10 @@ package io.daobab.result.predicate;
 import java.sql.Timestamp;
 import java.util.TimeZone;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class TimestampMatchLTEQ extends TimestampMatchEQ {
-
 
     public TimestampMatchLTEQ(Object valueToCompare) {
         super(valueToCompare);

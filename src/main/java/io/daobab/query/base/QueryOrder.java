@@ -6,13 +6,12 @@ import io.daobab.statement.condition.Order;
 import java.util.function.Supplier;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryOrder<Q extends Query> {
 
     Q orderBy(Order orderBy);
-
 
     default Q orderBy(Supplier<Order> order) {
         return orderBy(order.get());

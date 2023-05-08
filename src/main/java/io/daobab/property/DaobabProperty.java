@@ -1,5 +1,8 @@
 package io.daobab.property;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface DaobabProperty {
 
     String LOGGER_GLOBAL = "daobab.logger.global";
@@ -11,6 +14,7 @@ public interface DaobabProperty {
     String GENERATOR_COLUMNS = "daobab.generator.generate.columns";
     String GENERATOR_VIEWS = "daobab.generator.generate.views";
     String GENERATOR_TARGETS = "daobab.generator.generate.targets";
+    String GENERATOR_LANGUAGE = "daobab.generator.language";
     String GENERATOR_TARGET_INTERFACE = "daobab.generator.generate.target.internace";
 
 }

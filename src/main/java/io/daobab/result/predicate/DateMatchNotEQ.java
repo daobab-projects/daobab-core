@@ -1,5 +1,8 @@
 package io.daobab.result.predicate;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class DateMatchNotEQ extends DateMatchEQ {
 
     public DateMatchNotEQ(Object valueToCompare) {

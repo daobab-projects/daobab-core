@@ -3,6 +3,9 @@ package io.daobab.model;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class Dual extends Table implements Dummy<Dual> {
 
     @Override

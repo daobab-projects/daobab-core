@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface EntityDuplicator {
 
@@ -107,45 +107,46 @@ public interface EntityDuplicator {
         E clone;
         try {
             clone = (E) src.getClass().getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new DaobabEntityCreationException(src.getClass(), e);
         }
 
-        for (TableColumn ecol : src.columns()) {
-            Column col = ecol.getColumn();
+        for (TableColumn tableColumn : src.columns()) {
+            Column column = tableColumn.getColumn();
 
-            Class columnClass = col.getFieldClass();
+            Class columnClass = column.getFieldClass();
 
-            Object val = col.getThisValue();
-            if (val == null) continue;
+            Object value = column.getThisValue();
+            if (value == null) continue;
             if (columnClass.equals(DictFieldType.CLASS_BIG_DECIMAL)) {
-                clone.setColumnParam(col.getFieldName(), new BigDecimal(val.toString()));
+                clone.setColumnParam(column.getFieldName(), new BigDecimal(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_STRING)) {
-                clone.setColumnParam(col.getFieldName(), val.toString());
+                clone.setColumnParam(column.getFieldName(), value.toString());
             } else if (columnClass.equals(DictFieldType.CLASS_DATE_UTIL)) {
-                clone.setColumnParam(col.getFieldName(), new Date(((Date) val).getTime()));
+                clone.setColumnParam(column.getFieldName(), new Date(((Date) value).getTime()));
             } else if (columnClass.equals(DictFieldType.CLASS_DATE_SQL)) {
-                clone.setColumnParam(col.getFieldName(), new java.sql.Date(((java.sql.Date) val).getTime()));
+                clone.setColumnParam(column.getFieldName(), new java.sql.Date(((java.sql.Date) value).getTime()));
             } else if (columnClass.equals(DictFieldType.CLASS_TIMESTAMP_SQL)) {
-                clone.setColumnParam(col.getFieldName(), new Timestamp(((Timestamp) val).getTime()));
+                clone.setColumnParam(column.getFieldName(), new Timestamp(((Timestamp) value).getTime()));
             } else if (columnClass.equals(DictFieldType.CLASS_TIME_SQL)) {
-                clone.setColumnParam(col.getFieldName(), new Time(((Time) val).getTime()));
+                clone.setColumnParam(column.getFieldName(), new Time(((Time) value).getTime()));
             } else if (columnClass.equals(DictFieldType.CLASS_BOOLEAN)) {
-                clone.setColumnParam(col.getFieldName(), (boolean) val);
+                clone.setColumnParam(column.getFieldName(), (boolean) value);
             } else if (columnClass.equals(DictFieldType.CLASS_BIG_INTEGER)) {
-                clone.setColumnParam(col.getFieldName(), new BigInteger(val.toString()));
+                clone.setColumnParam(column.getFieldName(), new BigInteger(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_DOUBLE)) {
-                clone.setColumnParam(col.getFieldName(), Double.valueOf(val.toString()));
+                clone.setColumnParam(column.getFieldName(), Double.valueOf(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_FLOAT)) {
-                clone.setColumnParam(col.getFieldName(), Float.valueOf(val.toString()));
+                clone.setColumnParam(column.getFieldName(), Float.valueOf(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_LONG)) {
-                clone.setColumnParam(col.getFieldName(), Long.valueOf(val.toString()));
+                clone.setColumnParam(column.getFieldName(), Long.valueOf(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_INTEGER)) {
-                clone.setColumnParam(col.getFieldName(), Integer.valueOf(val.toString()));
+                clone.setColumnParam(column.getFieldName(), Integer.valueOf(value.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_BYTE_ARRAY)) {
-                clone.setColumnParam(col.getFieldName(), ((byte[]) val).clone());
+                clone.setColumnParam(column.getFieldName(), ((byte[]) value).clone());
             } else if (columnClass.isInstance(EntityMap.class)) {
-                clone.setColumnParam(col.getFieldName(), EntityDuplicator.cloneEntity((EntityMap) val));
+                clone.setColumnParam(column.getFieldName(), EntityDuplicator.cloneEntity((EntityMap) value));
             }
         }
 

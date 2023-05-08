@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Exposes the very basic methods to handle CRUD operation
  *
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface QueryDataBaseHandler extends Target, QueryHandler {
 

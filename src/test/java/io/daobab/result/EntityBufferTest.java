@@ -1,7 +1,7 @@
 package io.daobab.result;
 
 import io.daobab.query.base.QueryWhisperer;
-import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.nonheap.NonHeapEntities;
 import io.daobab.target.buffer.query.BufferQueryEntity;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.test.dao.SakilaTables;
@@ -33,7 +33,7 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
 
         Entities<Film> films = generator.getFilms2();
 
-        NoHeapEntities<Film> buf = new NoHeapEntities<>(films);
+        NonHeapEntities<Film> buf = new NonHeapEntities<>(films);
 
         for (int i = 0; i < 5; i++) {
             buf.add(films.get(i));
@@ -59,7 +59,7 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
         long start = 0;//System.currentTimeMillis();
         long stop = 0;
 
-        NoHeapEntities<Film> noHeapEntities = new NoHeapEntities<>(films);
+        NonHeapEntities<Film> nonHeapEntities = new NonHeapEntities<>(films);
 
         start = System.currentTimeMillis();
         System.out.println("start");
@@ -84,7 +84,7 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
 
 
         start = System.currentTimeMillis();
-        BufferQueryEntity<Film> res = noHeapEntities.select(tabFilm)
+        BufferQueryEntity<Film> res = nonHeapEntities.select(tabFilm)
                 .where(and()
                         .greater(tabFilm.colFilmId(), 990000)
                         .less(tabFilm.colFilmId(), 995000)
@@ -98,7 +98,7 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
 //                         .and(tabFilm.colRentalRate(),GT,new BigDecimal(18))
                 ;
 
-//        System.out.println(noHeapEntities.size());
+//        System.out.println(nonHeapEntities.size());
 
         Entities<Film> res2 = res.findMany();
         stop = System.currentTimeMillis();

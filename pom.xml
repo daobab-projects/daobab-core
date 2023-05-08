@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.daobab</groupId>
   <artifactId>daobab-core</artifactId>
-  <version>1.5</version>
+  <version>1.6</version>
     <name>Daobab</name>
     <url>http://www.daobab.io</url>
     <description>Daobab Java ORM</description>
@@ -23,22 +23,34 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
     <developers>
         <developer>
             <name>Klaudiusz Wojtkowiak</name>
             <organization>Elephant Software</organization>
+            <organizationUrl>http://www.daobab.io</organizationUrl>
         </developer>
     </developers>
 
-	<dependencies>
+    <scm>
+        <url>https://github.com/daobab-projects/daobab-core</url>
+        <tag>HEAD</tag>
+    </scm>
 
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.33</version>
-			<scope>compile</scope>
-		</dependency>
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.33</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>
@@ -94,7 +106,7 @@
                             <url>${project.url}</url>
                             <company>Elephant Software</company>
                             <author>Klaudiusz Wojtkowiak</author>
-                            <license>CC-BY-NC-ND</license>
+                            <license>Apache License, Version 2.0</license>
                         </manifestEntries>
                     </archive>
                 </configuration>

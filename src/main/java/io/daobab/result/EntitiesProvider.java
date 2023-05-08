@@ -2,7 +2,7 @@ package io.daobab.result;
 
 import io.daobab.error.NullFunction;
 import io.daobab.model.Entity;
-import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.nonheap.NonHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")
 public interface EntitiesProvider<E extends Entity> {
@@ -20,8 +20,8 @@ public interface EntitiesProvider<E extends Entity> {
 
     Entities<E> findMany();
 
-    default NoHeapEntities<E> toNoHeap() {
-        return new NoHeapEntities<>(findMany());
+    default NonHeapEntities<E> toNonHeap() {
+        return new NonHeapEntities<>(findMany());
     }
 
     Optional<E> findFirst();

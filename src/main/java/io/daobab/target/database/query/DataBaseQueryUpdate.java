@@ -16,7 +16,7 @@ import static io.daobab.statement.where.WhereAnd.and;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBase<E, DataBaseQueryUpdate<E>> implements ParserGeneral {
 
@@ -32,19 +32,19 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    //This is for the whole object update
+    //This is for the entire object update
     public <E1 extends PrimaryKey<E, F, ?>, F> DataBaseQueryUpdate(QueryTarget target, E1 entity) {
         if (target == null) throw new MandatoryTargetException();
         init(target, entity);
 
         SetFields sf = new SetFields();
-        for (TableColumn ecol : target.getColumnsForTable(entity)) {
-            Column col = ecol.getColumn();
-            if (col.getColumnName().equals(entity.colID().getColumnName())) continue;
-            if (col.getThisValue() == null) {
-                sf.setNull(col);
+        for (TableColumn tableColumn : target.getColumnsForTable(entity)) {
+            Column column = tableColumn.getColumn();
+            if (column.getColumnName().equals(entity.colID().getColumnName())) continue;
+            if (column.getThisValue() == null) {
+                sf.setNull(column);
             } else {
-                sf.setValue((Column<?, Object, ?>) col, col.getThisValue());
+                sf.setValue((Column<?, Object, ?>) column, column.getThisValue());
             }
         }
         set(sf);
@@ -70,7 +70,6 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
         set(setFields);
         setEntity((E) setFields.getFieldForPointer(1).getInstance());
     }
-
 
     public Integer execute(boolean transaction) {
         return getTarget().update(this, transaction);
@@ -116,8 +115,4 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
         return QueryType.ENTITY;
     }
 
-    @Override
-    public String toSqlQuery() {
-        return getTarget().toSqlQuery(this);
-    }
 }

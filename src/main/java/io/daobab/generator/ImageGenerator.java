@@ -16,7 +16,9 @@ import java.util.List;
 import static io.daobab.generator.GenerateFormatter.toCamelCase;
 import static io.daobab.statement.where.WhereAnd.and;
 
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class ImageGenerator implements MetaDataTables {
 
     private String fileDirectoryPath;

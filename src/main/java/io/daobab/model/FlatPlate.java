@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
+@SuppressWarnings("unused")
 public class FlatPlate extends HashMap<String, Object> implements EntityMap {
-
 
     @Override
     public String getEntityName() {

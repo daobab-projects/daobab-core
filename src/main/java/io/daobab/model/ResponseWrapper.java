@@ -1,5 +1,8 @@
 package io.daobab.model;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class ResponseWrapper {
 
     private Object content;

@@ -1,15 +1,24 @@
 package io.daobab.generator;
 
+import io.daobab.generator.template.GenKeys;
+import io.daobab.generator.template.TemplateLanguage;
+import io.daobab.generator.template.TemplateProvider;
 import io.daobab.model.Composite;
-import io.daobab.model.CompositeColumns;
 import io.daobab.model.TableColumn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static io.daobab.generator.template.TemplateLanguage.JAVA;
+import static io.daobab.generator.template.TemplateLanguage.KOTLIN;
+import static io.daobab.generator.template.TemplateType.*;
+import static java.lang.String.format;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class GenerateTable {
 
@@ -24,7 +33,6 @@ public class GenerateTable {
     private List<GenerateColumn> columnList = new ArrayList<>();
 
     private String javaPackage;
-    private boolean alreadyGenerated;
 
     private boolean view = false;
 
@@ -54,7 +62,7 @@ public class GenerateTable {
             setColumnList(primaryKey);
         }
         if (primaryKey != null && getColumnList() != null && !getColumnList().isEmpty()) {
-            boolean pkincolumns = false;
+            boolean pkPresent = false;
             List<GenerateColumn> pktoAdd = new ArrayList<>();
             for (GenerateColumn g : getColumnList()) {
                 for (GenerateColumn pKey : primaryKey) {
@@ -62,10 +70,9 @@ public class GenerateTable {
                         pktoAdd.add(pKey);
                     }
                 }
-
             }
 
-            if (!pkincolumns) {
+            if (!pkPresent) {
                 getColumnList().addAll(pktoAdd);
             }
         }
@@ -76,28 +83,28 @@ public class GenerateTable {
 
 
     public String toString() {
-        StringBuilder primaryKeys = new StringBuilder();
+        StringBuilder primaryKeysSB = new StringBuilder();
         if (this.primaryKeys != null) {
             for (GenerateColumn pk : this.primaryKeys) {
-                primaryKeys.append(pk.getFinalFieldNameShortOrLong(tableName));
+                primaryKeysSB.append(pk.getFinalFieldNameShortOrLong(tableName));
             }
         }
-        return "name:" + tableName + ",schema:" + schemaName + ",type:" + type + ",remarks:" + remarks + ", PK:" + (getPrimaryKeys() == null ? "NO" : primaryKeys.toString());
+        return "name:" + tableName + ",schema:" + schemaName + ",type:" + type + ",remarks:" + remarks + ", PK:" + (getPrimaryKeys() == null ? "NO" : primaryKeysSB.toString());
     }
 
-    public String getColumnImport(String tableName) {
+    public String getColumnImport(String tableName, String endImport) {
         StringBuilder sb = new StringBuilder();
         for (GenerateColumn gc : getColumnList()) {
-            if (gc.getFinalFieldName().equalsIgnoreCase(tableName)) continue;
-            //java.lang is always imported
-            if (gc.getPackage().startsWith("java.lang.") && gc.getPackage().lastIndexOf(".") == "java.lang.".lastIndexOf(".")) {
+            if (gc.getFinalFieldName().equalsIgnoreCase(tableName)
+                    //java.lang is always imported
+                    || (gc.getPackage().startsWith("java.lang.") && gc.getPackage().lastIndexOf(".") == "java.lang.".lastIndexOf("."))
+            ) {
                 continue;
             }
             sb.append("import ")
-                    .append(gc.getPackage());
-
-            sb.append(".").append(gc.getFinalFieldName())
-                    .append(";")
+                    .append(gc.getPackage())
+                    .append(".").append(gc.getFinalFieldName())
+                    .append(endImport)
                     .append("\n");
         }
         return sb.toString();
@@ -106,76 +113,87 @@ public class GenerateTable {
     public String getCompositeColumnImport(String tableName) {
         StringBuilder sb = new StringBuilder();
         for (GenerateColumn gc : getColumnList()) {
-            if (gc.getFinalFieldName().equalsIgnoreCase(tableName)) continue;
+            if (gc.getFinalFieldName().equalsIgnoreCase(tableName)) {
+                continue;
+            }
             sb.append("import ")
-                    .append(gc.getPackage());
-
-            sb.append(".").append(gc.getFinalFieldName())
+                    .append(gc.getPackage())
+                    .append(".").append(gc.getFinalFieldName())
                     .append(";")
                     .append("\n");
         }
         return sb.toString();
     }
 
-    public String getCompositeKeyInterfaces(String tableCamelName) {
+    public String getCompositeKeyInterfaces(Replacer replacer, String tableCamelName, TemplateLanguage language) {
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < getPrimaryKeys().size(); i++) {
-            GenerateColumn gc = getPrimaryKeys().get(i);
-            sb.append(" & ");
-            sb.append(gc.getColumnInterfaceType(tableCamelName));
-        }
-        return sb.toString();
-    }
-
-    public String getCompositeKeyInterfaces2(String tableCamelName) {
-        StringBuilder sb = new StringBuilder();
-
-        List<GenerateColumn> anotherCompositesColumns = new ArrayList<>();
-
-        boolean atLeastOneColumnAdded = false;
-        for (int i = 0; i < getPrimaryKeys().size(); i++) {
-            GenerateColumn primKeyColumn = getPrimaryKeys().get(i);
-            boolean columnAlreadyImported = false;
-            for (GenerateColumn targetgt : anotherCompositesColumns) {
-                if (targetgt.getColumnName().equals(primKeyColumn.getColumnName())) {
-                    columnAlreadyImported = true;
-                    break;
-                }
+        if (language == JAVA) {
+            for (GenerateColumn gc : getPrimaryKeys()) {
+                sb.append(" & ")
+                        .append(gc.getColumnInterfaceType(replacer, language, tableCamelName));
             }
-            if (columnAlreadyImported) continue;
-            atLeastOneColumnAdded = true;
-            sb.append(" ");
-            sb.append(primKeyColumn.getColumnInterfaceType(tableCamelName));
-            if (i < getPrimaryKeys().size() - 1) sb.append(",");
+        }
+        return sb.toString();
+    }
+
+    public String getCompositeKeyInterfaces2(Replacer replacer, String tableCamelName, TemplateLanguage language) {
+        StringBuilder sb = new StringBuilder();
+
+        if (language == JAVA) {
+            boolean atLeastOneColumnAdded = false;
+            for (int i = 0; i < getPrimaryKeys().size(); i++) {
+                GenerateColumn primKeyColumn = getPrimaryKeys().get(i);
+                atLeastOneColumnAdded = true;
+                sb.append(" ");
+                sb.append(primKeyColumn.getColumnInterfaceType(replacer, language, tableCamelName));
+                if (i < getPrimaryKeys().size() - 1) sb.append(",");
+            }
+
+            if (!getInheritedSubCompositeKeys().isEmpty() && !atLeastOneColumnAdded) {
+                sb.append(",");
+            }
+
+            sb.append(format(", %s<%s>", Composite.class.getSimpleName(), tableCamelName));
+        } else if (language == KOTLIN) {
+            boolean atLeastOneColumnAdded = false;
+            for (int i = 0; i < getPrimaryKeys().size(); i++) {
+                GenerateColumn primKeyColumn = getPrimaryKeys().get(i);
+                GeneratedColumnInTable git = primKeyColumn.getColumnInTableOrCreate(tableName);
+                atLeastOneColumnAdded = true;
+                sb.append(" ")
+                        .append(primKeyColumn.getFinalFieldNameShortOrLong(tableCamelName))
+                        .append("<")
+                        .append(tableCamelName)
+                        .append(", ")
+                        .append(primKeyColumn.getCorrectClassSimpleNameForLanguage(replacer, language))
+                        .append(">")
+                        .append(git.isNullable() ? "?" : "");
+                if (i < getPrimaryKeys().size() - 1) sb.append(",");
+            }
+
+            if (!getInheritedSubCompositeKeys().isEmpty() && !atLeastOneColumnAdded) {
+                sb.append(",");
+            }
+
+            sb.append(format(", %s<%s>", Composite.class.getSimpleName(), tableCamelName));
         }
 
-        if (!getInheritedSubCompositeKeys().isEmpty() && !atLeastOneColumnAdded) {
-            sb.append(",");
-        }
-
-        sb.append(", ").append(Composite.class.getSimpleName());
-        sb.append("<").append(tableCamelName).append(">");
 
         return sb.toString();
     }
 
-    public String getColumnInterfaces(String compositeKeyName, String tableCamelName) {
+    public String getColumnInterfaces(Replacer replacer, TemplateLanguage language, String compositeKeyName, String tableCamelName) {
         StringBuilder sb = new StringBuilder();
 
         if (getPrimaryKeys() != null && getPrimaryKeys().size() > 1) {
-            sb.append("\t");
-
-            sb.append(compositeKeyName)
-                    .append("<")
-                    .append(tableCamelName)
-                    .append(">,\n");
+            sb.append(format("\t%s<%s>,%n", compositeKeyName, tableCamelName));
         }
 
         for (int i = 0; i < getColumnList().size(); i++) {
             GenerateColumn gc = getColumnList().get(i);
             sb.append("\t");
-            sb.append(gc.getColumnInterface(tableCamelName, this.getTableName()));
+            sb.append(gc.getColumnInterface(replacer, language, tableCamelName, this.getTableName()));
             if (i < getColumnList().size() - 1) sb.append(",\n");
         }
 
@@ -184,26 +202,28 @@ public class GenerateTable {
         return sb.toString();
     }
 
-    public String getColumnMethods() {
+    public String getColumnMethods(TemplateLanguage language) {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < getColumnList().size(); i++) {
             GenerateColumn gc = getColumnList().get(i);
-            sb.append(getTableColumn(gc));
+            sb.append(getTableColumn(gc, language));
             if (i < getColumnList().size() - 1) sb.append(",");
             sb.append("\n");
         }
         return sb.toString();
     }
 
-    public StringBuilder getTableColumn(GenerateColumn gc) {
+    public StringBuilder getTableColumn(GenerateColumn gc, TemplateLanguage language) {
         GeneratedColumnInTable generatedColumnInTable = gc.getColumnInTableOrCreate(this.getTableName());
 
         StringBuilder sb = new StringBuilder();
         sb.append("\t").append("\t").append("\t");
-        sb.append("new ").append(TableColumn.class.getSimpleName()).append("(col");
-        sb.append(gc.getInterfaceName());
-        sb.append("())");
+        if (language == JAVA) {
+            sb.append("new ");
+        }
+
+        sb.append(TableColumn.class.getSimpleName()).append(format("(col%s())", gc.getInterfaceName()));
 
         if (generatedColumnInTable.isPk()) {
             sb.append(".primaryKey()");
@@ -212,15 +232,11 @@ public class GenerateTable {
         if (generatedColumnInTable.getColumnSize() == 2147483647) {
             sb.append(".lob()");
         } else if (generatedColumnInTable.getColumnSize() > 0) {
-            sb.append(".size(");
-            sb.append(generatedColumnInTable.getColumnSize());
-            sb.append(")");
+            sb.append(format(".size(%s)", generatedColumnInTable.getColumnSize()));
         }
 
         if (generatedColumnInTable.getDecimalDigits() != null && !generatedColumnInTable.getDecimalDigits().trim().isEmpty() && !"0".equals(generatedColumnInTable.getDecimalDigits())) {
-            sb.append(".scale(");
-            sb.append(generatedColumnInTable.getDecimalDigits());
-            sb.append(")");
+            sb.append(format(".scale(%s)", generatedColumnInTable.getDecimalDigits()));
         }
 
         if ("yes".equalsIgnoreCase(generatedColumnInTable.getNullable())) {
@@ -229,60 +245,46 @@ public class GenerateTable {
         return sb;
     }
 
-    public String getPkIdMethod() {
-        if (getPrimaryKeys() == null) return "";
-        String tableName = GenerateFormatter.toCamelCase(getTableName());
-        return "@Override\n" +
-                "\tpublic Column<" + tableName + "," + getPrimaryKeys().get(0).getFieldClass().getSimpleName() + "," + getPrimaryKeys().get(0).getFinalFieldNameShortOrLong(tableName) + "> colID() {\n" +
-                "\t\treturn col" + getPrimaryKeys().get(0).getInterfaceName() + "();\n" +
-                "\t}" +
-                "\n" +
-                "\n" +
-                "\t@Override\n" +
-                "\tpublic int hashCode() {\n" +
-                "\t\treturn Objects.hashCode(getId());\n" +
-                "\t}\n" +
-                "\n" +
-                "\t@Override\n" +
-                "\tpublic boolean equals(Object obj) {\n" +
-                "\t\tif (this == obj)return true;\n" +
-                "\t\tif (obj == null)return false;\n" +
-                "\t\tif (getClass() != obj.getClass())return false;\n" +
-                "\t\tPrimaryKey<?,?,?> other = (PrimaryKey<?,?,?>) obj;\n" +
-                "\t\treturn Objects.equals(getId(), other.getId());\n" +
-                "\t}\n" +
-                "\n";
+    public String getPkIdMethod(TemplateLanguage language) {
+        if (getPrimaryKeys() == null || getPrimaryKeys().isEmpty()) return "";
+
+        GenerateColumn pk = getPrimaryKeys().get(0);
+
+        Replacer replacer = new Replacer();
+
+        return replacer
+                .add(GenKeys.TABLE_NAME, GenerateFormatter.toCamelCase(getTableName()))
+                .add(GenKeys.PK_TYPE_IMPORT, pk.getFieldClass().getSimpleName())
+                .add(GenKeys.TYPE_IMPORTS, getPkTypeSimpleName(language, pk))
+                .add(GenKeys.INTERFACE_NAME, pk.getFinalFieldNameShortOrLong(tableName))
+                .replaceAll(TemplateProvider.getTemplate(language, PK_COL_METHOD));
     }
 
-
-    public String getPkKeyMethod(String compositeKeyName) {
-        if (getPrimaryKeys() == null) return "";
-        String tableCamelName = GenerateFormatter.toCamelCase(getTableName());
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("@Override\n" +
-                "\tpublic " + CompositeColumns.class.getSimpleName() + "<" + compositeKeyName + "<" + tableCamelName + ">>" + " keyColumns() {\n" +
-                "\t\treturn " + " composite" + compositeKeyName + "();\n\t\t}");
-
-        return sb.toString();
-    }
-
-
-    public String getCompositeMethod(String compositeKeyName) {
-        if (getPrimaryKeys() == null) return "";
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("default ").append(CompositeColumns.class.getSimpleName()).append("<").append(compositeKeyName).append("<E>>").append(" composite").append(compositeKeyName).append("() {\n").append("\treturn new ").append(CompositeColumns.class.getSimpleName()).append("<>(\n");
-
-        for (int i = 0; i < getPrimaryKeys().size(); i++) {
-            sb.append(getTableColumn(getPrimaryKeys().get(i)));
-            if (i < getPrimaryKeys().size() - 1) sb.append(",\n");
+    String getPkTypeSimpleName(TemplateLanguage language, GenerateColumn pk) {
+        if (language == KOTLIN) {
+            String simpleName = pk.getFieldClass().getSimpleName();
+            return simpleName.equals("Integer") ? "Int" : simpleName;
+        } else {
+            return pk.getFieldClass().getSimpleName();
         }
-        sb.append(");\n\t\t}");
-
-        return sb.toString();
     }
 
+    public String getPkKeyMethod(String compositeKeyName, TemplateLanguage language) {
+        if (getPrimaryKeys() == null || getPrimaryKeys().isEmpty()) return "";
+        return new Replacer()
+                .add(GenKeys.TABLE_NAME, GenerateFormatter.toCamelCase(getTableName()))
+                .add(GenKeys.COMPOSITE_KEY_METHOD, compositeKeyName)
+                .replaceAll(TemplateProvider.getTemplate(language, COMPOSITE_PK_KEY_METHOD));
+    }
+
+    public String getCompositeMethod(String compositeKeyName, TemplateLanguage language) {
+        if (getPrimaryKeys() == null) return "";
+
+        return new Replacer()
+                .add(GenKeys.COMPOSITE_NAME, compositeKeyName)
+                .add(GenKeys.COMPOSITE_KEY_METHOD, getPrimaryKeys().stream().map(s -> getTableColumn(s, language)).collect(Collectors.joining(",\n")))
+                .replaceAll(TemplateProvider.getTemplate(language, COMPOSITE_METHOD));
+    }
 
     public String getTableName() {
         return tableName;
@@ -348,14 +350,6 @@ public class GenerateTable {
         this.javaPackage = javaPackage;
     }
 
-    public boolean isAlreadyGenerated() {
-        return alreadyGenerated;
-    }
-
-    public void setAlreadyGenerated(boolean alreadyGenerated) {
-        this.alreadyGenerated = alreadyGenerated;
-    }
-
     public boolean isView() {
         return view;
     }
@@ -391,8 +385,8 @@ public class GenerateTable {
         }
         for (GenerateColumn col : columns) {
             boolean contains = false;
-            for (GenerateColumn tabcol : target) {
-                if (tabcol.getColumnName().equals(col.getColumnName())) {
+            for (GenerateColumn tabCol : target) {
+                if (tabCol.getColumnName().equals(col.getColumnName())) {
                     contains = true;
                     break;
                 }
@@ -414,5 +408,19 @@ public class GenerateTable {
 
     public void setCatalogName(String catalogName) {
         this.catalogName = catalogName;
+    }
+
+
+    public Set<Class> getColumnTypes() {
+        return columnList.stream()
+                .map(GenerateColumn::getFieldClass)
+                .filter(c -> !c.getName().startsWith("java.lang"))
+                .filter(c -> !c.equals(byte[].class))
+                .collect(Collectors.toSet());
+    }
+
+    public String getTypeImports(TemplateLanguage language) {
+        String endimport = language == JAVA ? ";" : "";
+        return getColumnTypes().stream().map(c -> "import " + c.getName() + endimport).collect(Collectors.joining("\n"));
     }
 }

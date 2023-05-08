@@ -17,7 +17,7 @@ import static io.daobab.model.IdGeneratorType.*;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBase<E, DataBaseQueryInsert<E>> {
 
@@ -73,20 +73,18 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
             }
         }
 
-        for (TableColumn ec : target.getColumnsForTable(entity)) {
+        for (TableColumn tableColumn : target.getColumnsForTable(entity)) {
 
-            Column c = ec.getColumn();
+            Column column = tableColumn.getColumn();
 
-            Column<E, Object, EntityRelation> ce = (Column<E, Object, EntityRelation>) c;
-
-            Object oo = ce.getValueOf((EntityRelation) entity);
+            Object value = ((Column<E, Object, EntityRelation>) column).getValueOf((EntityRelation) entity);
 
             // no PK column into SEQUENCE,AUTO_INCREMENT
-            if (entityIsPk && ((PrimaryKey) entity).colID().equals(c) && (SEQUENCE.equals(idgeneratorType) || AUTO_INCREMENT.equals(idgeneratorType))) {
+            if (entityIsPk && ((PrimaryKey) entity).colID().equals(column) && (SEQUENCE.equals(idgeneratorType) || AUTO_INCREMENT.equals(idgeneratorType))) {
                 continue;
             }
-            getFields().add(getInfoColumn(ce));
-            sd.setValue(ce, oo);
+            getFields().add(getInfoColumn(column));
+            sd.setValue(column, value);
         }
         set(sd);
     }
@@ -129,12 +127,11 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         return getTarget().insert(this, Propagation.SUPPORTS);
     }
 
-
+    @SuppressWarnings("rawtypes")
     public <F, R extends EntityRelation> DataBaseQueryInsert<E> set(Column<E, F, R> key, R value) {
         set(new SetFields().setValue(key, value));
         return this;
     }
-
 
     public String getSequenceName() {
         return sequenceName;
@@ -184,6 +181,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         this.entity = entity;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void fromRemote(QueryTarget target, Map<String, Object> rv) {
         super.fromRemote(target, rv);
@@ -240,8 +238,4 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         return QueryType.ENTITY;
     }
 
-    @Override
-    public String toSqlQuery() {
-        return getTarget().toSqlQuery(this);
-    }
 }

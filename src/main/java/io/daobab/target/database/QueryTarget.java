@@ -7,6 +7,8 @@ import io.daobab.statement.condition.SetField;
 import io.daobab.statement.condition.SetFields;
 import io.daobab.target.Target;
 import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.database.converter.DatabaseConverterManager;
+import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
 import io.daobab.target.database.query.*;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
@@ -16,6 +18,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ *
+ * <p>
+ * <p>
  * Enriches the target by all necessary and useful methods like select,find,insert,update etc...
  * May be implemented by DataBaseTarget only.
  * Provides all basic CRUD methods which are being available as a target methods
@@ -29,6 +35,10 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
 
     boolean getShowSql();
 
+    default DatabaseConverterManager getConverterManager() {
+        return null;
+    }
+
     List<TableColumn> getColumnsForTable(final ColumnsProvider entity);
 
     default <E extends Entity> DataBaseQueryInsert<E> insert(E entity) {
@@ -38,8 +48,8 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     default <E extends Entity> boolean insertAll(Collection<E> entities) {
         OpenedTransactionDataBaseTarget transactionTarget = this.beginTransaction();
         for (E entity : entities) {
-            DataBaseQueryInsert q = new DataBaseQueryInsert<>(transactionTarget, entity);
-            q.execute(false);
+            DataBaseQueryInsert queryInsert = new DataBaseQueryInsert<>(transactionTarget, entity);
+            queryInsert.execute(false);
         }
         transactionTarget.commit();
         return true;
@@ -88,7 +98,6 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return new DataBaseQueryField<>(this, col);
     }
 
-
     //=====  FIELD LIST ======
     default <E extends Entity> DataBaseQueryEntity<E> select(E entity) {
         return new DataBaseQueryEntity<>(this, entity);
@@ -120,11 +129,11 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     }
 
     default <E extends Entity & PrimaryCompositeKey<E, K>, K extends Composite> E findOneByPk(E entity, K key) {
-        return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.keyColumns(), key).findOne();
+        return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.colCompositeId(), key).findOne();
     }
 
     default <E extends Entity & PrimaryCompositeKey<E, K>, K extends Composite> Entities<E> findManyByPk(E entity, K key) {
-        return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.keyColumns(), key).findMany();
+        return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.colCompositeId(), key).findMany();
     }
 
     default <E extends EntityMap & PrimaryKey<E, F, ?>, F> E findFieldsByPk(F id, Column<E, ?, ?>... columns) {
@@ -135,7 +144,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
 
     default <E extends EntityMap & PrimaryCompositeKey<E, K>, K extends Composite> E findFieldsByPk(K key, Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) throw new MandatoryColumn();
-        DataBaseQueryPlate query = new DataBaseQueryPlate(this, columns).whereEqual(columns[0].getInstance().keyColumns(), key);
+        DataBaseQueryPlate query = new DataBaseQueryPlate(this, columns).whereEqual(columns[0].getInstance().colCompositeId(), key);
         return query.findOneAs(columns[0].getEntityClass());
     }
 
@@ -185,6 +194,8 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     default <E extends Entity> DataBaseIdGeneratorSupplier getPrimaryKeyGenerator(E entity) {
         throw new DaobabException("Provide a getPrimaryKeyGenerator() method into " + this.getClass().getName());
     }
+
+    DatabaseDateConverter getDatabaseDateConverter();
 
 
 }

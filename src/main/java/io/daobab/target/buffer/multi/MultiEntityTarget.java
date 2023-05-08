@@ -9,7 +9,7 @@ import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesJoined;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.BufferQueryTarget;
-import io.daobab.target.buffer.noheap.PlateBufferIndexed;
+import io.daobab.target.buffer.nonheap.PlateBufferIndexed;
 import io.daobab.target.buffer.query.*;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class MultiEntityTarget extends BaseTarget implements MultiEntity, BufferQueryTarget {
 
@@ -42,7 +42,6 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
             register(entity);
         }
     }
-
 
     @Override
     public OpenedTransactionBufferTarget beginTransaction() {

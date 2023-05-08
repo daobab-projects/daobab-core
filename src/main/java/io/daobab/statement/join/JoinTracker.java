@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("rawtypes")
 public interface JoinTracker {
@@ -65,15 +65,15 @@ public interface JoinTracker {
 
         for (int i = 0; i < bunch.size(); i++) {
             Entity left = bunch.get(i);
-            for (TableColumn ecol : left.columns()) {
-                Column col = ecol.getColumn();
+            for (TableColumn tableColumn : left.columns()) {
+                Column column = tableColumn.getColumn();
                 for (int r = 0; r < bunch.size(); r++) {
                     Entity right = bunch.get(r);
                     if (left.getEntityName().equals(right.getEntityName())) continue;
-                    for (TableColumn ecolright : right.columns()) {
-                        Column colright = ecolright.getColumn();
-                        if (col.getColumnName().equals(colright.getColumnName()) && col.getFieldClass().equals(colright.getFieldClass()) && oneOfThemIsPk(left, right, col, colright)) {
-                            edges.add(new Edge(nodes.get(i), nodes.get(r), 1, left, right, getLink(left, right, col, colright)));
+                    for (TableColumn tableColumnRight : right.columns()) {
+                        Column columnRight = tableColumnRight.getColumn();
+                        if (column.getColumnName().equals(columnRight.getColumnName()) && column.getFieldClass().equals(columnRight.getFieldClass()) && oneOfThemIsPk(left, right, column, columnRight)) {
+                            edges.add(new Edge(nodes.get(i), nodes.get(r), 1, left, right, getLink(left, right, column, columnRight)));
                         }
                     }
                 }

@@ -13,7 +13,7 @@ import java.util.Map;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E, BufferQueryDelete<E>> {
 

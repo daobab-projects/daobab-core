@@ -15,7 +15,7 @@ import io.daobab.target.Target;
 import java.util.*;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes", "unused", "UnusedReturnValue"})
 public abstract class WhereBase {
@@ -217,7 +217,7 @@ public abstract class WhereBase {
                 counter++;
             }
         }
-        optimisationWage = Collections.min(map.keySet());
+        optimisationWage = map.isEmpty() ? 0 : Collections.min(map.keySet());
     }
 
     public <W extends Where> W add(Object wrapper, Object key, Object val, Object relation) {

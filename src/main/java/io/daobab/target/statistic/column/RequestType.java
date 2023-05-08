@@ -15,13 +15,14 @@ public interface RequestType<E extends EntityMap> extends EntityRelationMap<E> {
         return getColumnParam("RequestType");
     }
 
+    @SuppressWarnings("unchecked")
     default E setRequestType(QueryType val) {
         setColumnParam("RequestType", val);
         return (E) this;
     }
 
-    default Column<E, QueryType, RequestType> colRequestType() {
-        return new Column<E, QueryType, RequestType>() {
+    default Column<E, QueryType, RequestType<E>> colRequestType() {
+        return new Column<E, QueryType, RequestType<E>>() {
 
             @Override
             public String getColumnName() {
@@ -44,13 +45,13 @@ public interface RequestType<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public QueryType getValue(RequestType entity) {
+            public QueryType getValue(RequestType<E> entity) {
                 if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "RequestType");
                 return entity.getRequestType();
             }
 
             @Override
-            public void setValue(RequestType entity, QueryType param) {
+            public void setValue(RequestType<E> entity, QueryType param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RequestType");
                 entity.setRequestType(param);
             }

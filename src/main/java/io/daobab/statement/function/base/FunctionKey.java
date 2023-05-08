@@ -1,5 +1,8 @@
 package io.daobab.statement.function.base;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class FunctionKey {
 
     private final String key;

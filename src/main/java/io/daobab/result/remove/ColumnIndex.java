@@ -4,6 +4,9 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class ColumnIndex<P extends Entity, O extends Number, R extends EntityRelation> {
 
     private Column<P, O, R> column;

@@ -1,5 +1,8 @@
 package io.daobab.parser;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class Decoder {
 
     static final byte PADDING = 127;

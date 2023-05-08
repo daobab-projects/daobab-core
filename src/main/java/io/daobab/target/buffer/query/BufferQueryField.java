@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryFieldsProvider<E, F>, FieldsProvider<F>, ColumnOrQuery<E, F, EntityRelation> {
 
@@ -75,7 +75,6 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
     @Override
     public List<F> findMany() {
         return getTarget().readFieldList(modifyQuery(this));
-//        return (List<F>) new BufferFunctionManager().applyFunctionsField(rv, functionMap);
     }
 
     @Override

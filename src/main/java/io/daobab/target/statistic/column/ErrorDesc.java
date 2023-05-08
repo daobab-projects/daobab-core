@@ -14,6 +14,7 @@ public interface ErrorDesc<E extends EntityMap> extends EntityRelationMap<E> {
         return getColumnParam("ErrorDesc");
     }
 
+    @SuppressWarnings("unchecked")
     default E setErrorDesc(String val) {
         setColumnParam("ErrorDesc", val);
         return (E) this;

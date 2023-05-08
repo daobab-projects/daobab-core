@@ -2,6 +2,9 @@ package io.daobab.result;
 
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class IndexedFilterResult {
 
     private Integer[] pointers;

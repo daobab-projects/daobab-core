@@ -1,8 +1,11 @@
 package io.daobab.result.predicate;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class MatchIN implements WherePredicate<Object> {
 
     private final Collection<Object> valueToCompare;
@@ -11,7 +14,7 @@ public class MatchIN implements WherePredicate<Object> {
         if (valueToCompare instanceof Collection) {
             this.valueToCompare = (Collection<Object>) valueToCompare;
         } else {
-            this.valueToCompare = Arrays.asList(valueToCompare);
+            this.valueToCompare = Collections.singletonList(valueToCompare);
         }
     }
 

@@ -2,6 +2,9 @@ package io.daobab.target.database.meta;
 
 import io.daobab.target.database.meta.table.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface MetaDataTables {
     MetaSchema tabMetaSchema = new MetaSchema();
     MetaTable tabMetaTable = new MetaTable();
