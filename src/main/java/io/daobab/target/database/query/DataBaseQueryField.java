@@ -1,10 +1,7 @@
 package io.daobab.target.database.query;
 
 import io.daobab.error.MandatoryColumn;
-import io.daobab.model.Column;
-import io.daobab.model.Dual;
-import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.*;
 import io.daobab.model.dummy.DummyColumnTemplate;
 import io.daobab.query.base.QueryExpressionProvider;
 import io.daobab.query.base.QueryType;
@@ -20,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQueryBase<E, DataBaseQueryField<E, F>> implements InnerQueryFieldsProvider<E, F>, QueryExpressionProvider<E>, FieldsProvider<F>, ColumnOrQuery<E, F, EntityRelation> {
 
@@ -55,7 +52,6 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
         return new DummyColumnRelation<>(this, DummyColumnTemplate.createDummyColumn(new Dual(), clazz, asName));
     }
 
-
     @Override
     public InnerQueryFields<E, F> innerResult() {
         return new InnerQueryFields<>(this);
@@ -82,8 +78,8 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
         return QueryType.FIELD;
     }
 
-    @Override
-    public String toSqlQuery() {
-        return getTarget().toSqlQuery(this);
+    public TableColumn getSelectedColumn() {
+        return fields.get(0);
     }
+
 }

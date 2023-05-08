@@ -1,5 +1,8 @@
 package io.daobab.statement.function.base;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public enum DatePeriod {
 
     YEAR, QUARTER, MONTH, WEEK, DAY, HOUR, MINUTE, SECOND, MILLISECOND,

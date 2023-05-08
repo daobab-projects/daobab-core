@@ -1,5 +1,8 @@
 package io.daobab.statement.function.dictionary;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings("unused")
 public interface DictFunctionOracle {
 

@@ -11,6 +11,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class CurrentDate extends BufferFunction<Object> {
 
     @SuppressWarnings("rawtypes")

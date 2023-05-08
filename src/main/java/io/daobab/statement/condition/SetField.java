@@ -5,6 +5,9 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class SetField<E extends Entity> {
     E entity;
     private Column<E, Object, ?> field;

@@ -8,6 +8,7 @@ import io.daobab.test.dao.table.City;
 import io.daobab.test.dao.table.Country;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CountryCity extends City implements
@@ -19,7 +20,7 @@ public class CountryCity extends City implements
 
     @Override
     public List<Column> joinedColumns() {
-        return Arrays.asList(
+        return Collections.singletonList(
                 tabCountry.colCountry()
         );
     }
@@ -27,7 +28,7 @@ public class CountryCity extends City implements
 
     @Override
     public <Q extends Query & QueryJoin<Q>> Q enhanceQuery(Q query) {
-        return (Q) query
+        return query
                 .join(tabCountry, colCountryId());
     }
 }

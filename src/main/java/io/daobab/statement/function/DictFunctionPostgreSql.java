@@ -1,5 +1,8 @@
 package io.daobab.statement.function;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public interface DictFunctionPostgreSql {
 
 //    String Functions

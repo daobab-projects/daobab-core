@@ -7,6 +7,9 @@ import io.daobab.target.database.query.DataBaseQueryEntity;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class QueryMultiEntityTarget extends MultiEntityTarget implements QueryMultiEntity {
 
     protected final Map<Class<? extends Entity>, DataBaseQueryEntity<? extends Entity>> refreshQueries = new HashMap<>();

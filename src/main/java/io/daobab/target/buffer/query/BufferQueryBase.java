@@ -27,7 +27,7 @@ import java.util.function.UnaryOperator;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBase> implements Query<E, BufferQueryTarget, Q>, QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, RemoteQuery<Q>, ILoggerBean {
@@ -254,7 +254,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     @Override
     public boolean isJoin() {
-        return _unique;
+        return _calcJoins;
     }
 
     @Override
@@ -326,7 +326,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         if (joins != null && !joins.isEmpty()) {
             Map<String, Object> joinMap = new HashMap<>();
             for (int i = 0; i < joins.size(); i++) {
-                joinMap.put("" + i, joins.get(i).toMap());
+                joinMap.put(String.valueOf(i), joins.get(i).toMap());
             }
             rv.put(DictRemoteKey.JOINS, joinMap);
         }

@@ -1,6 +1,9 @@
 package io.daobab.result.predicate;
 
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class MatchNotNull extends MatchEQ {
 
     public MatchNotNull() {

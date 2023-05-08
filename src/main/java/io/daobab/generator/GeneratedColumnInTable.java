@@ -1,7 +1,7 @@
 package io.daobab.generator;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class GeneratedColumnInTable {
 
@@ -84,5 +84,9 @@ public class GeneratedColumnInTable {
     public GeneratedColumnInTable setDataType(int dataType) {
         this.dataType = dataType;
         return this;
+    }
+
+    public boolean isNullable() {
+        return "1".equals(getNullable());
     }
 }

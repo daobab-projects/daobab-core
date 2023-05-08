@@ -2,7 +2,7 @@ package io.daobab.error;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class ParserException extends RuntimeException {
 

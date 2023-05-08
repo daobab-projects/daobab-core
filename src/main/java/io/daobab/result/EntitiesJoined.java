@@ -10,12 +10,12 @@ import io.daobab.statement.where.base.Where;
 import io.daobab.statement.where.base.WhereBase;
 import io.daobab.target.buffer.multi.MultiEntityTarget;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
     private final MultiEntityTarget target;
@@ -140,10 +140,13 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
     @SuppressWarnings({"rawtypes","unchecked"})
     private List<Object> getThisValuesOfColumn(Column column) {
-        return rows.stream()
-                .map(p -> p.getValue(column))
-                .distinct()
-                .collect(Collectors.toList());
+
+        Set<Object> set=new HashSet<>();
+        for (Plate row:rows){
+            set.add(row.getValue(column));
+        }
+        return new ArrayList<>(set);
+
     }
 
 

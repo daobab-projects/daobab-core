@@ -2,6 +2,9 @@ package io.daobab.result.predicate;
 
 import java.util.regex.Pattern;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class MatchLike implements WherePredicate<Object> {
 
     private final Object valueToCompare;

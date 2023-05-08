@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta;
 
-import io.daobab.generator.TypeConverter;
+import io.daobab.generator.JDBCTypeConverter;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.target.buffer.multi.AboveMultiEntityTarget;
@@ -19,11 +19,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaData, MetaDataTables {
 
     private final DataBaseTarget source;
     private final HashMap<String, MetaTable> quickAccessMetaTable = new HashMap<>();
     private final HashMap<String, MetaColumn> quickAccessMetaColumn = new HashMap<>();
+
+    public MetaSchema tabMetaSchema = new MetaSchema();
+    public MetaTable tabMetaTable = new MetaTable();
+    public MetaColumn tabMetaColumn = new MetaColumn();
+    public MetaPrimaryKey tabMetaPrimaryKey = new MetaPrimaryKey();
+    public MetaForeignKey tabMetaForeignKey = new MetaForeignKey();
+    public MetaIndex tabMetaIndex = new MetaIndex();
 
     public MetaDataBaseTarget(String catalog, String schema, DataBaseTarget source) throws SQLException {
         if (schema == null) {
@@ -33,7 +43,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
             catalog = "%";
         }
 
-        TypeConverter typeConverter = new TypeConverter();
+        JDBCTypeConverter typeConverter = new JDBCTypeConverter();
         this.source = source;
         register(MetaTable.class, MetaColumn.class);
 
@@ -79,7 +89,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
                 mc.setRemarks(rsColumn.getString("REMARKS"));
                 mc.setDatatype(JdbcType.valueOf(rsColumn.getInt("DATA_TYPE")));
                 mc.setTableName(rsColumn.getString("TABLE_NAME"));
-                mc.setFieldClass(typeConverter.convert(TypeConverter.UNKNOWN_TABLE, rsColumn.getInt("DATA_TYPE")));
+                mc.setFieldClass(typeConverter.convert(JDBCTypeConverter.UNKNOWN_TABLE, rsColumn.getInt("DATA_TYPE")));
                 mc.setColumnDefault(rsColumn.getString(mc.colColumnDefault().getColumnName()));
                 mc.setOrdinalPosition(rsColumn.getInt(mc.colOrdinalPosition().getColumnName()));
                 mc.setTableColumnName(mc.getTableName() + "." + mc.getColumnName());

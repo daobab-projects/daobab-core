@@ -4,7 +4,7 @@ import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.meta.table.*;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")
 public class DaobabDataBaseMetaData {

@@ -1,18 +1,21 @@
 package io.daobab.result.predicate;
 
-import io.daobab.target.buffer.noheap.NoHeapBuffer;
-import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.nonheap.NonHeapBuffer;
+import io.daobab.target.buffer.nonheap.NonHeapEntities;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BitStringMatchEQ extends MatchEQ {
-    private final NoHeapEntities bufferEntityPointer;
+    private final NonHeapEntities bufferEntityPointer;
 
     private final String strValueToCompare;
     private final int strValueToCompareSize;
 
-    public BitStringMatchEQ(Object valueToCompare, NoHeapEntities bufferEntityPointer) {
+    public BitStringMatchEQ(Object valueToCompare, NonHeapEntities bufferEntityPointer) {
         super(valueToCompare);
         this.strValueToCompare = (String) valueToCompare;
         this.strValueToCompareSize = strValueToCompare.length();
@@ -20,7 +23,7 @@ public class BitStringMatchEQ extends MatchEQ {
     }
 
     @Override
-    public boolean bitTest(NoHeapBuffer bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
+    public boolean bitTest(NonHeapBuffer bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
         int page = entityPosition >> bufferEntityPointer.pageMaxCapacityBytes;
         int rowAtPage = entityPosition - (page << bufferEntityPointer.pageMaxCapacityBytes);
         int posEntity = rowAtPage * bufferEntityPointer.totalEntitySpace;

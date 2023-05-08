@@ -1,5 +1,8 @@
 package io.daobab.result;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class WrapOffsetAndSize {
     private final int offset;
     private final int size;

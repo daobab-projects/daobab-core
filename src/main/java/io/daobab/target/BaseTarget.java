@@ -26,7 +26,7 @@ import java.util.function.BiConsumer;
 import static java.lang.String.format;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")
 public abstract class BaseTarget implements Target, StatisticCollectorProvider, StatisticProvider {
@@ -109,7 +109,8 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
 
     private void handleInterceptorMethod(Entity entity, BiConsumer<Entity, DaobabInterceptor> consumer) {
         if (!areInterceptorInUse()) return;
-        if (entity == null) return;
+        if (entity == null) {
+        }
 //        for (DaobabInterceptor interceptor : getInterceptorsForEntity(entity)) {
 //            consumer.accept(entity, interceptor);
 //        }

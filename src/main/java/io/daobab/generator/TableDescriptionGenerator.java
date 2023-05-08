@@ -1,11 +1,10 @@
 package io.daobab.generator;
 
 
-import java.util.Collections;
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class TableDescriptionGenerator {
 
@@ -27,11 +26,9 @@ public class TableDescriptionGenerator {
     public static String getTableDescription(GenerateTable table) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\r/**\n");
-        sb.append("\r * Comment:").append(table.getRemarks()).append("<br>\n");
-        sb.append("\r * <pre>\n");
-//        sb.append("\r * <pre>\n");
-
+        sb.append("\n\r    /**");
+        sb.append("\r     * Comment:").append(table.getRemarks()).append("<br>");
+        sb.append("\r     * <pre>");
 
         int maxSizeName = getMaxSizeFor(NAME, table);
         int maxSizeType = getMaxSizeFor(TYPE, table);
@@ -44,7 +41,7 @@ public class TableDescriptionGenerator {
         List<GenerateColumn> tableColumns = table.getColumnList();
 
 
-        sb.append("\r * <u>")
+        sb.append("\r     * <u>")
                 .append(fillGaps(labelName, maxSizeName))
                 .append(fillGaps(labelType, maxSizeType))
                 .append(fillGaps(labelSize, maxSizeSize))
@@ -53,20 +50,20 @@ public class TableDescriptionGenerator {
                 .append(fillGaps(labelDescription, maxSizeDescription))
                 .append("</u>");
 
-        Collections.sort(tableColumns, new ComparatorByFinalFieldName());
+        tableColumns.sort(new ComparatorByFinalFieldName());
         for (GenerateColumn c : tableColumns) {
             GeneratedColumnInTable g = c.getColumnInTable(table.getTableName());
-            sb.append("\r * ")
+            sb.append("\r     * ")
                     .append(fillGaps(g.isPk() ? (c.getFinalFieldName() + "(PK)") : c.getFinalFieldName(), maxSizeName))
                     .append(fillGaps(c.getFieldClass().getSimpleName(), maxSizeType))
-                    .append(fillGaps(String.valueOf(g == null ? 0 : g.getColumnSize()), maxSizeSize))
+                    .append(fillGaps(String.valueOf(g.getColumnSize()), maxSizeSize))
                     .append(fillGaps(c.getColumnName() == null ? "" : c.getColumnName(), maxSizeDBName))
-                    .append(fillGaps(TypeConverter.getDataBaseTypeName(c.getDataType()), maxSizeDBType))
-                    .append(fillGaps(g == null || g.getRemarks() == null ? "" : g.getRemarks(), maxSizeDescription));
+                    .append(fillGaps(JDBCTypeConverter.getDataBaseTypeName(c.getDataType()), maxSizeDBType))
+                    .append(fillGaps(g.getRemarks() == null ? "" : g.getRemarks(), maxSizeDescription));
         }
 
-        sb.append("\r * </pre>\n");
-        sb.append("\r*/\n");
+        sb.append("\r     * </pre>");
+        sb.append("\r    */\n");
 
         return sb.toString();
     }
@@ -107,7 +104,7 @@ public class TableDescriptionGenerator {
                     currentSize = c.getColumnName() == null ? 0 : c.getColumnName().length();
                     break;
                 case DBTYPE:
-                    currentSize = TypeConverter.getDataBaseTypeName(c.getDataType()).length();
+                    currentSize = JDBCTypeConverter.getDataBaseTypeName(c.getDataType()).length();
                     break;
                 case DESCRIPTION:
                     currentSize = g == null || g.getRemarks() == null ? 0 : g.getRemarks().length();

@@ -6,6 +6,9 @@ import io.daobab.model.TableColumn;
 
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings("rawtypes")
 public interface AccessProtector {
     AccessProtector setEntityAccess(Entity entity, Access... accessRights);

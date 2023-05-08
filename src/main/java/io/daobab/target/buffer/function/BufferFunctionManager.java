@@ -18,6 +18,9 @@ import io.daobab.target.buffer.single.Plates;
 
 import java.util.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BufferFunctionManager extends HashMap<String, BufferFunction> implements FunctionWhispererBuffer {
 
     public BufferFunctionManager() {

@@ -1,5 +1,8 @@
 package io.daobab.target.protection;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public enum Access {
 
     FULL,

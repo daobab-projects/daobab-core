@@ -16,6 +16,9 @@ import java.util.function.Predicate;
 
 import static io.daobab.statement.where.base.WhereBase.OR;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class GeneralWhereAndPlate<P extends Plate> implements WherePredicate<P> {
 

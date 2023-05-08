@@ -1,7 +1,7 @@
 package io.daobab.model;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface EntityRelation<E extends Entity> extends Entity {
 

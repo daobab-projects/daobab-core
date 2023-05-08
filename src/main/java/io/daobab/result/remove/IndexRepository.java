@@ -4,6 +4,9 @@ import io.daobab.model.Entity;
 
 import java.util.HashMap;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class IndexRepository<E extends Entity> extends HashMap<String, Index<E, ?>> {
 
 //    public  IndexRepository(List<E> entities) {

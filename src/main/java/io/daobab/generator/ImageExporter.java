@@ -12,6 +12,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class ImageExporter {
     DataSource ds;
 
@@ -29,7 +32,7 @@ public class ImageExporter {
             DaobabDataBaseMetaData rv = new DaobabDataBaseMetaData();
 
             try {
-                rv.setDatabaseMajorVersion("" + c.getMetaData().getDatabaseMajorVersion());
+                rv.setDatabaseMajorVersion(String.valueOf(c.getMetaData().getDatabaseMajorVersion()));
                 rv.setDatabaseProductName(c.getMetaData().getDatabaseProductName());
                 rv.setDriverName(c.getMetaData().getDriverName());
                 rv.setDriverVersion(c.getMetaData().getDriverVersion());

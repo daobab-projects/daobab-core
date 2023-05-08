@@ -8,6 +8,9 @@ import io.daobab.statement.condition.Operator;
 
 import java.util.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class IndexNumber<E extends Entity, F extends Number> extends Index<E, F> {
 
 

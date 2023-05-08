@@ -15,10 +15,11 @@ import io.daobab.statement.function.type.NoParamFunction;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"rawtypes", "unused"})
 public interface FunctionWhispererH2 {
-
 
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> ascii(ColumnOrQuery<E, F, R> columnOrQuery) {
         return new ColumnFunction<>(columnOrQuery, DictFunctionH2.ASCII, Integer.class);
@@ -582,11 +583,11 @@ public interface FunctionWhispererH2 {
     }
 
 
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, String, R, String> camel(ColumnOrQuery<E, String, R> column) {
-        return concat(upper(substring(column, 0, 1)), lower(substring(column, 1, length(column))));
+    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, String> camel(ColumnOrQuery<E, String, R> column) {
+        return concat(upper(substring(column, 0, 1)), lower(substring(column, 2, length(column))));
     }
 
-    default <C extends Number, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> sum(ColumnOrQuery<E, F, R> columnOrQuery) {
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, ?> sum(ColumnOrQuery<E, F, R> columnOrQuery) {
         return new ColumnFunction<>(columnOrQuery, DictFunctionH2.SUM);
     }
 
@@ -595,12 +596,11 @@ public interface FunctionWhispererH2 {
     }
 
     @SuppressWarnings("unchecked")
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> sumRows(ColumnOrQuery column, ColumnOrQuery... columns) {
+    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> sumRows(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, ?, ?>... columns) {
         if (column == null) throw new MandatoryFunctionParameter(DictFunctionH2.SUM2);
         return new ManyArgumentsFunction<>(DictFunctionH2.SUM2, "+", column, columns);
     }
 
-    @SuppressWarnings("unchecked")
     default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> sub(ColumnOrQuery column) {
         return new ManyArgumentsFunction<>(DictFunctionH2.SUB2);
     }
@@ -611,11 +611,11 @@ public interface FunctionWhispererH2 {
         return new ManyArgumentsFunction<>(DictFunctionH2.SUB2, "-", columns);
     }
 
-    default <C extends Number, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> count(ColumnOrQuery<E, F, R> columnOrQuery, Class<C> clazz) {
+    default <C extends Number, E extends Entity & EntityRelation> ColumnFunction<E, Long, E, C> count(ColumnOrQuery<E, Long, E> columnOrQuery, Class<C> clazz) {
         return new ColumnFunction<>(columnOrQuery, DictFunctionH2.COUNT, clazz);
     }
 
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Long> count(E entity) {
+    default <E extends Entity & EntityRelation> ColumnFunction<E, Long, E, Long> count(E entity) {
         return new ColumnFunction<>(DictFunctionH2.COUNT, Long.class, entity);
     }
 

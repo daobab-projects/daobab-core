@@ -1,11 +1,14 @@
 package io.daobab.result.predicate;
 
 
-import io.daobab.target.buffer.noheap.NoHeapEntities;
-import io.daobab.target.buffer.noheap.access.field.BitFieldInteger;
+import io.daobab.target.buffer.nonheap.NonHeapEntities;
+import io.daobab.target.buffer.nonheap.access.field.BitFieldInteger;
 
 import java.nio.ByteBuffer;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class NumberMatchGT extends NumberMatchEQ {
 
     private final BitFieldInteger bt = new BitFieldInteger();
@@ -19,7 +22,7 @@ public class NumberMatchGT extends NumberMatchEQ {
         return valueFromEntityField != null && valueToCompare < (((Number) valueFromEntityField).doubleValue());
     }
 
-    public boolean bitTest(NoHeapEntities bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
+    public boolean bitTest(NonHeapEntities bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
 
         int page = entityPosition >> bufferEntityPointer.pageMaxCapacityBytes;
         int rowAtPage = entityPosition - (page << bufferEntityPointer.pageMaxCapacityBytes);

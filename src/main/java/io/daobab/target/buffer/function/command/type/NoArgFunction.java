@@ -6,6 +6,9 @@ import io.daobab.target.buffer.single.Plates;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class NoArgFunction<F> extends BufferFunction<F> {
 
     @Override

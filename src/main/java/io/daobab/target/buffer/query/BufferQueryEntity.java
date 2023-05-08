@@ -8,7 +8,7 @@ import io.daobab.result.EntitiesProvider;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.buffer.BufferQueryTarget;
-import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.nonheap.NonHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E, BufferQueryEntity<E>> implements InnerQueryEntity<E>, EntitiesProvider<E> {
 
@@ -64,8 +64,8 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
     }
 
     @Override
-    public NoHeapEntities<E> toNoHeap() {
-        return new NoHeapEntities<>(this.findMany());
+    public NonHeapEntities<E> toNonHeap() {
+        return new NonHeapEntities<>(this.findMany());
     }
 
     @Override

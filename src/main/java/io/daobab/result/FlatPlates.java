@@ -10,7 +10,7 @@ import java.util.Collection;
 /**
  * FlatBuffer collection.
  *
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable, JsonHandler, Cloneable {
 

@@ -3,7 +3,7 @@ package io.daobab.error;
 import io.daobab.internallogger.ILoggerBean;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class DaobabRollbackException extends RuntimeException {
 

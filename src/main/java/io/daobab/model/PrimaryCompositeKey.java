@@ -13,22 +13,22 @@ import io.daobab.transaction.Propagation;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface PrimaryCompositeKey<E extends Entity, K extends Composite> extends EntityRelation<E>, Composite<E>, QueryWhisperer {
 
 
-    CompositeColumns<K> keyColumns();
+    CompositeColumns<K> colCompositeId();
 
-    default Where getKeyWhere(Composite<E> keyEntity) {
+    default Where getCompositeKeyWhere(Composite<E> keyEntity) {
         if (keyEntity == null) {
             throw new DaobabException("Composite key cannot be null");
         }
         WhereAnd where = new WhereAnd();
-        for (TableColumn tCol : keyColumns()) {
-            Column col = tCol.getColumn();
-            where.equal(col, col.getValue((EntityRelation) keyEntity));
+        for (TableColumn tableColumn : colCompositeId()) {
+            Column column = tableColumn.getColumn();
+            where.equal(column, column.getValue((EntityRelation) keyEntity));
         }
         return where;
     }
@@ -49,15 +49,15 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default boolean delete(QueryTarget target) {
-        return new DataBaseQueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute() == 1;
+        return new DataBaseQueryDelete<>(target, (E) this).where(getCompositeKeyWhere(this)).execute() == 1;
     }
 
     default boolean delete(OpenedTransactionDataBaseTarget target, boolean transaction) {
-        return new DataBaseQueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute(transaction) == 1;
+        return new DataBaseQueryDelete<>(target, (E) this).where(getCompositeKeyWhere(this)).execute(transaction) == 1;
     }
 
     default boolean delete(OpenedTransactionDataBaseTarget target, Propagation propagation) {
-        return new DataBaseQueryDelete<>(target, (E) this).where(getKeyWhere(this)).execute(propagation) == 1;
+        return new DataBaseQueryDelete<>(target, (E) this).where(getCompositeKeyWhere(this)).execute(propagation) == 1;
     }
 
     default E update(QueryTarget target, Column<E, ?, ?>... columnsToUpdate) {
@@ -82,7 +82,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
 
             }
         }
-        target.update(SetFields.setColumns((E) this, columnsToUpdate)).where(getKeyWhere(this)).execute();
+        target.update(SetFields.setColumns((E) this, columnsToUpdate)).where(getCompositeKeyWhere(this)).execute();
         return (E) this;
     }
 
@@ -100,14 +100,14 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
             }
 
             if (!occColumnUpdated) {
-                Column<E, ?, ?>[] newarray = new Column[columnsToUpdate.length + 1];
-                System.arraycopy(columnsToUpdate, 0, newarray, 0, columnsToUpdate.length);
-                newarray[columnsToUpdate.length + 1] = occ.getOCCColumn();
-                columnsToUpdate = newarray;
+                Column<E, ?, ?>[] newArray = new Column[columnsToUpdate.length + 1];
+                System.arraycopy(columnsToUpdate, 0, newArray, 0, columnsToUpdate.length);
+                newArray[columnsToUpdate.length + 1] = occ.getOCCColumn();
+                columnsToUpdate = newArray;
 
             }
         }
-        target.update(SetFields.setColumns((E) this, columnsToUpdate)).where(getKeyWhere(this)).execute(propagation);
+        target.update(SetFields.setColumns((E) this, columnsToUpdate)).where(getCompositeKeyWhere(this)).execute(propagation);
         return (E) this;
     }
 
@@ -116,8 +116,8 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setInfoColumns((EntityRelation) this, columns().toArray(new TableColumn[columns().size()])))
-                .where(getKeyWhere(this))
+        target.update(SetFields.setInfoColumns((EntityRelation) this, columns().toArray(new TableColumn[0])))
+                .where(getCompositeKeyWhere(this))
                 .execute();
         return (E) this;
     }
@@ -127,8 +127,8 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setColumns((E) this, columns().toArray(new Column[columns().size()])))
-                .where(getKeyWhere(this))
+        target.update(SetFields.setColumns((E) this, columns().toArray(new Column[0])))
+                .where(getCompositeKeyWhere(this))
                 .execute(transaction);
         return (E) this;
     }
@@ -148,21 +148,20 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
             }
 
             if (!occColumnUpdated) {
-                Column<E, ?, ?>[] newarray = new Column[columnsToUpdate.length + 1];
-                System.arraycopy(columnsToUpdate, 0, newarray, 0, columnsToUpdate.length);
-                newarray[columnsToUpdate.length + 1] = occ.getOCCColumn();
-                columnsToUpdate = newarray;
-
+                Column<E, ?, ?>[] newArray = new Column[columnsToUpdate.length + 1];
+                System.arraycopy(columnsToUpdate, 0, newArray, 0, columnsToUpdate.length);
+                newArray[columnsToUpdate.length + 1] = occ.getOCCColumn();
+                columnsToUpdate = newArray;
             }
         }
         target.update(SetFields.setColumns((E) this, columnsToUpdate))
-                .where(getKeyWhere(this))
+                .where(getCompositeKeyWhere(this))
                 .execute(transaction);
         return (E) this;
     }
 
     default E findById(QueryTarget target, K id) {
-        return target.select((E) this).where(getKeyWhere(this)).findOne();
+        return target.select((E) this).where(getCompositeKeyWhere(this)).findOne();
     }
 
     default <F, R extends EntityRelation> E findByColumnValue(QueryTarget target, Column<E, F, R> column, F value) {
@@ -170,11 +169,11 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default String getSqlUpdate(DataBaseTarget target) {
-        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) target.getColumnsForTable(this))).where(getKeyWhere(this)) + ";";
+        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) target.getColumnsForTable(this))).where(getCompositeKeyWhere(this)) + ";";
     }
 
     default String getSqlUpdate(DataBaseTarget target, Column<E, ?, ?>... columnsToUpdate) {
-        return target.update(SetFields.setColumns((E) this, columnsToUpdate)).where(getKeyWhere(this)).getSQLQuery(target) + ";";
+        return target.update(SetFields.setColumns((E) this, columnsToUpdate)).where(getCompositeKeyWhere(this)).getSQLQuery(target) + ";";
     }
 
 }

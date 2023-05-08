@@ -1,8 +1,11 @@
 package io.daobab.result.predicate;
 
 
-import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.nonheap.NonHeapEntities;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class IntegerMatchGTEQ extends IntegerMatchEQ {
 
     public IntegerMatchGTEQ(int valueToCompare) {
@@ -14,7 +17,7 @@ public class IntegerMatchGTEQ extends IntegerMatchEQ {
         return valueFromEntityField != null && valueToCompare <= valueFromEntityField;
     }
 
-    public boolean bitTest(NoHeapEntities bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
+    public boolean bitTest(NonHeapEntities bufferEntityPointer, int entityPosition, int columnPositionIntoEntity, int colPosition) {
         Integer v = getEntityVal(bufferEntityPointer, entityPosition, columnPositionIntoEntity, colPosition);
         return v != null && valueToCompare <= v;
     }

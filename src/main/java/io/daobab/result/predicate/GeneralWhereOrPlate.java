@@ -4,6 +4,9 @@ import io.daobab.model.Column;
 import io.daobab.model.Plate;
 import io.daobab.statement.where.base.Where;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class GeneralWhereOrPlate<P extends Plate> extends GeneralWhereAndPlate<P> {
 
     public GeneralWhereOrPlate(Where wrapperWhere) {

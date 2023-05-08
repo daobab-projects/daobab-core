@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.daobab</groupId>
     <artifactId>daobab-core</artifactId>
-    <version>1.2.3</version>
+    <version>1.6</version>
     <name>Daobab</name>
     <url>http://www.daobab.io</url>
     <description>Daobab Java ORM</description>
@@ -26,7 +26,7 @@
 
     <licenses>
         <license>
-            <name>CC-BY-NC-ND</name>
+            <name>Apache License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
@@ -34,19 +34,15 @@
     <developers>
         <developer>
             <name>Klaudiusz Wojtkowiak</name>
-            <email>klaudiusz.wojtkowiak@gmail.com</email>
             <organization>Elephant Software</organization>
             <organizationUrl>http://www.daobab.io</organizationUrl>
         </developer>
     </developers>
 
     <scm>
-        <url>https://github.com/KlaudiuszWojtkowiak/drummer-examples.git</url>
-        <connection>scm:git:git://github.com/KlaudiuszWojtkowiak/drummer-examples.git</connection>
-        <developerConnection>scm:git:git@github.com/KlaudiuszWojtkowiak/drummer-examples.git</developerConnection>
+        <url>https://github.com/daobab-projects/daobab-core</url>
         <tag>HEAD</tag>
     </scm>
-
 
     <distributionManagement>
         <snapshotRepository>
@@ -57,14 +53,13 @@
     </distributionManagement>
 
 
-
     <dependencies>
 
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
+            <version>1.7.33</version>
             <scope>compile</scope>
         </dependency>
 
@@ -72,7 +67,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.2.0</version>
+            <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -80,7 +75,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.11.0</version>
+            <version>2.13.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -106,7 +101,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
 
@@ -114,18 +109,25 @@
 
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
+
+                        <manifestEntries>
+                            <url>${project.url}</url>
+                            <company>Elephant Software</company>
+                            <author>Klaudiusz Wojtkowiak</author>
+                            <license>Apache License, Version 2.0</license>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
 
 
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>

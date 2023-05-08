@@ -3,7 +3,7 @@ package io.daobab.statement.where;
 import io.daobab.statement.where.base.Where;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class WhereOr extends Where<WhereOr> {
 
@@ -17,6 +17,12 @@ public class WhereOr extends Where<WhereOr> {
             temp(where);
         }
     }
+
+//    public WhereOr or(UnaryOperator<WhereOr> condition) {
+//        WhereOr or = new WhereOr();
+//        or = condition.apply(or);
+//        return or;
+//    }
 
     public static WhereOr or() {
         return new WhereOr();

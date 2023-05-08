@@ -18,7 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")
 public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBaseQueryPlate> implements QueryExpressionProvider<Entity>, PlateProvider {
@@ -38,10 +38,10 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
             columns.addAll(target.getColumnsForTable(e));
         }
 
-        TableColumn fielddao = columns.get(0);
-        if (fielddao == null) throw new MandatoryColumn();
-        init(target, fielddao.getColumn().getInstance());
-        andColumn(fielddao.getColumn());
+        TableColumn fieldDao = columns.get(0);
+        if (fieldDao == null) throw new MandatoryColumn();
+        init(target, fieldDao.getColumn().getInstance());
+        andColumn(fieldDao.getColumn());
 
         for (int i = 1; i < columns.size(); i++) {
             getFields().add(columns.get(i));
@@ -66,6 +66,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         setSingleEntity(entities.size() == 1);
     }
 
+    @SuppressWarnings("rawtypes")
     public DataBaseQueryPlate(QueryTarget target, List<? extends Column> columndaos) {
 
         Column<?, ?, ?> fielddao = columndaos.get(0);
@@ -106,29 +107,22 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         return getTarget().count(this);
     }
 
-
     public FieldsProvider<FlatPlate> flat() {
         return map2(Plate::toFlat);
     }
 
     private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
-        List<Plate> res = findMany();
-        List<M> rv = new ArrayList<>();
-        if (mapper == null) return new FieldsBuffer<>(rv);
-
-        res.forEach(t -> rv.add(mapper.apply(t)));
-
-        return new FieldsBuffer<>(rv);
+        if (mapper == null) return new FieldsBuffer<>();
+        return new FieldsBuffer<>(findMany().stream().map(mapper).collect(Collectors.toList()));
     }
 
-    private DataBaseQueryPlate andColumn(Column<?, ?, ?> columndao) {
+    private DataBaseQueryPlate andColumn(Column<?, ?, ?> column) {
         if (getFields() == null) setFields(new ArrayList<>());
-        getFields().add(getInfoColumn(columndao));
+        getFields().add(getInfoColumn(column));
         return this;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Plates findMany() {
         return getTarget().readPlateList(modifyQuery(this));
     }
@@ -162,17 +156,8 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     }
 
     public List<Entity> getRelatedEntities() {
-        List<Entity> rv = new ArrayList<>();
-        if (getFields() == null || getFields().isEmpty()) return rv;
-        for (TableColumn col : getFields()) {
-            for (Entity e : rv) {
-                if (e.getEntityName().equals(col.getColumn().getInstance().getEntityName())) {
-                    continue;
-                }
-                rv.add(col.getColumn().getInstance());
-            }
-        }
-        return rv;
+        if (getFields() == null) return new ArrayList<>();
+        return getFields().stream().map(col -> col.getColumn().getInstance()).distinct().collect(Collectors.toList());
     }
 
     @Override
@@ -191,11 +176,6 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     @Override
     public QueryType getQueryType() {
         return QueryType.PLATE;
-    }
-
-    @Override
-    public String toSqlQuery() {
-        return getTarget().toSqlQuery(this);
     }
 
 }

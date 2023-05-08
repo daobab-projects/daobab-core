@@ -4,6 +4,7 @@ import io.daobab.model.*;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.statement.where.WhereAnd;
+import io.daobab.statement.where.WhereNot;
 import io.daobab.statement.where.WhereOr;
 import io.daobab.statement.where.base.Where;
 import io.daobab.target.buffer.single.Entities;
@@ -13,7 +14,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryWhere<Q extends Query> {
@@ -26,7 +27,6 @@ public interface QueryWhere<Q extends Query> {
         setWhereWrapper(wrapper);
         return (Q) this;
     }
-
 
     default Q whereAnd(UnaryOperator<WhereAnd> condition) {
         WhereAnd and = new WhereAnd();
@@ -45,6 +45,19 @@ public interface QueryWhere<Q extends Query> {
         WhereOr or = new WhereOr();
         or = condition.apply(or);
         setWhereWrapper(or);
+        return (Q) this;
+    }
+
+    default Q whereNOT(Supplier<WhereNot> wrapper) {
+        setWhereWrapper(wrapper.get());
+        return (Q) this;
+    }
+
+    @SuppressWarnings("java:S1845")
+    default Q whereNot(UnaryOperator<WhereNot> condition) {
+        WhereNot not = new WhereNot();
+        not = condition.apply(not);
+        setWhereWrapper(not);
         return (Q) this;
     }
 
@@ -135,6 +148,17 @@ public interface QueryWhere<Q extends Query> {
 
     default <E extends Entity, F, R extends EntityRelation> Q whereNotIn(Column<E, F, R> column, F... val) {
         setWhereWrapper(new WhereAnd().notIn(column, val));
+        return (Q) this;
+    }
+
+
+    default <E extends Entity, F, R extends EntityRelation> Q whereInCollection(Column<E, F, R> column, Collection<F> val) {
+        setWhereWrapper(new WhereAnd().inFields(column, val));
+        return (Q) this;
+    }
+
+    default <E extends Entity, F, R extends EntityRelation> Q whereNotInCollection(Column<E, F, R> column, Collection<F> val) {
+        setWhereWrapper(new WhereAnd().notInFields(column, val));
         return (Q) this;
     }
 
@@ -303,12 +327,12 @@ public interface QueryWhere<Q extends Query> {
         return (Q) this;
     }
 
-    default <K extends Composite> Q whereEqual(CompositeColumns key, K val) {
+    default <K extends Composite, K1 extends Composite> Q whereEqual(CompositeColumns<K> key, K1 val) {
         setWhereWrapper(new WhereAnd().equal(key, val));
         return (Q) this;
     }
 
-    default <K extends Composite> Q whereNotEqual(CompositeColumns key, K val) {
+    default <K extends Composite, K1 extends Composite> Q whereNotEqual(CompositeColumns<K> key, K1 val) {
         setWhereWrapper(new WhereAnd().equal(key, val));
         return (Q) this;
     }

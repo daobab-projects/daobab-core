@@ -7,6 +7,9 @@ import io.daobab.model.TableColumn;
 
 import java.util.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class BasicAccessProtector implements AccessProtector {
 
     private final Map<String, Set<Access>> entityRights = new HashMap<>();

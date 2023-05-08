@@ -5,7 +5,7 @@ import io.daobab.model.Column;
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryGroupBy<Q extends Query> {

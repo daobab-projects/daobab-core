@@ -20,6 +20,7 @@ public interface ResponseDate<E extends EntityMap> extends EntityRelationMap<E> 
         return getColumnParam("ResponseDate");
     }
 
+    @SuppressWarnings("unchecked")
     default E setResponseDate(Timestamp val) {
         setColumnParam("ResponseDate", val);
         return (E) this;

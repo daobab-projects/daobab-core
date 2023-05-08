@@ -3,7 +3,7 @@ package io.daobab.generator;
 import java.util.Comparator;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class ComparatorByFinalFieldName implements Comparator<GenerateColumn> {
     @Override

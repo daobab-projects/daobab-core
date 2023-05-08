@@ -9,6 +9,9 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings("unused")
 public class Avg extends Sum {
 

@@ -8,6 +8,9 @@ import io.daobab.target.buffer.single.Plates;
 
 import java.util.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class Upper extends BufferFunction<String> {
 
     @SuppressWarnings({"rawtypes", "unchecked"})

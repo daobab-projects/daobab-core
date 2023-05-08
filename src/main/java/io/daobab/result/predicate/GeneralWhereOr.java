@@ -6,6 +6,9 @@ import io.daobab.statement.where.base.Where;
 
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class GeneralWhereOr<E> extends GeneralWhereAnd<E> {
 
     public GeneralWhereOr(Where wrapperWhere) {

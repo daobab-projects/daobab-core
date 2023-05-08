@@ -16,6 +16,9 @@ import io.daobab.transaction.TransactionIndicator;
 import java.util.List;
 import java.util.function.BiFunction;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget implements MultiEntity {
 
     private boolean propagateModifications = false;

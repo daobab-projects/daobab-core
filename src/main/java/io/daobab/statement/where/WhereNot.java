@@ -3,7 +3,7 @@ package io.daobab.statement.where;
 import io.daobab.statement.where.base.Where;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class WhereNot extends Where<WhereNot> {
 

@@ -3,6 +3,9 @@ package io.daobab.result.predicate;
 import java.util.Date;
 import java.util.TimeZone;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class DateMatchLTEQ extends DateMatchEQ {
 
     public DateMatchLTEQ(Object valueToCompare) {

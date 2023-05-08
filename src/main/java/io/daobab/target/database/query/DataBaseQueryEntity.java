@@ -1,25 +1,23 @@
 package io.daobab.target.database.query;
 
-import io.daobab.model.Column;
-import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.*;
 import io.daobab.query.base.QueryType;
 import io.daobab.result.EntitiesProvider;
 import io.daobab.statement.condition.Count;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
-import io.daobab.target.buffer.noheap.NoHeapEntities;
+import io.daobab.target.buffer.nonheap.NonHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.QueryTarget;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
+@SuppressWarnings("unused")
 public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBase<E, DataBaseQueryEntity<E>> implements InnerQueryEntity<E>, EntitiesProvider<E> {
 
     @SuppressWarnings("unused")
@@ -40,7 +38,6 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         target.getColumnsForTable(entity).forEach(e -> getFields().add(e));
     }
 
-
     public DataBaseQueryEntity(String nativeQuery, QueryTarget target, E entity) {
         this(target, entity);
         this._nativeQuery = nativeQuery;
@@ -52,9 +49,6 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         return getTarget().count(this);
     }
 
-
-    //---- RESULT SECTION
-
     @Override
     public Entities<E> findMany() {
         return getTarget().readEntityList(modifyQuery(this));
@@ -65,6 +59,7 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         return Optional.ofNullable(getTarget().readEntity(modifyQuery(this)));
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public <E1 extends Entity, F, R extends EntityRelation> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> column) {
         DataBaseQueryField<E1, F> dataBaseQueryField = new DataBaseQueryField<>(getTarget(), column);
@@ -72,8 +67,8 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
     }
 
     @Override
-    public NoHeapEntities<E> toNoHeap() {
-        return new NoHeapEntities<E>(this.findMany());
+    public NonHeapEntities<E> toNonHeap() {
+        return new NonHeapEntities<>(this.findMany());
     }
 
     @Override
@@ -81,9 +76,52 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         return QueryType.ENTITY;
     }
 
-    @Override
-    public String toSqlQuery() {
-        return getTarget().toSqlQuery(this);
+
+    @SuppressWarnings({"java:S2175", "rawtypes", "unchecked"})
+    public DataBaseQueryEntity<E> skip(Column<E, ?, ?>... columns) {
+        if (columns == null || columns.length == 0) return this;
+        List<Column<E, ?, ?>> toRemove = new ArrayList<>();
+        List<TableColumn> tableAllColumns = getTarget().getColumnsForTable(columns[0].getInstance());
+        Collections.addAll(toRemove, columns);
+
+        Entity entity = columns[0].getInstance();
+        boolean primaryKeyEntity = entity instanceof PrimaryKey;
+        if (primaryKeyEntity) {
+            Column pkColumn = ((PrimaryKey) entity).colID();
+            if (Arrays.stream(columns).anyMatch(c -> c.equalsColumn(pkColumn))) {
+                //PK must stay if the entity has it.
+                toRemove.remove(pkColumn);
+            }
+        }
+
+        setFields(tableAllColumns.stream()
+                .filter(t -> toRemove.stream().noneMatch(c -> c.equalsColumn(t.getColumn())))
+                .filter(t -> getFields().stream().anyMatch(c -> c.getColumn().equalsColumn(t.getColumn())))
+                .collect(Collectors.toList()));
+        return this;
+    }
+
+    @SuppressWarnings({"java:S2175", "rawtypes", "unchecked"})
+    public DataBaseQueryEntity<E> only(Column<E, ?, ?>... columns) {
+        if (columns == null || columns.length == 0) return this;
+        List<Column<E, ?, ?>> toLeave = new ArrayList<>();
+        List<TableColumn> tableAllColumns = getTarget().getColumnsForTable(columns[0].getInstance());
+        Collections.addAll(toLeave, columns);
+
+        Entity entity = columns[0].getInstance();
+        boolean primaryKeyEntity = entity instanceof PrimaryKey;
+        if (primaryKeyEntity) {
+            Column pkColumn = ((PrimaryKey) entity).colID();
+            if (Arrays.stream(columns).noneMatch(c -> c.equalsColumn(pkColumn))) {
+                //PK must stay if the entity has it.
+                toLeave.add(pkColumn);
+            }
+        }
+        setFields(tableAllColumns.stream()
+                .filter(t -> toLeave.stream().anyMatch(c -> c.equalsColumn(t.getColumn())))
+                .filter(t -> getFields().stream().anyMatch(c -> c.getColumn().equalsColumn(t.getColumn())))
+                .collect(Collectors.toList()));
+        return this;
     }
 
 }

@@ -7,6 +7,9 @@ import io.daobab.model.dummy.DummyColumnTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class ProcedureParameters {
 
     private final Plate plate = new Plate();

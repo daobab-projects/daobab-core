@@ -11,6 +11,9 @@ import io.daobab.statement.where.WhereNot;
 import io.daobab.statement.where.WhereOr;
 import io.daobab.statement.where.base.Where;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
 public interface QueryWhisperer {
 

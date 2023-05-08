@@ -1,5 +1,8 @@
 package io.daobab.result.predicate;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class MatchNotIN extends MatchIN {
 
     public MatchNotIN(Object valueToCompare) {

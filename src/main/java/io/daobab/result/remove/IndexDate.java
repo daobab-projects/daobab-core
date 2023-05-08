@@ -9,6 +9,9 @@ import io.daobab.statement.condition.Operator;
 
 import java.util.*;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class IndexDate<E extends Entity, F extends Date> extends IndexNumber<E, Long> {
 
     private IndexDate(Column<E, ?, EntityRelation> indexedColumn, Map<Long, List<E>> oneToManySubMap, List<E> nullValuesAsPK) {

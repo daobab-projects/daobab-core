@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"rawtypes", "unused"})
 public interface BufferQueryTarget extends Target, BufferQueryHandler {
 
@@ -108,12 +111,12 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
         return new BufferQueryField<>(this, column).whereEqual(column.getInstance().colID(), id).findOne();
     }
 
-    default <E extends Entity & PrimaryCompositeKey<E, K>, K extends Composite> E findOneByPk(E entity, K key) {
-        return new BufferQueryEntity<>(this, entity).whereEqual(entity.keyColumns(), key).findOne();
+    default <E extends Entity & PrimaryCompositeKey<E, K>, K extends Composite, K1 extends Composite> E findOneByPk(E entity, K1 key) {
+        return new BufferQueryEntity<>(this, entity).whereEqual(entity.colCompositeId(), key).findOne();
     }
 
     default <E extends Entity & PrimaryCompositeKey<E, K>, K extends Composite> Entities<E> findManyByPk(E entity, K key) {
-        return new BufferQueryEntity<>(this, entity).whereEqual(entity.keyColumns(), key).findMany();
+        return new BufferQueryEntity<>(this, entity).whereEqual(entity.colCompositeId(), key).findMany();
     }
 
     default <E extends EntityMap & PrimaryKey<E, F, ?>, F> E findFieldsByPk(F id, Column<E, ?, ?>... columns) {
@@ -124,7 +127,7 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
 
     default <E extends EntityMap & PrimaryCompositeKey<E, K>, K extends Composite> E findFieldsByPk(K key, Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) throw new MandatoryColumn();
-        BufferQueryPlate query = new BufferQueryPlate(this, columns).whereEqual(columns[0].getInstance().keyColumns(), key);
+        BufferQueryPlate query = new BufferQueryPlate(this, columns).whereEqual(columns[0].getInstance().colCompositeId(), key);
         return query.findOneAs(columns[0].getEntityClass());
     }
 

@@ -5,6 +5,9 @@ import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.query.base.Query;
 
+/**
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class DummyColumnRelation<E extends Entity, F, R extends EntityRelation> extends ColumnFunction<E, F, R, F> {
 
     private Query<?, ?, ?> query;

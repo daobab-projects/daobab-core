@@ -12,7 +12,7 @@ import io.daobab.transaction.Propagation;
 import java.util.List;
 
 /**
- * @author Klaudiusz Wojtkowiak, (C) Elephant Software 2018-2022
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface BufferQueryHandler extends Target, QueryHandler {
 
