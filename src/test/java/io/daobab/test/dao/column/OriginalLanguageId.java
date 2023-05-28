@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface OriginalLanguageId<E extends EntityMap> extends EntityRelationMap<E> {
+public interface OriginalLanguageId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface OriginalLanguageId<E extends EntityMap> extends EntityRelationM
      * db type: TINYINT
      */
     default Integer getOriginalLanguageId() {
-        return getColumnParam("OriginalLanguageId");
+        return readParam("OriginalLanguageId");
     }
 
     default E setOriginalLanguageId(Integer val) {
-        setColumnParam("OriginalLanguageId", val);
-        return (E) this;
+        return storeParam("OriginalLanguageId", val);
     }
 
     default Column<E, Integer, OriginalLanguageId> colOriginalLanguageId() {
@@ -50,15 +50,15 @@ public interface OriginalLanguageId<E extends EntityMap> extends EntityRelationM
             @Override
             public Integer getValue(OriginalLanguageId entity) {
                 if (entity == null)
-                    throw new AttemptToReadFromNullEntityException(getEntityClass(), "OriginalLanguageId");
+                    throw new AttemptToReadFromNullEntityException(entityClass(), "OriginalLanguageId");
                 return entity.getOriginalLanguageId();
             }
 
             @Override
-            public void setValue(OriginalLanguageId entity, Integer param) {
+            public OriginalLanguageId setValue(OriginalLanguageId entity, Integer param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "OriginalLanguageId");
-                entity.setOriginalLanguageId(param);
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "OriginalLanguageId");
+                return (OriginalLanguageId) entity.setOriginalLanguageId(param);
             }
 
             @Override
@@ -68,7 +68,7 @@ public interface OriginalLanguageId<E extends EntityMap> extends EntityRelationM
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

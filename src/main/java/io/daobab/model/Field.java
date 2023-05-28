@@ -4,13 +4,10 @@ package io.daobab.model;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface Field<E extends Entity, F, R extends EntityRelation> {
+public interface Field<E extends Entity, F, R extends RelatedTo> {
 
     String getFieldName();
 
-    default String getEntityName() {
-        return getInstance().getEntityName();
-    }
 
     Class getFieldClass();
 
@@ -18,13 +15,13 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
         return null;
     }
 
-    default Class<E> getEntityClass() {
+    default Class<E> entityClass() {
         return (Class<E>) getInstance().getClass();
     }
 
     F getValue(R entity);
 
-    void setValue(R entity, F value);
+    R setValue(R entity, F value);
 
 
     E getInstance();
@@ -65,8 +62,8 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
             }
 
             @Override
-            public void setValue(R entity, F value) {
-                this.setValue(entity, value);
+            public R setValue(R entity, F value) {
+                return this.setValue(entity, value);
             }
 
             @Override
@@ -76,11 +73,14 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
         };
     }
 
-    default boolean equalsField(Field another) {
-        return
-                getEntityName().equals(another.getEntityName())
-                        && getEntityClass().equals(another.getEntityClass())
-                        && getFieldName().equals(another.getFieldName());
+    default boolean equalsField(Field<?, ?, ?> another) {
+        return getFieldName().equals(another.getFieldName());
+    }
+
+
+    default boolean equalsFieldAndEntity(Field<?, ?, ?> another) {
+        return entityClass().equals(another.entityClass())
+                && getFieldName().equals(another.getFieldName());
     }
 
 

@@ -9,7 +9,7 @@ import io.daobab.target.database.converter.type.TypeConverterPKBased;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterPrimaryKeyEntity<F, E extends Entity & PrimaryKey<E, F, ?>> implements TypeConverterPKBased<F, E> {
+public class StandardTypeConverterPrimaryKeyEntity<F, E extends Entity & PrimaryKey<E, F, ?>> extends TypeConverterPKBased<F, E> {
 
     private final DatabaseTypeConverter<F, E> pkTypeConverter;
     private final E table;

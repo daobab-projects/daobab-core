@@ -3,13 +3,14 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public interface ReturnDate<E extends EntityMap> extends EntityRelationMap<E> {
+public interface ReturnDate<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -17,12 +18,11 @@ public interface ReturnDate<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: TIMESTAMP
      */
     default Timestamp getReturnDate() {
-        return getColumnParam("ReturnDate");
+        return readParam("ReturnDate");
     }
 
     default E setReturnDate(Timestamp val) {
-        setColumnParam("ReturnDate", val);
-        return (E) this;
+        return storeParam("ReturnDate", val);
     }
 
     default Column<E, Timestamp, ReturnDate> colReturnDate() {
@@ -50,14 +50,14 @@ public interface ReturnDate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Timestamp getValue(ReturnDate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ReturnDate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ReturnDate");
                 return entity.getReturnDate();
             }
 
             @Override
-            public void setValue(ReturnDate entity, Timestamp param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ReturnDate");
-                entity.setReturnDate(param);
+            public ReturnDate setValue(ReturnDate entity, Timestamp param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "ReturnDate");
+                return (ReturnDate) entity.setReturnDate(param);
             }
 
             @Override
@@ -67,7 +67,7 @@ public interface ReturnDate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

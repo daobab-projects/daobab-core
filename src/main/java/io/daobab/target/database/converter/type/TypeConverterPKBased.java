@@ -8,15 +8,15 @@ import io.daobab.target.database.DataBaseTarget;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public interface TypeConverterPKBased<F, E extends Entity & PrimaryKey<?, F, ?>> extends DatabaseTypeConverter<F, E> {
+public abstract class TypeConverterPKBased<F, E extends Entity & PrimaryKey<?, F, ?>> implements DatabaseTypeConverter<F, E> {
 
-    default F readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
+    public F readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
         return null;
     }
 
-    E getTable();
+    public abstract E getTable();
 
-    DataBaseTarget getDataBaseTarget();
+    public abstract DataBaseTarget getDataBaseTarget();
 
 
 }

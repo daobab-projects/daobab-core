@@ -59,10 +59,10 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
         ResultSet rsTable = databaseMetaData.getTables(catalog, schema, "%", new String[]{"TABLE", "VIEW"});
 
         while (rsTable.next()) {
-            MetaTable mt = new MetaTable();
-            mt.setTableName(rsTable.getString("TABLE_NAME"));
-            mt.setRemarks(rsTable.getString("REMARKS"));
-            mt.setTableType(rsTable.getString("TABLE_TYPE"));
+            MetaTable mt = new MetaTable()
+                    .setTableName(rsTable.getString("TABLE_NAME"))
+                    .setRemarks(rsTable.getString("REMARKS"))
+                    .setTableType(rsTable.getString("TABLE_TYPE"));
 
             String primaryKeyColumn = null;
 
@@ -225,11 +225,11 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
     @SuppressWarnings("rawtypes")
     public Optional<MetaColumn> getMetaColumn(Column column) {
-        return Optional.ofNullable(quickAccessMetaColumn.get(column.getEntityName() + "." + column.getColumnName()));
+        return Optional.ofNullable(quickAccessMetaColumn.get(getEntityName(column.entityClass()) + "." + column.getColumnName()));
     }
 
     public Optional<MetaTable> getMetaTable(Entity entity) {
-        return Optional.ofNullable(quickAccessMetaTable.get(entity.getEntityName()));
+        return Optional.ofNullable(quickAccessMetaTable.get(getEntityName(entity.entityClass())));
     }
 
 

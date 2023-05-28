@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface CustomerId<E extends EntityMap> extends EntityRelationMap<E> {
+public interface CustomerId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface CustomerId<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: SMALLINT
      */
     default Integer getCustomerId() {
-        return getColumnParam("CustomerId");
+        return readParam("CustomerId");
     }
 
     default E setCustomerId(Integer val) {
-        setColumnParam("CustomerId", val);
-        return (E) this;
+        return storeParam("CustomerId", val);
     }
 
     default Column<E, Integer, CustomerId> colCustomerId() {
@@ -49,14 +49,14 @@ public interface CustomerId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Integer getValue(CustomerId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "CustomerId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "CustomerId");
                 return entity.getCustomerId();
             }
 
             @Override
-            public void setValue(CustomerId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CustomerId");
-                entity.setCustomerId(param);
+            public CustomerId setValue(CustomerId entity, Integer param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "CustomerId");
+                return (CustomerId) entity.setCustomerId(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface CustomerId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

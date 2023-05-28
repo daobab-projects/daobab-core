@@ -217,7 +217,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
         List<TableColumn> columns = entity.columns();
         for (TableColumn tableColumn : columns) {
 
-            Column<E, ?, EntityRelation> column = (Column<E, ?, EntityRelation>) tableColumn.getColumn();
+            Column<E, ?, RelatedTo> column = (Column<E, ?, RelatedTo>) tableColumn.getColumn();
             Index index;
             if (Number.class.isAssignableFrom(column.getFieldClass())) {
                 index = new IndexNumber<>(column, this);

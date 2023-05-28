@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface PaymentId<E extends EntityMap> extends EntityRelationMap<E> {
+public interface PaymentId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface PaymentId<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: SMALLINT
      */
     default Integer getPaymentId() {
-        return getColumnParam("PaymentId");
+        return readParam("PaymentId");
     }
 
     default E setPaymentId(Integer val) {
-        setColumnParam("PaymentId", val);
-        return (E) this;
+        return storeParam("PaymentId", val);
     }
 
     default Column<E, Integer, PaymentId> colPaymentId() {
@@ -49,14 +49,14 @@ public interface PaymentId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Integer getValue(PaymentId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "PaymentId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "PaymentId");
                 return entity.getPaymentId();
             }
 
             @Override
-            public void setValue(PaymentId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PaymentId");
-                entity.setPaymentId(param);
+            public PaymentId setValue(PaymentId entity, Integer param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "PaymentId");
+                return (PaymentId) entity.setPaymentId(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface PaymentId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

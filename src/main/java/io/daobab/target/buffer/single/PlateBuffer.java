@@ -1,8 +1,8 @@
 package io.daobab.target.buffer.single;
 
-import io.daobab.clone.EntityDuplicator;
+import io.daobab.converter.json.JsonConverterManager;
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.BufferedOperationAllowedOnlyForSingleEntityColumns;
-import io.daobab.error.DaobabException;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.statement.condition.Limit;
@@ -39,7 +39,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     private transient StatisticCollector statistic;
     private boolean statisticEnabled = false;
 
-    private transient AccessProtector accessProtector = new BasicAccessProtector();
+    private transient AccessProtector accessProtector = new BasicAccessProtector(this);
 
     public PlateBuffer() {
     }
@@ -55,6 +55,11 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     @Override
     public boolean isTransactionActive() {
         return transactionActive;
+    }
+
+    @Override
+    public String getEntityName(Class<? extends Entity> entityClass) {
+        return Plate.class.getName();
     }
 
     @Override
@@ -96,7 +101,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <E extends Entity, R extends EntityRelation> PlateBuffer resultPlateList(BufferQueryPlate query) {
+    private <E extends Entity, R extends RelatedTo> PlateBuffer resultPlateList(BufferQueryPlate query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         Plates matched = new PlateBuffer(filter((Query<E, ?, ?>) query));
         if (matched.isEmpty()) {
@@ -110,7 +115,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         Plates elements = matched.orderAndLimit(query);
 
         for (Plate element : elements) {
-            Plate plate = new Plate(query.getFields());
+            Plate plate = PlateCreator.ofTableColumnList(query.getFields());
             for (TableColumn tableColumn : query.getFields()) {
                 plate.setValue(tableColumn, tableColumn.getColumn().getValueOf((R) element));
             }
@@ -126,7 +131,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     }
 
     @SuppressWarnings("unchecked")
-    private <E extends Entity, R extends EntityRelation, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
+    private <E extends Entity, R extends RelatedTo, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         Plates matched = new PlateBuffer(filter(query));
         if (matched.isEmpty()) {
@@ -142,7 +147,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <E extends Entity, R extends EntityRelation, F> F readFieldFromBuffer(Plates entities, BufferQueryField<E, F> query) {
+    private <E extends Entity, R extends RelatedTo, F> F readFieldFromBuffer(Plates entities, BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         PlateBuffer matched = new PlateBuffer(entities.filter(query));
 
@@ -306,7 +311,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
             return this;
         }
 
-        Plate template = new Plate(tableColumns);
+        Plate template = PlateCreator.ofTableColumnList(tableColumns);
         for (Plate plate : this) {
             plate.maskPlate(template);
         }
@@ -335,25 +340,14 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
 
     @Override
-    public String toJSON() {
-        StringBuilder rv = new StringBuilder();
-        rv.append("[");
+    public String toJson() {
 
-        int size = size();
-        int cnt = 0;
-
-        for (Plate val : this) {
-
-            cnt++;
-            boolean lastOne = cnt == size;
-
-            rv.append(val.toJSON());
-            if (!lastOne) rv.append(",");
+        if (isEmpty()) {
+            return "[]";
         }
 
-        rv.append("]");
-
-        return rv.toString();
+        return JsonConverterManager.INSTANCE.getPlateJsonConverter(get(0))
+                .toJson(new StringBuilder(), this).toString();
 
     }
 
@@ -365,13 +359,8 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     @Override
     public Plates clone() {
-        if (!isEmpty()) {
-            throw new DaobabException("Only " + EntityMap.class.getName() + " entities may be cloned");
-        }
-        return new PlateBuffer(EntityDuplicator.clonePlateList(this));
+        return new PlateBuffer(new ArrayList<>(this));
     }
-
-
     @Override
     public StatisticCollector getStatisticCollector() {
         if (statistic == null) {
@@ -379,7 +368,6 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         }
         return statistic;
     }
-
     @Override
     public boolean isStatisticCollectingEnabled() {
         return statisticEnabled;

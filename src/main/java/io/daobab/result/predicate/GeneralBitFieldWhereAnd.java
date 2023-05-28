@@ -3,7 +3,7 @@ package io.daobab.result.predicate;
 import io.daobab.error.UnhandledOperator;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.where.base.Where;
 import io.daobab.target.buffer.nonheap.NonHeapBuffer;
@@ -53,7 +53,7 @@ public class GeneralBitFieldWhereAnd<E> implements WherePredicate<Integer> {
                 continue;
             }
 //            wrapperWhere.getKeyForPointer(i);
-            Column<Entity, Object, EntityRelation> keyFromWrapper = (Column<Entity, Object, EntityRelation>) wrapperWhere.getKeyForPointer(i);
+            Column<Entity, Object, RelatedTo> keyFromWrapper = (Column<Entity, Object, RelatedTo>) wrapperWhere.getKeyForPointer(i);
             int columnOrder = nonHeapBuffer.getBufferPositionOfColumn(keyFromWrapper);
             columnsBufferPositionInWhere.add(columnOrder);
             columnsEntityPositionInWhere.add(nonHeapBuffer.getColumnIntoEntityPosition(keyFromWrapper));

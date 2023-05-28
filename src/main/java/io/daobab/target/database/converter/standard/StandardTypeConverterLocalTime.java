@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.time.LocalTime;
 
-public class StandardTypeConverterLocalTime implements TypeConverterTimeBased<LocalTime> {
+public class StandardTypeConverterLocalTime extends TypeConverterTimeBased<LocalTime> {
 
     private final DataBaseTarget target;
 

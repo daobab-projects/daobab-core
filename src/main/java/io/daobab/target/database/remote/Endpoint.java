@@ -2,6 +2,7 @@ package io.daobab.target.database.remote;
 
 import io.daobab.error.DaobabException;
 import io.daobab.generator.DictRemoteKey;
+import io.daobab.model.MapHandler;
 import io.daobab.model.ResponseWrapper;
 import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.query.*;
@@ -24,18 +25,18 @@ public class Endpoint {
             ResponseWrapper r = new ResponseWrapper();
             boolean accessProtectorAvailable = protector != null && protector.isEnabled();
 
-            String queryclass = (String) query.get(DictRemoteKey.QUERY_CLASS);
+            String queryClass = (String) query.get(DictRemoteKey.QUERY_CLASS);
             boolean singleResult = (boolean) query.get(DictRemoteKey.SINGLE_RESULT);
 
-            if (DataBaseQueryEntity.class.getName().equals(queryclass)) {
+            if (DataBaseQueryEntity.class.getName().equals(queryClass)) {
                 DataBaseQueryEntity<?> q = new DataBaseQueryEntity<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.validateEntityAllowedFor(q.getEntityName(), OperationType.READ);
                     protector.removeViolatedInfoColumns3(q.getFields(), OperationType.READ);
                 }
-                r.setContent(singleResult ? exposedTarget.readEntity(q) : exposedTarget.readEntityList(q));
+                r.setContent(singleResult ? ((MapHandler<?>) exposedTarget.readEntity(q)).accessParameterMap() : exposedTarget.readEntityList(q).toJson());
 
-            } else if (DataBaseQueryField.class.getName().equals(queryclass)) {
+            } else if (DataBaseQueryField.class.getName().equals(queryClass)) {
                 DataBaseQueryField<?, ?> q = new DataBaseQueryField<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.removeViolatedInfoColumns3(q.getFields(), OperationType.READ);
@@ -43,7 +44,7 @@ public class Endpoint {
                 if (!q.getFields().isEmpty()) {
                     r.setContent(singleResult ? exposedTarget.readField(q) : exposedTarget.readFieldList(q));
                 }
-            } else if (DataBaseQueryPlate.class.getName().equals(queryclass)) {
+            } else if (DataBaseQueryPlate.class.getName().equals(queryClass)) {
                 DataBaseQueryPlate q = new DataBaseQueryPlate(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.removeViolatedInfoColumns3(q.getFields(), OperationType.READ);
@@ -51,19 +52,19 @@ public class Endpoint {
                 if (!q.getFields().isEmpty()) {
                     r.setContent(singleResult ? exposedTarget.readPlate(q) : exposedTarget.readPlateList(q));
                 }
-            } else if (DataBaseQueryDelete.class.getName().equals(queryclass)) {
+            } else if (DataBaseQueryDelete.class.getName().equals(queryClass)) {
                 DataBaseQueryDelete<?> q = new DataBaseQueryDelete<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.validateEntityAllowedFor(q.getEntityName(), OperationType.DELETE);
                 }
                 r.setContent(exposedTarget.delete(q, true));
-            } else if (DataBaseQueryUpdate.class.getName().equals(queryclass)) {
+            } else if (DataBaseQueryUpdate.class.getName().equals(queryClass)) {
                 DataBaseQueryUpdate<?> q = new DataBaseQueryUpdate<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.validateEntityAllowedFor(q.getEntityName(), OperationType.UPDATE);
                 }
                 r.setContent(exposedTarget.update(q, true));
-            } else if (DataBaseQueryInsert.class.getName().equals(queryclass)) {
+            } else if (DataBaseQueryInsert.class.getName().equals(queryClass)) {
                 DataBaseQueryInsert<?> q = new DataBaseQueryInsert<>(exposedTarget, query);
                 if (accessProtectorAvailable) {
                     protector.validateEntityAllowedFor(q.getEntityName(), OperationType.INSERT);

@@ -3,13 +3,14 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public interface RentalRate<E extends EntityMap> extends EntityRelationMap<E> {
+public interface RentalRate<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -17,12 +18,11 @@ public interface RentalRate<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: DECIMAL
      */
     default BigDecimal getRentalRate() {
-        return getColumnParam("RentalRate");
+        return readParam("RentalRate");
     }
 
     default E setRentalRate(BigDecimal val) {
-        setColumnParam("RentalRate", val);
-        return (E) this;
+        return storeParam("RentalRate", val);
     }
 
     default Column<E, BigDecimal, RentalRate> colRentalRate() {
@@ -50,14 +50,14 @@ public interface RentalRate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public BigDecimal getValue(RentalRate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "RentalRate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "RentalRate");
                 return entity.getRentalRate();
             }
 
             @Override
-            public void setValue(RentalRate entity, BigDecimal param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RentalRate");
-                entity.setRentalRate(param);
+            public RentalRate setValue(RentalRate entity, BigDecimal param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "RentalRate");
+                return (RentalRate) entity.setRentalRate(param);
             }
 
             @Override
@@ -67,7 +67,7 @@ public interface RentalRate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

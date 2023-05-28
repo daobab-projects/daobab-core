@@ -11,12 +11,10 @@ public interface DictRemoteKey {
     String ENTITY_NAME = "entityName";
     String ENTITY_CLASS = "entityClass";
     String COLUMN_CLASS = "columnClass";
-    String UNIQUE = "_unique";
     String CACHE = "_cache";
     String CALC_JOINS = "_calcJoins";
     String WHERE = "where";
     String HAVING = "having";
-    String COUNT = "count";
     String LIMIT = "limit";
     String ORDER = "order";
     String GROUP_BY = "groupBy";

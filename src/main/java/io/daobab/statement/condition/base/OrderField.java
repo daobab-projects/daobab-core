@@ -2,13 +2,13 @@ package io.daobab.statement.condition.base;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("rawtypes")
-public class OrderField<E extends Entity, F, R extends EntityRelation> {
+public class OrderField<E extends Entity, F, R extends RelatedTo> {
 
     private Column<E, F, R> field;
     private String direction;

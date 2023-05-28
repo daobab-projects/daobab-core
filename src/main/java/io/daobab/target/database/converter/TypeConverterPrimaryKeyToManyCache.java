@@ -2,8 +2,8 @@ package io.daobab.target.database.converter;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
 import io.daobab.model.PrimaryKey;
+import io.daobab.model.RelatedTo;
 import io.daobab.query.base.QueryWhisperer;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 //E (SRC)- this entity with PK
 //E2 (DEST)- other Entity with FK to this entity. Many to One relation
-public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey<E, F, ?>, E2 extends Entity & PrimaryKey<E2, F, ?>> implements EntityListConverter<F, E2>, TypeConverterPKBasedList<F, E2>, KeyableCache<F, List<E2>>, QueryWhisperer {
+public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey<E, F, ?>, E2 extends Entity & PrimaryKey<E2, F, ?>> extends TypeConverterPKBasedList<F, E2> implements EntityListConverter<F, E2>, KeyableCache<F, List<E2>>, QueryWhisperer {
 
     private final TypeConverterPKBasedList<F, E2> rootConverter;
     private final QueryTarget target;
@@ -32,19 +32,19 @@ public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey
     private final Map<F, Consumer<List<E2>>> destKeyConsumerMap = new HashMap<>();
     private final Map<F, E2> secondTableEntityMap = new HashMap<>();
     private final E2 destEntity;
-    private final Column<E, F, EntityRelation> srcFkColumnToDest;
-    private final Column<E2, F, EntityRelation> destColumn;
+    private final Column<E, F, RelatedTo> srcFkColumnToDest;
+    private final Column<E2, F, RelatedTo> destColumn;
     private final E srcEntity;
 
     public TypeConverterPrimaryKeyToManyCache(QueryTarget target, TypeConverterPKBasedList<F, E2> rootConverter, E srcEntity, E2 destEntity) {
-        System.out.println(">>> srcEntity: " + srcEntity.getEntityName());
-        System.out.println(">>> dstEntity: " + destEntity.getEntityName());
+        System.out.println(">>> srcEntity: " + target.getEntityName(srcEntity.entityClass()));
+        System.out.println(">>> dstEntity: " + target.getEntityName(destEntity.entityClass()));
         this.rootConverter = rootConverter;
         this.target = target;
         this.srcEntity = srcEntity;
-        this.srcFkColumnToDest = (Column<E, F, EntityRelation>) destEntity.colID().transformTo(srcEntity);
+        this.srcFkColumnToDest = (Column<E, F, RelatedTo>) destEntity.colID().transformTo(srcEntity);
         this.destEntity = destEntity;
-        this.destColumn = (Column<E2, F, EntityRelation>) destEntity.colID();
+        this.destColumn = (Column<E2, F, RelatedTo>) destEntity.colID();
     }
 
     @Override

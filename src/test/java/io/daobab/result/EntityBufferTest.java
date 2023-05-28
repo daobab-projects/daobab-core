@@ -22,8 +22,6 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
         EntityBufferGenerator generator = new EntityBufferGenerator();
         films = generator.getFilms();
         films.calculateIndexes();
-
-
     }
 
     @Test

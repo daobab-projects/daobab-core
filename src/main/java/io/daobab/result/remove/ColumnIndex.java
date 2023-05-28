@@ -2,12 +2,12 @@ package io.daobab.result.remove;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class ColumnIndex<P extends Entity, O extends Number, R extends EntityRelation> {
+public class ColumnIndex<P extends Entity, O extends Number, R extends RelatedTo> {
 
     private Column<P, O, R> column;
     private Index<P, O> matchedIndex;

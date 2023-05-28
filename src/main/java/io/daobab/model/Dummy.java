@@ -8,20 +8,18 @@ import java.util.Objects;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface Dummy<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Dummy<E extends Entity> extends RelatedTo<E>, MapHandler<E>, Entity {
 
     /**
      * db name: DUMMY,
      * db type: VARCHAR
      */
     default String getDummy() {
-        return getColumnParam("Dummy");
+        return readParam("Dummy");
     }
 
-    @SuppressWarnings("unchecked")
     default E setDummy(String val) {
-        setColumnParam("Dummy", val);
-        return (E) this;
+        return storeParam("Dummy", val);
     }
 
     @SuppressWarnings("rawtypes")
@@ -50,14 +48,14 @@ public interface Dummy<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(Dummy entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Dummy");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Dummy");
                 return entity.getDummy();
             }
 
             @Override
-            public void setValue(Dummy entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Dummy");
-                entity.setDummy(param);
+            public Dummy setValue(Dummy entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Dummy");
+                return (Dummy) entity.setDummy(param);
             }
 
             @Override
@@ -67,7 +65,7 @@ public interface Dummy<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

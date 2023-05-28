@@ -1,26 +1,17 @@
 package io.daobab.test.dao.table;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import io.daobab.clone.EntityDuplicator;
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.creation.DaobabCache;
+import io.daobab.model.*;
 import io.daobab.test.dao.column.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
-public class Rental extends Table implements
+@TableInformation(name = "RENTAL")
+public class Rental extends Table<Rental> implements
         RentalId<Rental>,
         RentalDate<Rental>,
         InventoryId<Rental>,
@@ -32,27 +23,26 @@ public class Rental extends Table implements
         PrimaryKey<Rental, BigDecimal, RentalId> {
 
     @Override
-    public String getEntityName() {
-        return "RENTAL";
-    }
-
-    @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colRentalId()),
-                new TableColumn(colRentalDate()),
-                new TableColumn(colInventoryId()),
-                new TableColumn(colCustomerId()),
-                new TableColumn(colReturnDate()),
-                new TableColumn(colStaffId()),
-                new TableColumn(colLastUpdate())
-
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colRentalId()),
+                        new TableColumn(colRentalDate()),
+                        new TableColumn(colInventoryId()),
+                        new TableColumn(colCustomerId()),
+                        new TableColumn(colReturnDate()),
+                        new TableColumn(colStaffId()),
+                        new TableColumn(colLastUpdate())
+                ));
     }
 
-    @Override
-    public Rental clone() {
-        return EntityDuplicator.cloneEntity(this);
+
+    public Rental() {
+        super();
+    }
+
+    public Rental(Map<String, Object> parameters) {
+        super(parameters);
     }
 
     @Override

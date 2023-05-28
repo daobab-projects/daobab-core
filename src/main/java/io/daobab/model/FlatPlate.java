@@ -1,27 +1,14 @@
 package io.daobab.model;
 
-import io.daobab.error.DaobabException;
-
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")
-public class FlatPlate extends HashMap<String, Object> implements EntityMap {
+public interface FlatPlate extends Map<String, Object>, Entity {
 
-    @Override
-    public String getEntityName() {
-        return this.getClass().getSimpleName();
-    }
+    void fromPlate(Plate plate);
 
-    @Override
-    public List<TableColumn> columns() {
-        throw new DaobabException("FlatPlate has no columns");
-    }
 
-    public void fromPlate(Plate plate) {
-        plate.toFlatPlate(this);
-    }
 }

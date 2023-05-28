@@ -22,7 +22,7 @@ public class CompositeColumns<K extends Composite> extends ArrayList<TableColumn
         WhereAnd whereAnd = new WhereAnd();
         for (TableColumn tableColumn : this) {
             Column column = tableColumn.getColumn();
-            whereAnd.equal(column, column.getValueOf((EntityRelation) val));
+            whereAnd.equal(column, column.getValueOf((RelatedTo) val));
         }
         return whereAnd;
     }

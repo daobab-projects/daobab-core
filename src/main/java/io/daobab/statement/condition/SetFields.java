@@ -3,7 +3,7 @@ package io.daobab.statement.condition;
 import io.daobab.error.AttemptToSetNullValueInWrongWay;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.model.TableColumn;
 
 import java.util.Date;
@@ -21,41 +21,40 @@ public class SetFields {
     private final HashMap<String, Object> hash = new HashMap<>();
     private int counter = 1;
 
-    public static <F, R extends EntityRelation> SetFields setColumn(Column<?, F, R> field, R related) {
-        SetFields s = new SetFields();
-        s.setValue(field, related);
-        return s;
+    public static <F, R extends RelatedTo> SetFields setColumn(Column<?, F, R> field, R related) {
+        SetFields setFields = new SetFields();
+        setFields.setValue(field, related);
+        return setFields;
     }
 
-    public static <F, R extends EntityRelation> SetFields setInfoColumns(R related, TableColumn[] fields) {
-        SetFields s = new SetFields();
+    public static <F, R extends RelatedTo> SetFields setInfoColumns(R related, TableColumn[] fields) {
+        SetFields setFields = new SetFields();
         for (TableColumn field : fields) {
-            s.setValue((Column<?, F, R>) field.getColumn(), related);
+            setFields.setValue((Column<?, F, R>) field.getColumn(), related);
         }
-        return s;
+        return setFields;
     }
 
-    public static <F, R extends EntityRelation> SetFields setColumns(R related, Column<?, F, R>... fields) {
-        SetFields s = new SetFields();
+    public static <F, R extends RelatedTo> SetFields setValues(R related, Column<?, F, R>... fields) {
+        SetFields setFields = new SetFields();
         for (Column<?, F, R> field : fields) {
-            s.setValue(field, related);
+            setFields.setValue(field, related);
         }
-        return s;
+        return setFields;
     }
 
-    public static <F, R extends EntityRelation> SetFields setColumn(Column<?, F, R> field, F value) {
-        SetFields s = new SetFields();
-        s.setValue(field, value);
-        return s;
+    public static <F, R extends RelatedTo> SetFields setColumn(SetFields setFields, Column<?, F, R> field, F value) {
+        setFields.setValue(field, value);
+        return setFields;
     }
 
-    public static <E extends Entity, R extends EntityRelation> SetFields setColumns(E related, Column<E, ?, ?>... fields) {
-        SetFields s = new SetFields();
+    public static <E extends Entity, R extends RelatedTo> SetFields setValuesArray(E related, Column<E, ?, ?>... fields) {
+        SetFields setFields = new SetFields();
         for (Column<E, ?, ?> c : fields) {
             Column<E, ?, R> cc = (Column<E, ?, R>) c;
-            s.setValue(cc, (R) related);
+            setFields.setValue(cc, (R) related);
         }
-        return s;
+        return setFields;
     }
 
     public int size() {
@@ -75,18 +74,17 @@ public class SetFields {
         return this;
     }
 
-    public <F, R extends EntityRelation> SetFields setValue(Column<?, F, R> relation, R related) {
+    public <F, R extends RelatedTo> SetFields setValue(Column<?, F, R> relation, R related) {
         if (related == null) throw new AttemptToSetNullValueInWrongWay(relation);
         hash.put(FIELD + getCounter(), relation);
         Object val = relation.getValueOf(related);
         if (val != null) hash.put(VALUE + getCounter(), val);
 
-
         setCounter(getCounter() + 1);
         return this;
     }
 
-    public <F, R extends EntityRelation> SetFields setValue(Column<?, F, R> relation, F val) {
+    public <F, R extends RelatedTo> SetFields setValue(Column<?, F, R> relation, F val) {
         hash.put(FIELD + getCounter(), relation);
         if (val != null) hash.put(VALUE + getCounter(), val);
         setCounter(getCounter() + 1);
@@ -112,7 +110,7 @@ public class SetFields {
     public Object getValueForColumn(Column<?, ?, ?> col) {
         for (int i = 0; i < counter; i++) {
             Column<?, ?, ?> column = (Column<?, ?, ?>) hash.get(FIELD + i);
-            if (col.getEntityName().equals(column.getEntityName()) && col.getFieldName().equals(column.getFieldName())) {
+            if (col.entityClass().equals(column.entityClass()) && col.getFieldName().equals(column.getFieldName())) {
                 return hash.get(VALUE + i);
             }
         }

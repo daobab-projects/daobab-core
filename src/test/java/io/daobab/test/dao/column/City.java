@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface City<E extends EntityMap> extends EntityRelationMap<E> {
+public interface City<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface City<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default String getCity() {
-        return getColumnParam("City");
+        return readParam("City");
     }
 
     default E setCity(String val) {
-        setColumnParam("City", val);
-        return (E) this;
+        return storeParam("City", val);
     }
 
     default Column<E, String, City> colCity() {
@@ -49,14 +49,14 @@ public interface City<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(City entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "City");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "City");
                 return entity.getCity();
             }
 
             @Override
-            public void setValue(City entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "City");
-                entity.setCity(param);
+            public City setValue(City entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "City");
+                return (City) entity.setCity(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface City<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

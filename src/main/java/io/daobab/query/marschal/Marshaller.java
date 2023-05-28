@@ -1,7 +1,8 @@
 package io.daobab.query.marschal;
 
+import io.daobab.converter.duplicator.duplication.EntityDuplication;
 import io.daobab.error.MandatoryTargetException;
-import io.daobab.error.NoEntitiesIntoTargetException;
+import io.daobab.error.TargetHasNoEntitiesException;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.model.*;
 import io.daobab.target.Target;
@@ -30,7 +31,7 @@ public interface Marshaller {
     static MarshalledColumn marshallColumn(TableColumn column) {
         MarshalledColumn rv = new MarshalledColumn();
         rv.setColumnClass(column.getColumn().getFieldName());
-        rv.setEntityClass(column.getColumn().getEntityClass().getSimpleName());
+        rv.setEntityClass(column.getColumn().entityClass().getSimpleName());
         return rv;
     }
 
@@ -42,7 +43,7 @@ public interface Marshaller {
         Map<String, Object> rv = new HashMap<>();
 
         rv.put(DictRemoteKey.FIELD, column.getFieldName());
-        rv.put(DictRemoteKey.ENTITY_NAME, column.getInstance().getEntityName());
+        rv.put(DictRemoteKey.ENTITY_NAME, EntityDuplication.getEntityName(column.entityClass(), null));
 
 
         return rv;
@@ -68,7 +69,7 @@ public interface Marshaller {
         if (target == null) throw new MandatoryTargetException();
 
         for (Entity targetentity : target.getTables()) {
-            if (targetentity.getEntityName().equals(entity)) {
+            if (target.getEntityName(targetentity.entityClass()).equals(entity)) {
                 return targetentity;
             }
         }
@@ -85,7 +86,7 @@ public interface Marshaller {
     static List<TableColumn> unMarshallColumns(Map<String, Object> map, Target target) {
         if (target == null) throw new MandatoryTargetException();
         if (map == null) throw new MandatoryTargetException();
-        if (target.getTables() == null || target.getTables().isEmpty()) throw new NoEntitiesIntoTargetException(target);
+        if (target.getTables() == null || target.getTables().isEmpty()) throw new TargetHasNoEntitiesException(target);
 
         int counter = 0;
         List<TableColumn> rv = new ArrayList<>();
@@ -104,7 +105,7 @@ public interface Marshaller {
 
     static TableColumn unMarshallColumn(Map<String, Object> rv, Target target) {
         if (target == null) throw new MandatoryTargetException();
-        if (target.getTables() == null || target.getTables().isEmpty()) throw new NoEntitiesIntoTargetException(target);
+        if (target.getTables() == null || target.getTables().isEmpty()) throw new TargetHasNoEntitiesException(target);
         String fieldName = (String) rv.get(DictRemoteKey.FIELD);
         String entityName = (String) rv.get(DictRemoteKey.ENTITY_NAME);
 

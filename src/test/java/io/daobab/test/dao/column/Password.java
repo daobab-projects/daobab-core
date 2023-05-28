@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface Password<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Password<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface Password<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default String getPassword() {
-        return getColumnParam("Password");
+        return readParam("Password");
     }
 
     default E setPassword(String val) {
-        setColumnParam("Password", val);
-        return (E) this;
+        return storeParam("Password", val);
     }
 
     default Column<E, String, Password> colPassword() {
@@ -49,14 +49,14 @@ public interface Password<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(Password entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Password");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Password");
                 return entity.getPassword();
             }
 
             @Override
-            public void setValue(Password entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Password");
-                entity.setPassword(param);
+            public Password setValue(Password entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Password");
+                return (Password) entity.setPassword(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface Password<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

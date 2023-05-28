@@ -1,9 +1,13 @@
 package io.daobab.statement.base;
 
+import io.daobab.converter.TypeConverter;
 import io.daobab.error.DaobabException;
-import io.daobab.error.NullEntityException;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.model.Column;
 import io.daobab.model.ColumnHaving;
+import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.frozen.DaoParam;
+import io.daobab.target.database.query.frozen.ParameterInjectionPoint;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,9 +24,12 @@ public final class IdentifierStorage {
     private final Map<String, String> queryIdentifiers = new HashMap<>();
     private final Map<String, String> joinIdentifiers = new HashMap<>();
     private final List<String> queryEntities = new ArrayList<>();
+    private final List<ParameterInjectionPoint> queryParameters = new ArrayList<>();
+
+    private final Map<String, Column> identifiedColumnByAsKey = new HashMap<>();
 
     public void registerIdentifiers(String... entities) {
-        if (entities == null) throw new NullEntityException();
+        if (entities == null) throw new MandatoryEntity();
 
         for (String entityName : entities) {
             getIdentifierFor(entityName);
@@ -34,13 +41,18 @@ public final class IdentifierStorage {
         entityNames.forEach(this::getIdentifierFor);
     }
 
-    public StringBuilder getIdentifierForColumn(Column<?, ?, ?> field) {
+    public void registerParameter(DaoParam param, TypeConverter typeConverter) {
+        if (param == null) return;
+        queryParameters.add(new ParameterInjectionPoint(param,typeConverter));
+    }
+
+    public StringBuilder getIdentifierForColumn(QueryTarget target, Column<?, ?, ?> field) {
         StringBuilder sb = new StringBuilder();
         if (field == null) return sb;
         if (field instanceof ColumnHaving) {
             sb.append(field.getColumnName());
         } else {
-            sb.append(getIdentifierFor(field.getEntityName()))
+            sb.append(getIdentifierFor(target.getEntityName(field.entityClass())))
                     .append(".")
                     .append(field.getColumnName());
         }
@@ -79,6 +91,19 @@ public final class IdentifierStorage {
 
     public List<String> getQueryEntities() {
         return queryEntities;
+    }
+
+
+    public List<ParameterInjectionPoint> getQueryParameters() {
+        return queryParameters;
+    }
+
+    public void addColumnIdentifiedAsKey(String identifier, Column column) {
+        identifiedColumnByAsKey.put(identifier, column);
+    }
+
+    public Column getColumnByIdentifier(String identifier) {
+        return identifiedColumnByAsKey.get(identifier);
     }
 
 }

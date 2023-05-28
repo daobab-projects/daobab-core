@@ -34,7 +34,7 @@ public class DatabaseDateConverterPostgreSql implements DatabaseDateConverter {
 
     @Override
     public String toDatabaseLocalDate(LocalDate value) {
-        return (String.format(" STR_TO_DATE('%s-%s-%s',", value.getYear(), value.getMonth(), value.getDayOfMonth())) + "'%Y-%m-%d') ";
+        return (String.format(" STR_TO_DATE('%s-%s-%s',", value.getYear(), value.getMonthValue(), value.getDayOfMonth())) + "'%Y-%m-%d') ";
 
     }
 
@@ -44,7 +44,7 @@ public class DatabaseDateConverterPostgreSql implements DatabaseDateConverter {
             return null;
         }
 
-        return (String.format(" STR_TO_DATE('%s-%s-%s %s:%s:%s',", value.getYear(), value.getMonth(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond())) + "'%Y-%m-%d '%H:%i:%s') ";
+        return (String.format(" STR_TO_DATE('%s-%s-%s %s:%s:%s',", value.getYear(), value.getMonthValue(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond())) + "'%Y-%m-%d '%H:%i:%s') ";
     }
 
     @Override
@@ -52,6 +52,6 @@ public class DatabaseDateConverterPostgreSql implements DatabaseDateConverter {
         if (value == null) {
             return null;
         }
-        return (String.format(" STR_TO_DATE('%s-%s-%s %s:%s:%s',", value.getYear(), value.getMonth(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond())) + "'%Y-%m-%d '%H:%i:%s') ";
+        return (String.format(" STR_TO_DATE('%s-%s-%s %s:%s:%s',", value.getYear(), value.getMonthValue(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond())) + "'%Y-%m-%d '%H:%i:%s') ";
     }
 }

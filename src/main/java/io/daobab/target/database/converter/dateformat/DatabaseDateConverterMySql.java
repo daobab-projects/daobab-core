@@ -40,7 +40,7 @@ public class DatabaseDateConverterMySql implements DatabaseDateConverter {
         if (value == null) {
             return null;
         }
-        return String.format("'%s-%s-%s'", value.getYear(), value.getMonth(), value.getDayOfMonth());
+        return String.format("'%s-%s-%s'", value.getYear(), value.getMonthValue(), value.getDayOfMonth());
     }
 
     @Override
@@ -48,7 +48,7 @@ public class DatabaseDateConverterMySql implements DatabaseDateConverter {
         if (value == null) {
             return null;
         }
-        return String.format("'%s-%s-%s %s:%s:%s'", value.getYear(), value.getMonth(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
+        return String.format("'%s-%s-%s %s:%s:%s'", value.getYear(), value.getMonthValue(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
     }
 
     @Override
@@ -56,6 +56,6 @@ public class DatabaseDateConverterMySql implements DatabaseDateConverter {
         if (value == null) {
             return null;
         }
-        return String.format("'%s-%s-%s %s:%s:%s'", value.getYear(), value.getMonth(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
+        return String.format("'%s-%s-%s %s:%s:%s'", value.getYear(), value.getMonthValue(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
     }
 }

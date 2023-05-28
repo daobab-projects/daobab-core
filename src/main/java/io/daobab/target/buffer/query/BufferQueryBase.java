@@ -2,8 +2,8 @@ package io.daobab.target.buffer.query;
 
 import io.daobab.error.AttemptToSetWhereClauseSecondTimeException;
 import io.daobab.error.DaobabEntityCreationException;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.error.MandatoryTargetException;
-import io.daobab.error.NullEntityException;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.Column;
@@ -13,7 +13,10 @@ import io.daobab.model.TableColumn;
 import io.daobab.query.base.*;
 import io.daobab.query.marschal.Marshaller;
 import io.daobab.statement.base.IdentifierStorage;
-import io.daobab.statement.condition.*;
+import io.daobab.statement.condition.Having;
+import io.daobab.statement.condition.Limit;
+import io.daobab.statement.condition.Order;
+import io.daobab.statement.condition.SetOperator;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.WhereAnd;
@@ -34,7 +37,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     public List<Column<?, ?, ?>> _groupBy = new ArrayList<>();
     public String _groupByAlias = null;
-    public boolean _unique = false;
     public boolean _calcJoins = false;
     protected Order orderBy;
     protected List<TableColumn> fields = new ArrayList<>();
@@ -46,7 +48,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     private Class<E> entityClass;
     private Where whereWrapper;
     private Having havingWrapper;
-    protected Count _count;
     private Limit limit;
     private String identifier;
     private String sentQuery;
@@ -66,9 +67,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         to.entityClass = from.entityClass;
         to.whereWrapper = from.whereWrapper; //TODO
         to.havingWrapper = from.havingWrapper; //TODO
-        to._count = from._count;
         to.limit = from.limit;
-        to._unique = from._unique;
         to._calcJoins = from._calcJoins;
         to.identifier = from.identifier;
         // to.logQueryConsumer = from.logQueryConsumer;
@@ -126,10 +125,10 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     protected void init(BufferQueryTarget target, Entity entity) {
         if (target == null) throw new MandatoryTargetException();
-        if (entity == null) throw new NullEntityException();
+        if (entity == null) throw new MandatoryEntity();
         setTarget(target);
-        setEntityName(entity.getEntityName());
-        setEntityClass(entity.getEntityClass());
+        setEntityName(target.getEntityName(entity.entityClass()));
+        setEntityClass(entity.entityClass());
         IdentifierStorage storage = new IdentifierStorage();
         storage.registerIdentifiers(getEntityName());
         setIdentifierStorage(storage);
@@ -208,14 +207,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         return (Q) this;
     }
 
-    public Count getCount() {
-        return _count;
-    }
-
-    protected void setTempCount(Count c) {
-        this._count = c;
-    }
-
     public Limit getLimit() {
         return limit;
     }
@@ -240,16 +231,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     public boolean isLogQueryEnabled() {
         return logQueryEnabled;
-    }
-
-    public Q distinct() {
-        _unique = true;
-        return (Q) this;
-    }
-
-    @Override
-    public boolean isUnique() {
-        return _unique;
     }
 
     @Override
@@ -313,13 +294,11 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
             rv.put(DictRemoteKey.FIELDS, Marshaller.marshalColumnList(fields));
         if (entityName != null) rv.put(DictRemoteKey.ENTITY_NAME, entityName);
         if (entityClass != null) rv.put(DictRemoteKey.ENTITY_CLASS, entityClass.getName());
-        if (_unique) rv.put(DictRemoteKey.UNIQUE, _unique);
         if (_calcJoins) rv.put(DictRemoteKey.SMART_JOINS, _calcJoins);
         if (getWhereWrapper() != null && !getWhereWrapper().isEmpty())
             rv.put(DictRemoteKey.WHERE, getWhereWrapper().toMap());
         if (getHavingWrapper() != null && !getHavingWrapper().isEmpty())
             rv.put(DictRemoteKey.HAVING, getHavingWrapper().toMap());
-        if (getCount() != null) rv.put(DictRemoteKey.COUNT, getCount().getCountMap());
         if (getLimit() != null) rv.put(DictRemoteKey.LIMIT, getLimit().getLimitMap());
         if (getOrderBy() != null) rv.put(DictRemoteKey.ORDER, getOrderBy().toMap());
         if (_groupBy != null && !_groupBy.isEmpty()) rv.put(DictRemoteKey.GROUP_BY, _groupBy);
@@ -344,16 +323,12 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         Object fields = rv.get(DictRemoteKey.FIELDS);
         Object remoteEntityName = rv.get(DictRemoteKey.ENTITY_NAME);
         Object remoteEntityClass = rv.get(DictRemoteKey.ENTITY_CLASS);
-        Object unique = rv.get(DictRemoteKey.UNIQUE);
         Object cache = rv.get(DictRemoteKey.CACHE);
 
         Entity ent = Marshaller.fromRemote(target, (String) remoteEntityName);
 
-        if (ent != null) setEntityClass(ent.getEntityClass());
+        if (ent != null) setEntityClass(ent.entityClass());
         setEntityName((String) remoteEntityName);
-
-        if (unique != null) _unique = "true".equals(unique);
-
 
         if (where != null) {
             setWhereWrapper(WhereBase.fromRemote(target, (Map<String, Object>) where));
@@ -402,9 +377,8 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         return identifier;
     }
 
-    public Q setIdentifier(String identifier) {
+    public void setIdentifier(String identifier) {
         this.identifier = identifier;
-        return (Q) this;
     }
 
     protected TableColumn getInfoColumn(ColumnFunction column) {
@@ -418,7 +392,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
             return new TableColumn(column);
         }
 
-        if (column.getEntityName().equals("DUAL")) {
+        if (target.getEntityName(column.entityClass()).equals("DUAL")) {
             return new TableColumn(column);
         }
 
@@ -439,9 +413,9 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     }
 
     public <E extends Entity> Q from(E entity) {
-        if (entity == null) throw new NullEntityException();
-        setEntityName(entity.getEntityName());
-        setEntityClass(entity.getEntityClass());
+        if (entity == null) throw new MandatoryEntity();
+        setEntityName(target.getEntityName(entity.entityClass()));
+        setEntityClass(entity.entityClass());
         IdentifierStorage storage = new IdentifierStorage();
         setIdentifierStorage(storage);
         getIdentifierStorage().registerIdentifiers(getEntityName());

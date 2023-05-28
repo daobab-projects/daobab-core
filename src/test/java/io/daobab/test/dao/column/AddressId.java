@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface AddressId<E extends EntityMap> extends EntityRelationMap<E> {
+public interface AddressId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface AddressId<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: SMALLINT
      */
     default Integer getAddressId() {
-        return getColumnParam("AddressId");
+        return readParam("AddressId");
     }
 
     default E setAddressId(Integer val) {
-        setColumnParam("AddressId", val);
-        return (E) this;
+        return storeParam("AddressId", val);
     }
 
     default Column<E, Integer, AddressId> colAddressId() {
@@ -49,14 +49,14 @@ public interface AddressId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Integer getValue(AddressId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "AddressId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "AddressId");
                 return entity.getAddressId();
             }
 
             @Override
-            public void setValue(AddressId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "AddressId");
-                entity.setAddressId(param);
+            public AddressId setValue(AddressId entity, Integer param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "AddressId");
+                return (AddressId) entity.setAddressId(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface AddressId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

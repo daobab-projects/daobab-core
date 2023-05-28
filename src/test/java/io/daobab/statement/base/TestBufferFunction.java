@@ -30,7 +30,7 @@ class TestBufferFunction implements FunctionWhispererBuffer, SakilaTables {
 //                        min(tabFilm.colID()).as("maximum"))
 //                )
 //                .orderDescBy("length")
-                .findMany().forEach(p -> System.out.println(p.toJSON()));
+                .findMany().forEach(p -> System.out.println(p.toJson()));
 
 //        System.out.println(rv.size());
     }

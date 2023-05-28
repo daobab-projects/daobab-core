@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-public class StandardTypeConverterTimestamp implements TypeConverterTimestampBased<Timestamp> {
+public class StandardTypeConverterTimestamp extends TypeConverterTimestampBased<Timestamp> {
 
     private final DataBaseTarget target;
 

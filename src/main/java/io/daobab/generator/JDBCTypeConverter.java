@@ -1,8 +1,10 @@
 package io.daobab.generator;
 
-import io.daobab.dict.DictFieldType;
+
 import io.daobab.error.DaobabException;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -27,20 +29,20 @@ public class JDBCTypeConverter {
     public JDBCTypeConverter() {
         generalTypes = new HashMap<>();
         generalTypes.put(Types.ARRAY, Object[].class);
-        generalTypes.put(Types.BIGINT, DictFieldType.CLASS_BIG_INTEGER);
-        generalTypes.put(Types.BINARY, DictFieldType.CLASS_BYTE_ARRAY);
-        generalTypes.put(Types.BLOB, DictFieldType.CLASS_BYTE_ARRAY);
-        generalTypes.put(Types.BIT, DictFieldType.CLASS_BOOLEAN);
-        generalTypes.put(Types.BOOLEAN, DictFieldType.CLASS_BOOLEAN);
-        generalTypes.put(Types.CHAR, DictFieldType.CLASS_STRING);
-        generalTypes.put(Types.CLOB, DictFieldType.CLASS_STRING);
+        generalTypes.put(Types.BIGINT, BigInteger.class);
+        generalTypes.put(Types.BINARY, byte[].class);
+        generalTypes.put(Types.BLOB, byte[].class);
+        generalTypes.put(Types.BIT, Boolean.class);
+        generalTypes.put(Types.BOOLEAN, Boolean.class);
+        generalTypes.put(Types.CHAR, String.class);
+        generalTypes.put(Types.CLOB, String.class);
         generalTypes.put(Types.DATE, LocalDate.class);
         generalTypes.put(Types.TIME_WITH_TIMEZONE, LocalTime.class);
-        generalTypes.put(Types.DECIMAL, DictFieldType.CLASS_BIG_DECIMAL);
-        generalTypes.put(Types.FLOAT, DictFieldType.CLASS_BIG_DECIMAL);
-        generalTypes.put(Types.DOUBLE, DictFieldType.CLASS_BIG_DECIMAL);
-        generalTypes.put(Types.INTEGER, DictFieldType.CLASS_BIG_DECIMAL);
-        generalTypes.put(Types.NUMERIC, DictFieldType.CLASS_BIG_DECIMAL);
+        generalTypes.put(Types.DECIMAL, BigDecimal.class);
+        generalTypes.put(Types.FLOAT, BigDecimal.class);
+        generalTypes.put(Types.DOUBLE, BigDecimal.class);
+        generalTypes.put(Types.INTEGER, BigDecimal.class);
+        generalTypes.put(Types.NUMERIC, BigDecimal.class);
         generalTypes.put(Types.LONGNVARCHAR, String.class);
         generalTypes.put(Types.LONGVARCHAR, String.class);
         generalTypes.put(Types.NCHAR, String.class);

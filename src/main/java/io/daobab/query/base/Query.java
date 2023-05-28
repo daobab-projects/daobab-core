@@ -19,11 +19,9 @@ import java.util.Map;
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"rawtypes", "unused"})
-public interface Query<E extends Entity, T extends Target & QueryHandler, Q extends Query> extends ILoggerBean {
+public interface Query<E extends Entity, T extends Target & QueryHandler, Q extends Query> extends ILoggerBean, StatisticQuery {
 
     List<SetOperator> getSetOperatorList();
-
-    boolean isUnique();
 
     boolean isJoin();
 
@@ -43,6 +41,8 @@ public interface Query<E extends Entity, T extends Target & QueryHandler, Q exte
 
     Q where(Where whereWrapper);
 
+    void setIdentifier(String identifier);
+
     Target getTarget();
 
     Q having(Having having);
@@ -51,13 +51,9 @@ public interface Query<E extends Entity, T extends Target & QueryHandler, Q exte
 
     Q orderBy(Order orderBy);
 
-    Count getCount();
-
     Limit getLimit();
 
     boolean isLogQueryEnabled();
-
-    Q distinct();
 
     String getEntityName();
 
@@ -72,14 +68,6 @@ public interface Query<E extends Entity, T extends Target & QueryHandler, Q exte
     Map<String, Object> toRemote(boolean singleResult);
 
     void fromRemote(T target, Map<String, Object> rv);
-
-    String getIdentifier();
-
-    Q setIdentifier(String identifier);
-
-    QueryType getQueryType();
-
-    String getSentQuery();
 
     void setSentQuery(String sentQuery);
 

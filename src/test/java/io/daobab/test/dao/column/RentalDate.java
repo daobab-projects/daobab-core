@@ -3,13 +3,14 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public interface RentalDate<E extends EntityMap> extends EntityRelationMap<E> {
+public interface RentalDate<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -17,12 +18,11 @@ public interface RentalDate<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: TIMESTAMP
      */
     default Timestamp getRentalDate() {
-        return getColumnParam("RentalDate");
+        return readParam("RentalDate");
     }
 
     default E setRentalDate(Timestamp val) {
-        setColumnParam("RentalDate", val);
-        return (E) this;
+        return storeParam("RentalDate", val);
     }
 
     default Column<E, Timestamp, RentalDate> colRentalDate() {
@@ -50,14 +50,14 @@ public interface RentalDate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Timestamp getValue(RentalDate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "RentalDate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "RentalDate");
                 return entity.getRentalDate();
             }
 
             @Override
-            public void setValue(RentalDate entity, Timestamp param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RentalDate");
-                entity.setRentalDate(param);
+            public RentalDate setValue(RentalDate entity, Timestamp param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "RentalDate");
+                return (RentalDate) entity.setRentalDate(param);
             }
 
             @Override
@@ -67,7 +67,7 @@ public interface RentalDate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

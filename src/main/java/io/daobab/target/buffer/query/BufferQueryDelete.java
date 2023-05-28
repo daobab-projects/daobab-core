@@ -34,7 +34,7 @@ public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E
 
     public BufferQueryDelete(BufferQueryTarget target, Column<E, ?, ?> column) {
         if (column == null) throw new MandatoryTargetException();
-        init(target, column.getEntityName());
+        init(target, target.getEntityName(column.entityClass()));
         setFields(Collections.singletonList(getInfoColumn(column)));
     }
 
@@ -75,7 +75,6 @@ public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E
         query.setLimit(getLimit());
         query.orderBy(getOrderBy());
         query.having(getHavingWrapper());
-        query._count = getCount();
         query._groupBy = (getGroupBy());
         return query;
     }

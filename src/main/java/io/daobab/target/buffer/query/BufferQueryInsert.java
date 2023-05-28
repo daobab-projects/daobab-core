@@ -50,13 +50,13 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         IdGeneratorType idgeneratorType = null;
         if (entityIsPk) {
             @SuppressWarnings("unchecked")
-            PrimaryKey<E, Object, EntityRelation> pk = (PrimaryKey<E, Object, EntityRelation>) entity;
+            PrimaryKey<E, Object, RelatedTo> pk = (PrimaryKey<E, Object, RelatedTo>) entity;
 
             idgeneratorType = pk.getIdGeneratorType();
             if (SEQUENCE.equals(idgeneratorType)) {
                 setSequenceName(pk.getSequenceName());
             } else if (GENERATOR.equals(idgeneratorType)) {
-                pk.colID().setValue((EntityRelation) entity, target.getPrimaryKeyGenerator(pk).generateId(target));
+                entity = (E) pk.colID().setValue((RelatedTo) entity, target.getPrimaryKeyGenerator(pk).generateId(target));
             }
 
             setIdGenerator(idgeneratorType);
@@ -74,7 +74,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         for (TableColumn tableColumn : entity.columns()) {
             Column column = tableColumn.getColumn();
             @SuppressWarnings("unchecked")
-            Object value = ((Column<E, Object, EntityRelation>) column).getValueOf((EntityRelation) entity);
+            Object value = ((Column<E, Object, RelatedTo>) column).getValueOf((RelatedTo) entity);
 
             // no PK column into SEQUENCE,AUTO_INCREMENT
             if (entityIsPk && ((PrimaryKey) entity).colID().equals(column) && (SEQUENCE.equals(idgeneratorType) || AUTO_INCREMENT.equals(idgeneratorType))) {
@@ -124,7 +124,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
     }
 
     @SuppressWarnings("rawtypes")
-    public <F, R extends EntityRelation> BufferQueryInsert<E> set(Column<E, F, R> key, R value) {
+    public <F, R extends RelatedTo> BufferQueryInsert<E> set(Column<E, F, R> key, R value) {
         set(new SetFields().setValue(key, value));
         return this;
     }

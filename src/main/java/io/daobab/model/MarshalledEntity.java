@@ -11,7 +11,7 @@ public class MarshalledEntity {
     }
 
     public MarshalledEntity(Column<?, ?, ?> col) {
-        setEntityClass(col.getEntityClass().getName());
+        setEntityClass(col.entityClass().getName());
     }
 
     public String getEntityClass() {

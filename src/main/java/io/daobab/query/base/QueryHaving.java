@@ -3,7 +3,7 @@ package io.daobab.query.base;
 import io.daobab.model.Column;
 import io.daobab.model.ColumnHaving;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.statement.condition.Having;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
@@ -36,22 +36,22 @@ public interface QueryHaving<Q extends Query> {
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q having(ColumnFunction<? extends Entity, F, R, F> col, InnerQueryFieldsProvider<? extends R, F> val) {
+    default <F extends Number, R extends RelatedTo> Q having(ColumnFunction<? extends Entity, F, R, F> col, InnerQueryFieldsProvider<? extends R, F> val) {
         setHavingWrapper(new Having().in(col, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F extends Number, R extends EntityRelation> Q having(ColumnFunction<E, F, R, F> column, F val) {
+    default <E extends Entity, F extends Number, R extends RelatedTo> Q having(ColumnFunction<E, F, R, F> column, F val) {
         setHavingWrapper(new Having().equal(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F extends Number, R extends EntityRelation> Q having(ColumnFunction<E, F, R, F> column, R val) {
+    default <E extends Entity, F extends Number, R extends RelatedTo> Q having(ColumnFunction<E, F, R, F> column, R val) {
         setHavingWrapper(new Having().equal(column, column.getValueOf(val)));
         return (Q) this;
     }
 
-    default <E extends Entity, F extends Number, R extends EntityRelation> Q havingIfNotNull(ColumnFunction<E, F, R, F> column, F val) {
+    default <E extends Entity, F extends Number, R extends RelatedTo> Q havingIfNotNull(ColumnFunction<E, F, R, F> column, F val) {
         if (val != null) setHavingWrapper(new Having().ifNotNull(column, val));
         return (Q) this;
     }
@@ -66,98 +66,98 @@ public interface QueryHaving<Q extends Query> {
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingEqual(Column<E, F, R> column, F val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingEqual(Column<E, F, R> column, F val) {
         setHavingWrapper(new Having().equal(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingNotEqual(Column<E, F, R> column, F val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingNotEqual(Column<E, F, R> column, F val) {
         setHavingWrapper(new Having().notEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingGreater(Column<E, F, R> column, F val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingGreater(Column<E, F, R> column, F val) {
         setHavingWrapper(new Having().greater(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingGreaterOrEqual(Column<E, F, R> column, F val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingGreaterOrEqual(Column<E, F, R> column, F val) {
         setHavingWrapper(new Having().greaterOrEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingLess(Column<E, F, R> column, F val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingLess(Column<E, F, R> column, F val) {
         setHavingWrapper(new Having().less(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingLessOrEqual(Column<E, F, R> column, F val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingLessOrEqual(Column<E, F, R> column, F val) {
         setHavingWrapper(new Having().lessOrEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingLike(Column<E, F, R> column, F val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingLike(Column<E, F, R> column, F val) {
         setHavingWrapper(new Having().like(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingEqual(Column<E, F, R> column, R val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingEqual(Column<E, F, R> column, R val) {
         setHavingWrapper(new Having().equal(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingNotEqual(Column<E, F, R> column, R val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingNotEqual(Column<E, F, R> column, R val) {
         setHavingWrapper(new Having().notEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingGreater(Column<E, F, R> column, R val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingGreater(Column<E, F, R> column, R val) {
         setHavingWrapper(new Having().greater(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingGreaterOrEqual(Column<E, F, R> column, R val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingGreaterOrEqual(Column<E, F, R> column, R val) {
         setHavingWrapper(new Having().greaterOrEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingLess(Column<E, F, R> column, R val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingLess(Column<E, F, R> column, R val) {
         setHavingWrapper(new Having().less(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingLessOrEqual(Column<E, F, R> column, R val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingLessOrEqual(Column<E, F, R> column, R val) {
         setHavingWrapper(new Having().lessOrEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingIn(Column<E, F, R> column, F... val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingIn(Column<E, F, R> column, F... val) {
         setHavingWrapper(new Having().in(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingNotIn(Column<E, F, R> column, F... val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingNotIn(Column<E, F, R> column, F... val) {
         setHavingWrapper(new Having().notIn(column, val));
         return (Q) this;
     }
 
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingIn(Column<E, F, R> column, Collection<F> val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingIn(Column<E, F, R> column, Collection<F> val) {
         setHavingWrapper(new Having().inFields(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingNotIn(Column<E, F, R> column, Collection<F> val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingNotIn(Column<E, F, R> column, Collection<F> val) {
         setHavingWrapper(new Having().notInFields(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingIn(Column<E, F, R> column, R... val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingIn(Column<E, F, R> column, R... val) {
         setHavingWrapper(new Having().in(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q havingNotIn(Column<E, F, R> column, R... val) {
+    default <E extends Entity, F, R extends RelatedTo> Q havingNotIn(Column<E, F, R> column, R... val) {
         setHavingWrapper(new Having().notIn(column, val));
         return (Q) this;
     }
@@ -197,38 +197,38 @@ public interface QueryHaving<Q extends Query> {
         return (Q) this;
     }
 
-    default <F extends Number, R extends EntityRelation> Q havingBetween(ColumnFunction<?, F, R, F> column, R valueFrom, R valueTo) {
+    default <F extends Number, R extends RelatedTo> Q havingBetween(ColumnFunction<?, F, R, F> column, R valueFrom, R valueTo) {
         setHavingWrapper(new Having(new WhereAnd().between(column, valueFrom, valueTo)));
         return (Q) this;
     }
 
     default Q havingEqual(String column, Object val) {
-        havingEqual(new ColumnHaving(column), val);
+        havingEqual(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 
     default Q havingGreater(String column, Object val) {
-        havingGreater(new ColumnHaving(column), val);
+        havingGreater(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 
     default Q havingGreaterOrEqual(String column, Object val) {
-        havingGreaterOrEqual(new ColumnHaving(column), val);
+        havingGreaterOrEqual(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 
     default Q havingLess(String column, Object val) {
-        havingLess(new ColumnHaving(column), val);
+        havingLess(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 
     default Q havingLessOrEqual(String column, Object val) {
-        havingLessOrEqual(new ColumnHaving(column), val);
+        havingLessOrEqual(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 
     default Q havingNotEqual(String column, Object val) {
-        havingNotEqual(new ColumnHaving(column), val);
+        havingNotEqual(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 

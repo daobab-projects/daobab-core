@@ -21,7 +21,8 @@ public class ColumnAnalysator {
 
     static void compileNames(List<GenerateColumn> storage) {
         storage.stream()
-                .map(GenerateColumn::getColumnName).forEach(columnName -> {
+                .map(GenerateColumn::getColumnName)
+                .forEach(columnName -> {
                     List<GenerateColumn> columnList = storage
                             .stream()
                             .filter(r -> r.getFinalFieldName() == null && columnName != null && columnName.equals(r.getColumnName()))

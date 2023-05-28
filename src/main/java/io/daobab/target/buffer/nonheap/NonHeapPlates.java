@@ -1,5 +1,6 @@
 package io.daobab.target.buffer.nonheap;
 
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.DaobabException;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
@@ -117,7 +118,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
 
             BitBufferIndexBase index = indexRepository[pointer];
             if (index != null) {
-                index.removeValue(column.getValueOf((EntityRelation) entityToRemove), position);
+                index.removeValue(column.getValueOf((RelatedTo) entityToRemove), position);
             }
         }
 
@@ -138,7 +139,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
         for (TableColumn tableColumn : getColumnsForTable(entity)) {
             Column column = tableColumn.getColumn();
             Integer pointer = columnsOrder.get(column.getColumnName());
-            Object value = column.getValueOf((EntityRelation) entity);
+            Object value = column.getValueOf((RelatedTo) entity);
             if (pointer == null) {
                 Map<String, Object> additionalValues = additionalParameters.getOrDefault(entityLocation, new HashMap<>());
                 additionalValues.put(column.toString(), value);
@@ -161,7 +162,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
 
     @Override
     public Plate getPlate(int i, Collection<TableColumn> chosenColumns) {
-        Plate rv = new Plate();
+        Plate rv = PlateCreator.ofTableColumnList(chosenColumns);
 
         int entityLocation = locations.get(i);
         int page = entityLocation >> pageMaxCapacityBytes;
@@ -187,7 +188,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Plate get(int i) {
-        Plate rv = new Plate();
+        Plate rv = PlateCreator.ofTableColumnList(columns);
 
         int entityLocation = locations.get(i);
         int page = entityLocation >> pageMaxCapacityBytes;
@@ -201,13 +202,13 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
             if (posCol == null) {
                 HashMap<String, Object> additionalValues = additionalParameters.get(entityLocation);
                 if (additionalValues != null) {
-                    column.setValue((EntityRelation) rv, additionalValues.get(column.toString()));
+                    rv = (Plate) column.setValue((RelatedTo) rv, additionalValues.get(column.toString()));
                 }
                 cnt++;
                 continue;
             }
             pageBuffer.position(0);
-            column.setValue((EntityRelation) rv, bitFields[cnt].readValue(pageBuffer, posEntity + posCol));
+            rv = (Plate) column.setValue((RelatedTo) rv, bitFields[cnt].readValue(pageBuffer, posEntity + posCol));
             cnt++;
         }
         return rv;
@@ -236,7 +237,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
         Query<E1, ?, ?> q = query;
         List<Plate> list = finalFilter(q);
         return new EntityList<>((List<E1>) list.stream()
-                .map(p -> p.toEntity((Class<EntityMap>) query.getEntityClass(), query.getFields()))
+                .map(p -> p.toEntity((Class<Entity>) query.getEntityClass(), query.getFields()))
                 .collect(Collectors.toList()), query.getEntityClass());
     }
 

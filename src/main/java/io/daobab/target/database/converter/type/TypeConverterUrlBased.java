@@ -5,10 +5,10 @@ import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public interface TypeConverterUrlBased<T> extends DatabaseTypeConverter<URL, T> {
+public abstract class TypeConverterUrlBased<T> implements DatabaseTypeConverter<URL, T> {
 
 
-    default URL readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
+    public URL readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
         return rs.getURL(columnIndex);
     }
 

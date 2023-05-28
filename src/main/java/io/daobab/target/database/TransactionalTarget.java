@@ -17,15 +17,15 @@ public interface TransactionalTarget extends Target, QueryDataBaseHandler {
         return new OpenTransactionDataBaseTargetImpl((DataBaseTarget) this);
     }
 
-    default <R> void wrapTransactionAsynch(Function<OpenTransactionDataBaseTargetImpl, R> consumer) {
+    default <R> void wrapTransactionAsynch(Function<OpenTransactionDataBaseTargetImpl, ? extends R> consumer) {
         CompletableFuture.runAsync(() -> wrapTransaction(consumer));
     }
 
-    default <R> void wrapTransactionAsynch(Function<OpenTransactionDataBaseTargetImpl, R> consumer, Executor executor) {
+    default <R> void wrapTransactionAsynch(Function<OpenTransactionDataBaseTargetImpl, ? extends R> consumer, Executor executor) {
         CompletableFuture.runAsync(() -> wrapTransaction(consumer), executor);
     }
 
-    default <R> R wrapTransaction(Function<OpenTransactionDataBaseTargetImpl, R> consumer) {
+    default <R> R wrapTransaction(Function<OpenTransactionDataBaseTargetImpl, ? extends R> consumer) {
 
         OpenTransactionDataBaseTargetImpl otx = beginTransaction();
         try {

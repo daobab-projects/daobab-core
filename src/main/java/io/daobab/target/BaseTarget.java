@@ -1,5 +1,7 @@
 package io.daobab.target;
 
+import io.daobab.converter.duplicator.duplication.EntityDuplication;
+import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.error.DaobabException;
 import io.daobab.model.ColumnsProvider;
 import io.daobab.model.Entity;
@@ -38,10 +40,14 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     private boolean statisticEnabled = false;
     private AccessProtector accessProtector;
 
+    private final Map<Class<?>, String> entityNameCache = new HashMap<>();
+
+    private final JsonConverterManager jsonConverterManager = JsonConverterManager.INSTANCE;
+
     private final Map<Class<? extends ColumnsProvider>, List<TableColumn>> columnsCache = new HashMap<>();
 
     protected BaseTarget() {
-        accessProtector = new BasicAccessProtector();
+        accessProtector = new BasicAccessProtector(this);
     }
 
     @Override
@@ -179,4 +185,13 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     public List<TableColumn> getColumnsForTable(final ColumnsProvider entity) {
         return columnsCache.computeIfAbsent(entity.getClass(), e -> entity.columns());
     }
+
+    public JsonConverterManager getJsonConverterManager() {
+        return jsonConverterManager;
+    }
+
+    public String getEntityName(Class<? extends Entity> entityClass) {
+        return entityNameCache.computeIfAbsent(entityClass, clazz -> EntityDuplication.getEntityName((Class<Entity>) clazz, this));
+    }
+
 }

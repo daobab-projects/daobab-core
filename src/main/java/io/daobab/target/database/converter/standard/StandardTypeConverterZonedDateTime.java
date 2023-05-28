@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 
-public class StandardTypeConverterZonedDateTime implements TypeConverterZonedDateTimeBased<ZonedDateTime> {
+public class StandardTypeConverterZonedDateTime extends TypeConverterZonedDateTimeBased<ZonedDateTime> {
 
     private final DataBaseTarget target;
 

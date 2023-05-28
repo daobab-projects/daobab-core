@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface FirstName<E extends EntityMap> extends EntityRelationMap<E> {
+public interface FirstName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface FirstName<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default String getFirstName() {
-        return getColumnParam("FirstName");
+        return readParam("FirstName");
     }
 
     default E setFirstName(String val) {
-        setColumnParam("FirstName", val);
-        return (E) this;
+        return storeParam("FirstName", val);
     }
 
     default Column<E, String, FirstName> colFirstName() {
@@ -49,14 +49,14 @@ public interface FirstName<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(FirstName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "FirstName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "FirstName");
                 return entity.getFirstName();
             }
 
             @Override
-            public void setValue(FirstName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FirstName");
-                entity.setFirstName(param);
+            public FirstName setValue(FirstName entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "FirstName");
+                return (FirstName) entity.setFirstName(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface FirstName<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

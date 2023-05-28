@@ -2,8 +2,8 @@ package io.daobab.target.database.query;
 
 import io.daobab.error.AttemptToSetWhereClauseSecondTimeException;
 import io.daobab.error.DaobabEntityCreationException;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.error.MandatoryTargetException;
-import io.daobab.error.NullEntityException;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.Column;
@@ -13,13 +13,19 @@ import io.daobab.model.TableColumn;
 import io.daobab.query.base.*;
 import io.daobab.query.marschal.Marshaller;
 import io.daobab.statement.base.IdentifierStorage;
-import io.daobab.statement.condition.*;
+import io.daobab.statement.condition.Having;
+import io.daobab.statement.condition.Limit;
+import io.daobab.statement.condition.Order;
+import io.daobab.statement.condition.SetOperator;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
 import io.daobab.statement.where.base.WhereBase;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.base.DataBaseQueryHaving;
+import io.daobab.target.database.query.base.DataBaseQueryLimit;
+import io.daobab.target.database.query.base.DataBaseQueryWhere;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -30,14 +36,13 @@ import java.util.function.UnaryOperator;
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQueryBase> implements Query<E, QueryTarget, Q>, QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, QueryGroupBy<Q>, RemoteQuery<Q>, ILoggerBean {
+public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQueryBase> implements Query<E, QueryTarget, Q>, QueryJoin<Q>, DataBaseQueryWhere<Q>, QueryOrder<Q>, DataBaseQueryLimit<Q>, DataBaseQueryHaving<Q>, QuerySetOperator<Q>, QueryGroupBy<Q>, RemoteQuery<Q>, ILoggerBean {
 
     public List<Column<?, ?, ?>> _groupBy = new ArrayList<>();
     public String _groupByAlias = null;
-    public boolean _unique = false;
     public boolean _calcJoins = false;
     protected Order orderBy;
-    protected String _nativeQuery;
+
     protected List<TableColumn> fields = new ArrayList<>();
     private boolean logQueryEnabled = false;
     private List<JoinWrapper> joins = new ArrayList<>();
@@ -47,7 +52,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     private Class<E> entityClass;
     private Where whereWrapper;
     private Having havingWrapper;
-    private Count _count;
     private Limit limit;
     private String identifier;
     private String sentQuery;
@@ -68,11 +72,8 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         to.entityClass = from.entityClass;
         to.whereWrapper = from.whereWrapper; //TODO
         to.havingWrapper = from.havingWrapper; //TODO
-        to._count = from._count;
         to.limit = from.limit;
-        to._unique = from._unique;
         to._calcJoins = from._calcJoins;
-        to._nativeQuery = from._nativeQuery;
         to.identifier = from.identifier;
         // to.logQueryConsumer = from.logQueryConsumer;
 
@@ -133,12 +134,11 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
     protected void init(QueryTarget target, Entity entity) {
         if (target == null) throw new MandatoryTargetException();
-        if (entity == null) throw new NullEntityException();
+        if (entity == null) throw new MandatoryEntity();
         setTarget(target);
-        setEntityName(entity.getEntityName());
-        setEntityClass(entity.getEntityClass());
+        setEntityName(target.getEntityName(entity.entityClass()));
+        setEntityClass(entity.entityClass());
         IdentifierStorage storage = new IdentifierStorage();
-        storage.registerIdentifiers(getEntityName());
         setIdentifierStorage(storage);
     }
 
@@ -165,17 +165,17 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     /**
      * Get all DAO related withoutTransactionTo this statement
      */
-    public Set<String> getAllEntitiesRelated() {
+    public Set<String> getAllEntitiesRelated(QueryTarget target) {
         Set<String> rv = new HashSet<>();
         if (getEntityName() != null) rv.add(getEntityName());
         if (getWhereWrapper() != null) {
-            rv.addAll(getWhereWrapper().getAllDaoInWhereClause());
+            rv.addAll(getWhereWrapper().getAllDaoInWhereClause(target));
         }
 
         if (getFields() == null) return rv;
 
         for (TableColumn df : getFields()) {
-            String ndao = df.getColumn().getEntityName();
+            String ndao = target.getEntityName(df.getColumn().entityClass());
             if (ndao != null) {
                 rv.add(ndao);
             }
@@ -236,14 +236,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         return (Q) this;
     }
 
-    public Count getCount() {
-        return _count;
-    }
-
-    protected void setTempCount(Count c) {
-        this._count = c;
-    }
-
     public Limit getLimit() {
         return limit;
     }
@@ -268,17 +260,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
     public boolean isLogQueryEnabled() {
         return logQueryEnabled;
-    }
-
-
-    public Q distinct() {
-        _unique = true;
-        return (Q) this;
-    }
-
-    @Override
-    public boolean isUnique() {
-        return _unique;
     }
 
     @Override
@@ -342,13 +323,11 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
             rv.put(DictRemoteKey.FIELDS, Marshaller.marshalColumnList(fields));
         if (entityName != null) rv.put(DictRemoteKey.ENTITY_NAME, entityName);
         if (entityClass != null) rv.put(DictRemoteKey.ENTITY_CLASS, entityClass.getName());
-        if (_unique) rv.put(DictRemoteKey.UNIQUE, _unique);
         if (_calcJoins) rv.put(DictRemoteKey.SMART_JOINS, _calcJoins);
         if (getWhereWrapper() != null && !getWhereWrapper().isEmpty())
             rv.put(DictRemoteKey.WHERE, getWhereWrapper().toMap());
         if (getHavingWrapper() != null && !getHavingWrapper().isEmpty())
             rv.put(DictRemoteKey.HAVING, getHavingWrapper().toMap());
-        if (getCount() != null) rv.put(DictRemoteKey.COUNT, getCount().getCountMap());
         if (getLimit() != null) rv.put(DictRemoteKey.LIMIT, getLimit().getLimitMap());
         if (getOrderBy() != null) rv.put(DictRemoteKey.ORDER, getOrderBy().toMap());
         if (_groupBy != null && !_groupBy.isEmpty()) rv.put(DictRemoteKey.GROUP_BY, _groupBy);
@@ -374,16 +353,13 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         Object fields = rv.get(DictRemoteKey.FIELDS);
         Object remoteEntityName = rv.get(DictRemoteKey.ENTITY_NAME);
         Object remoteEntityClass = rv.get(DictRemoteKey.ENTITY_CLASS);
-        Object unique = rv.get(DictRemoteKey.UNIQUE);
         Object cache = rv.get(DictRemoteKey.CACHE);
+        Object order = rv.get(DictRemoteKey.ORDER);
 
         Entity ent = Marshaller.fromRemote(target, (String) remoteEntityName);
 
-        if (ent != null) setEntityClass(ent.getEntityClass());
+        if (ent != null) setEntityClass(ent.entityClass());
         setEntityName((String) remoteEntityName);
-
-        if (unique != null) _unique = "true".equals(unique);
-
 
         if (where != null) {
             setWhereWrapper(WhereBase.fromRemote(target, (Map<String, Object>) where));
@@ -398,10 +374,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         setIdentifierStorage(storage);
 
         setIdentifier((String) rv.get(DictRemoteKey.IDENTIFIER));
-    }
-
-    public String geNativeQuery() {
-        return _nativeQuery;
     }
 
     protected <Q1 extends Query> Q1 modifyQuery(Q1 query) {
@@ -437,12 +409,10 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         return identifier;
     }
 
-    public Q setIdentifier(String identifier) {
+    public void setIdentifier(String identifier) {
         this.identifier = identifier;
-        return (Q) this;
     }
 
-    public abstract QueryType getQueryType();
 
     protected TableColumn getInfoColumn(ColumnFunction column) {
         if (column == null) return null;
@@ -472,9 +442,9 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     }
 
     public <E1 extends Entity> Q from(E1 entity) {
-        if (entity == null) throw new NullEntityException();
-        setEntityName(entity.getEntityName());
-        setEntityClass(entity.getEntityClass());
+        if (entity == null) throw new MandatoryEntity();
+        setEntityName(target.getEntityName(entityClass));
+        setEntityClass(entity.entityClass());
         setIdentifierStorage(new IdentifierStorage());
         getIdentifierStorage().registerIdentifiers(getEntityName());
         return (Q) this;

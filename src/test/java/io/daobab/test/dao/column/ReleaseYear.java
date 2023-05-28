@@ -3,30 +3,30 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-public interface ReleaseYear<E extends EntityMap> extends EntityRelationMap<E> {
+public interface ReleaseYear<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
      * db name: RELEASE_YEAR,
      * db type: DATE
      */
-    default Date getReleaseYear() {
-        return getColumnParam("ReleaseYear");
+    default LocalDateTime getReleaseYear() {
+        return readParam("ReleaseYear");
     }
 
-    default E setReleaseYear(Date val) {
-        setColumnParam("ReleaseYear", val);
-        return (E) this;
+    default E setReleaseYear(LocalDateTime val) {
+        return storeParam("ReleaseYear", val);
     }
 
-    default Column<E, Date, ReleaseYear> colReleaseYear() {
-        return new Column<E, Date, ReleaseYear>() {
+    default Column<E, LocalDateTime, ReleaseYear> colReleaseYear() {
+        return new Column<E, LocalDateTime, ReleaseYear>() {
 
             @Override
             public String getColumnName() {
@@ -44,20 +44,20 @@ public interface ReleaseYear<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public Class<Date> getFieldClass() {
-                return Date.class;
+            public Class<LocalDateTime> getFieldClass() {
+                return LocalDateTime.class;
             }
 
             @Override
-            public Date getValue(ReleaseYear entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ReleaseYear");
+            public LocalDateTime getValue(ReleaseYear entity) {
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ReleaseYear");
                 return entity.getReleaseYear();
             }
 
             @Override
-            public void setValue(ReleaseYear entity, Date param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ReleaseYear");
-                entity.setReleaseYear(param);
+            public ReleaseYear setValue(ReleaseYear entity, LocalDateTime param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "ReleaseYear");
+                return (ReleaseYear) entity.setReleaseYear(param);
             }
 
             @Override
@@ -67,7 +67,7 @@ public interface ReleaseYear<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

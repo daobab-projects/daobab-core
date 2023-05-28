@@ -1,78 +1,23 @@
 package io.daobab.target.statistic.column;
 
-import io.daobab.error.AttemptToReadFromNullEntityException;
-import io.daobab.error.AttemptToWriteIntoNullEntityException;
-import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.creation.DaobabCache;
+import io.daobab.model.*;
 
-import java.util.Objects;
-
-public interface ProcedureName<E extends EntityMap> extends EntityRelationMap<E> {
+public interface ProcedureName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getProcedureName() {
-        return getColumnParam("ProcedureName");
+        return readParam("ProcedureName");
     }
 
     default E setProcedureName(String val) {
-        setColumnParam("ProcedureName", val);
-        return (E) this;
+        return storeParam("ProcedureName", val);
     }
 
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, ProcedureName> colProcedureName() {
-        return new Column<E, String, ProcedureName>() {
-
-            @Override
-            public String getColumnName() {
-                return "PROCEDURE_NAME";
-            }
-
-            @Override
-            public String getFieldName() {
-                return "ProcedureName";
-            }
-
-            @Override
-            public E getInstance() {
-                return getEntity();
-            }
-
-            @Override
-            public Class<String> getFieldClass() {
-                return String.class;
-            }
-
-            @Override
-            public String getValue(ProcedureName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ProcedureName");
-                return entity.getProcedureName();
-            }
-
-            @Override
-            public void setValue(ProcedureName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ProcedureName");
-                entity.setProcedureName(param);
-            }
-
-            @Override
-            public int hashCode() {
-                return toString().hashCode();
-            }
-
-            @Override
-            public String toString() {
-                return getEntityName() + "." + getFieldName();
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (this == obj) return true;
-                if (obj == null) return false;
-                if (getClass() != obj.getClass()) return false;
-                Column other = (Column) obj;
-                return Objects.equals(hashCode(), other.hashCode());
-            }
-        };
+        return DaobabCache.getColumn("ProcedureName", "PROCEDURE_NAME", (Table<?>) this, String.class);
     }
+
 
 }

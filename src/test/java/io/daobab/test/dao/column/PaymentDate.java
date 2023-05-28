@@ -3,13 +3,14 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public interface PaymentDate<E extends EntityMap> extends EntityRelationMap<E> {
+public interface PaymentDate<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -17,12 +18,11 @@ public interface PaymentDate<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: TIMESTAMP
      */
     default Timestamp getPaymentDate() {
-        return getColumnParam("PaymentDate");
+        return readParam("PaymentDate");
     }
 
     default E setPaymentDate(Timestamp val) {
-        setColumnParam("PaymentDate", val);
-        return (E) this;
+        return storeParam("PaymentDate", val);
     }
 
     default Column<E, Timestamp, PaymentDate> colPaymentDate() {
@@ -50,14 +50,14 @@ public interface PaymentDate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Timestamp getValue(PaymentDate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "PaymentDate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "PaymentDate");
                 return entity.getPaymentDate();
             }
 
             @Override
-            public void setValue(PaymentDate entity, Timestamp param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PaymentDate");
-                entity.setPaymentDate(param);
+            public PaymentDate setValue(PaymentDate entity, Timestamp param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "PaymentDate");
+                return (PaymentDate) entity.setPaymentDate(param);
             }
 
             @Override
@@ -67,7 +67,7 @@ public interface PaymentDate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

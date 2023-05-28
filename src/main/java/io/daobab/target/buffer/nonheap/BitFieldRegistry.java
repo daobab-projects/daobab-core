@@ -8,6 +8,8 @@ import io.daobab.target.buffer.nonheap.access.index.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -70,6 +72,15 @@ public class BitFieldRegistry {
         registerArrayNotNull(BigDecimal.class, BitArrayBigDecimalNotNull::new);
         registerIndex(BigDecimal.class, BitIndexBigDecimal::new);
 
+        register(LocalDate.class, BitFieldLocalDate::new, BitFieldLocalDateNotNull::new);
+        registerArray(LocalDate.class, BitArrayLocalDate::new);
+        registerArrayNotNull(LocalDate.class, BitArrayLocalDateNotNull::new);
+        registerIndex(LocalDate.class, BitIndexLocalDate::new);
+
+        register(LocalDateTime.class, BitFieldLocalDateTime::new, BitFieldLocalDateTimeNotNull::new);
+        registerArray(LocalDateTime.class, BitArrayLocalDateTime::new);
+        registerArrayNotNull(LocalDateTime.class, BitArrayLocalDateTimeNotNull::new);
+        registerIndex(LocalDateTime.class, BitIndexLocalDateTime::new);
 
         register(java.sql.Date.class, BitFieldSqlDate::new, BitFieldSqlDateNotNull::new);
 //        register(Character.class,new BitFieldCharacterNotNull::new);
@@ -81,7 +92,7 @@ public class BitFieldRegistry {
         bitBufferIndexBaseMap.put(clazz, bitIndex);
     }
 
-    public <F, B extends BitField<F>> void register(final Class<F> clazz, final Function<TableColumn, B> bitField, final Function<TableColumn, B> bitFieldNotNull) {
+    public <F, B extends BitField<F>> void register(final Class<F> clazz, final Function<TableColumn, ? extends B> bitField, final Function<TableColumn, B> bitFieldNotNull) {
         classSet.add(clazz);
         bitFieldMap.put(clazz, bitField);
         bitFieldNotNullMap.put(clazz, bitFieldNotNull);
@@ -103,7 +114,7 @@ public class BitFieldRegistry {
         return getBitFieldFor(tableColumn.getColumn().getFieldClass(), tableColumn);
     }
 
-    private <X> Optional<X> getOrNull(TableColumn tableColumn, Function<TableColumn, X> function) {
+    private <X> Optional<X> getOrNull(TableColumn tableColumn, Function<TableColumn, ? extends X> function) {
         if (function == null) {
             return Optional.empty();
         }
@@ -123,7 +134,7 @@ public class BitFieldRegistry {
             E entity = entities.get(i);
             F colVal;
             if (entity instanceof Entity) {
-                colVal = (F) tableColumn.getColumn().getValue((EntityRelation<?>) entity);
+                colVal = (F) tableColumn.getColumn().getValue((RelatedTo<?>) entity);
             } else {
                 colVal = (F) ((Plate) entity).getValue(tableColumn.getColumn());
             }

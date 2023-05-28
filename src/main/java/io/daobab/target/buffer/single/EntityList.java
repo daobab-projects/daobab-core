@@ -1,10 +1,13 @@
 package io.daobab.target.buffer.single;
 
-import io.daobab.clone.EntityDuplicator;
+import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.error.BufferedOperationAllowedOnlyForSingleEntityColumns;
 import io.daobab.error.DaobabException;
 import io.daobab.error.TargetDoesNotSupport;
-import io.daobab.model.*;
+import io.daobab.model.Column;
+import io.daobab.model.Entity;
+import io.daobab.model.Plate;
+import io.daobab.model.RelatedTo;
 import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesBufferIndexed;
 import io.daobab.statement.condition.Limit;
@@ -12,6 +15,7 @@ import io.daobab.statement.condition.base.OrderComparator;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.target.buffer.function.BufferFunctionManager;
 import io.daobab.target.buffer.query.*;
+import io.daobab.target.buffer.single.function.AggregateFunctionEngineEntities;
 import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
@@ -42,12 +46,12 @@ import java.util.stream.Collectors;
 public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> implements Entities<E>, StatisticCollectorProvider, StatisticProvider {
 
     private static final long serialVersionUID = 2291798166104201910L;
-    private final transient Class<E> entityClazz;
-    private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private final Class<E> entityClazz;
+    private final transient ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private boolean statisticEnabled = false;
-    private transient AccessProtector accessProtector = new BasicAccessProtector();
-    private final Lock readLock = readWriteLock.readLock();
-    private final Lock writeLock = readWriteLock.writeLock();
+    private transient AccessProtector accessProtector = new BasicAccessProtector(this);
+    private final transient Lock readLock = readWriteLock.readLock();
+    private final transient Lock writeLock = readWriteLock.writeLock();
 
     private transient StatisticCollector statistic;
 
@@ -59,7 +63,6 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     public EntityList(List<E> entities, Class<E> entityClass) { //clear();
         super(entities);
         this.entityClazz = entityClass;
-
     }
 
     public EntityList(Class<E> entityClass) {
@@ -69,6 +72,11 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     @Override
     public boolean isTransactionActive() {
         throw new TargetDoesNotSupport();
+    }
+
+    @Override
+    public String getEntityName(Class<? extends Entity> entityClass) {
+        return entityClass.getName();
     }
 
     @Override
@@ -100,8 +108,8 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         return (Entities<E1>) results;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private <R extends EntityRelation> Plates resultPlates(BufferQueryPlate query) {
+    @SuppressWarnings({"unchecked"})
+    private Plates resultPlates(BufferQueryPlate query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         EntityList<E> matched = new EntityList<>(filter((Query<E, ?, ?>) query), (Class<E>) query.getEntityClass());
 
@@ -110,11 +118,9 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
             return new PlateBuffer();
         }
 
-        Plates results = new PlateBuffer(matched);
-
-        results = new BufferFunctionManager().applyFunctions(results, query.getFunctionMap());
-        results = results.orderAndLimit(query);
-        results = results.sanitise(query.getFields());
+        Plates results = new BufferFunctionManager().applyFunctions(new PlateBuffer(matched), query.getFunctionMap())
+                .orderAndLimit(query)
+                .sanitise(query.getFields());
 
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
         return results;
@@ -126,7 +132,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <R extends EntityRelation, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
+    private <R extends RelatedTo, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         EntityList<E> matched = new EntityList<>(filter(query), query.getEntityClass());
         if (matched.isEmpty()) {
@@ -141,7 +147,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <R extends EntityRelation, F> F readFieldFromBuffer(Entities<E> entities, BufferQueryField<E, F> query) {
+    private <R extends RelatedTo, F> F readFieldFromBuffer(Entities<E> entities, BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         EntityList<E> matched = new EntityList<>(entities.filter(query), query.getEntityClass());
 
@@ -156,7 +162,13 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         }
 
         Column<E, F, R> firstColumn = query.getFields().get(0).getColumn();
-        F rv = firstColumn.getValueOf((R) el);
+        F rv;
+        if (firstColumn instanceof ColumnFunction) {
+            ColumnFunction columnFunction = (ColumnFunction) firstColumn;
+            rv = (F) AggregateFunctionEngineEntities.INSTANCE.executeFunction(this, columnFunction);
+        } else {
+            rv = firstColumn.getValueOf((R) el);
+        }
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
         return rv;
     }
@@ -330,11 +342,6 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @Override
-    public long countAny() {
-        return size();
-    }
-
-    @Override
     public void refreshImmediately() {
         throw new TargetDoesNotSupport();
     }
@@ -355,25 +362,14 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
 
     @Override
-    public String toJSON() {
-        StringBuilder rv = new StringBuilder();
-        rv.append("[");
-
-        int size = size();
-        int cnt = 0;
-
-        if (!isEmpty() && !(get(0) instanceof EntityMap)) {
-            throw new DaobabException("this method can be used for EntityMap implementations only");
+    public String toJson() {
+        if (isEmpty()) {
+            return "[]";
         }
 
-        for (E val : this) {
-            cnt++;
-            rv.append(((EntityMap) val).toJSON());
-            if (cnt != size) rv.append(",");
-        }
+        return JsonConverterManager.INSTANCE.getEntityJsonConverter(get(0))
+                .toJson(new StringBuilder(), this).toString();
 
-        rv.append("]");
-        return rv.toString();
     }
 
     @Override
@@ -384,10 +380,10 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     @SuppressWarnings("unchecked")
     @Override
     public Entities<E> clone() {
-        if (!isEmpty() && !(get(0) instanceof EntityMap))
-            throw new DaobabException("Only " + EntityMap.class.getName() + " entities may be cloned");
-        List<EntityMap> srcList = (List<EntityMap>) this;
-        return new EntityList<>((List<E>) EntityDuplicator.cloneEntityList(srcList), this.entityClazz);
+        if (!isEmpty() && !(get(0) instanceof Entity))
+            throw new DaobabException("Only " + Entity.class.getName() + " entities may be cloned");
+
+        return new EntityList<>(new ArrayList<>(this), this.entityClazz);
     }
 
     @Override

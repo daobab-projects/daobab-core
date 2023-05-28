@@ -33,7 +33,7 @@ public class DatabaseDateConverterOracle implements DatabaseDateConverter {
 
     @Override
     public String toDatabaseLocalDate(LocalDate value) {
-        return String.format(" TO_DATE(''%s:%s:%s'','YYYY-MM-DD') ", value.getYear(), value.getMonth(), value.getDayOfMonth());
+        return String.format(" TO_DATE(''%s:%s:%s'','YYYY-MM-DD') ", value.getYear(), value.getMonthValue(), value.getDayOfMonth());
     }
 
     @Override
@@ -41,7 +41,7 @@ public class DatabaseDateConverterOracle implements DatabaseDateConverter {
         if (value == null) {
             return null;
         }
-        return String.format("'%s-%s-%s %s:%s:%s'", value.getYear(), value.getMonth(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
+        return String.format("'%s-%s-%s %s:%s:%s'", value.getYear(), value.getMonthValue(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
     }
 
     @Override
@@ -49,6 +49,6 @@ public class DatabaseDateConverterOracle implements DatabaseDateConverter {
         if (value == null) {
             return null;
         }
-        return String.format("'%s-%s-%s %s:%s:%s'", value.getYear(), value.getMonth(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
+        return String.format("'%s-%s-%s %s:%s:%s'", value.getYear(), value.getMonthValue(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
     }
 }

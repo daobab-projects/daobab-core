@@ -1,41 +1,38 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.clone.EntityDuplicator;
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.creation.DaobabCache;
+import io.daobab.model.*;
 import io.daobab.target.database.meta.column.MetaCatalogName;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 @SuppressWarnings("rawtypes")
-public class MetaCatalog extends Table implements
+@TableInformation(name = "META_CATALOG")
+public class MetaCatalog extends Table<MetaCatalog> implements
         MetaCatalogName<MetaCatalog>,
 
         PrimaryKey<MetaCatalog, String, MetaCatalogName> {
 
-
-    @Override
-    public String getEntityName() {
-        return "META_SCHEMA";
+    public MetaCatalog() {
+        super();
     }
+
+    public MetaCatalog(Map<String, Object> parameters) {
+        super(parameters);
+    }
+
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colCatalogName()).size(256)
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Collections.singletonList(
+                        new TableColumn(colCatalogName()).size(256)
+                ));
     }
 
-
-    @Override
-    public MetaCatalog clone() {
-        return EntityDuplicator.cloneEntity(this);
-    }
 
     @Override
     public Column<MetaCatalog, String, MetaCatalogName> colID() {
@@ -43,13 +40,5 @@ public class MetaCatalog extends Table implements
     }
 
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        PrimaryKey other = (PrimaryKey) obj;
-        return Objects.equals(getId(), other.getId());
-    }
 
 }

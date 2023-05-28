@@ -1,6 +1,6 @@
 package io.daobab.target.buffer.single;
 
-import io.daobab.converter.JsonHandler;
+import io.daobab.converter.json.JsonProvider;
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
 import io.daobab.model.TableColumn;
@@ -17,7 +17,7 @@ import java.util.Optional;
  *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface Plates extends Serializable, List<Plate>, Cloneable, JsonHandler, BufferQueryTarget {
+public interface Plates extends Serializable, List<Plate>, Cloneable, JsonProvider, BufferQueryTarget {
 
     Plates findMany();
 

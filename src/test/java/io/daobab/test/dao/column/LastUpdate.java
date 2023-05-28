@@ -3,13 +3,14 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public interface LastUpdate<E extends EntityMap> extends EntityRelationMap<E> {
+public interface LastUpdate<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -17,12 +18,11 @@ public interface LastUpdate<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: TIMESTAMP
      */
     default Timestamp getLastUpdate() {
-        return getColumnParam("LastUpdate");
+        return readParam("LastUpdate");
     }
 
     default E setLastUpdate(Timestamp val) {
-        setColumnParam("LastUpdate", val);
-        return (E) this;
+        return storeParam("LastUpdate", val);
     }
 
     default Column<E, Timestamp, LastUpdate> colLastUpdate() {
@@ -50,14 +50,14 @@ public interface LastUpdate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Timestamp getValue(LastUpdate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "LastUpdate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "LastUpdate");
                 return entity.getLastUpdate();
             }
 
             @Override
-            public void setValue(LastUpdate entity, Timestamp param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "LastUpdate");
-                entity.setLastUpdate(param);
+            public LastUpdate setValue(LastUpdate entity, Timestamp param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "LastUpdate");
+                return (LastUpdate) entity.setLastUpdate(param);
             }
 
             @Override
@@ -67,7 +67,7 @@ public interface LastUpdate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface StoreId<E extends EntityMap> extends EntityRelationMap<E> {
+public interface StoreId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface StoreId<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: TINYINT
      */
     default Integer getStoreId() {
-        return getColumnParam("StoreId");
+        return readParam("StoreId");
     }
 
     default E setStoreId(Integer val) {
-        setColumnParam("StoreId", val);
-        return (E) this;
+        return storeParam("StoreId", val);
     }
 
     default Column<E, Integer, StoreId> colStoreId() {
@@ -49,14 +49,14 @@ public interface StoreId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Integer getValue(StoreId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "StoreId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "StoreId");
                 return entity.getStoreId();
             }
 
             @Override
-            public void setValue(StoreId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "StoreId");
-                entity.setStoreId(param);
+            public StoreId setValue(StoreId entity, Integer param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "StoreId");
+                return (StoreId) entity.setStoreId(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface StoreId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

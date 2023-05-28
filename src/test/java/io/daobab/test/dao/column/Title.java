@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface Title<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Title<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface Title<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default String getTitle() {
-        return getColumnParam("Title");
+        return readParam("Title");
     }
 
     default E setTitle(String val) {
-        setColumnParam("Title", val);
-        return (E) this;
+        return storeParam("Title", val);
     }
 
     default Column<E, String, Title> colTitle() {
@@ -49,14 +49,14 @@ public interface Title<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(Title entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Title");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Title");
                 return entity.getTitle();
             }
 
             @Override
-            public void setValue(Title entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Title");
-                entity.setTitle(param);
+            public Title setValue(Title entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Title");
+                return (Title) entity.setTitle(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface Title<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

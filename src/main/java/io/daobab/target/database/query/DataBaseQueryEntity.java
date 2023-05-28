@@ -3,12 +3,12 @@ package io.daobab.target.database.query;
 import io.daobab.model.*;
 import io.daobab.query.base.QueryType;
 import io.daobab.result.EntitiesProvider;
-import io.daobab.statement.condition.Count;
 import io.daobab.statement.inner.InnerQueryEntity;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.target.buffer.nonheap.NonHeapEntities;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,10 +24,6 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
     private DataBaseQueryEntity() {
     }
 
-    DataBaseQueryEntity(QueryTarget target, Column<E, ?, ?> column) {
-        init(target, column.getEntityName());
-    }
-
     public DataBaseQueryEntity(QueryTarget target, Map<String, Object> remote) {
         fromRemote(target, remote);
     }
@@ -38,16 +34,6 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         target.getColumnsForTable(entity).forEach(e -> getFields().add(e));
     }
 
-    public DataBaseQueryEntity(String nativeQuery, QueryTarget target, E entity) {
-        this(target, entity);
-        this._nativeQuery = nativeQuery;
-    }
-
-    @Override
-    public long countAny() {
-        setTempCount(Count.any());
-        return getTarget().count(this);
-    }
 
     @Override
     public Entities<E> findMany() {
@@ -61,7 +47,7 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
 
     @SuppressWarnings("rawtypes")
     @Override
-    public <E1 extends Entity, F, R extends EntityRelation> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> column) {
+    public <E1 extends Entity, F, R extends RelatedTo> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> column) {
         DataBaseQueryField<E1, F> dataBaseQueryField = new DataBaseQueryField<>(getTarget(), column);
         return dataBaseQueryField.where(getWhereWrapper());
     }
@@ -76,6 +62,9 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         return QueryType.ENTITY;
     }
 
+    public FrozenDataBaseQueryEntity<E> freezeQuery() {
+        return new FrozenDataBaseQueryEntity<>(this);
+    }
 
     @SuppressWarnings({"java:S2175", "rawtypes", "unchecked"})
     public DataBaseQueryEntity<E> skip(Column<E, ?, ?>... columns) {
