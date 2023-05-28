@@ -53,9 +53,5 @@ public class InnerQueryFields<E extends Entity, F> implements QueryExpressionPro
         return many.isEmpty() ? Optional.empty() : Optional.of(many.get(0));
     }
 
-    @Override
-    public long countAny() {
-        return findMany().size();
-    }
 
 }

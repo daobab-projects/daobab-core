@@ -40,10 +40,7 @@ public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBas
                 return target.readFieldList(frozenDataBaseQueryField, parameters, column, typeConverter);
             }
 
-            @Override
-            public long countAny() {
-                return target.count(frozenDataBaseQueryField, parameters);
-            }
+
         };
     }
 
@@ -57,12 +54,7 @@ public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBas
         return target.readFieldList(this, Collections.emptyList(), column, typeConverter);
     }
 
-    @Override
-    public long countAny() {
-        validateEmptyParameters();
 
-        return target.count(this, Collections.emptyList());
-    }
 
     @Override
     public QueryType getQueryType() {

@@ -59,12 +59,6 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
     }
 
     @Override
-    public long countAny() {
-        setTempCount(Count.field(getFields().get(0).getColumn()));
-        return getTarget().count(this);
-    }
-
-    @Override
     public List<F> findMany() {
         return getTarget().readFieldList(modifyQuery(this));
     }

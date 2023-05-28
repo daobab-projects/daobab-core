@@ -104,10 +104,6 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         setSingleEntity(entities.size() == 1);
     }
 
-    @Override
-    public long countAny() {
-        return findMany().size();
-    }
 
     public FieldsProvider<FlatPlate> flat() {
         return map2(Plate::toFlat);

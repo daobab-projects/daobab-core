@@ -18,7 +18,6 @@ import io.daobab.target.buffer.BufferQueryTarget;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -62,14 +61,6 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
     @Override
     public InnerQueryFields<E, F> innerResult() {
         return new InnerQueryFields<>(findMany());
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public long countAny() {
-        return findMany().stream().map(e -> getFields().get(0).getColumn().getValueOf((EntityRelation) e))
-                .filter(Objects::nonNull)
-                .count();
     }
 
     @Override

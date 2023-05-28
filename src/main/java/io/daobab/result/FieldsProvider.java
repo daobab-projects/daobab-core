@@ -20,8 +20,6 @@ public interface FieldsProvider<F> {
         return elements.isEmpty() ? Optional.empty() : Optional.of(elements.get(0));
     }
 
-    long countAny();
-
     default boolean exists() {
         return findFirst().isPresent();
     }
