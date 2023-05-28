@@ -10,6 +10,9 @@ import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.converter.DatabaseConverterManager;
 import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
 import io.daobab.target.database.query.*;
+import io.daobab.target.database.query.frozen.NativeDataBaseQueryEntity;
+import io.daobab.target.database.query.frozen.NativeDataBaseQueryField;
+import io.daobab.target.database.query.frozen.NativeDataBaseQueryPlate;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
 
@@ -179,16 +182,16 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     }
 
     //  NATIVE
-    default <E extends Entity, F> DataBaseQueryField<E, F> nativeSelect(String nativeQuery, Column<E, F, ?> col) {
-        return new DataBaseQueryField<>(nativeQuery, this, col);
+    default <E extends Entity, F> NativeDataBaseQueryField<E, F> nativeSelect(String nativeQuery, Column<E, F, ?> col) {
+        return new NativeDataBaseQueryField<>(nativeQuery, this, col);
     }
 
-    default <E extends Entity> DataBaseQueryEntity<E> nativeSelect(String nativeQuery, E entity) {
-        return new DataBaseQueryEntity<>(nativeQuery, this, entity);
+    default <E extends Entity> NativeDataBaseQueryEntity<E> nativeSelect(String nativeQuery, E entity) {
+        return new NativeDataBaseQueryEntity<>(nativeQuery,this, entity);
     }
 
-    default DataBaseQueryPlate nativeSelect(String nativeQuery, Column<?, ?, ?>... col) {
-        return new DataBaseQueryPlate(nativeQuery, this, col);
+    default NativeDataBaseQueryPlate nativeSelect(String nativeQuery, Column<?, ?, ?>... col) {
+        return new NativeDataBaseQueryPlate(nativeQuery, this, col);
     }
 
     default <E extends Entity> DataBaseIdGeneratorSupplier getPrimaryKeyGenerator(E entity) {

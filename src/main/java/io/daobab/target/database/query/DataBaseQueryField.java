@@ -37,12 +37,6 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
         fromRemote(target, remote);
     }
 
-    @SuppressWarnings("unchecked")
-    public DataBaseQueryField(String nativeQuery, QueryTarget target, Column<E, ?, ?> column) {
-        this(target, (Column<E, F, ?>) column);
-        this._nativeQuery = nativeQuery;
-    }
-
     @SuppressWarnings("rawtypes")
     public DummyColumnRelation<Dual, String, EntityRelation> as(String asName) {
         return new DummyColumnRelation<>(this, DummyColumnTemplate.dummyColumn(asName));

@@ -40,7 +40,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     public boolean _unique = false;
     public boolean _calcJoins = false;
     protected Order orderBy;
-    protected String _nativeQuery;
+
     protected List<TableColumn> fields = new ArrayList<>();
     private boolean logQueryEnabled = false;
     private List<JoinWrapper> joins = new ArrayList<>();
@@ -75,7 +75,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         to.limit = from.limit;
         to._unique = from._unique;
         to._calcJoins = from._calcJoins;
-        to._nativeQuery = from._nativeQuery;
         to.identifier = from.identifier;
         // to.logQueryConsumer = from.logQueryConsumer;
 
@@ -401,10 +400,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         setIdentifierStorage(storage);
 
         setIdentifier((String) rv.get(DictRemoteKey.IDENTIFIER));
-    }
-
-    public String geNativeQuery() {
-        return _nativeQuery;
     }
 
     protected <Q1 extends Query> Q1 modifyQuery(Q1 query) {

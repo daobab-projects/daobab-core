@@ -84,24 +84,6 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         setSingleEntity(entities.size() == 1);
     }
 
-
-    public DataBaseQueryPlate(String nativeQuery, QueryTarget target, Column<? extends Entity, ?, ?>[] columndaos) {
-
-        Column<?, ?, ?> fielddao = columndaos[0];
-        if (fielddao == null) throw new MandatoryColumn();
-        init(target, fielddao.getInstance());
-        andColumn(fielddao);
-
-        Set<String> entities = new HashSet<>();
-        for (int i = 1; i < columndaos.length; i++) {
-            getFields().add(getInfoColumn(columndaos[i]));
-            entities.add(columndaos[i].getEntityName());
-        }
-
-        setSingleEntity(entities.size() == 1);
-        this._nativeQuery = nativeQuery;
-    }
-
     @Override
     public long countAny() {
         setTempCount(Count.any());

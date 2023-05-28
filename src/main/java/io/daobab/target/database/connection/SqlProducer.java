@@ -70,10 +70,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         QueryTarget dataBaseTarget = base.getTarget();
         StringBuilder sb = new StringBuilder();
 
-        if (toNative(base, sb)) {
-            return sb.toString();
-        }
-
         if (base._calcJoins) {
             List<String> from = new ArrayList<>();
             from.add(base.getEntityName());
@@ -132,11 +128,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
         QuerySpecialParameters rv = new QuerySpecialParameters();
         StringBuilder sb = new StringBuilder();
-
-        if (toNative(base, sb)) {
-            rv.setQuery(sb);
-            return rv;
-        }
 
         sb.append("insert into ")
                 .append(base.getEntityName());
@@ -235,29 +226,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         return toSqlQuery(base, base.getIdentifierStorage());
     }
 
-    default <E extends Entity> boolean toNative(DataBaseQueryBase<E, ?> base, StringBuilder sb) {
-        if (base.geNativeQuery() != null) {
-            String query = base.geNativeQuery();
-
-            if (base.getTarget().getShowSql() || base.isLogQueryEnabled()) {
-                base.getTarget().getLog().info("[native query] {}", query);
-            } else {
-                base.getTarget().getLog().debug("[native query] {}", query);
-            }
-
-            sb.append(query);
-            return true;
-        }
-        return false;
-    }
-
     @SuppressWarnings({"rawtypes", "unchecked", "java:S3776"})
     default <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> base, IdentifierStorage storage) {
         StringBuilder sb = new StringBuilder();
-
-        if (toNative(base, sb)) {
-            return sb.toString();
-        }
 
         if (base.getWhereWrapper() != null) {
             storage.registerIdentifiers(base.getEntityName());
@@ -450,10 +421,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
         StringBuilder sb = new StringBuilder();
 
-        if (toNative(base, sb)) {
-            rv.setQuery(sb);
-            return rv;
-        }
         IdentifierStorage storage = base.getIdentifierStorage();
 
         sb.append("update ")

@@ -39,11 +39,6 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         target.getColumnsForTable(entity).forEach(e -> getFields().add(e));
     }
 
-    public DataBaseQueryEntity(String nativeQuery, QueryTarget target, E entity) {
-        this(target, entity);
-        this._nativeQuery = nativeQuery;
-    }
-
     @Override
     public long countAny() {
         setTempCount(Count.any());
