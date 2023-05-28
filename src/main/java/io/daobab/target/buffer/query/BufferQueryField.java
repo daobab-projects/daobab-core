@@ -18,6 +18,7 @@ import io.daobab.target.buffer.BufferQueryTarget;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -66,6 +67,11 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
     @Override
     public List<F> findMany() {
         return getTarget().readFieldList(modifyQuery(this));
+    }
+
+    @Override
+    public Optional<F> findFirst() {
+        return Optional.ofNullable(getTarget().readField(modifyQuery(this)));
     }
 
     @Override

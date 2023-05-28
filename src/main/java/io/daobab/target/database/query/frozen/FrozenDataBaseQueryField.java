@@ -9,13 +9,15 @@ import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import io.daobab.target.database.query.DataBaseQueryField;
 import io.daobab.target.protection.OperationType;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBaseQueryBase<E, DataBaseQueryField<E, F>, FrozenDataBaseQueryField<E, F>> implements FieldsProvider<F> {
 
     private final DatabaseTypeConverter<?, ?> typeConverter;
     private final Column<?, ?, ?> column;
-
 
     public FrozenDataBaseQueryField(DataBaseQueryField<E, F> originalQuery) {
         super(originalQuery);
@@ -40,7 +42,10 @@ public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBas
                 return target.readFieldList(frozenDataBaseQueryField, parameters, column, typeConverter);
             }
 
-
+            @Override
+            public Optional<F> findFirst() {
+                return Optional.ofNullable(target.readField(frozenDataBaseQueryField, parameters, column, typeConverter));
+            }
         };
     }
 
@@ -49,12 +54,19 @@ public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBas
     public List<F> findMany() {
         validateEmptyParameters();
         if (isCacheUsed()) {
-            return cacheManager.getManyContent(getFrozenQuery(),cachedPeriod, () ->  target.readFieldList(this, Collections.emptyList(), column, typeConverter));
+            return cacheManager.getManyContent(getFrozenQuery(), cachedPeriod, () -> target.readFieldList(this, Collections.emptyList(), column, typeConverter));
         }
         return target.readFieldList(this, Collections.emptyList(), column, typeConverter);
     }
 
-
+    @Override
+    public Optional<F> findFirst() {
+        validateEmptyParameters();
+        if (isCacheUsed()) {
+            return Optional.ofNullable(cacheManager.getSingleContent(getFrozenQuery(), cachedPeriod, () -> target.readField(this, Collections.emptyList(), column, typeConverter)));
+        }
+        return Optional.ofNullable(target.readField(this, Collections.emptyList(), column, typeConverter));
+    }
 
     @Override
     public QueryType getQueryType() {

@@ -25,10 +25,6 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
     private DataBaseQueryEntity() {
     }
 
-    DataBaseQueryEntity(QueryTarget target, Column<E, ?, ?> column) {
-        init(target, column.getEntityName());
-    }
-
     public DataBaseQueryEntity(QueryTarget target, Map<String, Object> remote) {
         fromRemote(target, remote);
     }

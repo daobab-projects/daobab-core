@@ -36,6 +36,9 @@ public interface QueryDataBaseHandler extends Target, QueryHandler {
 
     <E extends Entity, F> F readField(DataBaseQueryField<E, F> query);
 
+    <E extends Entity,F> F readField(FrozenDataBaseQueryField<E,F> query, List<Object> parameters, Column<?, ?, ?> column, DatabaseTypeConverter<?, ?> typeConverter);
+
+
     <E extends Entity, F> List<F> readFieldList(DataBaseQueryField<E, F> query);
 
     <E extends Entity,F> List<F> readFieldList(FrozenDataBaseQueryField<E,F> query, List<Object> parameters, Column<?, ?, ?> column, DatabaseTypeConverter<?, ?> typeConverter);

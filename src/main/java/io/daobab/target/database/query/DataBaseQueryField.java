@@ -7,7 +7,6 @@ import io.daobab.query.base.QueryExpressionProvider;
 import io.daobab.query.base.QueryType;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.result.FieldsProvider;
-import io.daobab.statement.condition.Count;
 import io.daobab.statement.function.type.DummyColumnRelation;
 import io.daobab.statement.inner.InnerQueryFields;
 import io.daobab.statement.inner.InnerQueryFieldsProvider;
@@ -16,6 +15,7 @@ import io.daobab.target.database.query.frozen.FrozenDataBaseQueryField;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -55,6 +55,11 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
     @Override
     public List<F> findMany() {
         return getTarget().readFieldList(modifyQuery(this));
+    }
+
+    @Override
+    public Optional<F> findFirst() {
+        return Optional.ofNullable(getTarget().readField(modifyQuery(this)));
     }
 
     @Override

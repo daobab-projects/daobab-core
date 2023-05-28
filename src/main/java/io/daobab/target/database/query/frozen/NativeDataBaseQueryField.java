@@ -1,6 +1,5 @@
 package io.daobab.target.database.query.frozen;
 
-import io.daobab.error.DaobabException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.target.database.QueryTarget;
@@ -12,8 +11,4 @@ public final class NativeDataBaseQueryField<E extends Entity,F> extends FrozenDa
         setSentQuery(nativeQuery);
     }
 
-    @Override
-    public DataBaseQueryField<E,F> getOriginalQuery() {
-        throw new DaobabException("NativeQuery has no original query to return");
-    }
 }

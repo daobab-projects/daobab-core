@@ -15,10 +15,7 @@ public interface FieldsProvider<F> {
 
     List<F> findMany();
 
-    default Optional<F> findFirst() {
-        List<F> elements = findMany();
-        return elements.isEmpty() ? Optional.empty() : Optional.of(elements.get(0));
-    }
+    Optional<F> findFirst();
 
     default boolean exists() {
         return findFirst().isPresent();

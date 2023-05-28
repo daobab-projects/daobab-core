@@ -262,6 +262,36 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         });
     }
 
+
+    @Override
+    default <E extends Entity, F> F readField(FrozenDataBaseQueryField<E, F> frozenQuery, List<Object> parameters, Column<?, ?, ?> column, DatabaseTypeConverter<?, ?> typeConverter) {
+        return doSthOnConnection(frozenQuery, (s, conn) -> {
+
+            if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozenQuery);
+
+            ResultSetReader rsReader = getResultSetReader();
+            Statement stmt = null;
+            try {
+                String sqlQuery = withParameters(frozenQuery, parameters);
+                frozenQuery.setSentQuery(sqlQuery);
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlQuery);
+
+                if (rs.next()) {
+                    if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQuery, 1);
+                    return rsReader.readCell(typeConverter, rs, 1, column);
+                }
+                if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQuery,0);
+                return null;
+            } catch (SQLException e) {
+                if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQuery, e);
+                throw new DaobabSQLException(e);
+            } finally {
+                rsReader.closeStatement(stmt, this);
+            }
+        });
+    }
+
     @Override
     default <E extends Entity, F> List<F> readFieldList(DataBaseQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
