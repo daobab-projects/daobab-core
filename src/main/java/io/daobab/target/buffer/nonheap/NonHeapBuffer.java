@@ -1,5 +1,6 @@
 package io.daobab.target.buffer.nonheap;
 
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.DaobabException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
@@ -54,7 +55,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     protected List<Integer> locations = new ArrayList<>();
     protected LinkedList<Integer> removed = new LinkedList<>();
     protected Map<Integer, HashMap<String, Object>> additionalParameters = new HashMap<>();
-    private AccessProtector accessProtector = new BasicAccessProtector();
+    private AccessProtector accessProtector = new BasicAccessProtector(this);
 
     protected final BitFieldRegistry bitFieldRegistry;
 
@@ -152,7 +153,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     }
 
     public Plate getPlate(int i, Collection<TableColumn> chosenColumns) {
-        Plate rv = new Plate();
+        Plate rv = PlateCreator.ofTableColumnList(chosenColumns);
 
         int entityLocation = locations.get(i);
         int page = entityLocation >> pageMaxCapacityBytes;
@@ -187,7 +188,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     @SuppressWarnings("unchecked")
     public Integer getColumnIntoEntityPosition(Column<?, ?, ?> column) {
         for (int i = 0; i < columns.size(); i++) {
-            if (columns.get(i).getColumn().equalsColumn(column)) {
+            if (columns.get(i).getColumn().equalsField(column)) {
                 return i;
             }
         }

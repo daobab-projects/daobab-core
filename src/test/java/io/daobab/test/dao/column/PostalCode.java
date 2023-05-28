@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface PostalCode<E extends EntityMap> extends EntityRelationMap<E> {
+public interface PostalCode<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface PostalCode<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default String getPostalCode() {
-        return getColumnParam("PostalCode");
+        return readParam("PostalCode");
     }
 
     default E setPostalCode(String val) {
-        setColumnParam("PostalCode", val);
-        return (E) this;
+        return storeParam("PostalCode", val);
     }
 
     default Column<E, String, PostalCode> colPostalCode() {
@@ -49,14 +49,14 @@ public interface PostalCode<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(PostalCode entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "PostalCode");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "PostalCode");
                 return entity.getPostalCode();
             }
 
             @Override
-            public void setValue(PostalCode entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PostalCode");
-                entity.setPostalCode(param);
+            public PostalCode setValue(PostalCode entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "PostalCode");
+                return (PostalCode) entity.setPostalCode(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface PostalCode<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

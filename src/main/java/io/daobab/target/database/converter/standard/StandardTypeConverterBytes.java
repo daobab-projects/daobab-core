@@ -5,7 +5,7 @@ import io.daobab.target.database.converter.type.TypeConverterByteArrayBased;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterBytes implements TypeConverterByteArrayBased<byte[]> {
+public class StandardTypeConverterBytes extends TypeConverterByteArrayBased<byte[]> {
 
     @Override
     public byte[] readAndConvert(ResultSet rs, int columnIndex) throws SQLException {

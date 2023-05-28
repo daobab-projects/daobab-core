@@ -5,10 +5,10 @@ import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public interface TypeConverterArrayBased<T> extends DatabaseTypeConverter<Array, T> {
+public abstract class TypeConverterArrayBased<T> implements DatabaseTypeConverter<Array, T> {
 
 
-    default Array readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
+    public Array readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
         return rs.getArray(columnIndex);
     }
 

@@ -18,6 +18,7 @@ public class ProjectionBoxTest implements SakilaTables {
         films=generator.getFilms();
         films.calculateIndexes();
 
+
     }
 
 

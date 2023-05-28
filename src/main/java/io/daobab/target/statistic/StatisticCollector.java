@@ -2,6 +2,7 @@ package io.daobab.target.statistic;
 
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.query.base.Query;
+import io.daobab.query.base.StatisticQuery;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.statistic.table.StatisticRecord;
 
@@ -14,7 +15,7 @@ import java.util.function.Supplier;
  */
 public interface StatisticCollector extends ILoggerBean {
 
-    default <T> List<T> wrapList(StatisticCollectorProvider statisticCollectorProvider, Query<?, ?, ?> query, Supplier<List<T>> supplier) {
+    default <T> List<T> wrapList(StatisticCollectorProvider statisticCollectorProvider, StatisticQuery query, Supplier<List<T>> supplier) {
 
         if (!statisticCollectorProvider.isStatisticCollectingEnabled()) {
             return supplier.get();
@@ -33,11 +34,11 @@ public interface StatisticCollector extends ILoggerBean {
 
     }
 
-    void send(Query<?, ?, ?> query);
+    void send(StatisticQuery query);
 
-    void received(Query<?, ?, ?> query, Integer result);
+    void received(StatisticQuery query, Integer result);
 
-    void error(Query<?, ?, ?> query, Throwable result);
+    void error(StatisticQuery query, Throwable result);
 
     String sendProcedure(String procedureName);
 

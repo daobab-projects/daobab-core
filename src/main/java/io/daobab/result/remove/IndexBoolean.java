@@ -2,7 +2,7 @@ package io.daobab.result.remove;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.result.EntitiesBufferIndexed;
 import io.daobab.statement.condition.Operator;
 
@@ -14,12 +14,12 @@ import java.util.*;
 public class IndexBoolean<E extends Entity, F extends Boolean> extends Index<E, F> {
 
     @SuppressWarnings("rawtypes")
-    private IndexBoolean(Column<E, ?, EntityRelation> indexedColumn, Map<F, List<E>> oneToManySubMap, List<E> nullValuesAsPK) {
+    private IndexBoolean(Column<E, ?, RelatedTo> indexedColumn, Map<F, List<E>> oneToManySubMap, List<E> nullValuesAsPK) {
         super(indexedColumn, oneToManySubMap, nullValuesAsPK);
     }
 
     @SuppressWarnings("rawtypes")
-    public IndexBoolean(Column<E, ?, EntityRelation> indexedColumn, EntitiesBufferIndexed<E> buffer) {
+    public IndexBoolean(Column<E, ?, RelatedTo> indexedColumn, EntitiesBufferIndexed<E> buffer) {
         super(indexedColumn, buffer);
     }
 
@@ -80,7 +80,7 @@ public class IndexBoolean<E extends Entity, F extends Boolean> extends Index<E, 
     }
 
     @Override
-    protected Index<E, F> newInstance(Column<E, ?, EntityRelation> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E> nullValuesAsPK) {
+    protected Index<E, F> newInstance(Column<E, ?, RelatedTo> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E> nullValuesAsPK) {
         return new IndexBoolean<>(indexedColumn, oneToManyMap, nullValuesAsPK);
     }
 }

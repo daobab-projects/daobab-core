@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface StaffId<E extends EntityMap> extends EntityRelationMap<E> {
+public interface StaffId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface StaffId<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: TINYINT
      */
     default Integer getStaffId() {
-        return getColumnParam("StaffId");
+        return readParam("StaffId");
     }
 
     default E setStaffId(Integer val) {
-        setColumnParam("StaffId", val);
-        return (E) this;
+        return storeParam("StaffId", val);
     }
 
     default Column<E, Integer, StaffId> colStaffId() {
@@ -49,14 +49,14 @@ public interface StaffId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Integer getValue(StaffId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "StaffId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "StaffId");
                 return entity.getStaffId();
             }
 
             @Override
-            public void setValue(StaffId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "StaffId");
-                entity.setStaffId(param);
+            public StaffId setValue(StaffId entity, Integer param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "StaffId");
+                return (StaffId) entity.setStaffId(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface StaffId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

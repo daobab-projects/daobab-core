@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface Description<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Description<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface Description<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default String getDescription() {
-        return getColumnParam("Description");
+        return readParam("Description");
     }
 
     default E setDescription(String val) {
-        setColumnParam("Description", val);
-        return (E) this;
+        return storeParam("Description", val);
     }
 
     default Column<E, String, Description> colDescription() {
@@ -49,14 +49,14 @@ public interface Description<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(Description entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Description");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Description");
                 return entity.getDescription();
             }
 
             @Override
-            public void setValue(Description entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Description");
-                entity.setDescription(param);
+            public Description setValue(Description entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Description");
+                return (Description) entity.setDescription(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface Description<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

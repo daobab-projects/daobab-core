@@ -5,7 +5,7 @@ import io.daobab.target.database.converter.type.TypeConverterBooleanBased;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterBoolean implements TypeConverterBooleanBased<Boolean> {
+public class StandardTypeConverterBoolean extends TypeConverterBooleanBased<Boolean> {
 
     @Override
     public Boolean readAndConvert(ResultSet rs, int columnIndex) throws SQLException {

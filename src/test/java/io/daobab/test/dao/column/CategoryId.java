@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface CategoryId<E extends EntityMap> extends EntityRelationMap<E> {
+public interface CategoryId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface CategoryId<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: TINYINT
      */
     default Integer getCategoryId() {
-        return getColumnParam("CategoryId");
+        return readParam("CategoryId");
     }
 
     default E setCategoryId(Integer val) {
-        setColumnParam("CategoryId", val);
-        return (E) this;
+        return storeParam("CategoryId", val);
     }
 
     default Column<E, Integer, CategoryId> colCategoryId() {
@@ -49,14 +49,14 @@ public interface CategoryId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Integer getValue(CategoryId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "CategoryId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "CategoryId");
                 return entity.getCategoryId();
             }
 
             @Override
-            public void setValue(CategoryId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CategoryId");
-                entity.setCategoryId(param);
+            public CategoryId setValue(CategoryId entity, Integer param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "CategoryId");
+                return (CategoryId) entity.setCategoryId(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface CategoryId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

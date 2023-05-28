@@ -2,7 +2,7 @@ package io.daobab.statement.inner;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 
 /**
  * Retrieves inner queries from entities related Queries
@@ -12,7 +12,7 @@ import io.daobab.model.EntityRelation;
 public interface InnerQueryEntity<E extends Entity> {
 
     @SuppressWarnings("rawtypes")
-    <E1 extends Entity, F, R extends EntityRelation> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> field);
+    <E1 extends Entity, F, R extends RelatedTo> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> field);
 
     String getEntityName();
 }

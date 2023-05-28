@@ -1,8 +1,8 @@
 package io.daobab.model;
 
 import io.daobab.error.DaobabException;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.error.MandatoryTargetException;
-import io.daobab.error.NullEntityException;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.target.database.QueryTarget;
@@ -15,12 +15,12 @@ import java.util.Date;
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKey<E, ?, ?>, F, R extends EntityRelation> extends OptimisticConcurrencyIndicator<E>, ParserGeneral {
+public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKey<E, ?, ?>, F, R extends RelatedTo> extends OptimisticConcurrencyIndicator<E>, ParserGeneral {
 
     @Override
     default E handleOCC(QueryTarget target, E entityToUpdate) {
         if (target == null) throw new MandatoryTargetException();
-        if (entityToUpdate == null) throw new NullEntityException();
+        if (entityToUpdate == null) throw new MandatoryEntity();
         Object dbval = entityToUpdate.findRelatedOne(target, entityToUpdate.colID(), new WhereAnd().greater(getOCCColumn(), (R) entityToUpdate));
 
         if (dbval != null) throw new DaobabException("Optimistic Concurrency Error");
@@ -68,11 +68,9 @@ public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKe
         } else if (getOCCColumn().getFieldClass().isAssignableFrom(java.sql.Date.class)) {
             val = toCurrentDateSQL();
         } else {
-            throw new DaobabException("Optimistic Concurrency Control Exception for Entity " + entityToUpdate.getEntityName() + " pointed OCC column has to be either Number or Date related type ");
+            throw new DaobabException("Optimistic Concurrency Control Exception for Entity " + target.getEntityName(entityToUpdate.entityClass()) + " pointed OCC column has to be either Number or Date related type ");
         }
-        getOCCColumn().setValue((R) entityToUpdate, (F) val);
-
-        return entityToUpdate;
+        return (E) getOCCColumn().setValue((R) entityToUpdate, (F) val);
     }
 
     Column<E, F, R> getOCCColumn();

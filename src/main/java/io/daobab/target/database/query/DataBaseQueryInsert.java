@@ -21,6 +21,9 @@ import static io.daobab.model.IdGeneratorType.*;
  */
 public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBase<E, DataBaseQueryInsert<E>> {
 
+    public static final int MODE_REPLACE = 1;
+    private static final int MODE_INSERT = 0;
+
     private SetFields setFields;
     private String sequenceName;
     private Object pkNo;
@@ -29,6 +32,10 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
     private boolean pkResolved = false;
     private E entity;
     private Query<?, ?, ?> selectQuery;
+    private int mode = MODE_REPLACE;
+
+
+    private SetFields onDuplicateKeyUpdate;
 
     @SuppressWarnings("unused")
     private DataBaseQueryInsert() {
@@ -53,13 +60,13 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         boolean entityIsPk = entity instanceof PrimaryKey;
         IdGeneratorType idgeneratorType = null;
         if (entityIsPk) {
-            PrimaryKey<E, Object, EntityRelation> pk = (PrimaryKey<E, Object, EntityRelation>) entity;
+            PrimaryKey<E, Object, RelatedTo> pk = (PrimaryKey<E, Object, RelatedTo>) entity;
 
             idgeneratorType = pk.getIdGeneratorType();
             if (SEQUENCE.equals(idgeneratorType)) {
                 setSequenceName(pk.getSequenceName());
             } else if (GENERATOR.equals(idgeneratorType)) {
-                pk.colID().setValue((EntityRelation) entity, target.getPrimaryKeyGenerator(pk).generateId(target));
+                entity = (E) pk.colID().setValue((RelatedTo) entity, target.getPrimaryKeyGenerator(pk).generateId(target));
             }
 
             setIdGenerator(idgeneratorType);
@@ -77,7 +84,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
 
             Column column = tableColumn.getColumn();
 
-            Object value = ((Column<E, Object, EntityRelation>) column).getValueOf((EntityRelation) entity);
+            Object value = ((Column<E, Object, RelatedTo>) column).getValueOf((RelatedTo) entity);
 
             // no PK column into SEQUENCE,AUTO_INCREMENT
             if (entityIsPk && ((PrimaryKey) entity).colID().equals(column) && (SEQUENCE.equals(idgeneratorType) || AUTO_INCREMENT.equals(idgeneratorType))) {
@@ -88,6 +95,60 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         }
         set(sd);
     }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public DataBaseQueryInsert(QueryTarget target, Column<E, ?, ?>... columns) {
+
+        if (columns == null || columns.length == 0) {
+            throw new DaobabException("At least one column has to be specified");
+        }
+
+        E entity = columns[0].getInstance();
+        init(target, entity);
+        setEntity(entity);
+        setFields(new LinkedList<>());
+
+        SetFields sd = new SetFields();
+
+        entity.beforeInsert(target);
+
+        boolean entityIsPk = entity instanceof PrimaryKey;
+        IdGeneratorType idgeneratorType = null;
+        if (entityIsPk) {
+            PrimaryKey<E, Object, RelatedTo> pk = (PrimaryKey<E, Object, RelatedTo>) entity;
+
+            idgeneratorType = pk.getIdGeneratorType();
+            if (SEQUENCE.equals(idgeneratorType)) {
+                setSequenceName(pk.getSequenceName());
+            } else if (GENERATOR.equals(idgeneratorType)) {
+                entity = (E) pk.colID().setValue((RelatedTo) entity, target.getPrimaryKeyGenerator(pk).generateId(target));
+            }
+
+            setIdGenerator(idgeneratorType);
+            setPkColumnName(pk.colID().getColumnName());
+            setPkResolved(true);
+
+            if (SEQUENCE.equals(idgeneratorType)) {
+                Column pkcol = pk.colID();
+                getFields().add(getInfoColumn(pkcol));
+                sd.setValue(pkcol, 0L);
+            }
+        }
+
+        for (Column column : columns) {
+
+            Object value = ((Column<E, Object, RelatedTo>) column).getValueOf((RelatedTo) entity);
+
+            // no PK column into SEQUENCE,AUTO_INCREMENT
+            if (entityIsPk && ((PrimaryKey) entity).colID().equals(column) && (SEQUENCE.equals(idgeneratorType) || AUTO_INCREMENT.equals(idgeneratorType))) {
+                continue;
+            }
+            getFields().add(getInfoColumn(column));
+            sd.setValue(column, value);
+        }
+        set(sd);
+    }
+
 
     public DataBaseQueryInsert<E> select(Query<?, ?, ?> query) {
         if (query == null) {
@@ -128,7 +189,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
     }
 
     @SuppressWarnings("rawtypes")
-    public <F, R extends EntityRelation> DataBaseQueryInsert<E> set(Column<E, F, R> key, R value) {
+    public <F, R extends RelatedTo> DataBaseQueryInsert<E> set(Column<E, F, R> key, R value) {
         set(new SetFields().setValue(key, value));
         return this;
     }
@@ -218,12 +279,10 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         if (pkNo != null) rv.put(DictRemoteKey.PK_NO, pkNo);
         if (dictIdGenerator != null) rv.put(DictRemoteKey.ID_GENERATOR, dictIdGenerator);
         if (pkColumnName != null) rv.put(DictRemoteKey.PK_COLUMN_NAME, pkColumnName);
-//		if (pkResolved==true)rv.put(DictRemoteKey.ENTITY_NAME,pkResolved);
         if (entity != null) rv.put(DictRemoteKey.ENTITY, entity);
         if (setFields != null) rv.put(DictRemoteKey.SET_FIELDS, setFields);
         return rv;
     }
-
 
     public Query<?, ?, ?> getSelectQuery() {
         return selectQuery;
@@ -238,4 +297,30 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         return QueryType.ENTITY;
     }
 
+    public DataBaseQueryInsert<E> onDuplicateKeyUpdate(SetFields fields) {
+        this.onDuplicateKeyUpdate = fields;
+        return this;
+    }
+
+    public DataBaseQueryInsert<E> orUpdateRow() {
+        return this.onDuplicateKeyUpdate(new SetFields());
+    }
+
+
+    public SetFields getOnDuplicateKeyUpdate() {
+        return onDuplicateKeyUpdate;
+    }
+
+    public int getMode() {
+        return mode;
+    }
+
+    public DataBaseQueryInsert<E> setMode(int mode) {
+        this.mode = mode;
+        return this;
+    }
+
+    public boolean isReplaceInto() {
+        return mode == MODE_REPLACE;
+    }
 }

@@ -3,13 +3,14 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public interface ReplacementCost<E extends EntityMap> extends EntityRelationMap<E> {
+public interface ReplacementCost<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -17,12 +18,11 @@ public interface ReplacementCost<E extends EntityMap> extends EntityRelationMap<
      * db type: DECIMAL
      */
     default BigDecimal getReplacementCost() {
-        return getColumnParam("ReplacementCost");
+        return readParam("ReplacementCost");
     }
 
     default E setReplacementCost(BigDecimal val) {
-        setColumnParam("ReplacementCost", val);
-        return (E) this;
+        return storeParam("ReplacementCost", val);
     }
 
     default Column<E, BigDecimal, ReplacementCost> colReplacementCost() {
@@ -50,15 +50,15 @@ public interface ReplacementCost<E extends EntityMap> extends EntityRelationMap<
 
             @Override
             public BigDecimal getValue(ReplacementCost entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ReplacementCost");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ReplacementCost");
                 return entity.getReplacementCost();
             }
 
             @Override
-            public void setValue(ReplacementCost entity, BigDecimal param) {
+            public ReplacementCost setValue(ReplacementCost entity, BigDecimal param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ReplacementCost");
-                entity.setReplacementCost(param);
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "ReplacementCost");
+                return (ReplacementCost) entity.setReplacementCost(param);
             }
 
             @Override
@@ -68,7 +68,7 @@ public interface ReplacementCost<E extends EntityMap> extends EntityRelationMap<
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -2,7 +2,7 @@ package io.daobab.result.remove;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.result.EntitiesBufferIndexed;
 import io.daobab.statement.condition.Operator;
 
@@ -13,11 +13,11 @@ import java.util.*;
  */
 public class IndexString<E extends Entity, F extends String> extends Index<E, F> {
 
-    private IndexString(Column<E, ?, EntityRelation> indexedColumn, Map<F, List<E>> oneToManySubMap, List<E> nullValuesAsPK) {
+    private IndexString(Column<E, ?, RelatedTo> indexedColumn, Map<F, List<E>> oneToManySubMap, List<E> nullValuesAsPK) {
         super(indexedColumn, oneToManySubMap, nullValuesAsPK);
     }
 
-    public IndexString(Column<E, ?, EntityRelation> indexedColumn, EntitiesBufferIndexed<E> buffer) {
+    public IndexString(Column<E, ?, RelatedTo> indexedColumn, EntitiesBufferIndexed<E> buffer) {
         super(indexedColumn, buffer);
     }
 
@@ -75,7 +75,7 @@ public class IndexString<E extends Entity, F extends String> extends Index<E, F>
     }
 
     @Override
-    protected Index<E, F> newInstance(Column<E, ?, EntityRelation> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E> nullValuesAsPK) {
+    protected Index<E, F> newInstance(Column<E, ?, RelatedTo> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E> nullValuesAsPK) {
         return new IndexString<>(indexedColumn, oneToManyMap, nullValuesAsPK);
     }
 }

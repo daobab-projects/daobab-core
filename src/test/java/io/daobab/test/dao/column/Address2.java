@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface Address2<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Address2<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface Address2<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default String getAddress2() {
-        return getColumnParam("Address2");
+        return readParam("Address2");
     }
 
     default E setAddress2(String val) {
-        setColumnParam("Address2", val);
-        return (E) this;
+        return storeParam("Address2", val);
     }
 
     default Column<E, String, Address2> colAddress2() {
@@ -49,14 +49,14 @@ public interface Address2<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(Address2 entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Address2");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Address2");
                 return entity.getAddress2();
             }
 
             @Override
-            public void setValue(Address2 entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Address2");
-                entity.setAddress2(param);
+            public Address2 setValue(Address2 entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Address2");
+                return (Address2) entity.setAddress2(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface Address2<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

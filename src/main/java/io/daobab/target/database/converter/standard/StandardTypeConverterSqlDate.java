@@ -7,7 +7,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterSqlDate implements TypeConverterSqlDateBased<Date> {
+public class StandardTypeConverterSqlDate extends TypeConverterSqlDateBased<Date> {
 
     private final DataBaseTarget target;
 

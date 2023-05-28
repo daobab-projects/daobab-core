@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface ManagerStaffId<E extends EntityMap> extends EntityRelationMap<E> {
+public interface ManagerStaffId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface ManagerStaffId<E extends EntityMap> extends EntityRelationMap<E
      * db type: TINYINT
      */
     default Integer getManagerStaffId() {
-        return getColumnParam("ManagerStaffId");
+        return readParam("ManagerStaffId");
     }
 
     default E setManagerStaffId(Integer val) {
-        setColumnParam("ManagerStaffId", val);
-        return (E) this;
+        return storeParam("ManagerStaffId", val);
     }
 
     default Column<E, Integer, ManagerStaffId> colManagerStaffId() {
@@ -49,14 +49,14 @@ public interface ManagerStaffId<E extends EntityMap> extends EntityRelationMap<E
 
             @Override
             public Integer getValue(ManagerStaffId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ManagerStaffId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ManagerStaffId");
                 return entity.getManagerStaffId();
             }
 
             @Override
-            public void setValue(ManagerStaffId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ManagerStaffId");
-                entity.setManagerStaffId(param);
+            public ManagerStaffId setValue(ManagerStaffId entity, Integer param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "ManagerStaffId");
+                return (ManagerStaffId) entity.setManagerStaffId(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface ManagerStaffId<E extends EntityMap> extends EntityRelationMap<E
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

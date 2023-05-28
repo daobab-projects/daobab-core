@@ -20,7 +20,7 @@ public interface ResultSetReader {
 
     <O extends ProcedureParameters> O readProcedure(ResultSet rs, O out) throws SQLException;
 
-    <E extends Entity> E readEntity(QueryTarget target, ResultSet rs, E entity, List<TableColumn> columns);
+    <E extends Entity> E readEntity(QueryTarget target, ResultSet rs, Class<E> entityClass, List<TableColumn> columns);
 
     Timestamp toTimeZone(Timestamp timestamp, TimeZone timeZone);
 
@@ -40,7 +40,7 @@ public interface ResultSetReader {
     int executeUpdate(QuerySpecialParameters insertQueryParameters, Connection conn);
 
     @SuppressWarnings("rawtypes")
-    <E extends Entity, F, R extends EntityRelation> F executeInsert(QuerySpecialParameters insertQueryParameters, Connection conn, ILoggerBean loggerBean, Column<E, F, R> pk);
+    <E extends Entity, F, R extends RelatedTo> F executeInsert(QuerySpecialParameters insertQueryParameters, Connection conn, ILoggerBean loggerBean, Column<E, F, R> pk);
 
     <F> F getSequenceNextId(Connection conn, String sequenceName, Class<F> fieldClazz);
 }

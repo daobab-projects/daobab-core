@@ -1,7 +1,8 @@
 package io.daobab.target.buffer.single;
 
-import io.daobab.converter.JsonHandler;
+import io.daobab.converter.json.JsonProvider;
 import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
 import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesProvider;
 import io.daobab.target.Target;
@@ -14,13 +15,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Provides cached (in memory) entities
  *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface Entities<E extends Entity> extends EntitiesProvider<E>, Serializable, List<E>, Target, Cloneable, JsonHandler, BufferQueryTarget {
+public interface Entities<E extends Entity> extends EntitiesProvider<E>, Serializable, List<E>, Target, Cloneable, JsonProvider, BufferQueryTarget {
 
     default E findOne() {
         return findFirst().orElse(null);
@@ -48,6 +51,10 @@ public interface Entities<E extends Entity> extends EntitiesProvider<E>, Seriali
         list.add(this);
         list.addAll(Arrays.asList(targets));
         return new SimpleMultiTarget(list);
+    }
+
+    default List<Map<String, Object>> toMapList() {
+        return stream().map(e -> (MapHandler<E>) e).map(MapHandler::accessParameterMap).collect(Collectors.toList());
     }
 
 }

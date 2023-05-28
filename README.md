@@ -1,6 +1,7 @@
 # DAOBAB #
 
-Daobab is a Java ORM (Object Relational Mapping) library, allowing to build an SQL as fully object-oriented Java code,
+[Daobab](http://www.daobab.io) is a Java ORM (Object Relational Mapping) library, allowing to build an SQL as fully
+object-oriented Java code,
 which may be used on:
 
 * database
@@ -29,7 +30,7 @@ The build requires at least Java 8 JDK as JAVA_HOME.
 
 ### Repository content ###
 
-* daobab-core - Daobab ORM sources
+* daobab-core - [Daobab](http://www.daobab.io) ORM sources
 
 ### License Apache License 2.0 ###
 

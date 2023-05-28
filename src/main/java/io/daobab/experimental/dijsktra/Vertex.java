@@ -1,5 +1,7 @@
 package io.daobab.experimental.dijsktra;
 
+
+import io.daobab.converter.duplicator.duplication.EntityDuplication;
 import io.daobab.model.Entity;
 
 public class Vertex {
@@ -9,8 +11,9 @@ public class Vertex {
 
     public Vertex(Entity entity) {
         this.entity = entity;
-        this.id = entity.getEntityName();
-        this.name = entity.getEntityName();
+        String entityName = EntityDuplication.getEntityNameByInstance(entity, null);
+        this.id = entityName;
+        this.name = entityName;
     }
 
     public String getId() {

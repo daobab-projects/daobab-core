@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface Picture<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Picture<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface Picture<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARBINARY
      */
     default byte[] getPicture() {
-        return getColumnParam("Picture");
+        return readParam("Picture");
     }
 
     default E setPicture(byte[] val) {
-        setColumnParam("Picture", val);
-        return (E) this;
+        return storeParam("Picture", val);
     }
 
     default Column<E, byte[], Picture> colPicture() {
@@ -49,14 +49,14 @@ public interface Picture<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public byte[] getValue(Picture entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Picture");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Picture");
                 return entity.getPicture();
             }
 
             @Override
-            public void setValue(Picture entity, byte[] param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Picture");
-                entity.setPicture(param);
+            public Picture setValue(Picture entity, byte[] param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Picture");
+                return (Picture) entity.setPicture(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface Picture<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

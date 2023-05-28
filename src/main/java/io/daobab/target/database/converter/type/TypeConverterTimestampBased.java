@@ -5,10 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-public interface TypeConverterTimestampBased<T> extends DatabaseTypeConverter<Timestamp, T> {
+public abstract class TypeConverterTimestampBased<T> implements DatabaseTypeConverter<Timestamp, T> {
 
 
-    default Timestamp readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
+    public Timestamp readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
         return rs.getTimestamp(columnIndex);
     }
 

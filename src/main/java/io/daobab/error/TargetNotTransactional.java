@@ -10,7 +10,7 @@ public class TargetNotTransactional extends DaobabException {
     private static final long serialVersionUID = 1L;
 
     public TargetNotTransactional(Target target) {
-        super("Untransactional target: " + target.getClass().getName());
+        super("Not transactional target: " + target.getClass().getName());
     }
 
 }

@@ -3,13 +3,14 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public interface InventoryId<E extends EntityMap> extends EntityRelationMap<E> {
+public interface InventoryId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -17,12 +18,11 @@ public interface InventoryId<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: INTEGER
      */
     default BigDecimal getInventoryId() {
-        return getColumnParam("InventoryId");
+        return readParam("InventoryId");
     }
 
     default E setInventoryId(BigDecimal val) {
-        setColumnParam("InventoryId", val);
-        return (E) this;
+        return storeParam("InventoryId", val);
     }
 
     default Column<E, BigDecimal, InventoryId> colInventoryId() {
@@ -50,14 +50,14 @@ public interface InventoryId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public BigDecimal getValue(InventoryId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "InventoryId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "InventoryId");
                 return entity.getInventoryId();
             }
 
             @Override
-            public void setValue(InventoryId entity, BigDecimal param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "InventoryId");
-                entity.setInventoryId(param);
+            public InventoryId setValue(InventoryId entity, BigDecimal param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "InventoryId");
+                return (InventoryId) entity.setInventoryId(param);
             }
 
             @Override
@@ -67,7 +67,7 @@ public interface InventoryId<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -3,13 +3,14 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 import io.daobab.test.dao.Lang;
 
 import java.util.Objects;
 
-public interface NameLang<E extends EntityMap> extends EntityRelationMap<E> {
+public interface NameLang<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -17,12 +18,11 @@ public interface NameLang<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default Lang getName() {
-        return getColumnParam("Name");
+        return readParam("Name");
     }
 
     default E setName(Lang val) {
-        setColumnParam("Name", val);
-        return (E) this;
+        return storeParam("Name", val);
     }
 
     default Column<E, Lang, NameLang> colName() {
@@ -50,19 +50,19 @@ public interface NameLang<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Lang getValue(NameLang entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Name");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Name");
                 return entity.getName();
             }
 
 
             @Override
-            public void setValue(NameLang entity, Lang param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Name");
-                entity.setName(param);
+            public NameLang setValue(NameLang entity, Lang param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Name");
+                return (NameLang) entity.setName(param);
             }
 
             public void setValue(NameLang entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Name");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Name");
                 entity.setName(Lang.valueOf(param));
             }
 
@@ -73,7 +73,7 @@ public interface NameLang<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

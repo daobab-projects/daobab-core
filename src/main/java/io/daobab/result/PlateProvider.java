@@ -28,9 +28,6 @@ public interface PlateProvider {
         return findFirst().orElse(null);
     }
 
-    long countAny();
-
-
     default void forEach(Consumer<Plate> consumer) {
         findMany().forEach(consumer);
     }
@@ -48,7 +45,7 @@ public interface PlateProvider {
     }
 
 
-    default <M> FieldsProvider<M> map(Function<Plate, M> mapper) {
+    default <M> FieldsProvider<M> map(Function<Plate, ? extends M> mapper) {
         List<Plate> res = findMany();
         if (mapper == null) return null;
 

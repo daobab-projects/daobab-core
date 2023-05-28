@@ -1,7 +1,7 @@
 package io.daobab.statement.condition.base;
 
-import io.daobab.model.EntityRelation;
 import io.daobab.model.Plate;
+import io.daobab.model.RelatedTo;
 import io.daobab.parser.ParserNumber;
 
 import java.util.Comparator;
@@ -32,8 +32,8 @@ public class OrderComparatorPlate implements Comparator<Plate> {
 
         for (OrderField<?, ?, ?> fo : getOrderList()) {
 
-            Object v1 = o1.getValue(((OrderField<?, ?, EntityRelation>) fo).getField());
-            Object v2 = o2.getValue(((OrderField<?, ?, EntityRelation>) fo).getField());
+            Object v1 = o1.getValue(((OrderField<?, ?, RelatedTo>) fo).getField());
+            Object v2 = o2.getValue(((OrderField<?, ?, RelatedTo>) fo).getField());
 
             int result = 0;
             if (v1 instanceof Number) {

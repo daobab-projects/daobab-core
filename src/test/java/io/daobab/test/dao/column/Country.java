@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface Country<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Country<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface Country<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default String getCountry() {
-        return getColumnParam("Country");
+        return readParam("Country");
     }
 
     default E setCountry(String val) {
-        setColumnParam("Country", val);
-        return (E) this;
+        return storeParam("Country", val);
     }
 
     default Column<E, String, Country> colCountry() {
@@ -49,14 +49,14 @@ public interface Country<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(Country entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Country");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Country");
                 return entity.getCountry();
             }
 
             @Override
-            public void setValue(Country entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Country");
-                entity.setCountry(param);
+            public Country setValue(Country entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Country");
+                return (Country) entity.setCountry(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface Country<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

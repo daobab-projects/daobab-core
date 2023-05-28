@@ -12,10 +12,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +53,7 @@ public class DatabaseConverterManager {
         registerTypeConverter(LocalDate.class, new StandardTypeConverterLocalDate(target));
         registerTypeConverter(LocalDateTime.class, new StandardTypeConverterLocalDateTime(target));
         registerTypeConverter(ZonedDateTime.class, new StandardTypeConverterZonedDateTime(target));
+        registerTypeConverter(Instant.class, new StandardTypeConverterInstant(target));
         registerTypeConverter(LocalTime.class, new StandardTypeConverterLocalTime(target));
         registerTypeConverter(URL.class, new StandardTypeConverterURL());
 
@@ -73,7 +71,7 @@ public class DatabaseConverterManager {
 
     @SuppressWarnings({"java:S1452", "java:S3776"})
     public Optional<DatabaseTypeConverter<?, ?>> getConverter(Column<?, ?, ?> column) {
-        return cache.computeIfAbsent(column.getEntityName() + column.getFieldName(), tableColumn -> {
+        return cache.computeIfAbsent(target.getEntityName(column.entityClass()) + column.getFieldName(), tableColumn -> {
 
             DatabaseTypeConverter<?, ?> rv = columnConverters.get(tableColumn);
             if (rv == null) {
@@ -106,8 +104,8 @@ public class DatabaseConverterManager {
 
 
     public <F> DatabaseConverterManager setColumnConverter(Column<?, F, ?> column, DatabaseTypeConverter<F, ?> typeConverter) {
-        columnConverters.put(column.getEntityName() + column.getFieldName(), typeConverter);
-        cache.put(column.getEntityName() + column.getFieldName(), Optional.ofNullable(typeConverter));
+        columnConverters.put(target.getEntityName(column.entityClass()) + column.getFieldName(), typeConverter);
+        cache.put(target.getEntityName(column.entityClass()) + column.getFieldName(), Optional.ofNullable(typeConverter));
         return this;
     }
 

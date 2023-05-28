@@ -1,5 +1,6 @@
 package io.daobab.target.database;
 
+import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.error.DaobabException;
 import io.daobab.error.MandatoryColumn;
 import io.daobab.model.*;
@@ -10,6 +11,9 @@ import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.converter.DatabaseConverterManager;
 import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
 import io.daobab.target.database.query.*;
+import io.daobab.target.database.query.frozen.NativeDataBaseQueryEntity;
+import io.daobab.target.database.query.frozen.NativeDataBaseQueryField;
+import io.daobab.target.database.query.frozen.NativeDataBaseQueryPlate;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget;
 
@@ -45,7 +49,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return new DataBaseQueryInsert<>(this, entity);
     }
 
-    default <E extends Entity> boolean insertAll(Collection<E> entities) {
+    default <E extends Entity> boolean insertAll(Collection<? extends E> entities) {
         OpenedTransactionDataBaseTarget transactionTarget = this.beginTransaction();
         for (E entity : entities) {
             DataBaseQueryInsert queryInsert = new DataBaseQueryInsert<>(transactionTarget, entity);
@@ -55,7 +59,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return true;
     }
 
-    default <E extends Entity> boolean insertAll(Collection<E> entities, int commitEvery) {
+    default <E extends Entity> boolean insertAll(Collection<? extends E> entities, int commitEvery) {
         Collection<E> sub = new ArrayList<>();
         entities.forEach(entity -> {
             sub.add(entity);
@@ -64,6 +68,40 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
             }
         });
         return insertAll(sub);
+    }
+
+
+    default <E extends Entity> DataBaseQueryInsert<E> replace(E entity) {
+        return new DataBaseQueryInsert<>(this, entity)
+                .setMode(DataBaseQueryInsert.MODE_REPLACE);
+
+    }
+
+    default <E extends Entity> DataBaseQueryInsert<E> replace(Column<E, ?, ?>... columns) {
+        return new DataBaseQueryInsert<>(this, columns)
+                .setMode(DataBaseQueryInsert.MODE_REPLACE);
+    }
+
+    default <E extends Entity> boolean replaceAll(Collection<E> entities) {
+        OpenedTransactionDataBaseTarget transactionTarget = this.beginTransaction();
+        for (E entity : entities) {
+            DataBaseQueryInsert<E> queryInsert = new DataBaseQueryInsert<>(transactionTarget, entity);
+            queryInsert.setMode(DataBaseQueryInsert.MODE_REPLACE);
+            queryInsert.execute(false);
+        }
+        transactionTarget.commit();
+        return true;
+    }
+
+    default <E extends Entity> boolean replaceAll(Collection<? extends E> entities, int commitEvery) {
+        Collection<E> sub = new ArrayList<>();
+        entities.forEach(entity -> {
+            sub.add(entity);
+            if (sub.size() > commitEvery) {
+                replaceAll(sub);
+            }
+        });
+        return replaceAll(sub);
     }
 
     default <E extends PrimaryKey<E, F, ?>, F> DataBaseQueryUpdate<E> update(E entity) {
@@ -75,17 +113,17 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     }
 
 
-    default <E extends Entity, F, R extends EntityRelation> DataBaseQueryUpdate<E> update(Column<E, F, R> column, F value) {
+    default <E extends Entity, F, R extends RelatedTo> DataBaseQueryUpdate<E> update(Column<E, F, R> column, F value) {
         SetFields sf = new SetFields().setValue(column, value);
         return new DataBaseQueryUpdate<>(this, sf);
     }
 
     @SuppressWarnings("unchecked")
     default <E extends Entity> DataBaseQueryUpdate<E> update(SetField... sets) {
-        SetFields sfs = null;
+        SetFields sfs = new SetFields();
 
         for (SetField s : sets) {
-            sfs = SetFields.setColumn(s.getField(), s.getValue());
+            sfs.setValue(s.getField(), s.getValue());
         }
         return new DataBaseQueryUpdate<>(this, sfs);
     }
@@ -103,7 +141,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return new DataBaseQueryEntity<>(this, entity);
     }
 
-    default <E extends Entity & PrimaryKey<E, F, R>, T extends Entity & EntityRelation<T>, F, R extends EntityRelation<?>> DataBaseQueryEntity<T> selectRelated(E entity, T rel) {
+    default <E extends Entity & PrimaryKey<E, F, R>, T extends Entity & RelatedTo<T>, F, R extends RelatedTo<?>> DataBaseQueryEntity<T> selectRelated(E entity, T rel) {
         return select(rel).whereEqual(entity.colID().transformTo(rel), entity.getId());
     }
 
@@ -116,11 +154,11 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return new DataBaseQueryField<>(this, column).findMany();
     }
 
-    default <E extends Entity & PrimaryKey<E, F, ? extends EntityRelation>, F> E findOneByPk(E entity, F id) {
+    default <E extends Entity & PrimaryKey<E, F, ? extends RelatedTo>, F> E findOneByPk(E entity, F id) {
         return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.colID(), id).findOne();
     }
 
-    default <E extends Entity & PrimaryKey<E, F, ? extends EntityRelation>, F> Entities<E> findManyByPk(E entity, F id) {
+    default <E extends Entity & PrimaryKey<E, F, ? extends RelatedTo>, F> Entities<E> findManyByPk(E entity, F id) {
         return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.colID(), id).findMany();
     }
 
@@ -136,16 +174,16 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.colCompositeId(), key).findMany();
     }
 
-    default <E extends EntityMap & PrimaryKey<E, F, ?>, F> E findFieldsByPk(F id, Column<E, ?, ?>... columns) {
+    default <E extends Entity & PrimaryKey<E, F, ?>, F> E findFieldsByPk(F id, Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) throw new MandatoryColumn();
         DataBaseQueryPlate query = new DataBaseQueryPlate(this, columns).whereEqual(columns[0].getInstance().colID(), id);
-        return query.findOneAs(columns[0].getEntityClass());
+        return query.findOneAs(columns[0].entityClass());
     }
 
-    default <E extends EntityMap & PrimaryCompositeKey<E, K>, K extends Composite> E findFieldsByPk(K key, Column<E, ?, ?>... columns) {
+    default <E extends Entity & PrimaryCompositeKey<E, K>, K extends Composite> E findFieldsByPk(K key, Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) throw new MandatoryColumn();
         DataBaseQueryPlate query = new DataBaseQueryPlate(this, columns).whereEqual(columns[0].getInstance().colCompositeId(), key);
-        return query.findOneAs(columns[0].getEntityClass());
+        return query.findOneAs(columns[0].entityClass());
     }
 
     default DataBaseQueryPlate select(Column<?, ?, ?>... columns) {
@@ -179,16 +217,16 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     }
 
     //  NATIVE
-    default <E extends Entity, F> DataBaseQueryField<E, F> nativeSelect(String nativeQuery, Column<E, F, ?> col) {
-        return new DataBaseQueryField<>(nativeQuery, this, col);
+    default <E extends Entity, F> NativeDataBaseQueryField<E, F> nativeSelect(String nativeQuery, Column<E, F, ?> col) {
+        return new NativeDataBaseQueryField<>(nativeQuery, this, col);
     }
 
-    default <E extends Entity> DataBaseQueryEntity<E> nativeSelect(String nativeQuery, E entity) {
-        return new DataBaseQueryEntity<>(nativeQuery, this, entity);
+    default <E extends Entity> NativeDataBaseQueryEntity<E> nativeSelect(String nativeQuery, E entity) {
+        return new NativeDataBaseQueryEntity<>(nativeQuery,this, entity);
     }
 
-    default DataBaseQueryPlate nativeSelect(String nativeQuery, Column<?, ?, ?>... col) {
-        return new DataBaseQueryPlate(nativeQuery, this, col);
+    default NativeDataBaseQueryPlate nativeSelect(String nativeQuery, Column<?, ?, ?>... col) {
+        return new NativeDataBaseQueryPlate(nativeQuery, this, col);
     }
 
     default <E extends Entity> DataBaseIdGeneratorSupplier getPrimaryKeyGenerator(E entity) {
@@ -196,6 +234,8 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     }
 
     DatabaseDateConverter getDatabaseDateConverter();
+
+    JsonConverterManager getJsonConverterManager();
 
 
 }

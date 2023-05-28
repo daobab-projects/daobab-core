@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface District<E extends EntityMap> extends EntityRelationMap<E> {
+public interface District<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface District<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default String getDistrict() {
-        return getColumnParam("District");
+        return readParam("District");
     }
 
     default E setDistrict(String val) {
-        setColumnParam("District", val);
-        return (E) this;
+        return storeParam("District", val);
     }
 
     default Column<E, String, District> colDistrict() {
@@ -49,14 +49,14 @@ public interface District<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(District entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "District");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "District");
                 return entity.getDistrict();
             }
 
             @Override
-            public void setValue(District entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "District");
-                entity.setDistrict(param);
+            public District setValue(District entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "District");
+                return (District) entity.setDistrict(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface District<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

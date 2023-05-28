@@ -2,7 +2,7 @@ package io.daobab.statement.function.type;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.model.TableColumn;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.target.database.query.DataBaseQueryField;
@@ -13,7 +13,16 @@ import java.util.List;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class ManyArgumentsFunction<E extends Entity, F, R extends EntityRelation, C> extends ColumnFunction<E, F, R, C> {
+public class ManyArgumentsFunction<E extends Entity, F, R extends RelatedTo, C> extends ColumnFunction<E, F, R, C> {
+
+    private String mediator;
+
+    public ManyArgumentsFunction(String mode, String mediator, List values) {
+        super(dummy, mode, determineClass(values));
+        this.mediator = mediator;
+        setKeyValue(KEY_VALUES, values);
+        setKeyValue(KEY_ARGUMENT, ", ");
+    }
 
     public ManyArgumentsFunction(String mode, Class<C> functionClass) {
         super(dummy, mode, functionClass);
@@ -23,6 +32,10 @@ public class ManyArgumentsFunction<E extends Entity, F, R extends EntityRelation
         super(dummy, mode, determineClass(values));
         setKeyValue(KEY_VALUES, Arrays.asList(values));
         setKeyValue(KEY_ARGUMENT, ", ");
+    }
+
+    public String getMediator() {
+        return mediator;
     }
 
     public ManyArgumentsFunction(String mode, Class clazz, ColumnOrQuery<?, ?, ?>... values) {

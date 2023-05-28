@@ -53,30 +53,22 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         String type = getCorrectClassSimpleNameForLanguage(replacer, language);
 
         if (TemplateLanguage.JAVA.equals(language)) {
-            return getFinalFieldNameShortOrLong(tableCamelName) +
-                    "<" +
-                    tableCamelName + ", " + type +
-                    ">";
+            return getFinalFieldNameShortOrLong(tableCamelName) + "<" + tableCamelName + ">";
         } else if (TemplateLanguage.KOTLIN.equals(language)) {
-//            String type = getCorrectClassSimpleNameForLanguage(replacer, language);
-            return getFinalFieldNameShortOrLong(tableCamelName) +
-                    "<" +
-                    tableCamelName + ", " + type + ("1".equalsIgnoreCase(g.getNullable()) ? "?" : "") +
-                    ">";
+            return getFinalFieldNameShortOrLong(tableCamelName) + "<" + tableCamelName + ", " + type + ("1".equalsIgnoreCase(g.getNullable()) ? "?" : "") + ">";
         } else {
             throw new RuntimeException("Unknown language: " + language);
         }
-
     }
 
     public String getColumnInterfaceType(Replacer replacer, TemplateLanguage language, String tableRealName) {
 
+        if (TemplateLanguage.JAVA.equals(language)) {
+            return getFinalFieldNameShortOrLong(tableRealName) + "<" + tableRealName + ">";
+        }
+
         return getFinalFieldNameShortOrLong(tableRealName) +
-                "<" +
-                tableRealName +
-                ", " +
-                getCorrectClassSimpleNameForLanguage(replacer, language) +
-                ">";
+                "<" + tableRealName + ", " + getCorrectClassSimpleNameForLanguage(replacer, language) + ">";
     }
 
     public String getFinalFieldNameShortOrLong(String tableCamelName) {

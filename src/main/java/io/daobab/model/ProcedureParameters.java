@@ -5,23 +5,39 @@ import io.daobab.error.MandatoryColumn;
 import io.daobab.model.dummy.DummyColumnTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class ProcedureParameters {
 
-    private final Plate plate = new Plate();
+    private Plate plate;
 
-    private final List<Column<?, ?, ?>> columns;
+    private final List<Column<?, ?, ?>> columns = new ArrayList<>();
     private final int length;
 
     public <E extends Entity> ProcedureParameters(E entity) {
-        this(entity.columns().size());
+        this.length = entity.columns().size();
         for (int i = 0; i < entity.columns().size(); i++) {
-            specifyValue(i + 1, entity.columns().get(i).getColumn());
+            Column<?, ?, ?> col = entity.columns().get(i).getColumn();
+            specifyValue(i + 1, col);
         }
+        plate = new Plate(entity.columns().stream().map(TableColumn::getColumn).collect(Collectors.toList()));
+    }
+
+    public ProcedureParameters(TableColumn... columns) {
+        if (columns == null) {
+            throw new MandatoryColumn();
+        }
+        this.length = columns.length;
+        List<TableColumn> tableColumns = Arrays.asList(columns);
+        for (int i = 0; i < columns.length; i++) {
+            specifyValue(i + 1, columns[i].getColumn());
+        }
+        plate = new Plate(tableColumns.stream().map(TableColumn::getColumn).collect(Collectors.toList()));
     }
 
     public <E extends Entity> ProcedureParameters(Column<?, ?, ?>... columns) {
@@ -36,7 +52,6 @@ public class ProcedureParameters {
 
     public ProcedureParameters(int length) {
         this.length = length;
-        columns = new ArrayList<>(length);
     }
 
     public <F> F getValue(Column<?, F, ?> column) {
@@ -77,7 +92,7 @@ public class ProcedureParameters {
     }
 
     @SuppressWarnings("rawtypes")
-    protected <E extends Entity, F, R extends EntityRelation> void specifyValue(int position, Column<E, F, R> column) {
+    protected <E extends Entity, F, R extends RelatedTo> void specifyValue(int position, Column<E, F, R> column) {
         if (position > (length + 1))
             throw new DaobabException("position greater than allowed value which is " + length);
         if (position <= 0) throw new DaobabException("position must be greater than 0 ");

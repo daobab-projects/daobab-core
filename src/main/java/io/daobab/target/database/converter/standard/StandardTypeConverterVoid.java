@@ -6,7 +6,7 @@ import io.daobab.target.database.converter.type.TypeConverterVoidBased;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterVoid implements TypeConverterVoidBased<Void> {
+public class StandardTypeConverterVoid extends TypeConverterVoidBased<Void> {
 
     private final DataBaseTarget target;
 

@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface RentalDuration<E extends EntityMap> extends EntityRelationMap<E> {
+public interface RentalDuration<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface RentalDuration<E extends EntityMap> extends EntityRelationMap<E
      * db type: TINYINT
      */
     default Integer getRentalDuration() {
-        return getColumnParam("RentalDuration");
+        return readParam("RentalDuration");
     }
 
     default E setRentalDuration(Integer val) {
-        setColumnParam("RentalDuration", val);
-        return (E) this;
+        return storeParam("RentalDuration", val);
     }
 
     default Column<E, Integer, RentalDuration> colRentalDuration() {
@@ -49,14 +49,14 @@ public interface RentalDuration<E extends EntityMap> extends EntityRelationMap<E
 
             @Override
             public Integer getValue(RentalDuration entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "RentalDuration");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "RentalDuration");
                 return entity.getRentalDuration();
             }
 
             @Override
-            public void setValue(RentalDuration entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RentalDuration");
-                entity.setRentalDuration(param);
+            public RentalDuration setValue(RentalDuration entity, Integer param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "RentalDuration");
+                return (RentalDuration) entity.setRentalDuration(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface RentalDuration<E extends EntityMap> extends EntityRelationMap<E
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

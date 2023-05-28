@@ -1,7 +1,7 @@
 package io.daobab.target.database.query;
 
 import io.daobab.error.MandatoryColumn;
-import io.daobab.error.NullOrEmptyParameter;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.model.*;
 import io.daobab.query.base.QueryExpressionProvider;
 import io.daobab.query.base.QueryType;
@@ -9,9 +9,9 @@ import io.daobab.result.FieldsBuffer;
 import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
 import io.daobab.result.PlateProvider;
-import io.daobab.statement.condition.Count;
 import io.daobab.target.buffer.single.Plates;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryPlate;
 
 import java.util.*;
 import java.util.function.Function;
@@ -31,7 +31,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
 
     public DataBaseQueryPlate(QueryTarget target, Entity... entities) {
         if (entities == null || entities.length == 0) {
-            throw new NullOrEmptyParameter("entities");
+            throw new MandatoryEntity();
         }
         List<TableColumn> columns = new ArrayList<>();
         for (Entity e : entities) {
@@ -60,7 +60,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         Set<String> entities = new HashSet<>();
         for (int i = 1; i < columndaos.length; i++) {
             getFields().add(getInfoColumn(columndaos[i]));
-            entities.add(columndaos[i].getEntityName());
+            entities.add(target.getEntityName(columndaos[i].entityClass()));
         }
 
         setSingleEntity(entities.size() == 1);
@@ -77,41 +77,17 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         Set<String> entities = new HashSet<>();
         for (int i = 1; i < columndaos.size(); i++) {
             getFields().add(getInfoColumn(columndaos.get(i)));
-            entities.add(columndaos.get(i).getEntityName());
+            entities.add(target.getEntityName(columndaos.get(i).entityClass()));
         }
 
         setSingleEntity(entities.size() == 1);
-    }
-
-
-    public DataBaseQueryPlate(String nativeQuery, QueryTarget target, Column<? extends Entity, ?, ?>[] columndaos) {
-
-        Column<?, ?, ?> fielddao = columndaos[0];
-        if (fielddao == null) throw new MandatoryColumn();
-        init(target, fielddao.getInstance());
-        andColumn(fielddao);
-
-        Set<String> entities = new HashSet<>();
-        for (int i = 1; i < columndaos.length; i++) {
-            getFields().add(getInfoColumn(columndaos[i]));
-            entities.add(columndaos[i].getEntityName());
-        }
-
-        setSingleEntity(entities.size() == 1);
-        this._nativeQuery = nativeQuery;
-    }
-
-    @Override
-    public long countAny() {
-        setTempCount(Count.any());
-        return getTarget().count(this);
     }
 
     public FieldsProvider<FlatPlate> flat() {
         return map2(Plate::toFlat);
     }
 
-    private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
+    private <M> FieldsProvider<M> map2(Function<Plate, ? extends M> mapper) {
         if (mapper == null) return new FieldsBuffer<>();
         return new FieldsBuffer<>(findMany().stream().map(mapper).collect(Collectors.toList()));
     }
@@ -132,14 +108,14 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         return Optional.ofNullable(getTarget().readPlate(modifyQuery(this)));
     }
 
-    public <M extends EntityMap> List<M> findManyAs(Class<M> clazz) {
+    public <M extends Entity> List<M> findManyAs(Class<M> clazz) {
         return findMany()
                 .stream()
                 .map(p -> p.toEntity(clazz, getFields()))
                 .collect(Collectors.toList());
     }
 
-    public <M extends EntityMap> M findOneAs(Class<M> clazz) {
+    public <M extends Entity> M findOneAs(Class<M> clazz) {
         return findFirst().map(p -> p.toEntity(clazz, getFields())).orElse(null);
     }
 
@@ -177,5 +153,10 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     public QueryType getQueryType() {
         return QueryType.PLATE;
     }
+
+    public FrozenDataBaseQueryPlate freezeQuery() {
+        return new FrozenDataBaseQueryPlate(this);
+    }
+
 
 }

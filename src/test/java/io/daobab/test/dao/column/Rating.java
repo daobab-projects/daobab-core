@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface Rating<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Rating<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface Rating<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: VARCHAR
      */
     default String getRating() {
-        return getColumnParam("Rating");
+        return readParam("Rating");
     }
 
     default E setRating(String val) {
-        setColumnParam("Rating", val);
-        return (E) this;
+        return storeParam("Rating", val);
     }
 
     default Column<E, String, Rating> colRating() {
@@ -49,14 +49,14 @@ public interface Rating<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String getValue(Rating entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Rating");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Rating");
                 return entity.getRating();
             }
 
             @Override
-            public void setValue(Rating entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Rating");
-                entity.setRating(param);
+            public Rating setValue(Rating entity, String param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Rating");
+                return (Rating) entity.setRating(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface Rating<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

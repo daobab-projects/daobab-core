@@ -1,15 +1,18 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.clone.EntityDuplicator;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
+import io.daobab.model.TableInformation;
 import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-public class MetaColumn extends Table implements
+@TableInformation(name = "META_COLUMN")
+public class MetaColumn extends Table<MetaColumn> implements
         MetaColumnName<MetaColumn>,
         MetaColumnSize<MetaColumn>,
         DecimalDigits<MetaColumn>,
@@ -25,35 +28,34 @@ public class MetaColumn extends Table implements
         FieldClass<MetaColumn>,
         Datatype<MetaColumn> {
 
-    @Override
-    public String getEntityName() {
-        return "META_COLUMN";
+    public MetaColumn() {
+        super();
     }
+
+    public MetaColumn(Map<String, Object> parameters) {
+        super(parameters);
+    }
+
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colColumnName()).size(256),
-                new TableColumn(colRemarks()).size(256),
-                new TableColumn(colColumnSize()).size(10),
-                new TableColumn(colTableName()).size(256),
-                new TableColumn(colSchemaName()).size(256),
-                new TableColumn(colCatalogName()).size(256),
-                new TableColumn(colCamelName()).size(256),
-                new TableColumn(colNullable()),
-                new TableColumn(colDecimalDigits()),
-                new TableColumn(colTableColumnName()).size(10),
-                new TableColumn(colColumnDefault()).size(10),
-                new TableColumn(colOrdinalPosition()),
-                new TableColumn(colFieldClass()),
-                new TableColumn(colDatatype())
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colColumnName()).size(256),
+                        new TableColumn(colRemarks()).size(256),
+                        new TableColumn(colColumnSize()).size(10),
+                        new TableColumn(colTableName()).size(256),
+                        new TableColumn(colSchemaName()).size(256),
+                        new TableColumn(colCatalogName()).size(256),
+                        new TableColumn(colCamelName()).size(256),
+                        new TableColumn(colNullable()),
+                        new TableColumn(colDecimalDigits()),
+                        new TableColumn(colTableColumnName()).size(10),
+                        new TableColumn(colColumnDefault()).size(10),
+                        new TableColumn(colOrdinalPosition()),
+                        new TableColumn(colFieldClass()),
+                        new TableColumn(colDatatype())
+                ));
     }
-
-    @Override
-    public MetaColumn clone() {
-        return EntityDuplicator.cloneEntity(this);
-    }
-
 
 }

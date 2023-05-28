@@ -7,9 +7,9 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-public interface TypeConverterZonedDateTimeBased<T> extends DatabaseTypeConverter<ZonedDateTime, T> {
+public abstract class TypeConverterZonedDateTimeBased<T> implements DatabaseTypeConverter<ZonedDateTime, T> {
 
-    default ZonedDateTime readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
+    public ZonedDateTime readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
         java.sql.Timestamp timestamp = rs.getTimestamp(columnIndex);
         if (timestamp == null) return null;
 

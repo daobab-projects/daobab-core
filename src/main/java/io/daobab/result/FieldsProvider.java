@@ -15,14 +15,7 @@ public interface FieldsProvider<F> {
 
     List<F> findMany();
 
-    default Optional<F> findFirst() {
-        List<F> elements = findMany();
-        return elements.isEmpty() ? Optional.empty() : Optional.of(elements.get(0));
-    }
-
-    default long countAny() {
-        return findMany().size();
-    }
+    Optional<F> findFirst();
 
     default boolean exists() {
         return findFirst().isPresent();
@@ -41,7 +34,7 @@ public interface FieldsProvider<F> {
         return new FieldsBuffer<>(rv);
     }
 
-    default <M> FieldsBuffer<M> map(Function<? super F, M> mapper) {
+    default <M> FieldsBuffer<M> map(Function<? super F, ? extends M> mapper) {
         if (mapper == null) throw new NullFunction();
         return new FieldsBuffer<>(findMany()
                 .stream()

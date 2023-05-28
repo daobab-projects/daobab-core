@@ -2,7 +2,7 @@ package io.daobab.target.buffer.query;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.query.base.QueryType;
 import io.daobab.result.EntitiesProvider;
 import io.daobab.statement.inner.InnerQueryEntity;
@@ -26,7 +26,7 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
     }
 
     BufferQueryEntity(BufferQueryTarget target, Column<E, ?, ?> column) {
-        init(target, column.getEntityName());
+        init(target, target.getEntityName(column.entityClass()));
     }
 
     public BufferQueryEntity(BufferQueryTarget target, Map<String, Object> remote) {
@@ -37,11 +37,6 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
         init(target, entity);
         setFields(new ArrayList<>(entity.columns().size()));
         entity.columns().forEach(e -> getFields().add(e));
-    }
-
-    @Override
-    public long countAny() {
-        return findMany().size();
     }
 
     //---- RESULT SECTION
@@ -58,7 +53,7 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
 
     @SuppressWarnings("rawtypes")
     @Override
-    public <E1 extends Entity, F, R extends EntityRelation> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> field) {
+    public <E1 extends Entity, F, R extends RelatedTo> InnerQueryFieldsProvider<E1, F> limitToField(Column<E1, F, R> field) {
         BufferQueryField<E1, F> queryField = new BufferQueryField<>(getTarget(), field);
         return queryField.where(getWhereWrapper());
     }

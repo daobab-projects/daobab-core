@@ -1,5 +1,6 @@
 package io.daobab.result;
 
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.DaobabException;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
@@ -20,15 +21,18 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
     private final MultiEntityTarget target;
     private final List<Plate> rows;
-    private Plate rootPlate =new Plate();
+    private final Plate rootPlate;
 
     public EntitiesJoined(MultiEntityTarget target, List<? extends Entity> columnsProviders, Query<?, ?, ?> query) {
         this.target = target;
         rows = new ArrayList<>(columnsProviders.size());
-        columnsProviders.forEach(entity ->rows.add(new Plate(entity)));
+
+        columnsProviders.forEach(entity -> rows.add(new Plate(entity)));
         if (!rows.isEmpty()) {
-            rootPlate =rows.get(0);
+            rootPlate = rows.get(0);
             join(query);
+        }else{
+            rootPlate = PlateCreator.ofTableColumnList(query.getFields());
         }
     }
 
@@ -36,7 +40,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
         return rows;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked","java:S3776","java:S135"})
+    @SuppressWarnings({"rawtypes", "unchecked", "java:S3776", "java:S135"})
     private void join(Query<?, ?, ?> query) {
         List<JoinWrapper> joins = query.getJoins();
 
@@ -54,36 +58,36 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
                     .map(TableColumn::getColumn)
                     .filter(col -> col.getColumnName().equals(byColumn.getColumnName()))
                     .findAny()
-                    .orElseThrow(() -> new DaobabException(String.format("Invalid operation during join: Entity %s has no column named %s", rightTable.getEntityName(), byColumn.getColumnName())));
+                    .orElseThrow(() -> new DaobabException(String.format("Invalid operation during join: Entity %s has no column named %s", query.getTarget().getEntityName(rightTable.entityClass()), byColumn.getColumnName())));
 
-            List<Object> columnValues=getThisValuesOfColumn(leftColumn.get());
+            List<Object> columnValues = getThisValuesOfColumn(leftColumn.get());
             Where composedWhereInner = new WhereAnd().inFields(joinedTableColumn, columnValues);
             Where composedWhereRight = new WhereAnd().notInFields(joinedTableColumn, columnValues);
 
-            boolean joinAllNotCommonFromLeft=false;
-            boolean joinAllNotCommonFromRight=false;
-            boolean joinCommons=false;
+            boolean joinAllNotCommonFromLeft = false;
+            boolean joinAllNotCommonFromRight = false;
+            boolean joinCommons = false;
 
-            switch (join.getType()){
+            switch (join.getType()) {
                 default:
                 case INNER:
-                    joinCommons=true;
+                    joinCommons = true;
                     break;
                 case OUTER:
-                    joinAllNotCommonFromLeft=true;
-                    joinAllNotCommonFromRight=true;
+                    joinAllNotCommonFromLeft = true;
+                    joinAllNotCommonFromRight = true;
                     break;
                 case LEFT_JOIN:
-                    joinCommons=true;
-                    joinAllNotCommonFromLeft=true;
+                    joinCommons = true;
+                    joinAllNotCommonFromLeft = true;
                     break;
                 case RIGHT_JOIN:
-                    joinCommons=true;
-                    joinAllNotCommonFromRight=true;
+                    joinCommons = true;
+                    joinAllNotCommonFromRight = true;
                     break;
             }
 
-            Map<String,Object> joinWhereMap=join.getWhere().getWhereMap();
+            Map<String, Object> joinWhereMap = join.getWhere().getWhereMap();
             //If there is an inner where in join, will be on second key for sure
             Object key = joinWhereMap.get(KEY + 2);
             Object val = joinWhereMap.get(VALUE + 2);
@@ -91,7 +95,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
             Object relation = joinWhereMap.get(RELATION + 2);
             composedWhereInner.add(wrapper, key, val, relation);
             composedWhereRight.add(wrapper, key, val, relation);
-            Column[] rightColumns=rightTable.columns()
+            Column[] rightColumns = rightTable.columns()
                     .stream()
                     .map(TableColumn::getColumn)
                     .toArray(Column[]::new);
@@ -113,12 +117,12 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
                 List<Plate> rightRelatedRecords = rightMap.get(leftValue);
                 if (rightRelatedRecords == null || rightRelatedRecords.isEmpty()) {
-                    if (joinAllNotCommonFromLeft){
+                    if (joinAllNotCommonFromLeft) {
                         joinedRowList.add(leftRow);
                     }
                     continue;
                 }
-                if (joinCommons){
+                if (joinCommons) {
                     for (Plate rPlate : rightRelatedRecords) {
                         Plate newRow = new Plate(leftRow);
                         newRow.joinPlate(rPlate);
@@ -127,7 +131,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
                 }
             }
 
-            if (joinAllNotCommonFromRight){
+            if (joinAllNotCommonFromRight) {
                 joinedRowList.addAll(target.select(rightColumns)
                         .where(composedWhereRight)
                         .findMany());
@@ -138,11 +142,11 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
         }
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private List<Object> getThisValuesOfColumn(Column column) {
 
-        Set<Object> set=new HashSet<>();
-        for (Plate row:rows){
+        Set<Object> set = new HashSet<>();
+        for (Plate row : rows) {
             set.add(row.getValue(column));
         }
         return new ArrayList<>(set);

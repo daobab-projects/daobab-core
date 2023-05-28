@@ -2,7 +2,7 @@ package io.daobab.target.buffer.nonheap.access.field;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.model.TableColumn;
 
 /**
@@ -10,7 +10,7 @@ import io.daobab.model.TableColumn;
  */
 public class SizeOnlyTableColumn extends TableColumn {
     public SizeOnlyTableColumn(int size) {
-        super(new Column<Entity, Object, EntityRelation>() {
+        super(new Column<Entity, Object, RelatedTo>() {
             @Override
             public String getFieldName() {
                 return null;
@@ -22,13 +22,13 @@ public class SizeOnlyTableColumn extends TableColumn {
             }
 
             @Override
-            public Object getValue(EntityRelation entity) {
+            public Object getValue(RelatedTo entity) {
                 return null;
             }
 
             @Override
-            public void setValue(EntityRelation entity, Object value) {
-
+            public RelatedTo setValue(RelatedTo entity, Object value) {
+                return entity;
             }
 
             @Override

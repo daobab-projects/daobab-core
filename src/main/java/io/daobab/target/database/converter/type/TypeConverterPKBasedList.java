@@ -9,15 +9,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface TypeConverterPKBasedList<F, E extends Entity & PrimaryKey<?, F, ?>> extends DatabaseTypeConverter<F, List<E>> {
+public abstract class TypeConverterPKBasedList<F, E extends Entity & PrimaryKey<?, F, ?>> implements DatabaseTypeConverter<F, List<E>> {
 
-    default F readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
+    public F readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
         return null;
     }
 
-    E getTable();
+    public abstract E getTable();
 
-    DataBaseTarget getDataBaseTarget();
+    public abstract DataBaseTarget getDataBaseTarget();
 
 
 }

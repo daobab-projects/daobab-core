@@ -1,10 +1,10 @@
 package io.daobab.result;
 
-import io.daobab.clone.EntityDuplicator;
-import io.daobab.converter.JsonHandler;
+import io.daobab.converter.json.JsonProvider;
 import io.daobab.model.FlatPlate;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -12,7 +12,7 @@ import java.util.Collection;
  *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable, JsonHandler, Cloneable {
+public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable, JsonProvider, Cloneable {
 
 
     private static final long serialVersionUID = 2291798166104201910L;
@@ -26,7 +26,7 @@ public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable,
     }
 
     @Override
-    public String toJSON() {
+    public String toJson() {
         StringBuilder rv = new StringBuilder();
         rv.append("[");
 
@@ -38,7 +38,7 @@ public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable,
             cnt++;
             boolean lastOne = cnt == size;
 
-            rv.append(val.toJSON());
+            rv.append(val.toJson());
             if (!lastOne) rv.append(",");
         }
 
@@ -50,7 +50,7 @@ public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable,
 
     @Override
     public FlatPlates clone() {
-        return new FlatPlates(EntityDuplicator.cloneEntityList(this));
+        return new FlatPlates(new ArrayList<>(this));
     }
 
 }

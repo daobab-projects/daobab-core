@@ -3,13 +3,14 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public interface CreateDate<E extends EntityMap> extends EntityRelationMap<E> {
+public interface CreateDate<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -17,12 +18,11 @@ public interface CreateDate<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: TIMESTAMP
      */
     default Timestamp getCreateDate() {
-        return getColumnParam("CreateDate");
+        return readParam("CreateDate");
     }
 
     default E setCreateDate(Timestamp val) {
-        setColumnParam("CreateDate", val);
-        return (E) this;
+        return storeParam("CreateDate", val);
     }
 
     default Column<E, Timestamp, CreateDate> colCreateDate() {
@@ -50,14 +50,14 @@ public interface CreateDate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Timestamp getValue(CreateDate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "CreateDate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "CreateDate");
                 return entity.getCreateDate();
             }
 
             @Override
-            public void setValue(CreateDate entity, Timestamp param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CreateDate");
-                entity.setCreateDate(param);
+            public CreateDate setValue(CreateDate entity, Timestamp param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "CreateDate");
+                return (CreateDate) entity.setCreateDate(param);
             }
 
             @Override
@@ -67,7 +67,7 @@ public interface CreateDate<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -1,12 +1,14 @@
 package io.daobab.target.database.connection;
 
+import io.daobab.creation.EntityBuilder;
+import io.daobab.creation.EntityCreator;
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.NoSequenceException;
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.*;
 import io.daobab.query.base.QuerySpecialParameters;
-import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.converter.KeyableCache;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
@@ -30,7 +32,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @Override
     public Plate readPlate(ResultSet rs, List<TableColumn> fields, DatabaseTypeConverter<?, ?>[] typeConverters) throws SQLException {
-        Plate plate = new Plate(fields);
+        Plate plate = PlateCreator.ofTableColumnList(fields);
         for (int i = 0; i < fields.size(); i++) {
             TableColumn tableColumn = fields.get(i);
             plate.setValue(tableColumn, readCell(typeConverters[i], rs, i + 1, tableColumn.getColumn()));
@@ -48,7 +50,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <E extends Entity> E readEntity(QueryTarget target, ResultSet rs, E entity, List<TableColumn> columns) {
+    public <E extends Entity> E readEntity(QueryTarget target, ResultSet rs, Class<E> entityClass, List<TableColumn> columns) {
 
         Column[] columnsArr = new Column[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
@@ -60,19 +62,15 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
             typeConvertersArr[i] = target.getConverterManager().getConverter(columnsArr[i]).orElse(null);
         }
 
+        EntityBuilder<E> builder = EntityCreator.builder(entityClass);
+
         for (int i = 0; i < columns.size(); i++) {
-            columnsArr[i].setValue((EntityRelation) entity, readCell(typeConvertersArr[i], rs, i + 1, columnsArr[i]));
+            builder.add(columnsArr[i], readCell(typeConvertersArr[i], rs, i + 1, columnsArr[i]));
+//            entity = (E) columnsArr[i].setValue((EntityRelation) entity, readCell(typeConvertersArr[i], rs, i + 1, columnsArr[i]));
         }
-        return entity;
+        return builder.build();
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public <E extends Entity> E readEntity(DataBaseTarget target, ResultSet rs, E entity, Column[] columnsArr, DatabaseTypeConverter<?, ?>[] typeConverters) {
-        for (int i = 0; i < columnsArr.length; i++) {
-            columnsArr[i].setValue((EntityRelation) entity, readCell(typeConverters[i], rs, i + 1, columnsArr[i]));
-        }
-        return entity;
-    }
 
     @Override
     public Timestamp toTimeZone(Timestamp timestamp, TimeZone timeZone) {
@@ -172,7 +170,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public <E extends Entity, F, R extends EntityRelation> F executeInsert(QuerySpecialParameters insertQueryParameters, Connection conn, ILoggerBean loggerBean, Column<E, F, R> pk) {
+    public <E extends Entity, F, R extends RelatedTo> F executeInsert(QuerySpecialParameters insertQueryParameters, Connection conn, ILoggerBean loggerBean, Column<E, F, R> pk) {
         PreparedStatement stmt = null;
         try {
             stmt = conn.prepareStatement(insertQueryParameters.getQuery().toString(), Statement.RETURN_GENERATED_KEYS);
@@ -212,7 +210,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
                 throw new DaobabException("Getting the sequence '{}' value failed. Database does not return anything. Is the name of the sequence correct?", sequenceName);
             }
         } catch (SQLException e) {
-            throw new DaobabSQLException("Error during generation of ID for object type = " + sequenceName, e);
+            throw new DaobabSQLException("Error during ID generation of ID by sentence name " + sequenceName, e);
         } finally {
             closeStatement(stmt, this);
         }

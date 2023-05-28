@@ -4,6 +4,7 @@ import io.daobab.error.DaobabException;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.query.base.Query;
 import io.daobab.query.base.QueryType;
+import io.daobab.query.base.StatisticQuery;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
 import io.daobab.target.statistic.dictionary.CallStatus;
@@ -28,7 +29,7 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
     private long ignoreBelowMilliseconds = 0;
 
     @Override
-    public void send(Query<?, ?, ?> query) {
+    public void send(StatisticQuery query) {
         if (ignoreSuccessful) {
             return;
         }
@@ -46,7 +47,7 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
     }
 
     @Override
-    public void received(Query<?, ?, ?> query, Integer result) {
+    public void received(StatisticQuery query, Integer result) {
         if (ignoreSuccessful) {
             return;
         }
@@ -73,7 +74,7 @@ public class StatisticCollectorImpl extends LinkedHashMap<String, StatisticRecor
     }
 
     @Override
-    public void error(Query<?, ?, ?> query, Throwable result) {
+    public void error(StatisticQuery query, Throwable result) {
         boolean daobabException = result instanceof DaobabException;
         String cause = "";
         if (daobabException) {

@@ -2,7 +2,7 @@ package io.daobab.result.remove;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.result.EntitiesBufferIndexed;
 import io.daobab.statement.condition.Operator;
 
@@ -14,11 +14,11 @@ import java.util.*;
 public class IndexNumber<E extends Entity, F extends Number> extends Index<E, F> {
 
 
-    protected IndexNumber(Column<E, ?, EntityRelation> indexedColumn, Map<F, List<E>> oneToManySubMap, List<E> nullValuesAsPK) {
+    protected IndexNumber(Column<E, ?, RelatedTo> indexedColumn, Map<F, List<E>> oneToManySubMap, List<E> nullValuesAsPK) {
         super(indexedColumn, oneToManySubMap, nullValuesAsPK);
     }
 
-    public IndexNumber(Column<E, ?, EntityRelation> indexedColumn, EntitiesBufferIndexed<E> buffer) {
+    public IndexNumber(Column<E, ?, RelatedTo> indexedColumn, EntitiesBufferIndexed<E> buffer) {
         super(indexedColumn, buffer);
     }
 
@@ -107,7 +107,7 @@ public class IndexNumber<E extends Entity, F extends Number> extends Index<E, F>
     }
 
     @Override
-    protected Index<E, F> newInstance(Column<E, ?, EntityRelation> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E> nullValuesAsPK) {
+    protected Index<E, F> newInstance(Column<E, ?, RelatedTo> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E> nullValuesAsPK) {
         return new IndexNumber<>(indexedColumn, oneToManyMap, nullValuesAsPK);
     }
 }

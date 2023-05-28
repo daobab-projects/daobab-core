@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterBigDecimal implements TypeConverterBigDecimalBased<BigDecimal> {
+public class StandardTypeConverterBigDecimal extends TypeConverterBigDecimalBased<BigDecimal> {
 
     @Override
     public BigDecimal readAndConvert(ResultSet rs, int columnIndex) throws SQLException {

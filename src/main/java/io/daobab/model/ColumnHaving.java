@@ -3,12 +3,24 @@ package io.daobab.model;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class ColumnHaving<E extends Entity, R extends EntityRelation> implements Column<E, String, R> {
+public class ColumnHaving<E extends Entity, R extends RelatedTo> implements Column<E, String, R> {
 
     private final String name;
+    private E instance;
+
+
+    //If a column is identified by 'as' keyword
+    private boolean identifiedAs = false;
 
     public ColumnHaving(String name) {
         this.name = name;
+        this.instance = (E) new Dual();
+    }
+
+    public ColumnHaving(String name, boolean identifiedAs) {
+        this.name = name;
+        this.identifiedAs = identifiedAs;
+        this.instance = (E) new Dual();
     }
 
     @Override
@@ -32,12 +44,17 @@ public class ColumnHaving<E extends Entity, R extends EntityRelation> implements
     }
 
     @Override
-    public void setValue(R entity, String value) {
-
+    public R setValue(R entity, String value) {
+        return entity;
     }
 
     @Override
     public E getInstance() {
-        return null;
+        return instance;
+    }
+
+
+    public boolean isIdentifiedAs() {
+        return identifiedAs;
     }
 }

@@ -3,12 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.Entity;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface Length<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Length<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
 
     /**
@@ -16,12 +17,11 @@ public interface Length<E extends EntityMap> extends EntityRelationMap<E> {
      * db type: SMALLINT
      */
     default Integer getLength() {
-        return getColumnParam("Length");
+        return readParam("Length");
     }
 
     default E setLength(Integer val) {
-        setColumnParam("Length", val);
-        return (E) this;
+        return storeParam("Length", val);
     }
 
     default Column<E, Integer, Length> colLength() {
@@ -49,14 +49,14 @@ public interface Length<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public Integer getValue(Length entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Length");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Length");
                 return entity.getLength();
             }
 
             @Override
-            public void setValue(Length entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Length");
-                entity.setLength(param);
+            public Length setValue(Length entity, Integer param) {
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Length");
+                return (Length) entity.setLength(param);
             }
 
             @Override
@@ -66,7 +66,7 @@ public interface Length<E extends EntityMap> extends EntityRelationMap<E> {
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override
