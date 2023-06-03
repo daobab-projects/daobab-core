@@ -241,47 +241,36 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             base.setJoins(JoinTracker.calculateJoins(getTables(), from, (base.getWhereWrapper() == null ? new HashSet<>() : base.getWhereWrapper().getAllDaoInWhereClause()), base.getJoins()));
         }
 
-        boolean countInUse = base.getCount() != null;
+
 
         sb.append(LINE_SEPARATOR);
         sb.append("select ");
-        if (countInUse) {
-            sb.append("count(");
-            if (base.isUnique()) {
-                sb.append("distinct ");
-            }
-            sb.append(countToExpression(base.getCount(), storage.getIdentifierFor(base.getEntityName())))
-                    .append(CLOSED_BRACKET);
 
+        if (base.getLimit() != null && base.getLimit().getOffset() == 0 && getDataBaseProductName().startsWith(DictDatabaseType.MicrosoftSQL)) {
+            sb.append("top(").append(base.getLimit().getLimit()).append(") ");
+        }
+
+        if (base.getFields().isEmpty()) {
+            sb.append(storage.getIdentifierFor(base.getEntityName()));
         } else {
-            if (base.getLimit() != null && base.getLimit().getOffset() == 0 && getDataBaseProductName().startsWith(DictDatabaseType.MicrosoftSQL)) {
-                sb.append("top(").append(base.getLimit().getLimit()).append(") ");
-            }
+            for (Iterator<TableColumn> it = base.getFields().iterator(); it.hasNext(); ) {
 
-            if (base.isUnique()) {
-                sb.append("distinct ");
-            }
-            if (base.getFields().isEmpty()) {
-                sb.append(storage.getIdentifierFor(base.getEntityName()));
-            } else {
-                for (Iterator<TableColumn> it = base.getFields().iterator(); it.hasNext(); ) {
+                Column<E, ?, ?> column = it.next().getColumn();
+                boolean fakeColumn = column.getColumnName() == null;
 
-                    Column<E, ?, ?> column = it.next().getColumn();
-                    boolean fakeColumn = column.getColumnName() == null;
-
-                    if (column instanceof ColumnFunction) {
-                        ColumnFunction db = (ColumnFunction) column;
-                        sb.append(columnFunctionToExpression(db, storage, false));
-                    } else {
-                        if (!fakeColumn) {
-                            sb.append(storage.getIdentifierForColumn(column));
-                        }
+                if (column instanceof ColumnFunction) {
+                    ColumnFunction db = (ColumnFunction) column;
+                    sb.append(columnFunctionToExpression(db, storage, false));
+                } else {
+                    if (!fakeColumn) {
+                        sb.append(storage.getIdentifierForColumn(column));
                     }
-
-                    if (it.hasNext() && !fakeColumn) sb.append(COMMA);
                 }
+
+                if (it.hasNext() && !fakeColumn) sb.append(COMMA);
             }
         }
+
 
         for (JoinWrapper<?> joinWrapper : base.getJoins()) {
             storage.getIdentifierForColumn(joinWrapper.getByColumn());
@@ -572,47 +561,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
             if (i < order.getCounter() - 1) {
                 sb.append(COMMA_SPACE);
-            }
-        }
-        return sb;
-    }
-
-    @SuppressWarnings({"rawtypes", "java:S3776"})
-    default StringBuilder countToExpression(Count count, String daoIdentifier) {
-        StringBuilder sb = new StringBuilder();
-        if (count.getCounter() == 1) {
-            Object field = count.getObjectForPointer(1);
-
-            if (field == null) {
-                sb.append(" *");
-            } else if (field instanceof Column) {
-                sb.append(((Column) field).getColumnName());
-            } else {
-                sb.append(field);
-            }
-
-            sb.append(SPACE);
-        } else {
-            for (int i = 1; i < count.getCounter(); i++) {
-                Object field = count.getObjectForPointer(i);
-                boolean distinct = count.isDistinctForPointer(i) && field != null;
-
-                if (distinct) {
-                    sb.append("distinct ");
-                }
-
-                if (field == null) {
-                    sb.append(daoIdentifier);
-                } else if (field instanceof Column) {
-                    sb.append(daoIdentifier).append(DOT)
-                            .append(((Column) field).getColumnName());
-                } else {
-                    sb.append(field);
-                }
-
-                if (i < count.getCounter() - 1) {
-                    sb.append(COMMA_SPACE);
-                }
             }
         }
         return sb;

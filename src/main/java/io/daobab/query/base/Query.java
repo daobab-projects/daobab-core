@@ -23,8 +23,6 @@ public interface Query<E extends Entity, T extends Target & QueryHandler, Q exte
 
     List<SetOperator> getSetOperatorList();
 
-    boolean isUnique();
-
     boolean isJoin();
 
     boolean isGroupBy();
@@ -53,13 +51,9 @@ public interface Query<E extends Entity, T extends Target & QueryHandler, Q exte
 
     Q orderBy(Order orderBy);
 
-    Count getCount();
-
     Limit getLimit();
 
     boolean isLogQueryEnabled();
-
-    Q distinct();
 
     String getEntityName();
 

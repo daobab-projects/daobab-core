@@ -34,7 +34,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     public List<Column<?, ?, ?>> _groupBy = new ArrayList<>();
     public String _groupByAlias = null;
-    public boolean _unique = false;
     public boolean _calcJoins = false;
     protected Order orderBy;
     protected List<TableColumn> fields = new ArrayList<>();
@@ -46,7 +45,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     private Class<E> entityClass;
     private Where whereWrapper;
     private Having havingWrapper;
-    protected Count _count;
     private Limit limit;
     private String identifier;
     private String sentQuery;
@@ -66,9 +64,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         to.entityClass = from.entityClass;
         to.whereWrapper = from.whereWrapper; //TODO
         to.havingWrapper = from.havingWrapper; //TODO
-        to._count = from._count;
         to.limit = from.limit;
-        to._unique = from._unique;
         to._calcJoins = from._calcJoins;
         to.identifier = from.identifier;
         // to.logQueryConsumer = from.logQueryConsumer;
@@ -208,14 +204,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         return (Q) this;
     }
 
-    public Count getCount() {
-        return _count;
-    }
-
-    protected void setTempCount(Count c) {
-        this._count = c;
-    }
-
     public Limit getLimit() {
         return limit;
     }
@@ -240,16 +228,6 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     public boolean isLogQueryEnabled() {
         return logQueryEnabled;
-    }
-
-    public Q distinct() {
-        _unique = true;
-        return (Q) this;
-    }
-
-    @Override
-    public boolean isUnique() {
-        return _unique;
     }
 
     @Override
@@ -313,13 +291,11 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
             rv.put(DictRemoteKey.FIELDS, Marshaller.marshalColumnList(fields));
         if (entityName != null) rv.put(DictRemoteKey.ENTITY_NAME, entityName);
         if (entityClass != null) rv.put(DictRemoteKey.ENTITY_CLASS, entityClass.getName());
-        if (_unique) rv.put(DictRemoteKey.UNIQUE, _unique);
         if (_calcJoins) rv.put(DictRemoteKey.SMART_JOINS, _calcJoins);
         if (getWhereWrapper() != null && !getWhereWrapper().isEmpty())
             rv.put(DictRemoteKey.WHERE, getWhereWrapper().toMap());
         if (getHavingWrapper() != null && !getHavingWrapper().isEmpty())
             rv.put(DictRemoteKey.HAVING, getHavingWrapper().toMap());
-        if (getCount() != null) rv.put(DictRemoteKey.COUNT, getCount().getCountMap());
         if (getLimit() != null) rv.put(DictRemoteKey.LIMIT, getLimit().getLimitMap());
         if (getOrderBy() != null) rv.put(DictRemoteKey.ORDER, getOrderBy().toMap());
         if (_groupBy != null && !_groupBy.isEmpty()) rv.put(DictRemoteKey.GROUP_BY, _groupBy);
@@ -344,16 +320,12 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         Object fields = rv.get(DictRemoteKey.FIELDS);
         Object remoteEntityName = rv.get(DictRemoteKey.ENTITY_NAME);
         Object remoteEntityClass = rv.get(DictRemoteKey.ENTITY_CLASS);
-        Object unique = rv.get(DictRemoteKey.UNIQUE);
         Object cache = rv.get(DictRemoteKey.CACHE);
 
         Entity ent = Marshaller.fromRemote(target, (String) remoteEntityName);
 
         if (ent != null) setEntityClass(ent.getEntityClass());
         setEntityName((String) remoteEntityName);
-
-        if (unique != null) _unique = "true".equals(unique);
-
 
         if (where != null) {
             setWhereWrapper(WhereBase.fromRemote(target, (Map<String, Object>) where));
