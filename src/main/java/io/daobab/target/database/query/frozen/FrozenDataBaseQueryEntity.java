@@ -87,10 +87,6 @@ public class FrozenDataBaseQueryEntity<E extends Entity> extends FrozenDataBaseQ
                 return Optional.ofNullable(target.readEntity(frozenDataBaseQueryEntity, parameters, typeConverters));
             }
 
-            @Override
-            public long countAny() {
-                return target.count(frozenDataBaseQueryEntity, parameters);
-            }
         };
     }
 
@@ -115,12 +111,6 @@ public class FrozenDataBaseQueryEntity<E extends Entity> extends FrozenDataBaseQ
             return cacheManager.getSingleContent(getFrozenQuery(), cachedPeriod, () -> Optional.ofNullable(target.readEntity(this, Collections.emptyList(), typeConverters)));
         }
         return Optional.ofNullable(target.readEntity(this, Collections.emptyList(), typeConverters));
-    }
-
-    @Override
-    public long countAny() {
-        validateEmptyParameters();
-        return target.count(this, Collections.emptyList());
     }
 
     @Override

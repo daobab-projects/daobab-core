@@ -84,11 +84,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         setSingleEntity(entities.size() == 1);
     }
 
-    @Override
-    public long countAny() {
-        setTempCount(Count.any());
-        return getTarget().count(this);
-    }
+
 
     public FieldsProvider<FlatPlate> flat() {
         return map2(Plate::toFlat);

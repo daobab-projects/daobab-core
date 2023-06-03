@@ -28,9 +28,6 @@ public interface PlateProvider {
         return findFirst().orElse(null);
     }
 
-    long countAny();
-
-
     default void forEach(Consumer<Plate> consumer) {
         findMany().forEach(consumer);
     }

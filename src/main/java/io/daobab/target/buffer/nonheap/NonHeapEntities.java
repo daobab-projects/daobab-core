@@ -381,11 +381,6 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
     }
 
     @Override
-    public long countAny() {
-        return size();
-    }
-
-    @Override
     public NonHeapEntities<E> toNonHeap() {
         return this;
     }

@@ -748,65 +748,6 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         }
     }
 
-
-    default long count(DataBaseQueryBase<?, ?> query) {
-        getLog().debug("Start count ");
-        Connection conn = null;
-        Statement stmt = null;
-        if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
-        try {
-            conn = this.getConnection();
-            stmt = conn.createStatement();
-
-            ResultSet rs = stmt.executeQuery(toSqlQuery(query));
-
-            if (rs.next()) {
-                long cnt = rs.getLong(1);
-                if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
-                return cnt;
-            }
-            if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
-            return 0;
-        } catch (SQLException e) {
-            if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
-            throw new DaobabSQLException(e);
-        } finally {
-            getResultSetReader().closeStatement(stmt, query);
-            this.closeConnection(conn);
-            getLog().debug("Finish count");
-        }
-    }
-
-
-    default long count(FrozenQueryProvider frozenQueryProvider, List<Object> parameters) {
-        getLog().debug("Start count ");
-        Connection conn = null;
-        Statement stmt = null;
-        if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozenQueryProvider);
-        try {
-            conn = this.getConnection();
-            stmt = conn.createStatement();
-
-            String sqlQuery = withParameters(frozenQueryProvider, parameters);
-            ResultSet rs = stmt.executeQuery(sqlQuery);
-
-            if (rs.next()) {
-                long cnt = rs.getLong(1);
-                if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQueryProvider, 1);
-                return cnt;
-            }
-            if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQueryProvider, 0);
-            return 0;
-        } catch (SQLException e) {
-            if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQueryProvider, e);
-            throw new DaobabSQLException(e);
-        } finally {
-            getResultSetReader().closeStatement(stmt, frozenQueryProvider);
-            this.closeConnection(conn);
-            getLog().debug("Finish count");
-        }
-    }
-
     default DaobabDataBaseMetaData getDataBaseMetaData() {
         return doSthOnConnection("", (nothing, c) -> {
 

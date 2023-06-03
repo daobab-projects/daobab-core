@@ -330,11 +330,6 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @Override
-    public long countAny() {
-        return size();
-    }
-
-    @Override
     public void refreshImmediately() {
         throw new TargetDoesNotSupport();
     }

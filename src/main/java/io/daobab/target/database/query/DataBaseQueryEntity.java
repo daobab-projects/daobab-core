@@ -35,11 +35,6 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
         target.getColumnsForTable(entity).forEach(e -> getFields().add(e));
     }
 
-    @Override
-    public long countAny() {
-        setTempCount(Count.any());
-        return getTarget().count(this);
-    }
 
     @Override
     public Entities<E> findMany() {

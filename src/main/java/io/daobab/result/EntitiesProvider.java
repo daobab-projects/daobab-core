@@ -26,8 +26,6 @@ public interface EntitiesProvider<E extends Entity> {
 
     Optional<E> findFirst();
 
-    long countAny();
-
     default boolean exists() {
         return findFirst().isPresent();
     }

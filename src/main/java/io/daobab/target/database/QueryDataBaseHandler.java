@@ -14,7 +14,6 @@ import io.daobab.target.database.query.*;
 import io.daobab.target.database.query.frozen.FrozenDataBaseQueryEntity;
 import io.daobab.target.database.query.frozen.FrozenDataBaseQueryField;
 import io.daobab.target.database.query.frozen.FrozenDataBaseQueryPlate;
-import io.daobab.target.database.query.frozen.FrozenQueryProvider;
 import io.daobab.transaction.Propagation;
 
 import java.util.List;
@@ -68,8 +67,4 @@ public interface QueryDataBaseHandler extends Target, QueryHandler {
     <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> query, IdentifierStorage identifierStorage);
 
     <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out);
-
-    long count(DataBaseQueryBase<?, ?> query);
-
-    long count(FrozenQueryProvider query, List<Object> parameters);
 }

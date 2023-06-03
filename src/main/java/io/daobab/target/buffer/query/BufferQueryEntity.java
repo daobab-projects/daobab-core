@@ -39,11 +39,6 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
         entity.columns().forEach(e -> getFields().add(e));
     }
 
-    @Override
-    public long countAny() {
-        return findMany().size();
-    }
-
     //---- RESULT SECTION
 
     @Override

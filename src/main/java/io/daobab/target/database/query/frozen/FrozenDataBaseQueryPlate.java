@@ -51,10 +51,6 @@ public class FrozenDataBaseQueryPlate extends FrozenDataBaseQueryBase<Entity, Da
                 return Optional.ofNullable(target.readPlate(frozenDataBaseQueryPlate, parameters, typeConverters));
             }
 
-            @Override
-            public long countAny() {
-                return target.count(frozenDataBaseQueryPlate, parameters);
-            }
         };
     }
 
@@ -69,12 +65,6 @@ public class FrozenDataBaseQueryPlate extends FrozenDataBaseQueryBase<Entity, Da
     public Optional<Plate> findFirst() {
         validateEmptyParameters();
         return Optional.ofNullable(target.readPlate(this, Collections.emptyList(), typeConverters));
-    }
-
-    @Override
-    public long countAny() {
-        validateEmptyParameters();
-        return target.count(this, Collections.emptyList());
     }
 
     @Override

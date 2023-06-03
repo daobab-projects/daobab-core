@@ -217,11 +217,6 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
     }
 
     @Override
-    public long count(DataBaseQueryBase<?, ?> query) {
-        throw new RemoteTargetCanNotHandleOpenedTransactionException();
-    }
-
-    @Override
     public DatabaseDateConverter getDatabaseDateConverter() {
         return null;
     }
