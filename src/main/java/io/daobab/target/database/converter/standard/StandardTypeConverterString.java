@@ -24,7 +24,7 @@ public class StandardTypeConverterString implements TypeConverterStringBased<Str
     }
 
 
-    private String valueStringToSQL(Object value) {
+    public static String valueStringToSQL(Object value) {
         StringBuilder sb = new StringBuilder();
         if (value == null) {
             return "";// do sth??

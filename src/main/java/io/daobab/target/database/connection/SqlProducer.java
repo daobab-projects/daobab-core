@@ -24,6 +24,7 @@ import io.daobab.statement.where.base.Where;
 import io.daobab.target.database.DataBaseTargetLogic;
 import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.converter.standard.StandardTypeConverterInteger;
+import io.daobab.target.database.converter.standard.StandardTypeConverterString;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import io.daobab.target.database.query.DataBaseQueryBase;
 import io.daobab.target.database.query.DataBaseQueryDelete;
@@ -212,7 +213,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 //            rv.setCounter(rv.getCounter() + 1);
         } else if (val instanceof String) {
             values.append(APOSTROPHE)
-                    .append(valueStringToSQL(val))
+                    .append(StandardTypeConverterString.valueStringToSQL(val))
                     .append(APOSTROPHE);
         } else if (val instanceof Time) {
             values.append(target.getDatabaseDateConverter().toDatabaseTimestamp((Time) val));
@@ -890,7 +891,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 sb.append(storage.getIdentifierForColumn(col));
             } else if (secondColumn instanceof String) {
                 sb.append(APOSTROPHE)
-                        .append(valueStringToSQL(secondColumn))
+                        .append(StandardTypeConverterString.valueStringToSQL(secondColumn))
                         .append(APOSTROPHE);
 //            }else if (secondColumn instanceof Number){
 //                sb.append(secondColumn);
@@ -943,22 +944,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
         sb.append(CLOSED_BRACKET).append(SPACE);
-        return sb;
-    }
-
-    default StringBuilder valueStringToSQL(Object value) {
-        StringBuilder sb = new StringBuilder();
-        if (value == null) {
-            return sb;// do sth??
-        }
-        String valStr = value.toString();
-        String valStrLower = value.toString().toLowerCase();
-        if (valStr.contains(";")
-                && (valStr.contains(APOSTROPHE) || valStr.contains("\""))
-                && (valStrLower.contains("table") || valStrLower.contains("insert") || valStrLower.contains("update") || valStrLower.contains("delete"))) {
-            throw new SqlInjectionDetected(valStr);
-        }
-        sb.append(value.toString().replace(APOSTROPHE, "''"));
         return sb;
     }
 

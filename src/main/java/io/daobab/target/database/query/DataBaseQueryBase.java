@@ -37,7 +37,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
     public List<Column<?, ?, ?>> _groupBy = new ArrayList<>();
     public String _groupByAlias = null;
-//    public boolean _unique = false;
     public boolean _calcJoins = false;
     protected Order orderBy;
 

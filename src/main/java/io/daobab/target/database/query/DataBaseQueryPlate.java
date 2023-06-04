@@ -84,8 +84,6 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         setSingleEntity(entities.size() == 1);
     }
 
-
-
     public FieldsProvider<FlatPlate> flat() {
         return map2(Plate::toFlat);
     }

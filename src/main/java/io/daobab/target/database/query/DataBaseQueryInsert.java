@@ -218,7 +218,6 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         if (pkNo != null) rv.put(DictRemoteKey.PK_NO, pkNo);
         if (dictIdGenerator != null) rv.put(DictRemoteKey.ID_GENERATOR, dictIdGenerator);
         if (pkColumnName != null) rv.put(DictRemoteKey.PK_COLUMN_NAME, pkColumnName);
-//		if (pkResolved==true)rv.put(DictRemoteKey.ENTITY_NAME,pkResolved);
         if (entity != null) rv.put(DictRemoteKey.ENTITY, entity);
         if (setFields != null) rv.put(DictRemoteKey.SET_FIELDS, setFields);
         return rv;
