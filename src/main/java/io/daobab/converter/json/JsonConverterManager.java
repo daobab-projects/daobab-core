@@ -8,6 +8,8 @@ import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -41,9 +43,9 @@ public class JsonConverterManager {
         registerTypeConverter(String.class, new JsonStringConverter());
 //        registerTypeConverter(Time.class, new StandardTypeConverterTime(target));
 //        registerTypeConverter(Timestamp.class, new StandardTypeConverterTimestamp(target));
-//        registerTypeConverter(java.util.Date.class, new StandardTypeConverterUtilDate(target));
-//        registerTypeConverter(LocalDate.class, new StandardTypeConverterLocalDate(target));
-//        registerTypeConverter(LocalDateTime.class, new StandardTypeConverterLocalDateTime(target));
+        registerTypeConverter(java.util.Date.class, new JsonDateConverter());
+        registerTypeConverter(LocalDate.class, new JsonLocalDateConverter());
+        registerTypeConverter(LocalDateTime.class, new JsonLocalDateTimeConverter());
 //        registerTypeConverter(ZonedDateTime.class, new StandardTypeConverterZonedDateTime(target));
 //        registerTypeConverter(LocalTime.class, new StandardTypeConverterLocalTime(target));
 //        registerTypeConverter(URL.class, new StandardTypeConverterURL());
