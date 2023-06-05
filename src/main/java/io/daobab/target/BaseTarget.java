@@ -1,5 +1,6 @@
 package io.daobab.target;
 
+import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.error.DaobabException;
 import io.daobab.model.ColumnsProvider;
 import io.daobab.model.Entity;
@@ -37,6 +38,8 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     private StatisticCollector statistic;
     private boolean statisticEnabled = false;
     private AccessProtector accessProtector;
+
+    private final JsonConverterManager jsonConverterManager = JsonConverterManager.INSTANCE;
 
     private final Map<Class<? extends ColumnsProvider>, List<TableColumn>> columnsCache = new HashMap<>();
 
@@ -179,4 +182,9 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     public List<TableColumn> getColumnsForTable(final ColumnsProvider entity) {
         return columnsCache.computeIfAbsent(entity.getClass(), e -> entity.columns());
     }
+
+    public JsonConverterManager getJsonConverterManager() {
+        return jsonConverterManager;
+    }
+
 }

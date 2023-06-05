@@ -1,5 +1,6 @@
 package io.daobab.target.database.query.frozen;
 
+import io.daobab.converter.json.conversion.EntityJsonConversion;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
@@ -26,6 +27,8 @@ public class FrozenDataBaseQueryEntity<E extends Entity> extends FrozenDataBaseQ
     private final Class<E> entityClass;
 
     private final DatabaseTypeConverter<?, ?>[] typeConverters;
+
+    private final EntityJsonConversion<E> entityJsonConversion;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public FrozenDataBaseQueryEntity(DataBaseQueryEntity<E> originalQuery) {
@@ -62,6 +65,7 @@ public class FrozenDataBaseQueryEntity<E extends Entity> extends FrozenDataBaseQ
                  NoSuchMethodException e) {
             throw new DaobabEntityCreationException(this.entityClass, e);
         }
+        entityJsonConversion=target.getJsonConverterManager().getEntityJsonConverter(entityInstance);
     }
 
     public EntitiesProvider<E> withParameters(Object... parameters) {
@@ -116,6 +120,19 @@ public class FrozenDataBaseQueryEntity<E extends Entity> extends FrozenDataBaseQ
     @Override
     public QueryType getQueryType() {
         return QueryType.ENTITY;
+    }
+
+
+    public String findOneAsJson() {
+        StringBuilder sb = new StringBuilder();
+        entityJsonConversion.toJson(sb, findOne());
+        return sb.toString();
+    }
+
+    public String findManyAsJson() {
+        StringBuilder sb = new StringBuilder();
+        entityJsonConversion.toJson(sb, "",findMany());
+        return sb.toString();
     }
 
 }

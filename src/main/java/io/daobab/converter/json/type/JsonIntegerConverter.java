@@ -1,4 +1,4 @@
-package io.daobab.converter.json;
+package io.daobab.converter.json.type;
 
 import io.daobab.converter.JsonConverter;
 

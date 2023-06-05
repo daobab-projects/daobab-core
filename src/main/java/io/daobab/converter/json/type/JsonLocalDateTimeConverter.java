@@ -1,19 +1,16 @@
-package io.daobab.converter.json;
+package io.daobab.converter.json.type;
 
 import io.daobab.converter.JsonConverter;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class JsonLocalDateTimeConverter implements JsonConverter<LocalDateTime> {
 
-    final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-ddThh:mm:ss");
+//    final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-ddThh:mm:ss");
 
     @Override
     public String toJson(LocalDateTime obj) {
-        return dateFormat.format(obj);
+        return obj.toString();
     }
 
     @Override

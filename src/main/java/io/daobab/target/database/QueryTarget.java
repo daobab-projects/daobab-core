@@ -1,5 +1,6 @@
 package io.daobab.target.database;
 
+import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.error.DaobabException;
 import io.daobab.error.MandatoryColumn;
 import io.daobab.model.*;
@@ -199,6 +200,8 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     }
 
     DatabaseDateConverter getDatabaseDateConverter();
+
+    JsonConverterManager getJsonConverterManager();
 
 
 }

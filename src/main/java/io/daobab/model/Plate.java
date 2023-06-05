@@ -72,7 +72,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
     }
 
     @SuppressWarnings("unchecked")
-    public <F> F getValue(Column<?, F, ?> df) {
+    public <F> F getValue(Field<?, F, ?> df) {
         if (df == null) return null;
         Map<String, Object> entityMap = get(df.getEntityName());
         if (entityMap == null) return null;
@@ -92,7 +92,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
     }
 
     @SuppressWarnings("unchecked")
-    public <F> F getValueOrElse(Column<?, F, ?> df, F defaultValue) {
+    public <F> F getValueOrElse(Field<?, F, ?> df, F defaultValue) {
         if (df == null) return defaultValue;
         Map<String, Object> entityMap = get(df.getEntityName());
         if (entityMap == null) return defaultValue;
@@ -103,7 +103,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
         return rv;
     }
 
-    public <F> F getValueOrElse(Column<?, F, ?> df, Class<F> clazz, F defaultValue) {
+    public <F> F getValueOrElse(Field<?, F, ?> df, Class<F> clazz, F defaultValue) {
         if (df == null) return defaultValue;
         Map<String, Object> entityMap = get(df.getEntityName());
         if (entityMap == null) return defaultValue;
@@ -219,7 +219,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
 
     @SuppressWarnings("unchecked")
     public <E extends EntityMap> E toEntity(Class<E> targetTypeClass, List<TableColumn> columns) {
-        E entity = null;
+        E entity;
 
         try {
             entity = targetTypeClass.getDeclaredConstructor().newInstance();
@@ -231,8 +231,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
                 entity.setColumnParam(col.getColumn().getFieldName(), getValue(col.getColumn()));
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
-            //TODO: exception
+            throw new DaobabException("Cannot create an Entity from a Plate",e);
         }
 
         return entity;

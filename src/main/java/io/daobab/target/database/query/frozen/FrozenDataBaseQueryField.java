@@ -1,5 +1,6 @@
 package io.daobab.target.database.query.frozen;
 
+import io.daobab.converter.json.conversion.FieldJsonConversion;
 import io.daobab.error.DaobabException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
@@ -19,6 +20,8 @@ public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBas
     private final DatabaseTypeConverter<?, ?> typeConverter;
     private final Column<?, ?, ?> column;
 
+    private final FieldJsonConversion<F> fieldJsonConversion;
+
     public FrozenDataBaseQueryField(DataBaseQueryField<E, F> originalQuery) {
         super(originalQuery);
         target.getAccessProtector().removeViolatedInfoColumns3(originalQuery.getFields(), OperationType.READ);
@@ -27,6 +30,8 @@ public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBas
         }
         column = originalQuery.getFields().get(0).getColumn();
         typeConverter = originalQuery.getTarget().getConverterManager().getConverter(column).orElse(null);
+
+        fieldJsonConversion = (FieldJsonConversion<F>) target.getJsonConverterManager().getFieldJsonConverter(column);
     }
 
     public FieldsProvider<F> withParameters(Object... parameters) {
@@ -49,7 +54,6 @@ public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBas
         };
     }
 
-
     @Override
     public List<F> findMany() {
         validateEmptyParameters();
@@ -71,6 +75,18 @@ public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBas
     @Override
     public QueryType getQueryType() {
         return QueryType.FIELD;
+    }
+
+    public String findOneAsJson() {
+        StringBuilder sb = new StringBuilder();
+        fieldJsonConversion.toJson(sb, findOne());
+        return sb.toString();
+    }
+
+    public String findManyAsJson() {
+        StringBuilder sb = new StringBuilder();
+        fieldJsonConversion.toJson(sb, findMany());
+        return sb.toString();
     }
 
 }

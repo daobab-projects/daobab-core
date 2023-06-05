@@ -1,20 +1,20 @@
-package io.daobab.converter.json;
+package io.daobab.converter.json.type;
 
 import io.daobab.converter.JsonConverter;
 
-public class JsonDoubleConverter implements JsonConverter<Double> {
+public class JsonFloatConverter implements JsonConverter<Float> {
     @Override
-    public String toJson(Double obj) {
+    public String toJson(Float obj) {
         return numberToString(obj);
     }
 
     @Override
-    public Double fromJson(String json) {
-        return Double.parseDouble(json);
+    public Float fromJson(String json) {
+        return Float.parseFloat(json);
     }
 
 
-    public static String numberToString(Double n) {
+    public static String numberToString(Float n) {
 //        if (n == null) {
 //            throw new JSONException("Null pointer");
 //        }
