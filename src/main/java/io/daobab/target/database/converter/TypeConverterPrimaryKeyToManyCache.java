@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 //E (SRC)- this entity with PK
 //E2 (DEST)- other Entity with FK to this entity. Many to One relation
-public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey<E, F, ?>, E2 extends Entity & PrimaryKey<E2, F, ?>> implements EntityListConverter<F, E2>, TypeConverterPKBasedList<F, E2>, KeyableCache<F, List<E2>>, QueryWhisperer {
+public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey<E, F, ?>, E2 extends Entity & PrimaryKey<E2, F, ?>> extends TypeConverterPKBasedList<F, E2> implements EntityListConverter<F, E2>, KeyableCache<F, List<E2>>, QueryWhisperer {
 
     private final TypeConverterPKBasedList<F, E2> rootConverter;
     private final QueryTarget target;

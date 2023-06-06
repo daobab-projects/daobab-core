@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class StandardTypeConverterPrimaryKeyEntityList<F, E extends Entity & PrimaryKey<E, F, ?>> implements TypeConverterPKBasedList<F, E> {
+public class StandardTypeConverterPrimaryKeyEntityList<F, E extends Entity & PrimaryKey<E, F, ?>> extends TypeConverterPKBasedList<F, E> {
 
     private final DatabaseTypeConverter<F, E> pkTypeConverter;
     private final E table;

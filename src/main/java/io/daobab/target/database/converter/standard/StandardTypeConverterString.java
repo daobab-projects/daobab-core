@@ -6,7 +6,7 @@ import io.daobab.target.database.converter.type.TypeConverterStringBased;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterString implements TypeConverterStringBased<String> {
+public class StandardTypeConverterString extends TypeConverterStringBased<String> {
 
     @Override
     public String readAndConvert(ResultSet rs, int columnIndex) throws SQLException {

@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @SuppressWarnings("rawtypes")
-public class StandardTypeConverterEnum<E extends Enum> implements TypeConverterStringBased<E> {
+public class StandardTypeConverterEnum<E extends Enum> extends TypeConverterStringBased<E> {
 
     private final Class<E> enumClass;
 

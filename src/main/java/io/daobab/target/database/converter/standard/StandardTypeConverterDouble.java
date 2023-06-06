@@ -5,7 +5,7 @@ import io.daobab.target.database.converter.type.TypeConverterDoubleBased;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterDouble implements TypeConverterDoubleBased<Double> {
+public class StandardTypeConverterDouble extends TypeConverterDoubleBased<Double> {
 
     @Override
     public Double readAndConvert(ResultSet rs, int columnIndex) throws SQLException {

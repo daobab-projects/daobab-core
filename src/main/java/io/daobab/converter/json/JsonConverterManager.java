@@ -75,10 +75,12 @@ public class JsonConverterManager {
         return Optional.ofNullable(jc);
     }
 
+    @SuppressWarnings({"unchecked","rawtypes"})
     public <E extends Entity> EntityJsonConversion<E> getEntityJsonConverter(E entity) {
         return entityJsonConversions.computeIfAbsent(entity, f -> new EntityJsonConversion(f, this));
     }
 
+    @SuppressWarnings("unchecked")
     public <F> FieldJsonConversion<F> getFieldJsonConverter(Field<?, F, ?> entity) {
         return (FieldJsonConversion<F>) fieldJsonConversions.computeIfAbsent(entity, f -> new FieldJsonConversion(f, this));
     }

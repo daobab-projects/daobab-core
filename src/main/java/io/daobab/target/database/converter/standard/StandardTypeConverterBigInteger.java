@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterBigInteger implements TypeConverterBigIntegerBased<BigInteger> {
+public class StandardTypeConverterBigInteger extends TypeConverterBigIntegerBased<BigInteger> {
 
     @Override
     public BigInteger readAndConvert(ResultSet rs, int columnIndex) throws SQLException {

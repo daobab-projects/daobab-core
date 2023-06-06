@@ -5,7 +5,7 @@ import io.daobab.target.database.converter.type.TypeConverterLongBased;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterLong implements TypeConverterLongBased<Long> {
+public class StandardTypeConverterLong extends TypeConverterLongBased<Long> {
 
     @Override
     public Long readAndConvert(ResultSet rs, int columnIndex) throws SQLException {

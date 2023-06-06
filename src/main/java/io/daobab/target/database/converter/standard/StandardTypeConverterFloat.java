@@ -5,7 +5,7 @@ import io.daobab.target.database.converter.type.TypeConverterFloatBased;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterFloat implements TypeConverterFloatBased<Float> {
+public class StandardTypeConverterFloat extends TypeConverterFloatBased<Float> {
 
     @Override
     public Float readAndConvert(ResultSet rs, int columnIndex) throws SQLException {

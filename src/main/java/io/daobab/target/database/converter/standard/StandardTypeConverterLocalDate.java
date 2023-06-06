@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-public class StandardTypeConverterLocalDate implements TypeConverterLocalDateBased<LocalDate> {
+public class StandardTypeConverterLocalDate extends TypeConverterLocalDateBased<LocalDate> {
 
     private final DataBaseTarget target;
 

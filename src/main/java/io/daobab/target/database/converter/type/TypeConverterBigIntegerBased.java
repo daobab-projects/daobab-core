@@ -5,9 +5,9 @@ import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public interface TypeConverterBigIntegerBased<T> extends DatabaseTypeConverter<BigInteger, T> {
+public abstract class TypeConverterBigIntegerBased<T> implements DatabaseTypeConverter<BigInteger, T> {
 
-    default BigInteger readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
+    public BigInteger readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
         return rs.getBigDecimal(columnIndex).toBigInteger();
     }
 

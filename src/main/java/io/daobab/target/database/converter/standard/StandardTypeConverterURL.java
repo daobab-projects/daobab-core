@@ -6,7 +6,7 @@ import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StandardTypeConverterURL implements TypeConverterUrlBased<URL> {
+public class StandardTypeConverterURL extends TypeConverterUrlBased<URL> {
 
     @Override
     public URL readAndConvert(ResultSet rs, int columnIndex) throws SQLException {
