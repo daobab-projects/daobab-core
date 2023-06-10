@@ -14,10 +14,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Year;
+import java.time.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +28,7 @@ public class JsonConverterManager {
     private final Map<Entity, EntityJsonConversion> entityJsonConversions = new HashMap<>();
     private final Map<Class<?>, JsonConverter<?>> typeConverters = new HashMap<>();
 
-    public static final JsonConverterManager INSTANCE=new JsonConverterManager();
+    public static final JsonConverterManager INSTANCE = new JsonConverterManager();
 
     private JsonConverterManager() {
         registerTypeConverter(BigDecimal.class, new JsonBigDecimalConverter());
@@ -59,6 +56,8 @@ public class JsonConverterManager {
         registerTypeConverter(LocalDate.class, new JsonLocalDateConverter());
         registerTypeConverter(LocalDateTime.class, new JsonLocalDateTimeConverter());
         registerTypeConverter(Year.class, new JsonLocalYearConverter());
+        registerTypeConverter(Month.class, new JsonLocalMonthConverter());
+        registerTypeConverter(DayOfWeek.class, new JsonLocalDayOfWeekConverter());
 //        registerTypeConverter(ZonedDateTime.class, new StandardTypeConverterZonedDateTime(target));
         registerTypeConverter(LocalTime.class, new JsonLocalTimeConverter());
 //        registerTypeConverter(URL.class, new StandardTypeConverterURL());
@@ -74,16 +73,22 @@ public class JsonConverterManager {
 
     @SuppressWarnings({"java:S1452", "java:S3776"})
     public Optional<JsonConverter<?>> getConverter(Field<?, ?, ?> field) {
-        JsonConverter<?> jc = fieldConverters.computeIfAbsent(field, f -> typeConverters.get(f.getFieldClass()));
+        JsonConverter<?> jc = fieldConverters.computeIfAbsent(field, f -> {
+            if (f.getFieldClass().isEnum()) {
+                return new JsonEnumConverter();
+            } else {
+                return typeConverters.get(f.getFieldClass());
+            }
+        });
         return Optional.ofNullable(jc);
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <E extends Entity> EntityJsonConversion<E> getEntityJsonConverter(E entity) {
         return entityJsonConversions.computeIfAbsent(entity, f -> new EntityJsonConversion(f, this));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public <F> FieldJsonConversion<F> getFieldJsonConverter(Field<?, F, ?> entity) {
         return (FieldJsonConversion<F>) fieldJsonConversions.computeIfAbsent(entity, f -> new FieldJsonConversion(f, this));
     }

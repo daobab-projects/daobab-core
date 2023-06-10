@@ -62,6 +62,7 @@ public interface EntityDuplicator {
         Map<String, Object> rv = new HashMap<>();
         src.forEach((key, val) -> {
 
+
             Class columnClass = val.getClass();
 //            if (val == null) continue;
             if (columnClass.equals(DictFieldType.CLASS_BIG_DECIMAL)) {

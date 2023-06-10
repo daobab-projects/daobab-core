@@ -5,6 +5,9 @@ import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -22,6 +25,10 @@ public interface DictFieldType {
     Class<BigInteger> CLASS_BIG_INTEGER = BigInteger.class;
     Class<Boolean> CLASS_BOOLEAN = Boolean.class;
     Class<Long> CLASS_LONG = Long.class;
+    Class<Integer> CLASS_INTEGER_SMALL = int.class;
     Class<Integer> CLASS_INTEGER = Integer.class;
     Class<byte[]> CLASS_BYTE_ARRAY = byte[].class;
+    Class<LocalDate> CLASS_LOCAL_DATE = LocalDate.class;
+    Class<LocalDateTime> CLASS_LOCAL_DATE_TIME = LocalDateTime.class;
+    Class<ZonedDateTime> CLASS_ZONED_DATE_TIME = ZonedDateTime.class;
 }

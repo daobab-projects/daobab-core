@@ -5,7 +5,7 @@ package io.daobab.converter;
  */
 public class JsonEscape {
 
-    static String quote(String string) {
+    public static String quote(String string) {
         if (string == null || string.length() == 0) {
             return "\"\"";
         }
