@@ -14,7 +14,6 @@ public class JsonDateConverter extends JsonConverter<Date> {
 
     private final JsonLocalDateTimeConverter jsonLocalDateTimeConverter=new JsonLocalDateTimeConverter();
 
-    final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss.SSSZ");
 
     @Override
     public void toJson(StringBuilder sb, Date obj) {
@@ -23,10 +22,6 @@ public class JsonDateConverter extends JsonConverter<Date> {
 
     @Override
     public Date fromJson(String json) {
-        try {
-            return dateFormat.parse(json);
-        } catch (ParseException e) {
-            throw new DaobabException("Date conversion failed.",e);
-        }
+        return null;
     }
 }
