@@ -26,7 +26,7 @@ public class TestEntityJsonConversion implements SakilaTables {
         actor2.setActorId(2).setFirstName("Amiga").setLastName("Rulez");
 
         sb.append("{");
-        fieldJsonConversion.toJson(sb, "myarr",Arrays.asList(actor,actor2));
+        fieldJsonConversion.toJson(sb, Arrays.asList(actor,actor2));
         sb.append("}");
         System.out.println(sb.toString());
     }

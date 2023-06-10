@@ -41,12 +41,9 @@ public class EntityJsonConversion<E extends Entity> {
         return sb;
     }
 
-    public StringBuilder toJson(StringBuilder sb, String label,List<E> entities) {
+    public StringBuilder toJson(StringBuilder sb, List<E> entities) {
         int maxSizeMinus1 = entities.size() - 1;
-        sb.append("\"")
-                .append(label)
-                .append("\":")
-                .append("[");
+        sb.append("[");
         for (int i = 0; i < entities.size(); i++) {
             toJson(sb,entities.get(i));
             if (i != maxSizeMinus1) {

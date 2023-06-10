@@ -15,7 +15,7 @@ public class JsonLocalDateConverter implements JsonConverter<LocalDate> {
 
     @Override
     public String toJson(LocalDate obj) {
-        return dateFormat.format(obj);
+        return "\""+obj.toString()+"\"";
     }
 
     @Override

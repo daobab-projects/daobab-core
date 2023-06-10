@@ -124,15 +124,17 @@ public class FrozenDataBaseQueryEntity<E extends Entity> extends FrozenDataBaseQ
 
 
     public String findOneAsJson() {
-        StringBuilder sb = new StringBuilder();
-        entityJsonConversion.toJson(sb, findOne());
-        return sb.toString();
+        if (isCacheUsed()) {
+            return cacheManager.getSingleJsonContent(getFrozenQuery(), cachedPeriod, () -> entityJsonConversion.toJson(new StringBuilder(), findOne()).toString());
+        }
+        return entityJsonConversion.toJson(new StringBuilder(), findOne()).toString();
     }
 
     public String findManyAsJson() {
-        StringBuilder sb = new StringBuilder();
-        entityJsonConversion.toJson(sb, "",findMany());
-        return sb.toString();
+        if (isCacheUsed()) {
+            return cacheManager.getManyJsonContent(getFrozenQuery(), cachedPeriod, () -> entityJsonConversion.toJson(new StringBuilder(), findMany()).toString());
+        }
+        return entityJsonConversion.toJson(new StringBuilder(), findMany()).toString();
     }
 
 }

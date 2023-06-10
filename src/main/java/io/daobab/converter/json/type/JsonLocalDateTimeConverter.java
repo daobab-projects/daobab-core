@@ -10,7 +10,7 @@ public class JsonLocalDateTimeConverter implements JsonConverter<LocalDateTime> 
 
     @Override
     public String toJson(LocalDateTime obj) {
-        return obj.toString();
+        return "\""+obj.toString()+"\"";
     }
 
     @Override

@@ -87,7 +87,7 @@ public class ImageExporter {
             }
         }
 
-        System.out.println(columns.toJSON());
+        System.out.println(columns.toJson());
     }
 
     private Entities<MetaTable> readTables(ResultSet rs) throws SQLException {

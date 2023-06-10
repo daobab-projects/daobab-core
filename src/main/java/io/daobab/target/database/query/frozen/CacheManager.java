@@ -9,7 +9,8 @@ public class CacheManager {
 
     private final Map<String, CachedObject> manyResultsCache = new ConcurrentHashMap<>();
     private final Map<String, CachedObject> singleResultCache = new ConcurrentHashMap<>();
-    private final Map<String, CachedObject> countCache = new ConcurrentHashMap<>();
+    private final Map<String, CachedObject> singleResultJsonCache = new ConcurrentHashMap<>();
+    private final Map<String, CachedObject> manyResultJsonCache = new ConcurrentHashMap<>();
 
     public <X> X getManyContent(String sqlQuery, TemporalAmount period, Supplier<X> reader) {
         return refreshIfNeeded(sqlQuery, period, reader, manyResultsCache);
@@ -19,8 +20,12 @@ public class CacheManager {
         return refreshIfNeeded(sqlQuery, period, reader, singleResultCache);
     }
 
-    public <X> X getCountContent(String sqlQuery, TemporalAmount period, Supplier<X> reader) {
-        return refreshIfNeeded(sqlQuery, period, reader, countCache);
+    public <X> X getSingleJsonContent(String sqlQuery, TemporalAmount period, Supplier<X> reader) {
+        return refreshIfNeeded(sqlQuery, period, reader, singleResultJsonCache);
+    }
+
+    public <X> X getManyJsonContent(String sqlQuery, TemporalAmount period, Supplier<X> reader) {
+        return refreshIfNeeded(sqlQuery, period, reader, manyResultJsonCache);
     }
 
     <X> X refreshIfNeeded(String sqlQuery, TemporalAmount period, Supplier<X> reader, Map<String, CachedObject> map) {

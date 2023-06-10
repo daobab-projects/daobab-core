@@ -1,6 +1,7 @@
 package io.daobab.model;
 
-import io.daobab.converter.JsonHandler;
+import io.daobab.converter.JsonProvider;
+import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.error.DaobabException;
 import io.daobab.error.MandatoryColumn;
@@ -13,7 +14,7 @@ import java.util.*;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class Plate extends HashMap<String, Map<String, Object>> implements JsonHandler, ColumnsProvider {
+public class Plate extends HashMap<String, Map<String, Object>> implements JsonProvider, ColumnsProvider {
 
     private transient List<TableColumn> fields;
 
@@ -214,7 +215,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
     }
 
     public FlatPlate toFlat() {
-        return toFlatPlate(new FlatPlate());
+        return toFlatPlate(new FlatPlateImpl(JsonConverterManager.INSTANCE.getPlateJsonConverter(this).toFlatJsonConversion()));
     }
 
     @SuppressWarnings("unchecked")
@@ -237,10 +238,10 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
         return entity;
     }
 
-    public <M extends FlatPlate> M toFlatPlate(M flatProjection) {
-        if (flatProjection == null) throw new AttemptToWriteIntoNullEntityException();
-        values().stream().filter(Objects::nonNull).forEach(flatProjection::putAll);
-        return flatProjection;
+    public <M extends FlatPlate> M toFlatPlate(M flatPlate) {
+        if (flatPlate == null) throw new AttemptToWriteIntoNullEntityException();
+        values().stream().filter(Objects::nonNull).forEach(flatPlate::putAll);
+        return flatPlate;
     }
 
     public void joinPlate(Plate otherPlate){
@@ -275,6 +276,18 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonH
                 }
             }
         }
+    }
+
+    @Override
+    public String toJson() {
+
+        if (isEmpty()) {
+            return "[]";
+        }
+
+        return JsonConverterManager.INSTANCE.getPlateJsonConverter(this)
+                .toJson(new StringBuilder(), this).toString();
+
     }
 
 }

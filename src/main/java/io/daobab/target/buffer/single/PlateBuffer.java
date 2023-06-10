@@ -1,6 +1,7 @@
 package io.daobab.target.buffer.single;
 
 import io.daobab.clone.EntityDuplicator;
+import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.error.BufferedOperationAllowedOnlyForSingleEntityColumns;
 import io.daobab.error.DaobabException;
 import io.daobab.model.*;
@@ -335,25 +336,14 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
 
     @Override
-    public String toJSON() {
-        StringBuilder rv = new StringBuilder();
-        rv.append("[");
+    public String toJson() {
 
-        int size = size();
-        int cnt = 0;
-
-        for (Plate val : this) {
-
-            cnt++;
-            boolean lastOne = cnt == size;
-
-            rv.append(val.toJSON());
-            if (!lastOne) rv.append(",");
+        if (isEmpty()) {
+            return "[]";
         }
 
-        rv.append("]");
-
-        return rv.toString();
+        return JsonConverterManager.INSTANCE.getPlateJsonConverter(get(0))
+                .toJson(new StringBuilder(), this).toString();
 
     }
 

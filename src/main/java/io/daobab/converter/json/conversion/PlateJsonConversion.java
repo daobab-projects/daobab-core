@@ -1,9 +1,13 @@
 package io.daobab.converter.json.conversion;
 
 import io.daobab.converter.json.JsonConverterManager;
+import io.daobab.error.DaobabException;
 import io.daobab.model.*;
+import io.daobab.target.buffer.single.Plates;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PlateJsonConversion {
@@ -45,12 +49,9 @@ public class PlateJsonConversion {
         return sb;
     }
 
-    public StringBuilder toJson(StringBuilder sb, String label,List<Plate> entities) {
+    public StringBuilder toJson(StringBuilder sb, Plates entities) {
         int maxSizeMinus1 = entities.size() - 1;
-        sb.append("\"")
-                .append(label)
-                .append("\":")
-                .append("[");
+        sb.append("[");
         for (int i = 0; i < entities.size(); i++) {
             toJson(sb,entities.get(i));
             if (i != maxSizeMinus1) {
@@ -59,5 +60,16 @@ public class PlateJsonConversion {
         }
         sb.append("]");
         return sb;
+    }
+
+    public Map<String,FieldJsonConversion> toFlatJsonConversion(){
+        Map<String,FieldJsonConversion> jsonConverters=new HashMap<>();
+        if (fieldJsonConversions.size()<fields.size()){
+            throw new DaobabException("Json converters doesn't match with fields number");
+        }
+        for (int i = 0; i < fields.size(); i++) {
+            jsonConverters.put(fields.get(i).getFieldName(), fieldJsonConversions.get(i));
+        }
+        return jsonConverters;
     }
 }
