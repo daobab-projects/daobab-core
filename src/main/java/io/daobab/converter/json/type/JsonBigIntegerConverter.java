@@ -4,10 +4,10 @@ import io.daobab.converter.JsonConverter;
 
 import java.math.BigInteger;
 
-public class JsonBigIntegerConverter implements JsonConverter<BigInteger> {
+public class JsonBigIntegerConverter extends JsonConverter<BigInteger> {
     @Override
-    public String toJson(BigInteger obj) {
-        return obj.toString();
+    public void toJson(StringBuilder sb, BigInteger obj) {
+        sb.append(obj.toString());
     }
 
     @Override

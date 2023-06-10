@@ -3,14 +3,17 @@ package io.daobab.converter.json.type;
 import io.daobab.converter.JsonConverter;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.concurrent.TimeUnit;
 
-public class JsonLocalDateTimeConverter implements JsonConverter<LocalDateTime> {
-
-//    final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-ddThh:mm:ss");
+public class JsonLocalDateTimeConverter extends JsonConverter<LocalDateTime> {
 
     @Override
-    public String toJson(LocalDateTime obj) {
-        return "\""+obj.toString()+"\"";
+    public void toJson(StringBuilder sb, LocalDateTime obj) {
+        sb.append(QUOTE);
+        appendDate(sb, obj.getYear(), obj.getMonthValue(), obj.getDayOfMonth());
+        appendTime(sb,obj.getHour(),obj.getMinute(),obj.getSecond(), obj.getNano());
+        sb.append(QUOTE);
     }
 
     @Override

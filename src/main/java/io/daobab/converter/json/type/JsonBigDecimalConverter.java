@@ -3,12 +3,11 @@ package io.daobab.converter.json.type;
 import io.daobab.converter.JsonConverter;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
-public class JsonBigDecimalConverter implements JsonConverter<BigDecimal> {
+public class JsonBigDecimalConverter extends JsonConverter<BigDecimal> {
     @Override
-    public String toJson(BigDecimal obj) {
-        return obj.toPlainString();
+    public void toJson(StringBuilder sb, BigDecimal obj) {
+        sb.append(obj.toPlainString());
     }
 
     @Override

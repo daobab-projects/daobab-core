@@ -2,10 +2,10 @@ package io.daobab.converter.json.type;
 
 import io.daobab.converter.JsonConverter;
 
-public class JsonBooleanConverter implements JsonConverter<Boolean> {
+public class JsonBooleanConverter extends JsonConverter<Boolean> {
     @Override
-    public String toJson(Boolean obj) {
-        return String.valueOf(obj);
+    public void toJson(StringBuilder sb, Boolean obj) {
+        sb.append(obj);
     }
 
     @Override

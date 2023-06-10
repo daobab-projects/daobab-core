@@ -4,19 +4,74 @@ import io.daobab.model.Entity;
 import io.daobab.model.Field;
 import io.daobab.target.statistic.column.RelatedEntity;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface JsonConverter<F> {
+public abstract class JsonConverter<F> {
 
-    String toJson(F obj);
+    protected static final String PAUSE="-";
+    protected static final String COLON=":";
+    protected static final String QUOTE="\"";
 
-    F fromJson(String json);
+    public abstract void toJson(StringBuilder sb, F obj);
 
-    default <E extends Entity> void toJson(StringBuilder sb, Field<E, F, RelatedEntity> field, RelatedEntity entity) {
+    public abstract F fromJson(String json);
+
+    public <E extends Entity> void toJson(StringBuilder sb, Field<E, F, RelatedEntity> field, RelatedEntity entity) {
         F value = field.getValue(entity);
         String fieldName = field.getFieldName();
-        sb.append(fieldName).append(":").append(value == null ? "null" : toJson(value));
+        sb.append(fieldName).append(":");//
+        if (value == null){
+            sb.append("null");
+        }else{
+            toJson(sb,value);
+        }
+    }
+
+    protected void appendDate(StringBuilder sb,int year, int month,int day){
+        sb.append(year);
+        sb.append(PAUSE);
+        if (month<10){
+            sb.append("0");
+        }
+        sb.append(month);
+        sb.append(PAUSE);
+        if (day<10){
+            sb.append("0");
+        }
+        sb.append(day);
+    }
+
+    protected void appendTime(StringBuilder sb,int hour, int minute,int second,long nano){
+        if (hour<10){
+            sb.append("0");
+        }
+        sb.append(hour);
+        sb.append(COLON);
+        if (minute<10){
+            sb.append("0");
+        }
+        sb.append(minute);
+        sb.append(COLON);
+        if (second<10){
+            sb.append("0");
+        }
+        sb.append(second);
+        sb.append(".");
+
+        long milliseconds= TimeUnit.NANOSECONDS.toMillis(nano);
+
+        if (milliseconds<100){
+            if (milliseconds<10){
+                sb.append("00");
+            }else{
+                sb.append("0");
+            }
+        }
+        sb.append(milliseconds);
+        sb.append("Z");
     }
 
 

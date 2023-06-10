@@ -12,6 +12,7 @@ import io.daobab.model.Plate;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -49,9 +50,9 @@ public class JsonConverterManager {
         registerTypeConverter(short.class, new JsonShortConverter());
         registerTypeConverter(Long.class, new JsonLongConverter());
         registerTypeConverter(long.class, new JsonLongConverter());
-//        registerTypeConverter(java.sql.Date.class, new StandardTypeConverterSqlDate(target));
+        registerTypeConverter(java.sql.Date.class, new JsonSqlDateConverter());
         registerTypeConverter(String.class, new JsonStringConverter());
-//        registerTypeConverter(Time.class, new StandardTypeConverterTime(target));
+        registerTypeConverter(Time.class, new JsonSqlTimeConverter());
         registerTypeConverter(Timestamp.class, new JsonTimestampConverter());
         registerTypeConverter(java.util.Date.class, new JsonDateConverter());
         registerTypeConverter(LocalDate.class, new JsonLocalDateConverter());

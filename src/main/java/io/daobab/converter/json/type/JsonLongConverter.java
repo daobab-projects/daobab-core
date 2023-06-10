@@ -2,10 +2,10 @@ package io.daobab.converter.json.type;
 
 import io.daobab.converter.JsonConverter;
 
-public class JsonLongConverter implements JsonConverter<Long> {
+public class JsonLongConverter extends JsonConverter<Long> {
     @Override
-    public String toJson(Long obj) {
-        return String.valueOf(obj);
+    public void toJson(StringBuilder sb, Long obj) {
+        sb.append(obj);
     }
 
     @Override

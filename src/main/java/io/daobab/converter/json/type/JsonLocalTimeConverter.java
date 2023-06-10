@@ -3,13 +3,17 @@ package io.daobab.converter.json.type;
 import io.daobab.converter.JsonConverter;
 
 import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.util.concurrent.TimeUnit;
 
-public class JsonLocalTimeConverter implements JsonConverter<LocalTime> {
+public class JsonLocalTimeConverter extends JsonConverter<LocalTime> {
 
 
     @Override
-    public String toJson(LocalTime obj) {
-        return "\""+obj.toString()+"\"";
+    public void toJson(StringBuilder sb, LocalTime obj) {
+        sb.append(QUOTE);
+        appendTime(sb,obj.getHour(),obj.getMinute(),obj.getSecond(), obj.getNano());
+        sb.append(QUOTE);
     }
 
     @Override

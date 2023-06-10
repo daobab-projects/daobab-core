@@ -1,21 +1,17 @@
 package io.daobab.converter.json.type;
 
 import io.daobab.converter.JsonConverter;
-import io.daobab.error.DaobabException;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
 
-public class JsonLocalDateConverter implements JsonConverter<LocalDate> {
+public class JsonLocalDateConverter extends JsonConverter<LocalDate> {
 
-    final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
-    public String toJson(LocalDate obj) {
-        return "\""+obj.toString()+"\"";
+    public void toJson(StringBuilder sb, LocalDate obj) {
+        sb.append(QUOTE);
+        appendDate(sb, obj.getYear(), obj.getMonthValue(), obj.getDayOfMonth());
+        sb.append(QUOTE);
     }
 
     @Override

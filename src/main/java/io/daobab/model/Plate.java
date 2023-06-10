@@ -64,7 +64,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         if (fields == null || fields.isEmpty()) {
             throw new MandatoryColumn();
         }
-        this.fields = fields;
+        this.fields = new ArrayList<>(fields);
         fields.forEach(c -> setValue(c, null));
     }
 

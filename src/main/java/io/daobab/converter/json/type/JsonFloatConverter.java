@@ -2,10 +2,10 @@ package io.daobab.converter.json.type;
 
 import io.daobab.converter.JsonConverter;
 
-public class JsonFloatConverter implements JsonConverter<Float> {
+public class JsonFloatConverter extends JsonConverter<Float> {
     @Override
-    public String toJson(Float obj) {
-        return numberToString(obj);
+    public void toJson(StringBuilder sb, Float obj) {
+        sb.append(numberToString(obj));
     }
 
     @Override

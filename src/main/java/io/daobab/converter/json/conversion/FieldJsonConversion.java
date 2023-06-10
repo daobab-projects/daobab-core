@@ -27,7 +27,12 @@ public class FieldJsonConversion<F> {
 
     public StringBuilder toJson(StringBuilder sb, F value) {
         sb.append(fieldName).append(":");
-        return sb.append(value == null ? "null" : jsonConverter.toJson(value));
+        if (value==null){
+            sb.append("null");
+        }else{
+            jsonConverter.toJson(sb,value);
+        }
+        return sb;
     }
 
     public StringBuilder toJson(StringBuilder sb, List<F> values) {
@@ -38,7 +43,8 @@ public class FieldJsonConversion<F> {
     }
 
     private StringBuilder toJsonNoName(StringBuilder sb, F value) {
-        return sb.append(jsonConverter.toJson(value));
+        jsonConverter.toJson(sb,value);
+        return sb;
     }
 
     private StringBuilder toJsonNoName(StringBuilder sb, List<F> values) {
