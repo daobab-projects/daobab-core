@@ -60,7 +60,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         }
     }
 
-    public Plate(List<TableColumn> fields) {
+    public Plate(Collection<TableColumn> fields) {
         if (fields == null || fields.isEmpty()) {
             throw new MandatoryColumn();
         }

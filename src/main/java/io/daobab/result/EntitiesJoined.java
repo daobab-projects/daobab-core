@@ -20,15 +20,18 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
     private final MultiEntityTarget target;
     private final List<Plate> rows;
-    private Plate rootPlate = new Plate();
+    private final Plate rootPlate;
 
     public EntitiesJoined(MultiEntityTarget target, List<? extends Entity> columnsProviders, Query<?, ?, ?> query) {
         this.target = target;
         rows = new ArrayList<>(columnsProviders.size());
+
         columnsProviders.forEach(entity -> rows.add(new Plate(entity)));
         if (!rows.isEmpty()) {
             rootPlate = rows.get(0);
             join(query);
+        }else{
+            rootPlate = new Plate(query.getFields());
         }
     }
 

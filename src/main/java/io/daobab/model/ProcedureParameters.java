@@ -5,6 +5,7 @@ import io.daobab.error.MandatoryColumn;
 import io.daobab.model.dummy.DummyColumnTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,32 +13,32 @@ import java.util.List;
  */
 public class ProcedureParameters {
 
-    private final Plate plate = new Plate();
+    private final Plate plate;
 
-    private final List<Column<?, ?, ?>> columns;
+    private final List<Column<?, ?, ?>> columns = new ArrayList<>();
     private final int length;
 
     public <E extends Entity> ProcedureParameters(E entity) {
-        this(entity.columns().size());
+        this.length = entity.columns().size();
         for (int i = 0; i < entity.columns().size(); i++) {
-            specifyValue(i + 1, entity.columns().get(i).getColumn());
+            Column<?, ?, ?> col = entity.columns().get(i).getColumn();
+            specifyValue(i + 1, col);
         }
+        plate = new Plate(entity.columns());
     }
 
-    public <E extends Entity> ProcedureParameters(Column<?, ?, ?>... columns) {
-        this(columns == null ? 0 : columns.length);
+    public <E extends Entity> ProcedureParameters(TableColumn... columns) {
         if (columns == null) {
             throw new MandatoryColumn();
         }
+        this.length = columns.length;
+        List<TableColumn> tableColumns = Arrays.asList(columns);
         for (int i = 0; i < columns.length; i++) {
-            specifyValue(i + 1, columns[i]);
+            specifyValue(i + 1, columns[i].getColumn());
         }
+        plate = new Plate(tableColumns);
     }
 
-    public ProcedureParameters(int length) {
-        this.length = length;
-        columns = new ArrayList<>(length);
-    }
 
     public <F> F getValue(Column<?, F, ?> column) {
         return plate.getValue(column);

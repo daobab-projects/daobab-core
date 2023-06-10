@@ -152,7 +152,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     }
 
     public Plate getPlate(int i, Collection<TableColumn> chosenColumns) {
-        Plate rv = new Plate();
+        Plate rv = new Plate(chosenColumns);
 
         int entityLocation = locations.get(i);
         int page = entityLocation >> pageMaxCapacityBytes;

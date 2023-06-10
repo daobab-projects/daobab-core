@@ -121,7 +121,7 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
         List<Plate> rv = new ArrayList<>();
         try {
             for (Map<String, Map<String, Object>> map : listMap) {
-                Plate entity = new Plate();
+                Plate entity = new Plate(query.getFields());
                 entity.putAll(map);
                 rv.add(entity);
             }
@@ -140,7 +140,7 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
             throw new RemoteDaobabException(response);
         }
         try {
-            Plate rv = new Plate();
+            Plate rv = new Plate(query.getFields());
             rv.putAll((Map<String, Map<String, Object>>) response.getContent());
             return rv;
         } catch (Exception e) {
