@@ -18,19 +18,19 @@ public class FieldJsonConversion<F> {
         this(field, JsonConverterManager.INSTANCE);
     }
 
+    @SuppressWarnings("unchecked")
     public FieldJsonConversion(Field<?, F, ?> field, JsonConverterManager manager) {
         targetField = field;
         fieldName = "\"" + field.getFieldName() + "\"";
         jsonConverter = (JsonConverter<F>) manager.getConverter(field).orElseThrow(() -> new DaobabException("Cannot find Json converter for %s", field.getFieldClass()));
     }
 
-
     public StringBuilder toJson(StringBuilder sb, F value) {
         sb.append(fieldName).append(":");
-        if (value==null){
+        if (value == null) {
             sb.append("null");
-        }else{
-            jsonConverter.toJson(sb,value);
+        } else {
+            jsonConverter.toJson(sb, value);
         }
         return sb;
     }
@@ -42,12 +42,11 @@ public class FieldJsonConversion<F> {
         return sb;
     }
 
-    private StringBuilder toJsonNoName(StringBuilder sb, F value) {
-        jsonConverter.toJson(sb,value);
-        return sb;
+    private void toJsonNoName(StringBuilder sb, F value) {
+        jsonConverter.toJson(sb, value);
     }
 
-    private StringBuilder toJsonNoName(StringBuilder sb, List<F> values) {
+    private void toJsonNoName(StringBuilder sb, List<F> values) {
         int maxSizeMinus1 = values.size() - 1;
         for (int i = 0; i < values.size(); i++) {
             toJsonNoName(sb, values.get(i));
@@ -55,6 +54,5 @@ public class FieldJsonConversion<F> {
                 sb.append(",");
             }
         }
-        return sb;
     }
 }

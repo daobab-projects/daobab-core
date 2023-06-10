@@ -2,9 +2,9 @@ package io.daobab.converter.json.type;
 
 import io.daobab.converter.JsonConverter;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.sql.Date;
 
 public class JsonSqlDateConverter extends JsonConverter<Date> {
 

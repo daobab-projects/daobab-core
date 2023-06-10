@@ -3,7 +3,6 @@ package io.daobab.converter.json.type;
 import io.daobab.converter.JsonConverter;
 
 import java.time.Month;
-import java.time.Year;
 
 public class JsonLocalMonthConverter extends JsonConverter<Month> {
 

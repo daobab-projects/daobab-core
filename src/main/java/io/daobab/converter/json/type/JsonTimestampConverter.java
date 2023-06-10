@@ -3,8 +3,6 @@ package io.daobab.converter.json.type;
 import io.daobab.converter.JsonConverter;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 public class JsonTimestampConverter extends JsonConverter<Timestamp> {
 

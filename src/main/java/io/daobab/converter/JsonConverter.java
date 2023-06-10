@@ -19,6 +19,7 @@ public abstract class JsonConverter<F> {
 
     public abstract F fromJson(String json);
 
+    @SuppressWarnings("rawtypes")
     public <E extends Entity> void toJson(StringBuilder sb, Field<E, F, RelatedEntity> field, RelatedEntity entity) {
         F value = field.getValue(entity);
         String fieldName = field.getFieldName();

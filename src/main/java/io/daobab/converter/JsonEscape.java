@@ -3,7 +3,7 @@ package io.daobab.converter;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface JsonEscape {
+public class JsonEscape {
 
     static String quote(String string) {
         if (string == null || string.length() == 0) {

@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Year;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -57,6 +58,7 @@ public class JsonConverterManager {
         registerTypeConverter(java.util.Date.class, new JsonDateConverter());
         registerTypeConverter(LocalDate.class, new JsonLocalDateConverter());
         registerTypeConverter(LocalDateTime.class, new JsonLocalDateTimeConverter());
+        registerTypeConverter(Year.class, new JsonLocalYearConverter());
 //        registerTypeConverter(ZonedDateTime.class, new StandardTypeConverterZonedDateTime(target));
         registerTypeConverter(LocalTime.class, new JsonLocalTimeConverter());
 //        registerTypeConverter(URL.class, new StandardTypeConverterURL());

@@ -11,22 +11,26 @@ import java.util.stream.Collectors;
 
 public class EntityJsonConversion<E extends Entity> {
 
+    @SuppressWarnings("rawtypes")
     private final List<FieldJsonConversion> fieldJsonConversions;
+
+    @SuppressWarnings("rawtypes")
     private final List<Field> fields;
 
 
-
     public EntityJsonConversion(E entity) {
-        this(entity,JsonConverterManager.INSTANCE);}
+        this(entity, JsonConverterManager.INSTANCE);
+    }
 
-    public EntityJsonConversion(E entity,JsonConverterManager jsonConverterManager) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public EntityJsonConversion(E entity, JsonConverterManager jsonConverterManager) {
         fields = entity.columns().stream().map(TableColumn::getColumn).collect(Collectors.toList());
         fieldJsonConversions = entity.columns().stream().map(TableColumn::getColumn).map(c -> new FieldJsonConversion(c, jsonConverterManager)).collect(Collectors.toList());
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public StringBuilder toJson(StringBuilder sb, E entity) {
-        if (entity==null) return sb;
+        if (entity == null) return sb;
         int maxSizeMinus1 = fields.size() - 1;
         sb.append("{");
         for (int i = 0; i < fields.size(); i++) {
@@ -45,7 +49,7 @@ public class EntityJsonConversion<E extends Entity> {
         int maxSizeMinus1 = entities.size() - 1;
         sb.append("[");
         for (int i = 0; i < entities.size(); i++) {
-            toJson(sb,entities.get(i));
+            toJson(sb, entities.get(i));
             if (i != maxSizeMinus1) {
                 sb.append(",");
             }

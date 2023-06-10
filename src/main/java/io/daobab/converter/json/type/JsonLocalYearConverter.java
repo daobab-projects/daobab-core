@@ -2,7 +2,6 @@ package io.daobab.converter.json.type;
 
 import io.daobab.converter.JsonConverter;
 
-import java.time.LocalDate;
 import java.time.Year;
 
 public class JsonLocalYearConverter extends JsonConverter<Year> {

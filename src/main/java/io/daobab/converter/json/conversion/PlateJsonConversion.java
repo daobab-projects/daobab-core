@@ -12,29 +12,33 @@ import java.util.stream.Collectors;
 
 public class PlateJsonConversion {
 
+    @SuppressWarnings("rawtypes")
     private final List<FieldJsonConversion> fieldJsonConversions;
+
+    @SuppressWarnings("rawtypes")
     private final List<Field> fields;
 
     public PlateJsonConversion(List<TableColumn> fields1) {
-        this(fields1,JsonConverterManager.INSTANCE);
+        this(fields1, JsonConverterManager.INSTANCE);
     }
 
     public PlateJsonConversion(Plate plate) {
-        this(plate.columns(),JsonConverterManager.INSTANCE);
+        this(plate.columns(), JsonConverterManager.INSTANCE);
     }
 
-    public PlateJsonConversion(Plate plate,JsonConverterManager jsonConverterManager) {
-        this(plate.columns(),jsonConverterManager);
+    public PlateJsonConversion(Plate plate, JsonConverterManager jsonConverterManager) {
+        this(plate.columns(), jsonConverterManager);
     }
 
-    public PlateJsonConversion(List<TableColumn> fields1,JsonConverterManager jsonConverterManager) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public PlateJsonConversion(List<TableColumn> fields1, JsonConverterManager jsonConverterManager) {
         fields = fields1.stream().map(TableColumn::getColumn).collect(Collectors.toList());
         fieldJsonConversions = fields1.stream().map(TableColumn::getColumn).map(c -> new FieldJsonConversion(c, jsonConverterManager)).collect(Collectors.toList());
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public StringBuilder toJson(StringBuilder sb, Plate entity) {
-        if (entity==null) return sb;
+        if (entity == null) return sb;
         int maxSizeMinus1 = fields.size() - 1;
         sb.append("{");
         for (int i = 0; i < fields.size(); i++) {
@@ -53,7 +57,7 @@ public class PlateJsonConversion {
         int maxSizeMinus1 = entities.size() - 1;
         sb.append("[");
         for (int i = 0; i < entities.size(); i++) {
-            toJson(sb,entities.get(i));
+            toJson(sb, entities.get(i));
             if (i != maxSizeMinus1) {
                 sb.append(",");
             }
@@ -62,9 +66,10 @@ public class PlateJsonConversion {
         return sb;
     }
 
-    public Map<String,FieldJsonConversion> toFlatJsonConversion(){
-        Map<String,FieldJsonConversion> jsonConverters=new HashMap<>();
-        if (fieldJsonConversions.size()<fields.size()){
+    @SuppressWarnings("rawtypes")
+    public Map<String, FieldJsonConversion> toFlatJsonConversion() {
+        Map<String, FieldJsonConversion> jsonConverters = new HashMap<>();
+        if (fieldJsonConversions.size() < fields.size()) {
             throw new DaobabException("Json converters doesn't match with fields number");
         }
         for (int i = 0; i < fields.size(); i++) {
