@@ -2,10 +2,7 @@ package io.daobab.model;
 
 import io.daobab.converter.JsonProvider;
 import io.daobab.converter.json.JsonConverterManager;
-import io.daobab.error.AttemptToWriteIntoNullEntityException;
-import io.daobab.error.DaobabException;
-import io.daobab.error.MandatoryColumn;
-import io.daobab.error.NullParameter;
+import io.daobab.error.*;
 import io.daobab.statement.function.type.ColumnFunction;
 
 import java.lang.reflect.InvocationTargetException;
@@ -166,7 +163,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     @SuppressWarnings({"unchecked","rawtypes"})
     public <E extends Entity> E getEntity(Class<E> entityClass) {
         if (entityClass == null) throw new NullParameter("entityClass");
-        E rv = null;
+        E rv;
         try {
             rv = entityClass.getDeclaredConstructor().newInstance();
 
@@ -174,7 +171,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
                 column.getColumn().setValue((EntityRelation) rv, getValue(column.getColumn()));
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
+            throw new DaobabEntityCreationException(entityClass, e);
         }
 
         return rv;

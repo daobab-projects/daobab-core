@@ -1,12 +1,11 @@
 package io.daobab.clone;
 
+import io.daobab.converter.duplicator.DuplicatorManager;
 import io.daobab.dict.DictFieldType;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.error.DaobabException;
-import io.daobab.model.Column;
 import io.daobab.model.EntityMap;
 import io.daobab.model.Plate;
-import io.daobab.model.TableColumn;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -18,9 +17,12 @@ import java.util.*;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface EntityDuplicator {
+public final class EntityDuplicator {
 
-    static <E extends EntityMap> List<E> cloneEntityList(Collection<E> srcCollection) {
+    private EntityDuplicator() {
+    }
+
+    public static <E extends EntityMap> List<E> cloneEntityList(Collection<E> srcCollection) {
         List<E> rv = new ArrayList<>(srcCollection.size());
         int counter = 0;
         for (E src : srcCollection) {
@@ -30,7 +32,7 @@ public interface EntityDuplicator {
         return rv;
     }
 
-    static List<Plate> clonePlateList(Collection<Plate> srcCollection) {
+    public static List<Plate> clonePlateList(Collection<Plate> srcCollection) {
         int counter = 0;
         List<Plate> rv = new ArrayList<>(srcCollection.size());
         for (Plate src : srcCollection) {
@@ -58,7 +60,7 @@ public interface EntityDuplicator {
         return clone;
     }
 
-    static Map<String, Object> cloneMap(Map<String, Object> src) {
+    public static Map<String, Object> cloneMap(Map<String, Object> src) {
         Map<String, Object> rv = new HashMap<>();
         src.forEach((key, val) -> {
 
@@ -102,56 +104,7 @@ public interface EntityDuplicator {
     }
 
     static <E extends EntityMap> E cloneEntity(E src) {
-        if (src.columns().isEmpty()) {
-            throw new DaobabException("Entity to clone need to have at least one column.");
-        }
-        E clone;
-        try {
-            clone = (E) src.getClass().getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                 InvocationTargetException e) {
-            throw new DaobabEntityCreationException(src.getClass(), e);
-        }
-
-        for (TableColumn tableColumn : src.columns()) {
-            Column column = tableColumn.getColumn();
-
-            Class columnClass = column.getFieldClass();
-
-            Object value = column.getThisValue();
-            if (value == null) continue;
-            if (columnClass.equals(DictFieldType.CLASS_BIG_DECIMAL)) {
-                clone.setColumnParam(column.getFieldName(), new BigDecimal(value.toString()));
-            } else if (columnClass.equals(DictFieldType.CLASS_STRING)) {
-                clone.setColumnParam(column.getFieldName(), value.toString());
-            } else if (columnClass.equals(DictFieldType.CLASS_DATE_UTIL)) {
-                clone.setColumnParam(column.getFieldName(), new Date(((Date) value).getTime()));
-            } else if (columnClass.equals(DictFieldType.CLASS_DATE_SQL)) {
-                clone.setColumnParam(column.getFieldName(), new java.sql.Date(((java.sql.Date) value).getTime()));
-            } else if (columnClass.equals(DictFieldType.CLASS_TIMESTAMP_SQL)) {
-                clone.setColumnParam(column.getFieldName(), new Timestamp(((Timestamp) value).getTime()));
-            } else if (columnClass.equals(DictFieldType.CLASS_TIME_SQL)) {
-                clone.setColumnParam(column.getFieldName(), new Time(((Time) value).getTime()));
-            } else if (columnClass.equals(DictFieldType.CLASS_BOOLEAN)) {
-                clone.setColumnParam(column.getFieldName(), (boolean) value);
-            } else if (columnClass.equals(DictFieldType.CLASS_BIG_INTEGER)) {
-                clone.setColumnParam(column.getFieldName(), new BigInteger(value.toString()));
-            } else if (columnClass.equals(DictFieldType.CLASS_DOUBLE)) {
-                clone.setColumnParam(column.getFieldName(), Double.valueOf(value.toString()));
-            } else if (columnClass.equals(DictFieldType.CLASS_FLOAT)) {
-                clone.setColumnParam(column.getFieldName(), Float.valueOf(value.toString()));
-            } else if (columnClass.equals(DictFieldType.CLASS_LONG)) {
-                clone.setColumnParam(column.getFieldName(), Long.valueOf(value.toString()));
-            } else if (columnClass.equals(DictFieldType.CLASS_INTEGER)) {
-                clone.setColumnParam(column.getFieldName(), Integer.valueOf(value.toString()));
-            } else if (columnClass.equals(DictFieldType.CLASS_BYTE_ARRAY)) {
-                clone.setColumnParam(column.getFieldName(), ((byte[]) value).clone());
-            } else if (columnClass.isInstance(EntityMap.class)) {
-                clone.setColumnParam(column.getFieldName(), EntityDuplicator.cloneEntity((EntityMap) value));
-            }
-        }
-
-        return clone;
+        return DuplicatorManager.INSTANCE.getEntityDuplication(src).duplicate(src);
     }
 
 }

@@ -6,7 +6,6 @@ import java.time.LocalTime;
 
 public class JsonLocalTimeConverter extends JsonConverter<LocalTime> {
 
-
     @Override
     public void toJson(StringBuilder sb, LocalTime obj) {
         sb.append(QUOTE);

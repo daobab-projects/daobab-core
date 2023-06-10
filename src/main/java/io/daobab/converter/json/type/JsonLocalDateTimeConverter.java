@@ -10,7 +10,8 @@ public class JsonLocalDateTimeConverter extends JsonConverter<LocalDateTime> {
     public void toJson(StringBuilder sb, LocalDateTime obj) {
         sb.append(QUOTE);
         appendDate(sb, obj.getYear(), obj.getMonthValue(), obj.getDayOfMonth());
-        appendTime(sb,obj.getHour(),obj.getMinute(),obj.getSecond(), obj.getNano());
+        sb.append("T");
+        appendTime(sb, obj.getHour(), obj.getMinute(), obj.getSecond(), obj.getNano());
         sb.append(QUOTE);
     }
 

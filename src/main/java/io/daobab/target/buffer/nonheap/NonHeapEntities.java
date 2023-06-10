@@ -250,9 +250,8 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
             }
             return rv;
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
+            throw new DaobabEntityCreationException(entityClass, e);
         }
-        return null;
     }
 
     public List<E> finalFilter(Query<E, ?, ?> query) {

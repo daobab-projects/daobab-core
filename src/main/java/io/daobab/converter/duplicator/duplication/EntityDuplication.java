@@ -1,8 +1,7 @@
 package io.daobab.converter.duplicator.duplication;
 
 import io.daobab.converter.duplicator.DuplicatorManager;
-import io.daobab.converter.json.JsonConverterManager;
-import io.daobab.converter.json.conversion.FieldJsonConversion;
+import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.model.Entity;
 import io.daobab.model.EntityRelation;
 import io.daobab.model.Field;
@@ -41,13 +40,10 @@ public class EntityDuplication<E extends Entity> {
 
         E rv;
         try {
-            rv=(E)entity.getEntityClass().getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            rv = (E) entity.getEntityClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new DaobabEntityCreationException(entity.getEntityClass(), e);
         }
 
         for (int i = 0; i < fields.size(); i++) {
