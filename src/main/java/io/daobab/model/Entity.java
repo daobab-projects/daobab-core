@@ -1,12 +1,13 @@
 package io.daobab.model;
 
+import io.daobab.converter.JsonProvider;
 import io.daobab.target.QueryHandler;
 import io.daobab.target.Target;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface Entity extends ColumnsProvider {
+public interface Entity extends ColumnsProvider, JsonProvider {
 
     String getEntityName();
 

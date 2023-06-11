@@ -1,5 +1,6 @@
 package io.daobab.model;
 
+import io.daobab.converter.JsonProvider;
 import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.target.QueryHandler;
 import io.daobab.target.Target;
@@ -9,11 +10,22 @@ import java.util.HashMap;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public abstract class Table extends HashMap<String, Object> implements EntityMap {
+public abstract class Table extends HashMap<String, Object> implements EntityMap, JsonProvider {
 
     @Override
     public String toJson() {
         return JsonConverterManager.INSTANCE.getEntityJsonConverter(this).toJson(new StringBuilder(), this).toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <X> X getColumnParam(String key) {
+        return (X) get(key);
+    }
+
+    @Override
+    public <X> void setColumnParam(String key, X param) {
+        put(key, param);
     }
 
     @Override
