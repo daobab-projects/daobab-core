@@ -2,6 +2,8 @@ package io.daobab.model;
 
 import io.daobab.converter.json.conversion.FieldJsonConversion;
 import io.daobab.error.DaobabException;
+import io.daobab.target.QueryHandler;
+import io.daobab.target.Target;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,12 +32,52 @@ public class FlatPlateImpl extends HashMap<String,Object> implements FlatPlate{
 
     @Override
     public String toJson() {
-        StringBuilder sb=new StringBuilder();
-        for (Entry<String,Object> entry:entrySet()){
-            String key=entry.getKey();
+        StringBuilder sb = new StringBuilder();
+        for (Entry<String, Object> entry : entrySet()) {
+            String key = entry.getKey();
             sb.append(key).append(":");
-            plateJsonConversion.get(key).toJson(sb,entry.getValue());
+            plateJsonConversion.get(key).toJson(sb, entry.getValue());
         }
         return sb.toString();
+    }
+
+    @Override
+    public Class<? extends Entity> getEntityClass() {
+        return this.getClass();
+    }
+
+    @Override
+    public <T extends Target & QueryHandler> void beforeInsert(T target) {
+
+    }
+
+    @Override
+    public <T extends Target & QueryHandler> void beforeUpdate(T target) {
+
+    }
+
+    @Override
+    public <T extends Target & QueryHandler> void beforeDelete(T target) {
+
+    }
+
+    @Override
+    public <T extends Target & QueryHandler> void afterSelect(T target) {
+
+    }
+
+    @Override
+    public <T extends Target & QueryHandler> void afterInsert(T target) {
+
+    }
+
+    @Override
+    public <T extends Target & QueryHandler> void afterUpdate(T target) {
+
+    }
+
+    @Override
+    public <T extends Target & QueryHandler> void afterDelete(T target) {
+
     }
 }

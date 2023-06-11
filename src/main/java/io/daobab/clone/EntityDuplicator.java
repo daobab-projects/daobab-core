@@ -23,6 +23,15 @@ public final class EntityDuplicator {
     private EntityDuplicator() {
     }
 
+    public static <E extends Entity> E createEntity(Class<E> entityClass) {
+        try {
+            return entityClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
+            throw new DaobabEntityCreationException(entityClass, e);
+        }
+    }
+
     public static <E extends EntityMap> List<E> cloneEntityList(Collection<E> srcCollection) {
         List<E> rv = new ArrayList<>(srcCollection.size());
         int counter = 0;
