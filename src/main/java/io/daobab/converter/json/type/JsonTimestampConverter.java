@@ -6,16 +6,16 @@ import java.sql.Timestamp;
 
 public class JsonTimestampConverter extends JsonConverter<Timestamp> {
 
-    private final JsonLocalDateTimeConverter jsonLocalDateTimeConverter=new JsonLocalDateTimeConverter();
+    private final JsonLocalDateTimeConverter jsonLocalDateTimeConverter = new JsonLocalDateTimeConverter();
 
     @Override
     public void toJson(StringBuilder sb, Timestamp obj) {
-        jsonLocalDateTimeConverter.toJson(sb,obj.toLocalDateTime());
+        jsonLocalDateTimeConverter.toJson(sb, obj.toLocalDateTime());
     }
 
     @Override
     public Timestamp fromJson(String json) {
-        return null;
+        return Timestamp.valueOf(jsonLocalDateTimeConverter.fromJson(json));
 
     }
 }

@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class JsonDateConverter extends JsonConverter<Date> {
 
-    private final JsonLocalDateTimeConverter jsonLocalDateTimeConverter=new JsonLocalDateTimeConverter();
+    private final JsonLocalDateTimeConverter jsonLocalDateTimeConverter = new JsonLocalDateTimeConverter();
 
 
     @Override

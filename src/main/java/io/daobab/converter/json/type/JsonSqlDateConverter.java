@@ -3,20 +3,18 @@ package io.daobab.converter.json.type;
 import io.daobab.converter.JsonConverter;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public class JsonSqlDateConverter extends JsonConverter<Date> {
 
-    private final JsonLocalDateTimeConverter jsonLocalDateTimeConverter=new JsonLocalDateTimeConverter();
+    private final JsonLocalDateConverter jsonLocalDateTimeConverter = new JsonLocalDateConverter();
 
     @Override
     public void toJson(StringBuilder sb, Date obj) {
-        jsonLocalDateTimeConverter.toJson(sb, LocalDateTime.ofInstant(obj.toInstant(), ZoneId.systemDefault()));
+        jsonLocalDateTimeConverter.toJson(sb, obj.toLocalDate());
     }
 
     @Override
     public Date fromJson(String json) {
-        return null;
+        return Date.valueOf(jsonLocalDateTimeConverter.fromJson(json));
     }
 }

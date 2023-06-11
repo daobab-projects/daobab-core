@@ -16,6 +16,6 @@ public class JsonLocalDateConverter extends JsonConverter<LocalDate> {
 
     @Override
     public LocalDate fromJson(String json) {
-         return LocalDate.parse(json);
+        return LocalDate.parse(json);
     }
 }
