@@ -7,6 +7,7 @@ import io.daobab.model.Field;
 import io.daobab.model.TableColumn;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class EntityJsonConversion<E extends Entity> {
@@ -56,5 +57,15 @@ public class EntityJsonConversion<E extends Entity> {
         }
         sb.append("]");
         return sb;
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public E deserialize(E entity, Map<String, String> map) {
+        for (FieldJsonConversion fieldJsonConversion : fieldJsonConversions) {
+            String fieldName = fieldJsonConversion.fieldName;
+
+            fieldJsonConversion.targetField.setValue((EntityRelation) entity, fieldJsonConversion.fromJson(map.get(fieldName)));
+        }
+        return entity;
     }
 }

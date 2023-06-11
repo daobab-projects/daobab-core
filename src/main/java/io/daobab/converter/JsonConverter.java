@@ -4,6 +4,7 @@ import io.daobab.model.Entity;
 import io.daobab.model.Field;
 import io.daobab.target.statistic.column.RelatedEntity;
 
+import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -65,9 +66,9 @@ public abstract class JsonConverter<F> {
         long milliseconds= TimeUnit.NANOSECONDS.toMillis(nano);
 
         if (milliseconds<100){
-            if (milliseconds<10){
+            if (milliseconds < 10) {
                 sb.append("00");
-            }else{
+            } else {
                 sb.append("0");
             }
         }
@@ -75,5 +76,8 @@ public abstract class JsonConverter<F> {
         sb.append("Z");
     }
 
+    protected void appendTimeZone(StringBuilder sb, ZoneOffset offset) {
+        sb.append(offset.toString());
+    }
 
 }

@@ -9,7 +9,6 @@ import io.daobab.model.Entity;
 import io.daobab.model.Field;
 import io.daobab.model.Plate;
 
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
@@ -58,7 +57,7 @@ public class JsonConverterManager {
         registerTypeConverter(Year.class, new JsonLocalYearConverter());
         registerTypeConverter(Month.class, new JsonLocalMonthConverter());
         registerTypeConverter(DayOfWeek.class, new JsonLocalDayOfWeekConverter());
-//        registerTypeConverter(ZonedDateTime.class, new StandardTypeConverterZonedDateTime(target));
+        registerTypeConverter(ZonedDateTime.class, new JsonZonedDateTimeConverter());
         registerTypeConverter(LocalTime.class, new JsonLocalTimeConverter());
 //        registerTypeConverter(URL.class, new StandardTypeConverterURL());
 

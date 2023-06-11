@@ -55,4 +55,18 @@ public class FieldJsonConversion<F> {
             }
         }
     }
+
+    public F fromJson(String jsonValue) {
+        if (jsonValue == null || jsonValue.trim().equals("null") || jsonValue.trim().isEmpty()) {
+            return null;
+        }
+
+        String trimmedJsonValue = jsonValue.trim();
+
+        if (trimmedJsonValue.equals("null") || trimmedJsonValue.isEmpty()) {
+            return null;
+        }
+        return jsonConverter.fromJson(trimmedJsonValue);
+    }
+
 }
