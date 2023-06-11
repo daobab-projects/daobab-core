@@ -4,6 +4,7 @@ import io.daobab.converter.duplicator.DuplicatorManager;
 import io.daobab.dict.DictFieldType;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.error.DaobabException;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityMap;
 import io.daobab.model.Plate;
 
@@ -103,7 +104,7 @@ public final class EntityDuplicator {
         return rv;
     }
 
-    static <E extends EntityMap> E cloneEntity(E src) {
+    public static <E extends Entity> E cloneEntity(E src) {
         return DuplicatorManager.INSTANCE.getEntityDuplication(src).duplicate(src);
     }
 
