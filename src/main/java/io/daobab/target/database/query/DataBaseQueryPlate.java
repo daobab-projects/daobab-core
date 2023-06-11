@@ -9,7 +9,6 @@ import io.daobab.result.FieldsBuffer;
 import io.daobab.result.FieldsProvider;
 import io.daobab.result.FlatPlates;
 import io.daobab.result.PlateProvider;
-import io.daobab.statement.condition.Count;
 import io.daobab.target.buffer.single.Plates;
 import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.query.frozen.FrozenDataBaseQueryPlate;
@@ -109,14 +108,14 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         return Optional.ofNullable(getTarget().readPlate(modifyQuery(this)));
     }
 
-    public <M extends EntityMap> List<M> findManyAs(Class<M> clazz) {
+    public <M extends Entity> List<M> findManyAs(Class<M> clazz) {
         return findMany()
                 .stream()
                 .map(p -> p.toEntity(clazz, getFields()))
                 .collect(Collectors.toList());
     }
 
-    public <M extends EntityMap> M findOneAs(Class<M> clazz) {
+    public <M extends Entity> M findOneAs(Class<M> clazz) {
         return findFirst().map(p -> p.toEntity(clazz, getFields())).orElse(null);
     }
 

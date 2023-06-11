@@ -32,7 +32,7 @@ public final class EntityDuplicator {
         }
     }
 
-    public static <E extends EntityMap> List<E> cloneEntityList(Collection<E> srcCollection) {
+    public static <E extends Entity> List<E> cloneEntityList(Collection<E> srcCollection) {
         List<E> rv = new ArrayList<>(srcCollection.size());
         int counter = 0;
         for (E src : srcCollection) {

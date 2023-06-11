@@ -46,12 +46,12 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
     }
 
     @SuppressWarnings("unchecked")
-    default <T extends EntityMap & EntityRelation<T>> T findRelatedOne(QueryTarget target, T entity, Column<T, ?, ?>... columns) {
+    default <T extends Entity & EntityRelation<T>> T findRelatedOne(QueryTarget target, T entity, Column<T, ?, ?>... columns) {
         return target.select(columns).whereEqual(colID().transformTo(entity), getId()).findOneAs(columns[0].getEntityClass());
     }
 
     @SuppressWarnings("unchecked")
-    default <T extends EntityMap & EntityRelation<T>> List<T> findRelatedMany(QueryTarget target, T entity, Column<T, ?, ?>... columns) {
+    default <T extends Entity & EntityRelation<T>> List<T> findRelatedMany(QueryTarget target, T entity, Column<T, ?, ?>... columns) {
         return target.select(columns).whereEqual(colID().transformTo(entity), getId()).findManyAs(columns[0].getEntityClass());
     }
 
@@ -98,11 +98,11 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
     default <M extends Entity, T extends Entity & PrimaryKey> List<T> findRelatedManyByCross(QueryTarget target, M cross, Column<T, ?, ?>... columns) {
         T entityRV = columns[0].getInstance();
         DataBaseQueryPlate dataBaseQueryPlate = target.select(columns).from(entityRV).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId());
-        return (List<T>) dataBaseQueryPlate.findManyAs((Class<? extends EntityMap>) columns[0].getEntityClass());
+        return (List<T>) dataBaseQueryPlate.findManyAs((Class<? extends Entity>) columns[0].getEntityClass());
     }
 
     @SuppressWarnings({"unchecked", "Duplicates"})
-    default <R1 extends EntityRelation<E1>, M extends Entity, T extends EntityMap & PrimaryKey<E1, F, R1>, E1 extends Entity> T findRelatedOneByCross(QueryTarget target, M cross, Column<T, ?, ?>... columns) {
+    default <R1 extends EntityRelation<E1>, M extends Entity, T extends Entity & PrimaryKey<E1, F, R1>, E1 extends Entity> T findRelatedOneByCross(QueryTarget target, M cross, Column<T, ?, ?>... columns) {
         T entityRV = columns[0].getInstance();
         return target.select(columns).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findOneAs(columns[0].getEntityClass());
     }

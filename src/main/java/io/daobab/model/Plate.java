@@ -216,7 +216,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends EntityMap> E toEntity(Class<E> targetTypeClass, List<TableColumn> columns) {
+    public <E extends Entity> E toEntity(Class<E> targetTypeClass, List<TableColumn> columns) {
         E entity;
 
         try {
@@ -226,7 +226,8 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
                 if (!col.getColumn().getEntityClass().equals(targetTypeClass)) {
                     throw new DaobabException("Invalid class");
                 }
-                entity.setColumnParam(col.getColumn().getFieldName(), getValue(col.getColumn()));
+                col.getColumn().setValue((EntityRelation) entity, getValue(col.getColumn()));
+//                entity.setColumnParam(col.getColumn().getFieldName(), getValue(col.getColumn()));
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new DaobabException("Cannot create an Entity from a Plate",e);

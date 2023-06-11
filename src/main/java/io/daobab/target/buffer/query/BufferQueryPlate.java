@@ -136,14 +136,14 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         return Optional.ofNullable(getTarget().readPlate(modifyQuery(this)));
     }
 
-    public <M extends EntityMap> List<M> findManyAs(Class<M> clazz) {
+    public <M extends Entity> List<M> findManyAs(Class<M> clazz) {
         return findMany()
                 .stream()
                 .map(p -> p.toEntity(clazz, getFields()))
                 .collect(Collectors.toList());
     }
 
-    public <M extends EntityMap> M findOneAs(Class<M> clazz) {
+    public <M extends Entity> M findOneAs(Class<M> clazz) {
         return findFirst().map(p -> p.toEntity(clazz, getFields())).orElse(null);
     }
 
