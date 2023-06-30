@@ -236,7 +236,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
         Query<E1, ?, ?> q = query;
         List<Plate> list = finalFilter(q);
         return new EntityList<>((List<E1>) list.stream()
-                .map(p -> p.toEntity((Class<EntityMap>) query.getEntityClass(), query.getFields()))
+                .map(p -> p.toEntity((Class<Entity>) query.getEntityClass(), query.getFields()))
                 .collect(Collectors.toList()), query.getEntityClass());
     }
 

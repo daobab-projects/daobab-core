@@ -25,7 +25,7 @@ class JavaTemplates {
             "import " + AttemptToWriteIntoNullEntityException.class.getName() + ";\n" +
             "import " + Column.class.getName() + ";\n" +
             "import " + EntityRelationMap.class.getName() + ";\n" +
-            "import " + EntityMap.class.getName() + ";\n" +
+            "import " + Entity.class.getName() + ";\n" +
             "import " + Objects.class.getName() + ";\n" +
             "\n" +
             GenKeys.CLASS_FULL_NAME + "\n" +
@@ -145,8 +145,6 @@ class JavaTemplates {
 
     static final String TABLE_CLASS_TEMP = "package " + GenKeys.TABLE_PACKAGE + ";\n" +
             "\n" +
-            "import com.fasterxml.jackson.annotation.JsonAutoDetect;\n" +
-            "import com.fasterxml.jackson.annotation.JsonInclude;\n" +
             "import " + EntityDuplicator.class.getName() + ";\n" +
             "import " + Column.class.getName() + ";\n" +
             "import " + TableColumn.class.getName() + ";\n" +
@@ -164,8 +162,6 @@ class JavaTemplates {
             "\n" +
             "\n" +
             "@SuppressWarnings(\"rawtypes\")\n" +
-            "@JsonInclude(JsonInclude.Include.NON_NULL)\n" +
-            "@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)\n" +
             "public class " + GenKeys.TABLE_CAMEL_NAME + " extends Table implements \n" +
             GenKeys.COLUMN_INTERFACES + "\n" +
             "\t" + GenKeys.PK_INTERFACE + "\n" +
@@ -198,7 +194,7 @@ class JavaTemplates {
             GenKeys.COLUMN_IMPORTS + "\n" +
             "import " + CompositeColumns.class.getName() + ";\n" +
             "import " + Composite.class.getName() + ";\n" +
-            "import " + EntityMap.class.getName() + ";\n" +
+            "import " + Entity.class.getName() + ";\n" +
             "import " + TableColumn.class.getName() + ";\n" +
             "\n" +
             "public interface " + GenKeys.COMPOSITE_NAME + "<E extends EntityMap" +

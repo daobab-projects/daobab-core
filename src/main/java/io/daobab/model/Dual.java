@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class Dual extends Table implements Dummy<Dual> {
+public class Dual extends Table<Dual> implements Dummy<Dual> {
 
     @Override
     public String getEntityName() {

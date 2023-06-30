@@ -1,10 +1,10 @@
 package io.daobab.result;
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.converter.JsonProvider;
 import io.daobab.model.FlatPlate;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -50,7 +50,7 @@ public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable,
 
     @Override
     public FlatPlates clone() {
-        return new FlatPlates(EntityDuplicator.cloneEntityList(this));
+        return new FlatPlates(new ArrayList<>(this));
     }
 
 }

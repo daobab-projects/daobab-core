@@ -1,7 +1,6 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
 import io.daobab.target.database.meta.column.*;
@@ -55,11 +54,6 @@ public class MetaForeignKey extends Table<MetaForeignKey> implements
                 new TableColumn(colUpdateRule()),
                 new TableColumn(colDeleteRule())
         );
-    }
-
-    @Override
-    public MetaForeignKey clone() {
-        return EntityDuplicator.cloneEntity(this);
     }
 
 

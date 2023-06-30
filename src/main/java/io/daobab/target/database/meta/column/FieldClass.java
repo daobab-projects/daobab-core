@@ -3,12 +3,12 @@ package io.daobab.target.database.meta.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 
 import java.util.Objects;
 
-public interface FieldClass<E extends EntityMap> extends EntityRelationMap<E> {
+public interface FieldClass<E extends Entity> extends EntityRelationMap<E> {
 
     default Class getFieldClass() {
         return getColumnParam("FieldClass");

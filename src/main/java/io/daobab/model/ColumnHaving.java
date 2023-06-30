@@ -32,8 +32,8 @@ public class ColumnHaving<E extends Entity, R extends EntityRelation> implements
     }
 
     @Override
-    public void setValue(R entity, String value) {
-
+    public R setValue(R entity, String value) {
+        return entity;
     }
 
     @Override

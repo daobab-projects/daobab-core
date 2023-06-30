@@ -1,11 +1,13 @@
 package io.daobab.target.buffer.single;
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.error.BufferedOperationAllowedOnlyForSingleEntityColumns;
 import io.daobab.error.DaobabException;
 import io.daobab.error.TargetDoesNotSupport;
-import io.daobab.model.*;
+import io.daobab.model.Column;
+import io.daobab.model.Entity;
+import io.daobab.model.EntityRelation;
+import io.daobab.model.Plate;
 import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesBufferIndexed;
 import io.daobab.statement.condition.Limit;
@@ -366,10 +368,10 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     @SuppressWarnings("unchecked")
     @Override
     public Entities<E> clone() {
-        if (!isEmpty() && !(get(0) instanceof EntityMap))
-            throw new DaobabException("Only " + EntityMap.class.getName() + " entities may be cloned");
-        List<EntityMap> srcList = (List<EntityMap>) this;
-        return new EntityList<>((List<E>) EntityDuplicator.cloneEntityList(srcList), this.entityClazz);
+        if (!isEmpty() && !(get(0) instanceof Entity))
+            throw new DaobabException("Only " + Entity.class.getName() + " entities may be cloned");
+
+        return new EntityList<>(new ArrayList<>(this), this.entityClazz);
     }
 
     @Override

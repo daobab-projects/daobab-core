@@ -27,8 +27,8 @@ public class SizeOnlyTableColumn extends TableColumn {
             }
 
             @Override
-            public void setValue(EntityRelation entity, Object value) {
-
+            public EntityRelation setValue(EntityRelation entity, Object value) {
+                return entity;
             }
 
             @Override

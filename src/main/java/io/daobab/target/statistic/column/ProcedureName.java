@@ -3,20 +3,19 @@ package io.daobab.target.statistic.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 
 import java.util.Objects;
 
-public interface ProcedureName<E extends EntityMap> extends EntityRelationMap<E> {
+public interface ProcedureName<E extends Entity> extends EntityRelationMap<E> {
 
     default String getProcedureName() {
         return getColumnParam("ProcedureName");
     }
 
     default E setProcedureName(String val) {
-        setColumnParam("ProcedureName", val);
-        return (E) this;
+        return setColumnParam("ProcedureName", val);
     }
 
     default Column<E, String, ProcedureName> colProcedureName() {
@@ -49,9 +48,9 @@ public interface ProcedureName<E extends EntityMap> extends EntityRelationMap<E>
             }
 
             @Override
-            public void setValue(ProcedureName entity, String param) {
+            public ProcedureName setValue(ProcedureName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ProcedureName");
-                entity.setProcedureName(param);
+                return (ProcedureName) entity.setProcedureName(param);
             }
 
             @Override

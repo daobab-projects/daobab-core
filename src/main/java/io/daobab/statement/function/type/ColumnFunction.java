@@ -212,8 +212,8 @@ public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> im
     }
 
     @Override
-    public void setValue(R entity, C value) {
-
+    public R setValue(R entity, C value) {
+        return entity;
     }
 
     @Override

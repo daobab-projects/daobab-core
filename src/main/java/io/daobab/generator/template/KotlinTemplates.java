@@ -55,8 +55,6 @@ class KotlinTemplates {
             "}";
     public static final String TABLE_CLASS_TEMP = "package " + GenKeys.TABLE_PACKAGE + "\n" +
             "\n" +
-            "import com.fasterxml.jackson.annotation.JsonAutoDetect\n" +
-            "import com.fasterxml.jackson.annotation.JsonInclude\n" +
             "import " + EntityDuplicator.class.getName() + "\n" +
             "import " + Column.class.getName() + "\n" +
             "import " + TableColumn.class.getName() + "\n" +
@@ -70,8 +68,6 @@ class KotlinTemplates {
             "import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY\n" +
             "import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE\n" +
             "\n" +
-            "@JsonInclude(JsonInclude.Include.NON_NULL)\n" +
-            "@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)\n" +
             "class " + GenKeys.TABLE_CAMEL_NAME + " : Table(), \n" +
             GenKeys.COLUMN_INTERFACES + "\n" +
             "\t" + GenKeys.PK_INTERFACE + "\n" +
@@ -97,11 +93,11 @@ class KotlinTemplates {
             "\n" +
             "import " + Column.class.getName() + "\n" +
             "import " + EntityRelationMap.class.getName() + "\n" +
-            "import " + EntityMap.class.getName() + "\n" +
+            "import " + Entity.class.getName() + "\n" +
             "\n" +
             GenKeys.CLASS_FULL_NAME + "\n" +
             "\n" +
-            "interface " + GenKeys.INTERFACE_NAME + "<E : " + EntityMap.class.getSimpleName() + ", F> : " + EntityRelationMap.class.getSimpleName() + "<E> {\n" +
+            "interface " + GenKeys.INTERFACE_NAME + "<E : " + Entity.class.getSimpleName() + ", F> : " + EntityRelationMap.class.getSimpleName() + "<E> {\n" +
             "\n" +
             "    fun get" + GenKeys.INTERFACE_NAME + "(): F = getColumnParam(\"" + GenKeys.FIELD_NAME + "\")" +
             "\n" +
@@ -137,7 +133,7 @@ class KotlinTemplates {
             GenKeys.COLUMN_IMPORTS + "\n" +
             "import " + CompositeColumns.class.getName() + "\n" +
             "import " + Composite.class.getName() + "\n" +
-            "import " + EntityMap.class.getName() + "\n" +
+            "import " + Entity.class.getName() + "\n" +
             "import " + TableColumn.class.getName() + "\n" +
             "\n" +
             "interface " + GenKeys.COMPOSITE_NAME + "<E : EntityMap" +

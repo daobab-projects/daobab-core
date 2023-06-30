@@ -3,13 +3,13 @@ package io.daobab.test.dao.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public interface ReturnDate<E extends EntityMap> extends EntityRelationMap<E> {
+public interface ReturnDate<E extends Entity> extends EntityRelationMap<E> {
 
 
     /**

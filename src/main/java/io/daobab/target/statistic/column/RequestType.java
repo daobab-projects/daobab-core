@@ -3,13 +3,13 @@ package io.daobab.target.statistic.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 import io.daobab.query.base.QueryType;
 
 import java.util.Objects;
 
-public interface RequestType<E extends EntityMap> extends EntityRelationMap<E> {
+public interface RequestType<E extends Entity> extends EntityRelationMap<E> {
 
     default QueryType getRequestType() {
         return getColumnParam("RequestType");
@@ -17,8 +17,7 @@ public interface RequestType<E extends EntityMap> extends EntityRelationMap<E> {
 
     @SuppressWarnings("unchecked")
     default E setRequestType(QueryType val) {
-        setColumnParam("RequestType", val);
-        return (E) this;
+        return setColumnParam("RequestType", val);
     }
 
     default Column<E, QueryType, RequestType<E>> colRequestType() {
@@ -51,9 +50,9 @@ public interface RequestType<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(RequestType<E> entity, QueryType param) {
+            public RequestType<E> setValue(RequestType<E> entity, QueryType param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RequestType");
-                entity.setRequestType(param);
+                return (RequestType<E>) entity.setRequestType(param);
             }
 
             @Override

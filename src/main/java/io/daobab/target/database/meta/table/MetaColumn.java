@@ -1,7 +1,6 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
 import io.daobab.target.database.meta.column.*;
@@ -58,11 +57,5 @@ public class MetaColumn extends Table<MetaColumn> implements
                 new TableColumn(colDatatype())
         );
     }
-
-    @Override
-    public MetaColumn clone() {
-        return EntityDuplicator.cloneEntity(this);
-    }
-
 
 }

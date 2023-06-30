@@ -1,8 +1,6 @@
 package io.daobab.test.dao.table;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.model.Column;
 import io.daobab.model.PrimaryKey;
 import io.daobab.model.Table;
@@ -14,13 +12,12 @@ import io.daobab.test.dao.column.StoreId;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
 public class Store extends Table<Store> implements
         StoreId<Store>,
@@ -29,6 +26,15 @@ public class Store extends Table<Store> implements
         LastUpdate<Store>,
 
         PrimaryKey<Store, Integer, StoreId> {
+
+
+    public Store() {
+        super();
+    }
+
+    public Store(Map<String, Object> parameters) {
+        super(parameters);
+    }
 
     @Override
     public String getEntityName() {
@@ -44,11 +50,6 @@ public class Store extends Table<Store> implements
                 new TableColumn(colLastUpdate())
 
         );
-    }
-
-    @Override
-    public Store clone() {
-        return EntityDuplicator.cloneEntity(this);
     }
 
     @Override

@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public abstract class Table<E extends Table> implements EntityMap<E>, JsonProvider {
+public abstract class Table<E extends Table> implements Entity, MapParameterHandler<E>, JsonProvider {
 
     private final Map<String, Object> parameters;
 
@@ -97,10 +97,5 @@ public abstract class Table<E extends Table> implements EntityMap<E>, JsonProvid
     public Map<String, Object> getParameters() {
         return parameters;
     }
-
-    public E clone() {
-        return (E) EntityDuplicator.cloneEntity(this);
-    }
-
 
 }

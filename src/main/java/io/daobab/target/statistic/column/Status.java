@@ -3,21 +3,20 @@ package io.daobab.target.statistic.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 import io.daobab.target.statistic.dictionary.CallStatus;
 
 import java.util.Objects;
 
-public interface Status<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Status<E extends Entity> extends EntityRelationMap<E> {
 
     default CallStatus getStatus() {
         return getColumnParam("Status");
     }
 
     default E setStatus(CallStatus val) {
-        setColumnParam("Status", val);
-        return (E) this;
+        return setColumnParam("Status", val);
     }
 
     default Column<E, CallStatus, Status> colStatus() {
@@ -50,9 +49,9 @@ public interface Status<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Status entity, CallStatus param) {
+            public Status setValue(Status entity, CallStatus param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Status");
-                entity.setStatus(param);
+                return (Status) entity.setStatus(param);
             }
 
             @Override

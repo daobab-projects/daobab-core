@@ -3,20 +3,19 @@ package io.daobab.target.statistic.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 
 import java.util.Objects;
 
-public interface ExecutionTime<E extends EntityMap> extends EntityRelationMap<E> {
+public interface ExecutionTime<E extends Entity> extends EntityRelationMap<E> {
 
     default Long getExecutionTime() {
         return getColumnParam("ExecutionTime");
     }
 
     default E setExecutionTime(Long val) {
-        setColumnParam("ExecutionTime", val);
-        return (E) this;
+        return setColumnParam("ExecutionTime", val);
     }
 
     default Column<E, Long, ExecutionTime> colExecutionTime() {
@@ -49,9 +48,9 @@ public interface ExecutionTime<E extends EntityMap> extends EntityRelationMap<E>
             }
 
             @Override
-            public void setValue(ExecutionTime entity, Long param) {
+            public ExecutionTime setValue(ExecutionTime entity, Long param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ExecutionTime");
-                entity.setExecutionTime(param);
+                return (ExecutionTime) entity.setExecutionTime(param);
             }
 
             @Override

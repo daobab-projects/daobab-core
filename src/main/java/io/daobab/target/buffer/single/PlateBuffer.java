@@ -1,9 +1,7 @@
 package io.daobab.target.buffer.single;
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.error.BufferedOperationAllowedOnlyForSingleEntityColumns;
-import io.daobab.error.DaobabException;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
 import io.daobab.statement.condition.Limit;
@@ -355,10 +353,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     @Override
     public Plates clone() {
-        if (!isEmpty()) {
-            throw new DaobabException("Only " + EntityMap.class.getName() + " entities may be cloned");
-        }
-        return new PlateBuffer(EntityDuplicator.clonePlateList(this));
+        return new PlateBuffer(new ArrayList<>(this));
     }
 
 

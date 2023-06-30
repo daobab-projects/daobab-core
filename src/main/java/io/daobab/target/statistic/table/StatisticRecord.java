@@ -1,7 +1,6 @@
 package io.daobab.target.statistic.table;
 
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.model.Column;
 import io.daobab.model.PrimaryKey;
 import io.daobab.model.Table;
@@ -13,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class StatisticRecord extends Table implements
+public class StatisticRecord extends Table<StatisticRecord> implements
         Key<StatisticRecord>,
         Remarks<StatisticRecord>,
         RequestDate<StatisticRecord>,
@@ -53,11 +52,6 @@ public class StatisticRecord extends Table implements
                 new TableColumn(colErrorDesc()).size(1024),
                 new TableColumn(colSqlQuery()).size(1024)
         );
-    }
-
-    @Override
-    public StatisticRecord clone() {
-        return EntityDuplicator.cloneEntity(this);
     }
 
     @Override

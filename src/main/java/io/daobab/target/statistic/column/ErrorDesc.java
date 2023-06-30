@@ -3,21 +3,19 @@ package io.daobab.target.statistic.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 
 import java.util.Objects;
 
-public interface ErrorDesc<E extends EntityMap> extends EntityRelationMap<E> {
+public interface ErrorDesc<E extends Entity> extends EntityRelationMap<E> {
 
     default String getErrorDesc() {
         return getColumnParam("ErrorDesc");
     }
 
-    @SuppressWarnings("unchecked")
     default E setErrorDesc(String val) {
-        setColumnParam("ErrorDesc", val);
-        return (E) this;
+        return setColumnParam("ErrorDesc", val);
     }
 
     default Column<E, String, ErrorDesc> colErrorDesc() {
@@ -50,9 +48,9 @@ public interface ErrorDesc<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(ErrorDesc entity, String param) {
+            public ErrorDesc setValue(ErrorDesc entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ErrorDesc");
-                entity.setErrorDesc(param);
+                return (ErrorDesc) entity.setErrorDesc(param);
             }
 
             @Override

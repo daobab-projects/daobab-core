@@ -1,7 +1,6 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
 import io.daobab.target.database.meta.column.*;
@@ -54,11 +53,5 @@ public class MetaIndex extends Table<MetaIndex> implements
                 new TableColumn(colFilterCondition()).size(1024)
         );
     }
-
-    @Override
-    public MetaIndex clone() {
-        return EntityDuplicator.cloneEntity(this);
-    }
-
 
 }

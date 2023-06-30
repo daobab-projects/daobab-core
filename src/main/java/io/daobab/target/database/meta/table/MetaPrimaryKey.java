@@ -1,7 +1,6 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
 import io.daobab.target.database.meta.column.*;
@@ -44,11 +43,6 @@ public class MetaPrimaryKey extends Table<MetaPrimaryKey> implements
                 new TableColumn(colSchemaName()).size(256),
                 new TableColumn(colCatalogName()).size(256)
         );
-    }
-
-    @Override
-    public MetaPrimaryKey clone() {
-        return EntityDuplicator.cloneEntity(this);
     }
 
 

@@ -3,12 +3,12 @@ package io.daobab.target.database.meta.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 
 import java.util.Objects;
 
-public interface MetaCatalogName<E extends EntityMap> extends EntityRelationMap<E> {
+public interface MetaCatalogName<E extends Entity> extends EntityRelationMap<E> {
 
     default String getCatalogName() {
         return getColumnParam("CatalogName");

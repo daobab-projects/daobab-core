@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public final class EntityAny implements Entity {
+public final class EntityAny extends Table<EntityAny> {
 
     @Override
     public String getEntityName() {

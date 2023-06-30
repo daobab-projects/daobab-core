@@ -3,13 +3,13 @@ package io.daobab.target.database.meta.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 import io.daobab.target.database.meta.column.dict.MetaRule;
 
 import java.util.Objects;
 
-public interface UpdateRule<E extends EntityMap> extends EntityRelationMap<E> {
+public interface UpdateRule<E extends Entity> extends EntityRelationMap<E> {
 
     default MetaRule getUpdateRule() {
         return getColumnParam("UpdateRule");

@@ -5,7 +5,6 @@ import io.daobab.dict.DictFieldType;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.error.DaobabException;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityMap;
 import io.daobab.model.Plate;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,16 +37,6 @@ public final class EntityDuplicator {
                  InvocationTargetException e) {
             throw new DaobabEntityCreationException(entityClass, e);
         }
-    }
-
-    public static <E extends Entity> List<E> cloneEntityList(Collection<E> srcCollection) {
-        List<E> rv = new ArrayList<>(srcCollection.size());
-        int counter = 0;
-        for (E src : srcCollection) {
-            rv.add(counter, cloneEntity(src));
-            counter++;
-        }
-        return rv;
     }
 
     public static List<Plate> clonePlateList(Collection<Plate> srcCollection) {
@@ -111,8 +100,6 @@ public final class EntityDuplicator {
                 rv.put(key, Integer.valueOf(val.toString()));
             } else if (columnClass.equals(DictFieldType.CLASS_BYTE_ARRAY)) {
                 rv.put(key, ((byte[]) val).clone());
-            } else if (columnClass.isInstance(EntityMap.class)) {
-                rv.put(key, EntityDuplicator.cloneEntity((EntityMap) val));
             }
 
 //            rv.put(entry.getKey())

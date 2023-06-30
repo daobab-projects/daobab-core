@@ -444,7 +444,8 @@ public abstract class Where<W extends Where> extends WhereBase {
 
             @SuppressWarnings("java:S1186")
             @Override
-            public void setValue(R entity, F value) {
+            public R setValue(R entity, F value) {
+                return entity;
             }
 
             @Override

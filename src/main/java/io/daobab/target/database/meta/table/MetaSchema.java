@@ -1,7 +1,6 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.model.Column;
 import io.daobab.model.PrimaryKey;
 import io.daobab.model.Table;
@@ -45,11 +44,6 @@ public class MetaSchema extends Table<MetaSchema> implements
         );
     }
 
-
-    @Override
-    public MetaSchema clone() {
-        return EntityDuplicator.cloneEntity(this);
-    }
 
     @Override
     public Column<MetaSchema, String, MetaSchemaName> colID() {

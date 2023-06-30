@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface Dummy<E extends Entity> extends EntityRelationMap<E>, EntityMap {
+public interface Dummy<E extends Entity> extends EntityRelationMap<E>, Entity {
 
     /**
      * db name: DUMMY,
@@ -20,8 +20,7 @@ public interface Dummy<E extends Entity> extends EntityRelationMap<E>, EntityMap
 
     @SuppressWarnings("unchecked")
     default E setDummy(String val) {
-        setColumnParam("Dummy", val);
-        return (E) this;
+        return setColumnParam("Dummy", val);
     }
 
     @SuppressWarnings("rawtypes")
@@ -55,9 +54,9 @@ public interface Dummy<E extends Entity> extends EntityRelationMap<E>, EntityMap
             }
 
             @Override
-            public void setValue(Dummy entity, String param) {
+            public Dummy setValue(Dummy entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Dummy");
-                entity.setDummy(param);
+                return (Dummy) entity.setDummy(param);
             }
 
             @Override

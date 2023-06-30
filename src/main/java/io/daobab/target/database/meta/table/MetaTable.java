@@ -1,7 +1,6 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.model.Column;
 import io.daobab.model.PrimaryKey;
 import io.daobab.model.Table;
@@ -49,12 +48,6 @@ public class MetaTable extends Table<MetaTable> implements
                 new TableColumn(colCatalogName()).size(256),
                 new TableColumn(colTableType()).size(256)
         );
-    }
-
-
-    @Override
-    public MetaTable clone() {
-        return EntityDuplicator.cloneEntity(this);
     }
 
     @SuppressWarnings("rawtypes")

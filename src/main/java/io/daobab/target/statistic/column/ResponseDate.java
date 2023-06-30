@@ -3,13 +3,13 @@ package io.daobab.target.statistic.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
-public interface ResponseDate<E extends EntityMap> extends EntityRelationMap<E> {
+public interface ResponseDate<E extends Entity> extends EntityRelationMap<E> {
 
 
     /**
@@ -22,8 +22,7 @@ public interface ResponseDate<E extends EntityMap> extends EntityRelationMap<E> 
 
     @SuppressWarnings("unchecked")
     default E setResponseDate(Timestamp val) {
-        setColumnParam("ResponseDate", val);
-        return (E) this;
+        return setColumnParam("ResponseDate", val);
     }
 
     default Column<E, Timestamp, ResponseDate> colResponseDate() {
@@ -56,9 +55,9 @@ public interface ResponseDate<E extends EntityMap> extends EntityRelationMap<E> 
             }
 
             @Override
-            public void setValue(ResponseDate entity, Timestamp param) {
+            public ResponseDate setValue(ResponseDate entity, Timestamp param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ResponseDate");
-                entity.setResponseDate(param);
+                return (ResponseDate) entity.setResponseDate(param);
             }
 
             @Override

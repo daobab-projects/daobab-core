@@ -3,20 +3,19 @@ package io.daobab.target.statistic.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 
 import java.util.Objects;
 
-public interface RelatedEntity<E extends EntityMap> extends EntityRelationMap<E> {
+public interface RelatedEntity<E extends Entity> extends EntityRelationMap<E> {
 
     default String getRelatedEntity() {
         return getColumnParam("RelatedEntity");
     }
 
     default E setRelatedEntity(String val) {
-        setColumnParam("RelatedEntity", val);
-        return (E) this;
+        return setColumnParam("RelatedEntity", val);
     }
 
     default Column<E, String, RelatedEntity> colRelatedEntity() {
@@ -49,9 +48,9 @@ public interface RelatedEntity<E extends EntityMap> extends EntityRelationMap<E>
             }
 
             @Override
-            public void setValue(RelatedEntity entity, String param) {
+            public RelatedEntity setValue(RelatedEntity entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RelatedEntity");
-                entity.setRelatedEntity(param);
+                return (RelatedEntity) entity.setRelatedEntity(param);
             }
 
             @Override
