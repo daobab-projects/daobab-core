@@ -3,12 +3,14 @@ package io.daobab.target.database.meta.table;
 
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
+import io.daobab.model.TableName;
 import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+@TableName("FOREIGN_KEY")
 public class MetaForeignKey extends Table<MetaForeignKey> implements
         PkTableCatalogName<MetaForeignKey>,
         PkTableSchemaName<MetaForeignKey>,
@@ -30,11 +32,6 @@ public class MetaForeignKey extends Table<MetaForeignKey> implements
 
     public MetaForeignKey(Map<String, Object> parameters) {
         super(parameters);
-    }
-
-    @Override
-    public String getEntityName() {
-        return "FOREIGN_KEY";
     }
 
     @Override

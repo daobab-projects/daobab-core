@@ -1,17 +1,14 @@
 package io.daobab.target.statistic.table;
 
 
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.target.statistic.column.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-
+@TableName("STATISTIC")
 public class StatisticRecord extends Table<StatisticRecord> implements
         Key<StatisticRecord>,
         Remarks<StatisticRecord>,
@@ -30,11 +27,6 @@ public class StatisticRecord extends Table<StatisticRecord> implements
 
     public StatisticRecord(String identifier) {
         setId(identifier);
-    }
-
-    @Override
-    public String getEntityName() {
-        return "STATISTIC";
     }
 
     @Override

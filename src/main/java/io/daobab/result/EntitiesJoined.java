@@ -57,7 +57,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
                     .map(TableColumn::getColumn)
                     .filter(col -> col.getColumnName().equals(byColumn.getColumnName()))
                     .findAny()
-                    .orElseThrow(() -> new DaobabException(String.format("Invalid operation during join: Entity %s has no column named %s", rightTable.getEntityName(), byColumn.getColumnName())));
+                    .orElseThrow(() -> new DaobabException(String.format("Invalid operation during join: Entity %s has no column named %s", query.getTarget().getEntityName(rightTable.getEntityClass()), byColumn.getColumnName())));
 
             List<Object> columnValues = getThisValuesOfColumn(leftColumn.get());
             Where composedWhereInner = new WhereAnd().inFields(joinedTableColumn, columnValues);

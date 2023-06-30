@@ -26,7 +26,7 @@ public final class BufferQueryEntity<E extends Entity> extends BufferQueryBase<E
     }
 
     BufferQueryEntity(BufferQueryTarget target, Column<E, ?, ?> column) {
-        init(target, column.getEntityName());
+        init(target, target.getEntityName(column.getEntityClass()));
     }
 
     public BufferQueryEntity(BufferQueryTarget target, Map<String, Object> remote) {

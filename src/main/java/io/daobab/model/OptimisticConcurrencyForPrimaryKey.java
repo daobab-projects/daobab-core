@@ -68,7 +68,7 @@ public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKe
         } else if (getOCCColumn().getFieldClass().isAssignableFrom(java.sql.Date.class)) {
             val = toCurrentDateSQL();
         } else {
-            throw new DaobabException("Optimistic Concurrency Control Exception for Entity " + entityToUpdate.getEntityName() + " pointed OCC column has to be either Number or Date related type ");
+            throw new DaobabException("Optimistic Concurrency Control Exception for Entity " + target.getEntityName(entityToUpdate.getEntityClass()) + " pointed OCC column has to be either Number or Date related type ");
         }
         return (E) getOCCColumn().setValue((R) entityToUpdate, (F) val);
     }

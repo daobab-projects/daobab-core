@@ -1,10 +1,7 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.target.database.meta.column.MetaCatalogName;
 
 import java.util.Arrays;
@@ -13,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings("rawtypes")
+@TableName("META_CATALOG")
 public class MetaCatalog extends Table<MetaCatalog> implements
         MetaCatalogName<MetaCatalog>,
 
@@ -26,11 +24,6 @@ public class MetaCatalog extends Table<MetaCatalog> implements
         super(parameters);
     }
 
-
-    @Override
-    public String getEntityName() {
-        return "META_SCHEMA";
-    }
 
     @Override
     public List<TableColumn> columns() {

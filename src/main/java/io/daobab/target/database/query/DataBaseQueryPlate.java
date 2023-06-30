@@ -60,7 +60,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         Set<String> entities = new HashSet<>();
         for (int i = 1; i < columndaos.length; i++) {
             getFields().add(getInfoColumn(columndaos[i]));
-            entities.add(columndaos[i].getEntityName());
+            entities.add(target.getEntityName(columndaos[i].getEntityClass()));
         }
 
         setSingleEntity(entities.size() == 1);
@@ -77,7 +77,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         Set<String> entities = new HashSet<>();
         for (int i = 1; i < columndaos.size(); i++) {
             getFields().add(getInfoColumn(columndaos.get(i)));
-            entities.add(columndaos.get(i).getEntityName());
+            entities.add(target.getEntityName(columndaos.get(i).getEntityClass()));
         }
 
         setSingleEntity(entities.size() == 1);

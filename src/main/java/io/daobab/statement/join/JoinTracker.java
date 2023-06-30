@@ -8,6 +8,7 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.PrimaryKey;
 import io.daobab.model.TableColumn;
+import io.daobab.target.database.QueryTarget;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,13 +53,13 @@ public interface JoinTracker {
     }
 
 
-    static List<JoinWrapper> calculateJoins(List<Entity> bunch, List<Entity> sourcePoints, Set<String> dest, List<JoinWrapper> alreadyDefinedJoins) {
+    static List<JoinWrapper> calculateJoins(QueryTarget target, List<Entity> bunch, List<Entity> sourcePoints, Set<String> dest, List<JoinWrapper> alreadyDefinedJoins) {
         Set<String> destinations = new HashSet<>();
         if (dest != null) destinations.addAll(dest);
 
         alreadyDefinedJoins.stream()
-                .filter((jw) -> jw.getWhere() != null && jw.getWhere().getAllDaoInWhereClause() != null)
-                .forEach((jw) -> destinations.addAll(jw.getWhere().getAllDaoInWhereClause()));
+                .filter((jw) -> jw.getWhere() != null && jw.getWhere().getAllDaoInWhereClause(target) != null)
+                .forEach((jw) -> destinations.addAll(jw.getWhere().getAllDaoInWhereClause(target)));
 
         List<Vertex> nodes = bunch.stream().map(Vertex::new).collect(Collectors.toList());
         List<Edge> edges = new ArrayList<>();
@@ -69,7 +70,8 @@ public interface JoinTracker {
                 Column column = tableColumn.getColumn();
                 for (int r = 0; r < bunch.size(); r++) {
                     Entity right = bunch.get(r);
-                    if (left.getEntityName().equals(right.getEntityName())) continue;
+                    if (target.getEntityName(left.getEntityClass()).equals(target.getEntityName(right.getEntityClass())))
+                        continue;
                     for (TableColumn tableColumnRight : right.columns()) {
                         Column columnRight = tableColumnRight.getColumn();
                         if (column.getColumnName().equals(columnRight.getColumnName()) && column.getFieldClass().equals(columnRight.getFieldClass()) && oneOfThemIsPk(left, right, column, columnRight)) {
@@ -86,7 +88,7 @@ public interface JoinTracker {
 
         for (Entity sourcePoint : sourcePoints) {
 
-            for (Entity destinationPoint : getEntities(destinations, bunch)) {
+            for (Entity destinationPoint : getEntities(target, destinations, bunch)) {
                 dijkstra.execute(getByEntity(sourcePoint, nodes));
                 List<Vertex> path = dijkstra.getPath(getByEntity(destinationPoint, nodes));
                 if (path == null) continue;
@@ -110,7 +112,7 @@ public interface JoinTracker {
     static boolean addedAlready(JoinWrapper jw, List<JoinWrapper> list) {
         if (jw == null || list == null) return true;
         for (JoinWrapper a : list) {
-            if (a.getTable().getEntityName().equals(jw.getTable().getEntityName())
+            if (a.getTable().getEntityClass().equals(jw.getTable().getEntityClass())
                     && a.getType().equals(jw.getType())
                     && a.getByColumn().getColumnName().equals(jw.getByColumn().getColumnName())
             ) return true;
@@ -120,14 +122,14 @@ public interface JoinTracker {
 
     static Vertex getByEntity(Entity entity, List<Vertex> list) {
         for (Vertex v : list) {
-            if (v.getEntity().getEntityName().equals(entity.getEntityName())) return v;
+            if (v.getEntity().getEntityClass().equals(entity.getEntityClass())) return v;
         }
         return null;
     }
 
     static Edge getEdge(Vertex from, Vertex to, List<Edge> edges) {
         for (Edge e : edges) {
-            if ((e.getFromNode().getEntityName().equals(from.getEntity().getEntityName()) && e.getToNode().getEntityName().equals(to.getEntity().getEntityName()))) {
+            if ((e.getFromNode().getEntityClass().equals(from.getEntity().getEntityClass()) && e.getToNode().getEntityClass().equals(to.getEntity().getEntityClass()))) {
                 return e;
             }
         }
@@ -154,13 +156,13 @@ public interface JoinTracker {
         return leftcolumn;
     }
 
-    static List<Entity> getEntities(Collection<String> names, List<Entity> allEntities) {
+    static List<Entity> getEntities(QueryTarget target, Collection<String> names, List<Entity> allEntities) {
         List<Entity> rv = new ArrayList<>();
         if (allEntities == null || allEntities.isEmpty() || names == null || names.isEmpty()) return rv;
 
         for (String name : names) {
             for (Entity entity : allEntities) {
-                if (name.equals(entity.getEntityName())) {
+                if (name.equals(target.getEntityName(entity.getEntityClass()))) {
                     rv.add(entity);
                     break;
                 }

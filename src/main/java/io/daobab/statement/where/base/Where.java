@@ -428,11 +428,6 @@ public abstract class Where<W extends Where> extends WhereBase {
             }
 
             @Override
-            public String getEntityName() {
-                return select.getEntityName();
-            }
-
-            @Override
             public Class<F> getFieldClass() {
                 return column.getFieldClass();
             }

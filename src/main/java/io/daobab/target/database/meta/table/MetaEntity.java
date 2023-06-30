@@ -1,15 +1,13 @@
 package io.daobab.target.database.meta.table;
 
 import io.daobab.error.DaobabException;
-import io.daobab.model.Column;
-import io.daobab.model.RelatedTo;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@TableName("META_ENTITY")
 @SuppressWarnings("rawtypes")
 public class MetaEntity extends Table<MetaEntity> {
 
@@ -22,6 +20,7 @@ public class MetaEntity extends Table<MetaEntity> {
     public MetaEntity(Map<String, Object> parameters) {
         super(parameters);
     }
+
     List<TableColumn> columnList = new ArrayList<>();
 
     public MetaEntity(String tableName) {
@@ -39,8 +38,7 @@ public class MetaEntity extends Table<MetaEntity> {
     }
 
     public TableColumn addColumn(MetaColumn mc) {
-        TableColumn tc = toColumn(this, mc);
-        return tc;
+        return toColumn(this, mc);
     }
 
     @Override

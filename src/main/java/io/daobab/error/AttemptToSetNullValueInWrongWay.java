@@ -14,7 +14,7 @@ public class AttemptToSetNullValueInWrongWay extends DaobabException {
     }
 
     public AttemptToSetNullValueInWrongWay(Field<?, ?, ?> field) {
-        super("Attempt to set null into field " + field.getFieldName() + " of entity:" + field.getEntityName() + ". Use SetNull method instead.");
+        super("Attempt to set null into field " + field.getFieldName() + " of entity:" + field.getEntityClass().getName() + ". Use SetNull method instead.");
     }
 
 }

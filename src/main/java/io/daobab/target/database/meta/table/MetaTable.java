@@ -1,10 +1,7 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
@@ -12,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@TableName("META_TABLE")
 public class MetaTable extends Table<MetaTable> implements
         Remarks<MetaTable>,
         MetaTableName<MetaTable>,
@@ -31,11 +29,6 @@ public class MetaTable extends Table<MetaTable> implements
         super(parameters);
     }
 
-
-    @Override
-    public String getEntityName() {
-        return "META_TABLE";
-    }
 
     @Override
     public List<TableColumn> columns() {

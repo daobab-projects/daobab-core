@@ -13,7 +13,10 @@ import io.daobab.model.TableColumn;
 import io.daobab.query.base.*;
 import io.daobab.query.marschal.Marshaller;
 import io.daobab.statement.base.IdentifierStorage;
-import io.daobab.statement.condition.*;
+import io.daobab.statement.condition.Having;
+import io.daobab.statement.condition.Limit;
+import io.daobab.statement.condition.Order;
+import io.daobab.statement.condition.SetOperator;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.WhereAnd;
@@ -133,7 +136,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         if (target == null) throw new MandatoryTargetException();
         if (entity == null) throw new NullEntityException();
         setTarget(target);
-        setEntityName(entity.getEntityName());
+        setEntityName(getEntityName());
         setEntityClass(entity.getEntityClass());
         IdentifierStorage storage = new IdentifierStorage();
         storage.registerIdentifiers(getEntityName());
@@ -163,17 +166,17 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     /**
      * Get all DAO related withoutTransactionTo this statement
      */
-    public Set<String> getAllEntitiesRelated() {
+    public Set<String> getAllEntitiesRelated(QueryTarget target) {
         Set<String> rv = new HashSet<>();
         if (getEntityName() != null) rv.add(getEntityName());
         if (getWhereWrapper() != null) {
-            rv.addAll(getWhereWrapper().getAllDaoInWhereClause());
+            rv.addAll(getWhereWrapper().getAllDaoInWhereClause(target));
         }
 
         if (getFields() == null) return rv;
 
         for (TableColumn df : getFields()) {
-            String ndao = df.getColumn().getEntityName();
+            String ndao = target.getEntityName(df.getColumn().getEntityClass());
             if (ndao != null) {
                 rv.add(ndao);
             }
@@ -440,7 +443,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
     public <E1 extends Entity> Q from(E1 entity) {
         if (entity == null) throw new NullEntityException();
-        setEntityName(entity.getEntityName());
+        setEntityName(target.getEntityName(entityClass));
         setEntityClass(entity.getEntityClass());
         setIdentifierStorage(new IdentifierStorage());
         getIdentifierStorage().registerIdentifiers(getEntityName());

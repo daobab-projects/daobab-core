@@ -1,10 +1,6 @@
 package io.daobab.test.dao.table;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.test.dao.column.CityId;
 import io.daobab.test.dao.column.CountryId;
 import io.daobab.test.dao.column.LastUpdate;
@@ -14,9 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@TableName("CITY")
 public class City extends Table<City> implements
         CityId<City>,
         io.daobab.test.dao.column.City<City>,
@@ -25,12 +19,6 @@ public class City extends Table<City> implements
         io.daobab.test.dao.column.Country<City>,
 
         PrimaryKey<City, Integer, CityId> {
-
-
-    @Override
-    public String getEntityName() {
-        return "CITY";
-    }
 
     @Override
     public List<TableColumn> columns() {

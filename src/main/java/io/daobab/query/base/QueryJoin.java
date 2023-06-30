@@ -8,6 +8,7 @@ import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
 import io.daobab.target.Target;
+import io.daobab.target.database.QueryTarget;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -106,12 +107,12 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-    default <R extends RelatedTo> Q joinThrough(Set<String> totables, R... throughTables) {
-        return joinThrough(JoinType.INNER, totables, throughTables);
+    default <R extends RelatedTo> Q joinThrough(QueryTarget target, Set<String> totables, R... throughTables) {
+        return joinThrough(target, JoinType.INNER, totables, throughTables);
     }
 
-    default <E extends Entity, R extends RelatedTo> Q joinRoute(E queryEntity, R... joinedTables) {
-        return joinRoute(JoinType.INNER, queryEntity, joinedTables);
+    default <E extends Entity, R extends RelatedTo> Q joinRoute(QueryTarget target, E queryEntity, R... joinedTables) {
+        return joinRoute(target, JoinType.INNER, queryEntity, joinedTables);
     }
 
     default <E extends Entity> Q join(E joinedTable, Column<?, ?, ?> one, Column<?, ?, ?> two) {
@@ -179,20 +180,20 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-    default <R extends RelatedTo> Q joinThrough(JoinType type, Set<String> totables, R... throughTables) {
+    default <R extends RelatedTo> Q joinThrough(QueryTarget target, JoinType type, Set<String> totables, R... throughTables) {
         if (throughTables == null) return (Q) this;
         Set<String> src = new HashSet<>();
         src.add(getEntityName());
-        List<String> tables = Arrays.stream(throughTables).map(Entity::getEntityName).collect(Collectors.toCollection(LinkedList::new));
+        List<String> tables = Arrays.stream(throughTables).map(e -> target.getEntityName(e.getEntityClass())).collect(Collectors.toCollection(LinkedList::new));
         setJoins(JoinTracker.calculateThrougth(getTarget().getTables(), src, totables, getJoins(), tables));
         return (Q) this;
     }
 
-    default <E extends Entity, R extends RelatedTo> Q joinRoute(JoinType type, E queryEntity, R... joinedTables) {
+    default <E extends Entity, R extends RelatedTo> Q joinRoute(QueryTarget target, JoinType type, E queryEntity, R... joinedTables) {
         if (queryEntity == null || joinedTables == null) return (Q) this;
         Set<String> src = new HashSet<>();
-        src.add(queryEntity.getEntityName());
-        Set<String> tables = Arrays.stream(joinedTables).map(Entity::getEntityName).collect(Collectors.toSet());
+        src.add(target.getEntityName(queryEntity.getEntityClass()));
+        Set<String> tables = Arrays.stream(joinedTables).map(e -> target.getEntityName(e.getEntityClass())).collect(Collectors.toSet());
         setJoins(JoinTracker.calculateJoins(getTarget().getTables(), src, tables, getJoins()));
         return (Q) this;
     }

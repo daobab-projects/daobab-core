@@ -63,7 +63,7 @@ public interface FkTableCatalogName<E extends Entity> extends RelatedTo<E>, MapH
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return getEntityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -6,12 +6,8 @@ import java.util.List;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
+@TableName("DUAL")
 public class Dual extends Table<Dual> implements Dummy<Dual> {
-
-    @Override
-    public String getEntityName() {
-        return "DUAL";
-    }
 
     @Override
     public List<TableColumn> columns() {

@@ -1,6 +1,5 @@
 package io.daobab.test.dao.table;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.daobab.model.*;
 import io.daobab.test.dao.column.*;
 
@@ -9,10 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@TableName("STAFF")
 public class Staff extends Table<Staff> implements
         StaffId<Staff>,
         FirstName<Staff>,
@@ -27,11 +23,6 @@ public class Staff extends Table<Staff> implements
         LastUpdate<Staff>,
         OptimisticConcurrencyForPrimaryKey<Staff, Timestamp, LastUpdate>,
         PrimaryKey<Staff, Integer, StaffId> {
-
-    @Override
-    public String getEntityName() {
-        return "STAFF";
-    }
 
     @Override
     public List<TableColumn> columns() {

@@ -3,12 +3,14 @@ package io.daobab.target.database.meta.table;
 
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
+import io.daobab.model.TableName;
 import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+@TableName("META_INDEX")
 public class MetaIndex extends Table<MetaIndex> implements
         MetaCatalogName<MetaIndex>,
         MetaSchemaName<MetaIndex>,
@@ -29,11 +31,6 @@ public class MetaIndex extends Table<MetaIndex> implements
 
     public MetaIndex(Map<String, Object> parameters) {
         super(parameters);
-    }
-
-    @Override
-    public String getEntityName() {
-        return "META_INDEX";
     }
 
     @Override

@@ -61,7 +61,7 @@ public interface PkTableSchemaName<E extends Entity> extends RelatedTo<E>, MapHa
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return getEntityClass().getName() + "." + getFieldName();
             }
 
             @Override

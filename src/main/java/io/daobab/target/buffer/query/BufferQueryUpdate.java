@@ -64,7 +64,7 @@ public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E
         if (setFields == null || setFields.getCounter() == 0) {
             throw new AtLeastOneColumnToUpdateIsRequired();
         }
-        init(target, setFields.getFieldForPointer(1).getEntityName());
+        init(target, target.getEntityName(setFields.getFieldForPointer(1).getEntityClass()));
 
         set(setFields);
         setEntity((E) setFields.getFieldForPointer(1).getInstance());
