@@ -3,7 +3,7 @@ package io.daobab.statement.function;
 import io.daobab.error.MandatoryFunctionParameter;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.statement.function.base.DatePeriod;
 import io.daobab.statement.function.base.FunctionKey;
@@ -22,7 +22,7 @@ import java.sql.Timestamp;
 public interface FunctionWhispererOracle {
 
 
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> ascii(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Integer> ascii(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.ASCII, Integer.class);
     }
 
@@ -33,7 +33,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument a NUMBER value, or any value that can be implicitly converted to NUMBER, and returns a character.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> chr(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> chr(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.CHR, String.class);
     }
 
@@ -52,7 +52,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function is equivalent to the concatenation operator (||).
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> concat(ColumnOrQuery<E, F, R> column1, ColumnOrQuery<?, ?, ?> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> concat(ColumnOrQuery<E, F, R> column1, ColumnOrQuery<?, ?, ?> column2) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column1, DictFunctionOracle.CONCAT, String.class);
         rv.setKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -73,7 +73,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function is equivalent to the concatenation operator (||).
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> concat(ColumnOrQuery<E, F, R> column, String str) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> concat(ColumnOrQuery<E, F, R> column, String str) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.CONCAT, String.class);
         rv.setKeyValue(ColumnFunction.AFTER_COL, str);
         return rv;
@@ -91,7 +91,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function is equivalent to the concatenation operator (||).
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> concat(String str, ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> concat(String str, ColumnOrQuery<E, F, R> column) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.CONCAT, String.class);
         rv.setKeyValue(ColumnFunction.BEFORE_COL, str);
         return rv;
@@ -102,28 +102,28 @@ public interface FunctionWhispererOracle {
      * char can be of any of the datatypes CHAR, VARCHAR2, NCHAR, or NVARCHAR2. The return value is the same datatype as char. The database sets the case of the initial characters based on the binary mapping defined for the underlying character set. For linguistic-sensitive uppercase and lowercase, please refer to NLS_INITCAP.
      * This function does not support CLOB data directly. However, CLOBs can be passed in as arguments through implicit data conversion.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> initcap(String... values) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> initcap(String... values) {
         return new ColumnFunction<>(DictFunctionOracle.INITCAP, String.class, values);
     }
 
     /**
      *
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> instr(String... values) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Integer> instr(String... values) {
         return new ColumnFunction<>(DictFunctionOracle.INSTR, Integer.class, values);
     }
 
     /**
      *
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> length(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Integer> length(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.LENGTH, Integer.class);
     }
 
     /**
      * LOWER returns char, with all letters lowercase. char can be any of the datatypes CHAR, VARCHAR2, NCHAR, NVARCHAR2, CLOB, or NCLOB. The return value is the same datatype as char. The database sets the case of the characters based on the binary mapping defined for the underlying character set. For linguistic-sensitive lowercase, please refer to NLS_LOWER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> lower(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> lower(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.LOWER, String.class);
     }
 
@@ -133,7 +133,7 @@ public interface FunctionWhispererOracle {
      * If you do not specify expr2, then the default is a single blank. If expr1 is longer than n, then this function returns the portion of expr1 that fits in n.
      * The argument n is the total length of the return value as it is displayed on your terminal screen. In most character sets, this is also the number of characters in the return value. However, in some multibyte character sets, the display length of a character string can differ from the number of characters in the string.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> lpad(ColumnOrQuery<E, F, R> column, int n, String expr) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> lpad(ColumnOrQuery<E, F, R> column, int n, String expr) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.LPAD, String.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, n);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2, expr);
@@ -144,7 +144,7 @@ public interface FunctionWhispererOracle {
      * LTRIM removes from the left end of char all of the characters contained in set. If you do not specify set, it defaults to a single blank. If char is a character literal, then you must enclose it in single quotes. Oracle Database begins scanning char from its first character and removes all characters that appear in set until reaching a character not in set and then returns the result.
      * Both char and set can be any of the datatypes CHAR, VARCHAR2, NCHAR, NVARCHAR2, CLOB, or NCLOB. The string returned is of VARCHAR2 datatype if char is a character datatype and a LOB if char is a LOB datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> ltrim(ColumnOrQuery<E, F, R> column, String str) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> ltrim(ColumnOrQuery<E, F, R> column, String str) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.LTRIM, String.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, str);
         return rv;
@@ -154,7 +154,7 @@ public interface FunctionWhispererOracle {
      * LTRIM removes from the left end of char all of the characters contained in set. If you do not specify set, it defaults to a single blank. If char is a character literal, then you must enclose it in single quotes. Oracle Database begins scanning char from its first character and removes all characters that appear in set until reaching a character not in set and then returns the result.
      * Both char and set can be any of the datatypes CHAR, VARCHAR2, NCHAR, NVARCHAR2, CLOB, or NCLOB. The string returned is of VARCHAR2 datatype if char is a character datatype and a LOB if char is a LOB datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> ltrim(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> ltrim(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.LTRIM, String.class);
     }
 
@@ -165,7 +165,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * The value of 'nlsparam' can have this form:
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> nlsInitcap(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> nlsInitcap(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.NLS_INITCAP);
     }
 
@@ -176,7 +176,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * The 'nlsparam' can have the same form and serve the same purpose as in the NLS_INITCAP function.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> nlsLower(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> nlsLower(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.NLS_LOWER);
     }
 
@@ -195,7 +195,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function does not support CLOB data directly. However, CLOBs can be passed in as arguments through implicit data conversion.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> nlssort(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> nlssort(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.NLSSORT);
     }
 
@@ -206,7 +206,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * The 'nlsparam' can have the same form and serve the same purpose as in the NLS_INITCAP function.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> nlsUpper(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> nlsUpper(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.NLS_UPPER);
     }
 
@@ -234,7 +234,7 @@ public interface FunctionWhispererOracle {
      * A period (.) does not match the newline character.
      * The source string is treated as a single line.
      */
-    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, String> regexpReplace(ColumnOrQuery<E, String, R> column, String regex, String replace) {
+    default <E extends Entity, R extends RelatedTo> ColumnFunction<E, String, R, String> regexpReplace(ColumnOrQuery<E, String, R> column, String regex, String replace) {
         ColumnFunction<E, String, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.REGEXP_REPLACE);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, regex);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2, replace);
@@ -276,7 +276,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * The source string is treated as a single line.
      */
-    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, String> regexpSubstr(ColumnOrQuery<E, String, R> column, String regex, String replace) {
+    default <E extends Entity, R extends RelatedTo> ColumnFunction<E, String, R, String> regexpSubstr(ColumnOrQuery<E, String, R> column, String regex, String replace) {
         ColumnFunction<E, String, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.REGEXP_SUBSTR);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, regex);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2, replace);
@@ -290,7 +290,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * REPLACE provides functionality related to that provided by the TRANSLATE function. TRANSLATE provides single-character, one-to-one substitution. REPLACE lets you substitute one string for another as well as to remove character strings.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> replace(ColumnOrQuery<E, F, R> column, String searchString, String replacement) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> replace(ColumnOrQuery<E, F, R> column, String searchString, String replacement) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.REPLACE, String.class);
         rv.setKeyValue(ColumnFunction.AFTER_COL, searchString);
         rv.setKeyValue(ColumnFunction.AFTER_COL2, replacement);
@@ -306,7 +306,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * The argument n is the total length of the return value as it is displayed on your terminal screen. In most character sets, this is also the number of characters in the return value. However, in some multibyte character sets, the display length of a character string can differ from the number of characters in the string.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> rpad(ColumnOrQuery<E, F, R> column, String expr1, String expr2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> rpad(ColumnOrQuery<E, F, R> column, String expr1, String expr2) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.RPAD, String.class);
         rv.setKeyValue(ColumnFunction.AFTER_COL, expr1);
         rv.setKeyValue(ColumnFunction.AFTER_COL2, expr2);
@@ -318,7 +318,7 @@ public interface FunctionWhispererOracle {
      * If you do not specify set, then it defaults to a single blank. If char is a character literal, then you must enclose it in single quotes. RTRIM works similarly to LTRIM.
      * Both char and set can be any of the datatypes CHAR, VARCHAR2, NCHAR, NVARCHAR2, CLOB, or NCLOB. The string returned is of VARCHAR2 datatype if char is a character datatype and a LOB if char is a LOB datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> rtrim(ColumnOrQuery<E, F, R> column, String expr1) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> rtrim(ColumnOrQuery<E, F, R> column, String expr1) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.RTRIM, String.class);
         rv.setKeyValue(ColumnFunction.AFTER_COL, expr1);
         return rv;
@@ -348,7 +348,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function does not support CLOB data directly. However, CLOBs can be passed in as arguments through implicit data conversion.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> soundex(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> soundex(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.SOUNDEX, String.class);
     }
 
@@ -377,7 +377,7 @@ public interface FunctionWhispererOracle {
      * This function does not support CLOB data directly. However, CLOBs can be passed in as arguments through implicit data conversion.
      */
     //TODO:Check
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> soundex(String str) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> soundex(String str) {
         return new ColumnFunction<>(str, DictFunctionOracle.SOUNDEX, String.class);
     }
 
@@ -396,7 +396,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * See Also:
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> substr(ColumnOrQuery<E, F, R> column, int start, int length) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> substr(ColumnOrQuery<E, F, R> column, int start, int length) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.SUBSTR, String.class);
         rv.setKeyValue(ColumnFunction.AFTER_COL, start);
         rv.setKeyValue(ColumnFunction.AFTER_COL2, length);
@@ -412,7 +412,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function does not support CLOB data directly. However, CLOBs can be passed in as arguments through implicit data conversion.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> translate(ColumnOrQuery<E, F, R> column, String fromString, String toString) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> translate(ColumnOrQuery<E, F, R> column, String fromString, String toString) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.TRANSLATE, String.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, fromString);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2, toString);
@@ -432,7 +432,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function does not support CLOB data directly. However, CLOBs can be passed in as arguments through implicit data conversion.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> treat(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> treat(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.TREAT, String.class);
     }
 
@@ -455,14 +455,14 @@ public interface FunctionWhispererOracle {
      * <p>
      * Both trim_character and trim_source can be any of the datatypes CHAR, VARCHAR2, NCHAR, NVARCHAR2, CLOB, or NCLOB. The string returned is of VARCHAR2 datatype if trim_source is a character datatype and a LOB if trim_source is a LOB datatype. The return string is in the same character set as trim_source.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> trim(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> trim(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.TRIM, String.class);
     }
 
     /**
      * UPPER returns char, with all letters uppercase. char can be any of the datatypes CHAR, VARCHAR2, NCHAR, NVARCHAR2, CLOB, or NCLOB. The return value is the same datatype as char. The database sets the case of the characters based on the binary mapping defined for the underlying character set. For linguistic-sensitive uppercase, please refer to NLS_UPPER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> upper(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> upper(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.UPPER, String.class);
     }
 
@@ -470,7 +470,7 @@ public interface FunctionWhispererOracle {
     /**
      * ABS returns the absolute value of n.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> abs(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> abs(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.ABS, BigDecimal.class);
     }
 
@@ -479,7 +479,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> acos(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> acos(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.ACOS, BigDecimal.class);
     }
 
@@ -488,7 +488,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> asin(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> asin(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.ASIN, BigDecimal.class);
     }
 
@@ -497,7 +497,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> atan(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> atan(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.ATAN, BigDecimal.class);
     }
 
@@ -506,7 +506,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> atan(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> atan(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(column, DictFunctionOracle.ATAN, BigDecimal.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -517,7 +517,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If any argument is BINARY_FLOAT or BINARY_DOUBLE, then the function returns BINARY_DOUBLE. Otherwise the function returns NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> atan2(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> atan2(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.ATAN2, BigDecimal.class);
     }
 
@@ -526,7 +526,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If any argument is BINARY_FLOAT or BINARY_DOUBLE, then the function returns BINARY_DOUBLE. Otherwise the function returns NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> atan2(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> atan2(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(column, DictFunctionOracle.ATAN2, BigDecimal.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -539,7 +539,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * Both arguments can be any numeric datatype, or any nonnumeric datatype that can be implicitly converted to NUMBER. The function returns NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> bitand(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> bitand(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(column, DictFunctionOracle.BITAND, BigDecimal.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -553,7 +553,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * Both arguments can be any numeric datatype, or any nonnumeric datatype that can be implicitly converted to NUMBER. The function returns NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> bitand(ColumnOrQuery<E, F, R> column, Number column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> bitand(ColumnOrQuery<E, F, R> column, Number column2) {
         ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(column, DictFunctionOracle.BITAND, BigDecimal.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -566,7 +566,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * Both arguments can be any numeric datatype, or any nonnumeric datatype that can be implicitly converted to NUMBER. The function returns NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> bitand(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> bitand(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.BITAND, BigDecimal.class);
     }
 
@@ -582,7 +582,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> ceil(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> ceil(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.CEIL, BigDecimal.class);
     }
 
@@ -591,7 +591,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> cos(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> cos(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.COS, BigDecimal.class);
     }
 
@@ -600,7 +600,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> cosh(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> cosh(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.COSH, BigDecimal.class);
     }
 
@@ -616,7 +616,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> exp(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> exp(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.EXP, BigDecimal.class);
     }
 
@@ -625,21 +625,21 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> floor(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> floor(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.FLOOR, BigDecimal.class);
     }
 
     /**
      *
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> greatest(Column<?, ?, ?>... columns) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> greatest(Column<?, ?, ?>... columns) {
         return new ColumnFunction<>(DictFunctionOracle.GREATEST, BigDecimal.class, columns);
     }
 
     /**
      *
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> least(Column<?, ?, ?>... columns) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> least(Column<?, ?, ?>... columns) {
         return new ColumnFunction<>(DictFunctionOracle.LEAST, BigDecimal.class, columns);
     }
 
@@ -648,7 +648,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> ln(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> ln(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.LN, BigDecimal.class);
     }
 
@@ -657,7 +657,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If any argument is BINARY_FLOAT or BINARY_DOUBLE, then the function returns BINARY_DOUBLE. Otherwise the function returns NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> log(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> log(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.LOG, BigDecimal.class);
     }
 
@@ -666,7 +666,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, and returns that datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> mod(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> mod(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.MOD, BigDecimal.class);
     }
 
@@ -675,7 +675,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, and returns that datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> nanvl(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> nanvl(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.NANVL, BigDecimal.class);
     }
 
@@ -684,7 +684,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If any argument is BINARY_FLOAT or BINARY_DOUBLE, then the function returns BINARY_DOUBLE. Otherwise the function returns NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> power(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> power(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(column, DictFunctionOracle.POWER, BigDecimal.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -697,7 +697,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * The MOD function is similar to REMAINDER except that it uses FLOOR in its formula, whereas REMAINDER uses ROUND. Please refer to MOD.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> remainder(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> remainder(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, BigDecimal> rv = new ColumnFunction<>(column, DictFunctionOracle.REMAINDER, BigDecimal.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -710,7 +710,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * For NUMBER values, the value n is rounded away from 0 (for example, to x+1 when x.5 is positive and to x-1 when x.5 is negative). For BINARY_FLOAT and BINARY_DOUBLE values, the function rounds to the nearest even value. Please refer to the examples that follow.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> round(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> round(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.ROUND);
     }
 
@@ -721,7 +721,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * For NUMBER values, the value n is rounded away from 0 (for example, to x+1 when x.5 is positive and to x-1 when x.5 is negative). For BINARY_FLOAT and BINARY_DOUBLE values, the function rounds to the nearest even value. Please refer to the examples that follow.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> round(ColumnOrQuery<E, F, R> column, Integer decimals) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> round(ColumnOrQuery<E, F, R> column, Integer decimals) {
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.ROUND);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, decimals);
         return rv;
@@ -744,7 +744,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * +1 if n>=0 or n=NaN
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> sign(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> sign(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.SIGN, BigDecimal.class);
     }
 
@@ -753,7 +753,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> sin(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> sin(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.SIN, BigDecimal.class);
     }
 
@@ -762,7 +762,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> sinh(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> sinh(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.SINH, BigDecimal.class);
     }
 
@@ -771,14 +771,14 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> sqrt(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> sqrt(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.SQRT, BigDecimal.class);
     }
 
     /**
      *
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> sum(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> sum(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.SUM);
     }
 
@@ -786,7 +786,7 @@ public interface FunctionWhispererOracle {
      * TAN returns the tangent of n (an angle expressed in radians).
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> tan(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> tan(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.TAN, BigDecimal.class);
     }
 
@@ -794,7 +794,7 @@ public interface FunctionWhispererOracle {
      * TANH returns the hyperbolic tangent of n.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If the argument is BINARY_FLOAT, then the function returns BINARY_DOUBLE. Otherwise the function returns the same numeric datatype as the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> tanh(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> tanh(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.TANH, BigDecimal.class);
     }
 
@@ -802,14 +802,14 @@ public interface FunctionWhispererOracle {
      * The TRUNC (number) function returns n1 truncated to n2 decimal places. If n2 is omitted, then n1 is truncated to 0 places. n2 can be negative to truncate (make zero) n2 digits left of the decimal point.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If you omit n2, then the function returns the same datatype as the numeric datatype of the argument. If you include n2, then the function returns NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> trunc(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> trunc(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.TRUNC, BigDecimal.class);
     }
 
     /**
      * ADD_MONTHS returns the date date plus integer months. The date argument can be a datetime value or any value that can be implicitly converted to DATE. The integer argument can be an integer or any value that can be implicitly converted to an integer. The return type is always DATE, regardless of the datatype of date. If date is the last day of the month or if the resulting month has fewer days than the day component of date, then the result is the last day of the resulting month. Otherwise, the result has the same day component as date.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> addMonths(ColumnOrQuery<E, F, R> column, Integer number) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> addMonths(ColumnOrQuery<E, F, R> column, Integer number) {
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.ADD_MONTHS);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, number);
         return rv;
@@ -818,7 +818,7 @@ public interface FunctionWhispererOracle {
     /**
      * CURRENT_DATE returns the current date in the session time zone, in a value in the Gregorian calendar of datatype DATE.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, java.sql.Date> currentDate() {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, java.sql.Date> currentDate() {
         return new NoParamFunction<>(DictFunctionOracle.CURRENT_DATE, java.sql.Date.class);
     }
 
@@ -826,14 +826,14 @@ public interface FunctionWhispererOracle {
      * CURRENT_TIMESTAMP returns the current date and time in the session time zone, in a value of datatype TIMESTAMP WITH TIME ZONE. The time zone offset reflects the current local time of the SQL session. If you omit precision, then the default is 6. The difference between this function and LOCALTIMESTAMP is that CURRENT_TIMESTAMP returns a TIMESTAMP WITH TIME ZONE value while LOCALTIMESTAMP returns a TIMESTAMP value.
      * In the optional argument, precision specifies the fractional second precision of the time value returned.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> currentTimestamp() {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Timestamp> currentTimestamp() {
         return new NoParamFunction<>(DictFunctionOracle.CURRENT_TIMESTAMP, Timestamp.class);
     }
 
     /**
      * DBTIMEZONE returns the value of the database time zone. The return type is a time zone offset (a character type in the format '[+|-]TZH:TZM') or a time zone region name, depending on how the user specified the database time zone value in the most recent CREATE DATABASE or ALTER DATABASE statement.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> dbTimeZone() {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> dbTimeZone() {
         return new NoParamFunction<>(DictFunctionOracle.DBTIMEZONE, String.class);
     }
 
@@ -841,7 +841,7 @@ public interface FunctionWhispererOracle {
     /**
      * EXTRACT extracts and returns the value of a specified datetime field from a datetime or interval value expression. When you extract a TIMEZONE_REGION or TIMEZONE_ABBR (abbreviation), the value returned is a string containing the appropriate time zone name or abbreviation. When you extract any of the other values, the value returned is in the Gregorian calendar. When extracting from a datetime with a time zone value, the value returned is in UTC. For a listing of time zone names and their corresponding abbreviations, query the V$TIMEZONE_NAMES dynamic performance view.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Long> extract(ColumnOrQuery<E, F, R> column, DatePeriod period) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Long> extract(ColumnOrQuery<E, F, R> column, DatePeriod period) {
         ColumnFunction<E, F, R, Long> rv = new ColumnFunction<>(column, DictFunctionOracle.EXTRACT, Long.class);
         rv.setMandatoryKeyValue(ColumnFunction.BEFORE_COL, new FunctionKey(" from "));
         rv.setMandatoryKeyValue(ColumnFunction.BEFORE_COL2, period);
@@ -851,7 +851,7 @@ public interface FunctionWhispererOracle {
     /**
      * FROM_TZ converts a timestamp value and a time zone to a TIMESTAMP WITH TIME ZONE value. time_zone_value is a character string in the format 'TZH:TZM' or a character expression that returns a string in TZR with optional TZD format.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> fromTz(ColumnOrQuery<E, F, R> column, ColumnOrQuery<?, ?, ?> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Timestamp> fromTz(ColumnOrQuery<E, F, R> column, ColumnOrQuery<?, ?, ?> column2) {
         ColumnFunction<E, F, R, Timestamp> rv = new ColumnFunction<>(column, DictFunctionOracle.FROM_TZ, Timestamp.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -860,7 +860,7 @@ public interface FunctionWhispererOracle {
     /**
      * FROM_TZ converts a timestamp value and a time zone to a TIMESTAMP WITH TIME ZONE value. time_zone_value is a character string in the format 'TZH:TZM' or a character expression that returns a string in TZR with optional TZD format.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> fromTz(ColumnOrQuery<E, F, R> column, String timezone) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Timestamp> fromTz(ColumnOrQuery<E, F, R> column, String timezone) {
         ColumnFunction<E, F, R, Timestamp> rv = new ColumnFunction<>(column, DictFunctionOracle.FROM_TZ, Timestamp.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, timezone);
         return rv;
@@ -869,7 +869,7 @@ public interface FunctionWhispererOracle {
     /**
      * LAST_DAY returns the date of the last day of the month that contains date. The return type is always DATE, regardless of the datatype of date.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> lastDay(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Integer> lastDay(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.LAST_DAY, Integer.class);
     }
 
@@ -878,14 +878,14 @@ public interface FunctionWhispererOracle {
      * <p>
      * The optional argument timestamp_precision specifies the fractional second precision of the time value returned.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> localtimestamp() {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Timestamp> localtimestamp() {
         return new NoParamFunction<>(DictFunctionOracle.LOCALTIMESTAMP, Timestamp.class);
     }
 
     /**
      * MONTHS_BETWEEN returns number of months between dates date1 and date2. If date1 is later than date2, then the result is positive. If date1 is earlier than date2, then the result is negative. If date1 and date2 are either the same days of the month or both last days of months, then the result is always an integer. Otherwise Oracle Database calculates the fractional portion of the result based on a 31-day month and considers the difference in time components date1 and date2.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> monthsBetween(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Integer> monthsBetween(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, Integer> rv = new ColumnFunction<>(column, DictFunctionOracle.MONTHS_BETWEEN, Integer.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -906,7 +906,7 @@ public interface FunctionWhispererOracle {
      * PST, PDT: Pacific Standard or Daylight Time
      * YST, YDT: Yukon Standard or Daylight Time
      */
-    default <E extends Entity, F extends Date, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> newTime(ColumnOrQuery<E, F, R> column, String timezone1, String timezone2) {
+    default <E extends Entity, F extends Date, R extends RelatedTo> ColumnFunction<E, F, R, Timestamp> newTime(ColumnOrQuery<E, F, R> column, String timezone1, String timezone2) {
         ColumnFunction<E, F, R, Timestamp> rv = new ColumnFunction<>(column, DictFunctionOracle.MONTHS_BETWEEN, Timestamp.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, timezone1);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, timezone2);
@@ -917,7 +917,7 @@ public interface FunctionWhispererOracle {
     /**
      * NEXT_DAY returns the date of the first weekday named by char that is later than the date date. The return type is always DATE, regardless of the datatype of date. The argument char must be a day of the week in the date language of your session, either the full name or the abbreviation. The minimum number of letters required is the number of letters in the abbreviated version. Any characters immediately following the valid abbreviation are ignored. The return value has the same hours, minutes, and seconds component as the argument date.
      */
-    default <E extends Entity, F extends Date, R extends EntityRelation> ColumnFunction<E, F, R, F> nextDay(ColumnOrQuery<E, F, R> column, String weekDay) {
+    default <E extends Entity, F extends Date, R extends RelatedTo> ColumnFunction<E, F, R, F> nextDay(ColumnOrQuery<E, F, R> column, String weekDay) {
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.NEXT_DAY);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, weekDay);
         return rv;
@@ -931,7 +931,7 @@ public interface FunctionWhispererOracle {
      * 'SECOND'
      * interval_unit is case insensitive. Leading and trailing values within the parentheses are ignored. By default, the precision of the return is 9.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> numtodsinterval(ColumnOrQuery<E, F, R> column, Integer n, String intervalunit) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Integer> numtodsinterval(ColumnOrQuery<E, F, R> column, Integer n, String intervalunit) {
         ColumnFunction<E, F, R, Integer> rv = new ColumnFunction<>(column, DictFunctionOracle.NUMTODSINTERVAL, Integer.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, n);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, intervalunit);
@@ -946,7 +946,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * interval_unit is case insensitive. Leading and trailing values within the parentheses are ignored. By default, the precision of the return is 9.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Integer> numtoyminterval(ColumnOrQuery<E, F, R> column, Integer n, String intervalunit) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Integer> numtoyminterval(ColumnOrQuery<E, F, R> column, Integer n, String intervalunit) {
         ColumnFunction<E, F, R, Integer> rv = new ColumnFunction<>(column, DictFunctionOracle.NUMTOYMINTERVAL, Integer.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, n);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, intervalunit);
@@ -956,7 +956,7 @@ public interface FunctionWhispererOracle {
     /**
      * ROUND returns date rounded to the unit specified by the format model fmt. The value returned is always of datatype DATE, even if you specify a different datetime datatype for date. If you omit fmt, then date is rounded to the nearest day. The date expression must resolve to a DATE value.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> round(ColumnOrQuery<E, F, R> column, DatePeriod period) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> round(ColumnOrQuery<E, F, R> column, DatePeriod period) {
         if (period == null) throw new MandatoryFunctionParameter(DictFunctionOracle.ROUND);
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.ROUND);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, new FunctionKey("'" + period + "'"));
@@ -966,7 +966,7 @@ public interface FunctionWhispererOracle {
     /**
      * SESSIONTIMEZONE returns the time zone of the current session. The return type is a time zone offset (a character type in the format '[+|]TZH:TZM') or a time zone region name, depending on how the user specified the session time zone value in the most recent ALTER SESSION statement.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, String> sessionTimezone() {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> sessionTimezone() {
         return new NoParamFunction<>(DictFunctionOracle.SESSIONTIMEZONE, String.class);
     }
 
@@ -987,7 +987,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * If you omit 'nlsparam', then this function uses the default date language for your session.
      */
-    default <E extends Entity, F extends Date, R extends EntityRelation> ColumnFunction<E, F, R, String> toChar(ColumnOrQuery<E, F, R> column, String format) {
+    default <E extends Entity, F extends Date, R extends RelatedTo> ColumnFunction<E, F, R, String> toChar(ColumnOrQuery<E, F, R> column, String format) {
         ColumnFunction<E, F, R, String> rv = new ColumnFunction<>(column, DictFunctionOracle.TO_CHAR, String.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, format);
         return rv;
@@ -1000,7 +1000,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function does not support CLOB data directly. However, CLOBs can be passed in as arguments through implicit data conversion.
      */
-    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, Timestamp> toTimestamp(ColumnOrQuery<E, String, R> column, String format) {
+    default <E extends Entity, R extends RelatedTo> ColumnFunction<E, String, R, Timestamp> toTimestamp(ColumnOrQuery<E, String, R> column, String format) {
         ColumnFunction<E, String, R, Timestamp> rv = new ColumnFunction<>(column, DictFunctionOracle.TO_TIMESTAMP, Timestamp.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, format);
         return rv;
@@ -1014,7 +1014,7 @@ public interface FunctionWhispererOracle {
      * This function does not convert character strings to TIMESTAMP WITH LOCAL TIME ZONE. To do this, use a CAST function, as shown in CAST.
      * The optional fmt specifies the format of char. If you omit fmt, then char must be in the default format of the TIMESTAMP WITH TIME ZONE datatype. The optional 'nlsparam' has the same purpose in this function as in the TO_CHAR function for date conversion.
      */
-    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, Timestamp> toTimestampTz(ColumnOrQuery<E, String, R> column, String format) {
+    default <E extends Entity, R extends RelatedTo> ColumnFunction<E, String, R, Timestamp> toTimestampTz(ColumnOrQuery<E, String, R> column, String format) {
         ColumnFunction<E, String, R, Timestamp> rv = new ColumnFunction<>(column, DictFunctionOracle.TO_TIMESTAMP_TZ, Timestamp.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, format);
         return rv;
@@ -1032,7 +1032,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * where d and g represent the decimal character and group separator respectively. Neither character can be a space.
      */
-    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, Timestamp> toDsinterval(String value, String nlsparam) {
+    default <E extends Entity, R extends RelatedTo> ColumnFunction<E, String, R, Timestamp> toDsinterval(String value, String nlsparam) {
         ColumnFunction<E, String, R, Timestamp> rv = new ColumnFunction<>(value, DictFunctionOracle.TO_DSINTERVAL, Timestamp.class);
         rv.setKeyValue(ColumnFunction.AFTER_COL, nlsparam);
         return rv;
@@ -1049,7 +1049,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * where d and g represent the decimal character and group separator respectively. Neither character can be a space.
      */
-    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, Timestamp> toDsinterval(ColumnOrQuery<E, String, R> column) {
+    default <E extends Entity, R extends RelatedTo> ColumnFunction<E, String, R, Timestamp> toDsinterval(ColumnOrQuery<E, String, R> column) {
         ColumnFunction<E, String, R, Timestamp> rv = new ColumnFunction<>(column, DictFunctionOracle.TO_DSINTERVAL, Timestamp.class);
         return rv;
     }
@@ -1057,7 +1057,7 @@ public interface FunctionWhispererOracle {
     /**
      * TO_YMINTERVAL converts a character string of CHAR, VARCHAR2, NCHAR, or NVARCHAR2 datatype to an INTERVAL YEAR TO MONTH type, where char is the character string to be converted.
      */
-    default <E extends Entity, R extends EntityRelation> ColumnFunction<E, String, R, Date> toYminterval(ColumnOrQuery<E, String, R> column) {
+    default <E extends Entity, R extends RelatedTo> ColumnFunction<E, String, R, Date> toYminterval(ColumnOrQuery<E, String, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.TO_YMINTERVAL, Date.class);
     }
 
@@ -1065,7 +1065,7 @@ public interface FunctionWhispererOracle {
     /**
      * The TRUNC (date) function returns date with the time portion of the day truncated to the unit specified by the format model fmt. The value returned is always of datatype DATE, even if you specify a different datetime datatype for date. If you omit fmt, then date is truncated to the nearest day. Please refer to "ROUND and TRUNC Date Functions" for the permitted format models to use in fmt.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> trunc(ColumnOrQuery<E, F, R> column, DatePeriod period) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> trunc(ColumnOrQuery<E, F, R> column, DatePeriod period) {
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.TRUNC);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, new FunctionKey("'" + period + "'"));
         return rv;
@@ -1074,28 +1074,28 @@ public interface FunctionWhispererOracle {
     /**
      *
      */
-    default <C extends Number, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> sysdate(ColumnOrQuery<E, F, R> column, Class<C> clazz) {
+    default <C extends Number, E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, C> sysdate(ColumnOrQuery<E, F, R> column, Class<C> clazz) {
         return new ColumnFunction<>(column, DictFunctionOracle.SYSDATE, clazz);
     }
 
     /**
      *
      */
-    default <C extends Number, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> sum(ColumnOrQuery<E, F, R> column, Class<C> clazz) {
+    default <C extends Number, E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, C> sum(ColumnOrQuery<E, F, R> column, Class<C> clazz) {
         return new ColumnFunction<>(column, DictFunctionOracle.SUM, clazz);
     }
 
     /**
      *
      */
-    default <C extends Number, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> sum(Class<C> clazz, Column<?, ?, ?>... columns) {
+    default <C extends Number, E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, C> sum(Class<C> clazz, Column<?, ?, ?>... columns) {
         return new ColumnFunction<>(DictFunctionOracle.SUM, clazz, "+", columns);
     }
 
     /**
      *
      */
-    default <C extends Number, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, BigDecimal> sum(Column... columns) {
+    default <C extends Number, E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> sum(Column... columns) {
         return new ColumnFunction<>(DictFunctionOracle.SUM, BigDecimal.class, "+", columns);
     }
 
@@ -1103,35 +1103,35 @@ public interface FunctionWhispererOracle {
     /**
      *
      */
-    default <C, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> count(ColumnOrQuery<E, F, R> column, Class<C> clazz) {
+    default <C, E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, C> count(ColumnOrQuery<E, F, R> column, Class<C> clazz) {
         return new ColumnFunction<>(column, DictFunctionOracle.COUNT, clazz);
     }
 
     /**
      *
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Long> count(E entity) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Long> count(E entity) {
         return new ColumnFunction<>(DictFunctionOracle.COUNT, Long.class, entity);
     }
 
     /**
      *
      */
-    default <C, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> replace(ColumnOrQuery<E, F, R> column, Class<C> clazz) {
+    default <C, E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, C> replace(ColumnOrQuery<E, F, R> column, Class<C> clazz) {
         return new ColumnFunction<>(column, DictFunctionOracle.REPLACE, clazz);
     }
 
     /**
      *
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> distinct(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> distinct(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.DISTINCT);
     }
 
     /**
      *
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> interval(Number value, DatePeriod addUnit) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Timestamp> interval(Number value, DatePeriod addUnit) {
         NoParamFunction<E, F, R, Timestamp> rv = new NoParamFunction<>(DictFunctionOracle.INTERVAL, Timestamp.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, value);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2, addUnit);
@@ -1139,7 +1139,7 @@ public interface FunctionWhispererOracle {
     }
 
 
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Timestamp> interval(ColumnOrQuery<E, F, R> columnOrQuery, Number value, DatePeriod addUnit) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Timestamp> interval(ColumnOrQuery<E, F, R> columnOrQuery, Number value, DatePeriod addUnit) {
         ColumnFunction<E, F, R, Timestamp> rv = new ColumnFunction<>(columnOrQuery, DictFunctionOracle.INTERVAL, Timestamp.class);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, value);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL2, addUnit);
@@ -1153,7 +1153,7 @@ public interface FunctionWhispererOracle {
      * AVG returns average value of expr.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> avg(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> avg(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.AVG);
     }
 
@@ -1162,7 +1162,7 @@ public interface FunctionWhispererOracle {
      * COLLECT takes as its argument a column of any type and creates a nested table of the input type out of the rows selected. To get the results of this function you must use it within a CAST function.
      * If column is itself a collection, then the output of COLLECT is a nested table of collections.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> collect(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> collect(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.COLLECT);
     }
 
@@ -1173,7 +1173,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, and returns that datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> corr(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> corr(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.CORR);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -1183,7 +1183,7 @@ public interface FunctionWhispererOracle {
      * COVAR_POP returns the population covariance of a set of number pairs. You can use it as an aggregate or analytic function.
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, and returns that datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> covarPop(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> covarPop(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.COVAR_POP);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -1193,7 +1193,7 @@ public interface FunctionWhispererOracle {
      * COVAR_SAMP returns the sample covariance of a set of number pairs. You can use it as an aggregate or analytic function.
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, and returns that datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> covarSamp(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> covarSamp(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, F, R> column2) {
         ColumnFunction<E, F, R, F> rv = new ColumnFunction<>(column, DictFunctionOracle.COVAR_SAMP);
         rv.setMandatoryKeyValue(ColumnFunction.AFTER_COL, column2);
         return rv;
@@ -1205,7 +1205,7 @@ public interface FunctionWhispererOracle {
      * CUME_DIST calculates the cumulative distribution of a value in a group of values. The range of values returned by CUME_DIST is >0 to <=1. Tie values always evaluate to the same cumulative distribution value.
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle Database determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, makes the calculation, and returns NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> cumeDist(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> cumeDist(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.CUME_DIST);
     }
 
@@ -1216,7 +1216,7 @@ public interface FunctionWhispererOracle {
      * As an aggregate function, DENSE_RANK calculates the dense rank of a hypothetical row identified by the arguments of the function with respect to a given sort specification. The arguments of the function must all evaluate to constant expressions within each aggregate group, because they identify a single row within each group. The constant argument expressions and the expressions in the order_by_clause of the aggregate match by position. Therefore, the number of arguments must be the same and types must be compatible.
      * As an analytic function, DENSE_RANK computes the rank of each row returned from a query with respect to the other rows, based on the values of the value_exprs in the order_by_clause.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> denseRank(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> denseRank(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.DENSE_RANK);
     }
 
@@ -1232,7 +1232,7 @@ public interface FunctionWhispererOracle {
      * DENSE_RANK FIRST or DENSE_RANK LAST indicates that Oracle Database will aggregate over only those rows with the minimum (FIRST) or the maximum (LAST) dense rank (also called olympic rank).
      * You can use the FIRST and LAST functions as analytic functions by specifying the OVER clause. The query_partitioning_clause is the only part of the OVER clause valid with these functions.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> first(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> first(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.FIRST);
     }
 
@@ -1241,7 +1241,7 @@ public interface FunctionWhispererOracle {
      * <p>
      * If n duplicates exist for a particular grouping, then GROUP_ID returns numbers in the range 0 to n-1.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> groupId() {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> groupId() {
         return new NoParamFunction<>(DictFunctionOracle.GROUP_ID);
     }
 
@@ -1249,7 +1249,7 @@ public interface FunctionWhispererOracle {
      * GROUPING distinguishes superaggregate rows from regular grouped rows. GROUP BY extensions such as ROLLUP and CUBE produce superaggregate rows where the set of all values is represented by null. Using the GROUPING function, you can distinguish a null representing the set of all values in a superaggregate row from a null in a regular row.
      * The expr in the GROUPING function must match one of the expressions in the GROUP BY clause. The function returns a value of 1 if the value of expr in the row is a null representing the set of all values. Otherwise, it returns zero. The datatype of the value returned by the GROUPING function is Oracle NUMBER. Please refer to the SELECT group_by_clause for a discussion of these terms.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> grouping(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> grouping(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.GROUPING);
     }
 
@@ -1257,7 +1257,7 @@ public interface FunctionWhispererOracle {
      * GROUPING_ID returns a number corresponding to the GROUPING bit vector associated with a row. GROUPING_ID is applicable only in a SELECT statement that contains a GROUP BY extension, such as ROLLUP or CUBE, and a GROUPING function. In queries with many GROUP BY expressions, determining the GROUP BY level of a particular row requires many GROUPING functions, which leads to cumbersome SQL. GROUPING_ID is useful in these cases.
      * GROUPING_ID is functionally equivalent to taking the results of multiple GROUPING functions and concatenating them into a bit vector (a string of ones and zeros). By using GROUPING_ID you can avoid the need for multiple GROUPING functions and make row filtering conditions easier to express. Row filtering is easier with GROUPING_ID because the desired rows can be identified with a single condition of GROUPING_ID = n. The function is especially useful when storing multiple levels of aggregation in a single table.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> groupingId(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> groupingId(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.GROUPING_ID);
     }
 
@@ -1265,14 +1265,14 @@ public interface FunctionWhispererOracle {
      * FIRST and LAST are very similar functions. Both are aggregate and analytic functions that operate on a set of values from a set of rows that rank as the FIRST or LAST with respect to a given sorting specification. If only one row ranks as FIRST or LAST, the aggregate operates on the set with only one element.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> last(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> last(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.LAST);
     }
 
     /**
      * MAX returns maximum value of expr. You can use it as an aggregate or analytic function.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> max(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> max(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.MAX);
     }
 
@@ -1280,14 +1280,14 @@ public interface FunctionWhispererOracle {
      * MEDIAN is an inverse distribution function that assumes a continuous distribution model. It takes a numeric or datetime value and returns the middle value or an interpolated value that would be the middle value once the values are sorted. Nulls are ignored in the calculation.
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. If you specify only expr, then the function returns the same datatype as the numeric datatype of the argument. if you specify the OVER clause, then Oracle Database determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, and returns that datatype.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> median(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> median(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.MEDIAN);
     }
 
     /**
      * MIN returns minimum value of expr. You can use it as an aggregate or analytic function.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> min(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> min(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.MIN);
     }
 
@@ -1297,7 +1297,7 @@ public interface FunctionWhispererOracle {
      * PERCENTILE_CONT is an inverse distribution function that assumes a continuous distribution model. It takes a percentile value and a sort specification, and returns an interpolated value that would fall into that percentile value with respect to the sort specification. Nulls are ignored in the calculation.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> percentileCont(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> percentileCont(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.PERCENTILE_CONT);
     }
 
@@ -1305,21 +1305,21 @@ public interface FunctionWhispererOracle {
      * PERCENTILE_DISC is an inverse distribution function that assumes a discrete distribution model. It takes a percentile value and a sort specification and returns an element from the set. Nulls are ignored in the calculation.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> percentileDisc(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> percentileDisc(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.PERCENTILE_DISC);
     }
 
     /**
      * PERCENT_RANK is similar to the CUME_DIST (cumulative distribution) function. The range of values returned by PERCENT_RANK is 0 to 1, inclusive. The first row in any set has a PERCENT_RANK of 0. The return value is NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> percentRank(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> percentRank(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.PERCENT_RANK);
     }
 
     /**
      * RANK calculates the rank of a value in a group of values. The return type is NUMBER.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> rank(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> rank(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.RANK);
     }
 
@@ -1327,7 +1327,7 @@ public interface FunctionWhispererOracle {
      * VAR_POP returns the population variance of a set of numbers after discarding the nulls in this set. You can use it as both an aggregate and analytic function.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> varPop(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> varPop(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.VAR_POP);
     }
 
@@ -1335,7 +1335,7 @@ public interface FunctionWhispererOracle {
      * VAR_SAMP returns the sample variance of a set of numbers after discarding the nulls in this set. You can use it as both an aggregate and analytic function.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> varSamp(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> varSamp(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.VAR_SAMP);
     }
 
@@ -1348,7 +1348,7 @@ public interface FunctionWhispererOracle {
      * If you specify DISTINCT, then you can specify only the query_partition_clause of the analytic_clause. The order_by_clause and windowing_clause are not allowed.
      * This function takes as an argument any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. The function returns the same datatype as the numeric datatype of the argument.
      */
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, F> variance(ColumnOrQuery<E, F, R> column) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> variance(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.VARIANCE);
     }
 

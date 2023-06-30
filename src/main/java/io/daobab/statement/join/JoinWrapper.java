@@ -3,7 +3,7 @@ package io.daobab.statement.join;
 import io.daobab.experimental.dijsktra.Edge;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.query.marschal.Marshaller;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.base.Where;
@@ -23,7 +23,7 @@ public class JoinWrapper<E extends Entity> {
     private E table;
     private Where where;
 
-    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type, Column<E, F, R> leftColumn, Column<E1, F, R> rightColumn) {
+    public <E1 extends Entity, F, R extends RelatedTo> JoinWrapper(JoinType type, Column<E, F, R> leftColumn, Column<E1, F, R> rightColumn) {
         setType(type);
         setByColumn(rightColumn);
         setTable(leftColumn.getInstance());
@@ -33,7 +33,7 @@ public class JoinWrapper<E extends Entity> {
         setWhere(wh);
     }
 
-    public <E1 extends Entity, E2 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type, Column<?, ?, ?> leftColumn, Column<?, ?, ?> rightColumn, boolean mark) {
+    public <E1 extends Entity, E2 extends Entity, F, R extends RelatedTo> JoinWrapper(JoinType type, Column<?, ?, ?> leftColumn, Column<?, ?, ?> rightColumn, boolean mark) {
         setType(type);
         setByColumn(leftColumn);
         setByColumn2(rightColumn);
@@ -44,7 +44,7 @@ public class JoinWrapper<E extends Entity> {
         setWhere(wh);
     }
 
-    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type, Column<E, F, R> table, Column<E1, F, R> byColumn, Where where) {
+    public <E1 extends Entity, F, R extends RelatedTo> JoinWrapper(JoinType type, Column<E, F, R> table, Column<E1, F, R> byColumn, Where where) {
         setType(type);
         setByColumn(byColumn);
         setTable(table.getInstance());
@@ -57,7 +57,7 @@ public class JoinWrapper<E extends Entity> {
         setWhere(where);
     }
 
-    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type, E table, Column<E1, F, R> byColumn) {
+    public <E1 extends Entity, F, R extends RelatedTo> JoinWrapper(JoinType type, E table, Column<E1, F, R> byColumn) {
         //TODO: NPE
         setType(type);
         setByColumn(byColumn);
@@ -68,7 +68,7 @@ public class JoinWrapper<E extends Entity> {
         setWhere(wh);
     }
 
-    public <E1 extends Entity, F, R extends EntityRelation> JoinWrapper(JoinType type, E table, Column<E1, F, R> byColumn, Where where) {
+    public <E1 extends Entity, F, R extends RelatedTo> JoinWrapper(JoinType type, E table, Column<E1, F, R> byColumn, Where where) {
         //TODO: NPE
         setType(type);
         setByColumn(byColumn);

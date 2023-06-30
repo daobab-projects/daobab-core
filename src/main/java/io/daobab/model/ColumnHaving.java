@@ -3,7 +3,7 @@ package io.daobab.model;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class ColumnHaving<E extends Entity, R extends EntityRelation> implements Column<E, String, R> {
+public class ColumnHaving<E extends Entity, R extends RelatedTo> implements Column<E, String, R> {
 
     private final String name;
 

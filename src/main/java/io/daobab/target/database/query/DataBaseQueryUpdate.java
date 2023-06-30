@@ -97,7 +97,7 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
     }
 
     @SuppressWarnings("rawtypes")
-    public <F, R extends EntityRelation> DataBaseQueryUpdate<E> set(Column<E, F, R> key, R value) {
+    public <F, R extends RelatedTo> DataBaseQueryUpdate<E> set(Column<E, F, R> key, R value) {
         set(new SetFields().setValue(key, value));
         return this;
     }

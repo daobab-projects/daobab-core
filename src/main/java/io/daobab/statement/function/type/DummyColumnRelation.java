@@ -2,13 +2,13 @@ package io.daobab.statement.function.type;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.query.base.Query;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class DummyColumnRelation<E extends Entity, F, R extends EntityRelation> extends ColumnFunction<E, F, R, F> {
+public class DummyColumnRelation<E extends Entity, F, R extends RelatedTo> extends ColumnFunction<E, F, R, F> {
 
     private Query<?, ?, ?> query;
 

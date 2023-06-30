@@ -1,7 +1,7 @@
 package io.daobab.result.predicate;
 
 import io.daobab.model.Column;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.statement.where.base.Where;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class GeneralWhereOr<E> extends GeneralWhereAnd<E> {
                 continue;
             }
 
-            Object valueFromEntity = column.getValue((EntityRelation) entity);
+            Object valueFromEntity = column.getValue((RelatedTo) entity);
 
             //if at least one record into OR clause is true, entity is matched
             if (predicates.get(i).test(valueFromEntity)) return true;

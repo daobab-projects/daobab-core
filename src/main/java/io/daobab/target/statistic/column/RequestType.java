@@ -4,12 +4,13 @@ import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 import io.daobab.query.base.QueryType;
 
 import java.util.Objects;
 
-public interface RequestType<E extends Entity> extends EntityRelationMap<E> {
+public interface RequestType<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default QueryType getRequestType() {
         return getColumnParam("RequestType");

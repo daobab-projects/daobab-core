@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface Dummy<E extends Entity> extends EntityRelationMap<E>, Entity {
+public interface Dummy<E extends Entity> extends RelatedTo<E>, MapHandler<E>, Entity {
 
     /**
      * db name: DUMMY,

@@ -4,11 +4,12 @@ import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelationMap;
+import io.daobab.model.MapHandler;
+import io.daobab.model.RelatedTo;
 
 import java.util.Objects;
 
-public interface Cardinality<E extends Entity> extends EntityRelationMap<E> {
+public interface Cardinality<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default Integer getCardinality() {
         return getColumnParam("Cardinality");

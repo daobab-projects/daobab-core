@@ -57,7 +57,7 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
     }
 
 
-    default <E extends Entity, F, R extends EntityRelation> BufferQueryUpdate<E> update(Column<E, F, R> column, F value) {
+    default <E extends Entity, F, R extends RelatedTo> BufferQueryUpdate<E> update(Column<E, F, R> column, F value) {
         SetFields sf = new SetFields().setValue(column, value);
         return new BufferQueryUpdate<>(this, sf);
     }
@@ -86,7 +86,7 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
         return new BufferQueryEntity<>(this, entity);
     }
 
-    default <E extends Entity & PrimaryKey<E, F, R>, T extends Entity & EntityRelation<T>, F, R extends EntityRelation<?>> BufferQueryEntity<T> selectRelated(E entity, T rel) {
+    default <E extends Entity & PrimaryKey<E, F, R>, T extends Entity & RelatedTo<T>, F, R extends RelatedTo<?>> BufferQueryEntity<T> selectRelated(E entity, T rel) {
         return select(rel).whereEqual(entity.colID().transformTo(rel), entity.getId());
     }
 
@@ -99,11 +99,11 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
         return new BufferQueryField<>(this, column).findMany();
     }
 
-    default <E extends Entity & PrimaryKey<E, F, ? extends EntityRelation>, F> E findOneByPk(E entity, F id) {
+    default <E extends Entity & PrimaryKey<E, F, ? extends RelatedTo>, F> E findOneByPk(E entity, F id) {
         return new BufferQueryEntity<>(this, entity).whereEqual(entity.colID(), id).findOne();
     }
 
-    default <E extends Entity & PrimaryKey<E, F, ? extends EntityRelation>, F> Entities<E> findManyByPk(E entity, F id) {
+    default <E extends Entity & PrimaryKey<E, F, ? extends RelatedTo>, F> Entities<E> findManyByPk(E entity, F id) {
         return new BufferQueryEntity<>(this, entity).whereEqual(entity.colID(), id).findMany();
     }
 

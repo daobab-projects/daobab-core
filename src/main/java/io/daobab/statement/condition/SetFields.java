@@ -3,7 +3,7 @@ package io.daobab.statement.condition;
 import io.daobab.error.AttemptToSetNullValueInWrongWay;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.model.TableColumn;
 
 import java.util.Date;
@@ -21,13 +21,13 @@ public class SetFields {
     private final HashMap<String, Object> hash = new HashMap<>();
     private int counter = 1;
 
-    public static <F, R extends EntityRelation> SetFields setColumn(Column<?, F, R> field, R related) {
+    public static <F, R extends RelatedTo> SetFields setColumn(Column<?, F, R> field, R related) {
         SetFields s = new SetFields();
         s.setValue(field, related);
         return s;
     }
 
-    public static <F, R extends EntityRelation> SetFields setInfoColumns(R related, TableColumn[] fields) {
+    public static <F, R extends RelatedTo> SetFields setInfoColumns(R related, TableColumn[] fields) {
         SetFields s = new SetFields();
         for (TableColumn field : fields) {
             s.setValue((Column<?, F, R>) field.getColumn(), related);
@@ -35,7 +35,7 @@ public class SetFields {
         return s;
     }
 
-    public static <F, R extends EntityRelation> SetFields setColumns(R related, Column<?, F, R>... fields) {
+    public static <F, R extends RelatedTo> SetFields setColumns(R related, Column<?, F, R>... fields) {
         SetFields s = new SetFields();
         for (Column<?, F, R> field : fields) {
             s.setValue(field, related);
@@ -43,13 +43,13 @@ public class SetFields {
         return s;
     }
 
-    public static <F, R extends EntityRelation> SetFields setColumn(Column<?, F, R> field, F value) {
+    public static <F, R extends RelatedTo> SetFields setColumn(Column<?, F, R> field, F value) {
         SetFields s = new SetFields();
         s.setValue(field, value);
         return s;
     }
 
-    public static <E extends Entity, R extends EntityRelation> SetFields setColumns(E related, Column<E, ?, ?>... fields) {
+    public static <E extends Entity, R extends RelatedTo> SetFields setColumns(E related, Column<E, ?, ?>... fields) {
         SetFields s = new SetFields();
         for (Column<E, ?, ?> c : fields) {
             Column<E, ?, R> cc = (Column<E, ?, R>) c;
@@ -75,7 +75,7 @@ public class SetFields {
         return this;
     }
 
-    public <F, R extends EntityRelation> SetFields setValue(Column<?, F, R> relation, R related) {
+    public <F, R extends RelatedTo> SetFields setValue(Column<?, F, R> relation, R related) {
         if (related == null) throw new AttemptToSetNullValueInWrongWay(relation);
         hash.put(FIELD + getCounter(), relation);
         Object val = relation.getValueOf(related);
@@ -86,7 +86,7 @@ public class SetFields {
         return this;
     }
 
-    public <F, R extends EntityRelation> SetFields setValue(Column<?, F, R> relation, F val) {
+    public <F, R extends RelatedTo> SetFields setValue(Column<?, F, R> relation, F val) {
         hash.put(FIELD + getCounter(), relation);
         if (val != null) hash.put(VALUE + getCounter(), val);
         setCounter(getCounter() + 1);

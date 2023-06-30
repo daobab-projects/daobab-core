@@ -6,8 +6,8 @@ import io.daobab.error.DaobabException;
 import io.daobab.error.TargetDoesNotSupport;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
 import io.daobab.model.Plate;
+import io.daobab.model.RelatedTo;
 import io.daobab.query.base.Query;
 import io.daobab.result.EntitiesBufferIndexed;
 import io.daobab.statement.condition.Limit;
@@ -126,7 +126,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <R extends EntityRelation, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
+    private <R extends RelatedTo, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         EntityList<E> matched = new EntityList<>(filter(query), query.getEntityClass());
         if (matched.isEmpty()) {
@@ -141,7 +141,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <R extends EntityRelation, F> F readFieldFromBuffer(Entities<E> entities, BufferQueryField<E, F> query) {
+    private <R extends RelatedTo, F> F readFieldFromBuffer(Entities<E> entities, BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         EntityList<E> matched = new EntityList<>(entities.filter(query), query.getEntityClass());
 

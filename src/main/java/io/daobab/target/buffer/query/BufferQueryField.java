@@ -4,7 +4,7 @@ import io.daobab.error.MandatoryColumn;
 import io.daobab.model.Column;
 import io.daobab.model.Dual;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.model.dummy.DummyColumnTemplate;
 import io.daobab.query.base.QueryType;
 import io.daobab.query.marker.ColumnOrQuery;
@@ -23,7 +23,7 @@ import java.util.Optional;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryFieldsProvider<E, F>, FieldsProvider<F>, ColumnOrQuery<E, F, EntityRelation> {
+public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase<E, BufferQueryField<E, F>> implements InnerQueryFieldsProvider<E, F>, FieldsProvider<F>, ColumnOrQuery<E, F, RelatedTo> {
 
     @SuppressWarnings("unused")
     private BufferQueryField() {
@@ -50,12 +50,12 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
     }
 
     @SuppressWarnings("rawtypes")
-    public DummyColumnRelation<Dual, String, EntityRelation> as(String asName) {
+    public DummyColumnRelation<Dual, String, RelatedTo> as(String asName) {
         return new DummyColumnRelation<>(this, DummyColumnTemplate.dummyColumn(asName));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <F1> DummyColumnRelation<Dual, F1, EntityRelation> as(String asName, Class<F1> clazz) {
+    public <F1> DummyColumnRelation<Dual, F1, RelatedTo> as(String asName, Class<F1> clazz) {
         return new DummyColumnRelation<>(this, DummyColumnTemplate.createDummyColumn(new Dual(), clazz, asName));
     }
 

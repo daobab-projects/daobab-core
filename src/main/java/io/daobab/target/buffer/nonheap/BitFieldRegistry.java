@@ -123,7 +123,7 @@ public class BitFieldRegistry {
             E entity = entities.get(i);
             F colVal;
             if (entity instanceof Entity) {
-                colVal = (F) tableColumn.getColumn().getValue((EntityRelation<?>) entity);
+                colVal = (F) tableColumn.getColumn().getValue((RelatedTo<?>) entity);
             } else {
                 colVal = (F) ((Plate) entity).getValue(tableColumn.getColumn());
             }

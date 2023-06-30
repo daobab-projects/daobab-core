@@ -3,7 +3,7 @@ package io.daobab.statement.condition;
 import io.daobab.error.MandatoryColumn;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -13,7 +13,7 @@ public class SetField<E extends Entity> {
     private Column<E, Object, ?> field;
     private Object value;
 
-    public <R extends EntityRelation> SetField(Column<E, Object, R> field, R related) {
+    public <R extends RelatedTo> SetField(Column<E, Object, R> field, R related) {
         if (field == null) {
             throw new MandatoryColumn();
         }

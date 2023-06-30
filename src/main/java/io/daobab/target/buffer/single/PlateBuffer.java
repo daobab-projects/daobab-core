@@ -95,7 +95,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <E extends Entity, R extends EntityRelation> PlateBuffer resultPlateList(BufferQueryPlate query) {
+    private <E extends Entity, R extends RelatedTo> PlateBuffer resultPlateList(BufferQueryPlate query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         Plates matched = new PlateBuffer(filter((Query<E, ?, ?>) query));
         if (matched.isEmpty()) {
@@ -125,7 +125,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     }
 
     @SuppressWarnings("unchecked")
-    private <E extends Entity, R extends EntityRelation, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
+    private <E extends Entity, R extends RelatedTo, F> List<F> resultFieldListFromBuffer(BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         Plates matched = new PlateBuffer(filter(query));
         if (matched.isEmpty()) {
@@ -141,7 +141,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private <E extends Entity, R extends EntityRelation, F> F readFieldFromBuffer(Plates entities, BufferQueryField<E, F> query) {
+    private <E extends Entity, R extends RelatedTo, F> F readFieldFromBuffer(Plates entities, BufferQueryField<E, F> query) {
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         PlateBuffer matched = new PlateBuffer(entities.filter(query));
 

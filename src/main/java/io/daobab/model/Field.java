@@ -4,7 +4,7 @@ package io.daobab.model;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface Field<E extends Entity, F, R extends EntityRelation> {
+public interface Field<E extends Entity, F, R extends RelatedTo> {
 
     String getFieldName();
 

@@ -3,7 +3,7 @@ package io.daobab.result.predicate;
 import io.daobab.error.UnhandledOperator;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.statement.condition.Operator;
 import io.daobab.statement.where.base.Where;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class GeneralWhereAnd<E> implements WherePredicate<E> {
     protected List<Integer> skipSteps;
 
     protected List<Predicate<Object>> predicates = new ArrayList<>();
-    protected List<Column<Entity, Object, EntityRelation>> keys = new ArrayList<>();
+    protected List<Column<Entity, Object, RelatedTo>> keys = new ArrayList<>();
 
     public GeneralWhereAnd(Where wrapperWhere) {
         this.wrapperWhere = wrapperWhere;
@@ -35,7 +35,7 @@ public class GeneralWhereAnd<E> implements WherePredicate<E> {
 
         for (int i = 1; i < wrapperWhere.getCounter(); i++) {
             predicates.add(matchPredicate(wrapperWhere, i));
-            Column<Entity, Object, EntityRelation> keyFromWrapper = (Column<Entity, Object, EntityRelation>) wrapperWhere.getKeyForPointer(i);
+            Column<Entity, Object, RelatedTo> keyFromWrapper = (Column<Entity, Object, RelatedTo>) wrapperWhere.getKeyForPointer(i);
             keys.add(keyFromWrapper);
         }
     }
@@ -51,7 +51,7 @@ public class GeneralWhereAnd<E> implements WherePredicate<E> {
                 continue;
             }
             predicates.add(matchPredicate(wrapperWhere, i));
-            Column<Entity, Object, EntityRelation> keyFromWrapper = (Column<Entity, Object, EntityRelation>) wrapperWhere.getKeyForPointer(i);
+            Column<Entity, Object, RelatedTo> keyFromWrapper = (Column<Entity, Object, RelatedTo>) wrapperWhere.getKeyForPointer(i);
             keys.add(keyFromWrapper);
         }
 
@@ -74,7 +74,7 @@ public class GeneralWhereAnd<E> implements WherePredicate<E> {
                 continue;
             }
 
-            Object valueFromEntity = column.getValue((EntityRelation) entity);
+            Object valueFromEntity = column.getValue((RelatedTo) entity);
 
             //if at least one record into AND clause if false, entity doesn't match
             if (!predicates.get(i).test(valueFromEntity)) return false;

@@ -5,7 +5,7 @@ import io.daobab.query.marker.ColumnOrQuery;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface Column<E extends Entity, F, R extends EntityRelation> extends Field<E, F, R>, ColumnOrQuery<E, F, R> {
+public interface Column<E extends Entity, F, R extends RelatedTo> extends Field<E, F, R>, ColumnOrQuery<E, F, R> {
 
     String getColumnName();
 

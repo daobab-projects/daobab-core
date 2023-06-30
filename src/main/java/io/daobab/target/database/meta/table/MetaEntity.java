@@ -2,7 +2,7 @@ package io.daobab.target.database.meta.table;
 
 import io.daobab.error.DaobabException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
 
@@ -64,7 +64,7 @@ public class MetaEntity extends Table<MetaEntity> {
 
 
     public TableColumn toColumn(MetaEntity entity, MetaColumn c) {
-        return new TableColumn(new Column<MetaEntity, Object, EntityRelation>() {
+        return new TableColumn(new Column<MetaEntity, Object, RelatedTo>() {
             @Override
             public String getColumnName() {
                 return c.getColumnName();
@@ -82,12 +82,12 @@ public class MetaEntity extends Table<MetaEntity> {
             }
 
             @Override
-            public Object getValue(EntityRelation entity) {
+            public Object getValue(RelatedTo entity) {
                 throw new DaobabException("Operation cannot be done");
             }
 
             @Override
-            public EntityRelation setValue(EntityRelation entity, Object value) {
+            public RelatedTo setValue(RelatedTo entity, Object value) {
                 throw new DaobabException("Operation cannot be done");
             }
 

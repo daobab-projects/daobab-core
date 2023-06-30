@@ -30,7 +30,7 @@ class JavaTemplates {
             "\n" +
             GenKeys.CLASS_FULL_NAME + "\n" +
             "\n" +
-            "public interface " + GenKeys.INTERFACE_NAME + "<E extends EntityMap, F> extends EntityRelationMap<E> {\n" +
+            "public interface " + GenKeys.INTERFACE_NAME + "<E extends EntityMap, F> extends RelatedTo<E>, MapHandler<E> {\n" +
             "\n" +
             "\n" +
             "    default F get" + GenKeys.INTERFACE_NAME + "(){return getColumnParam(\"" + GenKeys.FIELD_NAME + "\");}\n\n" +

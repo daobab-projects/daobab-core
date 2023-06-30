@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public abstract class Table<E extends Table> implements Entity, MapParameterHandler<E>, JsonProvider {
+public abstract class Table<E extends Table> implements Entity, MapHandler<E>, JsonProvider {
 
     private final Map<String, Object> parameters;
 

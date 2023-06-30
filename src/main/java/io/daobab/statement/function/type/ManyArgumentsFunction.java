@@ -2,7 +2,7 @@ package io.daobab.statement.function.type;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.model.TableColumn;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.target.database.query.DataBaseQueryField;
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class ManyArgumentsFunction<E extends Entity, F, R extends EntityRelation, C> extends ColumnFunction<E, F, R, C> {
+public class ManyArgumentsFunction<E extends Entity, F, R extends RelatedTo, C> extends ColumnFunction<E, F, R, C> {
 
     public ManyArgumentsFunction(String mode, Class<C> functionClass) {
         super(dummy, mode, functionClass);

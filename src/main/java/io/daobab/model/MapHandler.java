@@ -3,7 +3,7 @@ package io.daobab.model;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public interface MapParameterHandler<E extends Entity> {
+public interface MapHandler<E extends Entity> {
 
     <X> X getColumnParam(String key);
 

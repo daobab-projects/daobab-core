@@ -28,7 +28,7 @@ public interface QueryJoin<Q extends Query> {
 
     Q smartJoins();
 
-    default <E extends Entity & PrimaryKey, R extends EntityRelation> Q joinByPk(E tablePK, R... tablesFK) {
+    default <E extends Entity & PrimaryKey, R extends RelatedTo> Q joinByPk(E tablePK, R... tablesFK) {
         if (tablePK == null) throw new NullParameter("tablesFK");
         for (R pk : tablesFK) {
             getJoins().add(new JoinWrapper(JoinType.INNER, pk, tablePK.colID()));
@@ -106,11 +106,11 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-    default <R extends EntityRelation> Q joinThrough(Set<String> totables, R... throughTables) {
+    default <R extends RelatedTo> Q joinThrough(Set<String> totables, R... throughTables) {
         return joinThrough(JoinType.INNER, totables, throughTables);
     }
 
-    default <E extends Entity, R extends EntityRelation> Q joinRoute(E queryEntity, R... joinedTables) {
+    default <E extends Entity, R extends RelatedTo> Q joinRoute(E queryEntity, R... joinedTables) {
         return joinRoute(JoinType.INNER, queryEntity, joinedTables);
     }
 
@@ -167,11 +167,11 @@ public interface QueryJoin<Q extends Query> {
         return join(JoinType.INNER, joinedTable, where, joinByColumn);
     }
 
-    default <R extends EntityRelation> Q joinWhere(R joinedTable, Where where) {
+    default <R extends RelatedTo> Q joinWhere(R joinedTable, Where where) {
         return joinWhere(JoinType.INNER, joinedTable, where);
     }
 
-    default <E extends Entity & PrimaryKey, R extends EntityRelation> Q joinByPk(JoinType type, E tablePK, R... tablesFK) {
+    default <E extends Entity & PrimaryKey, R extends RelatedTo> Q joinByPk(JoinType type, E tablePK, R... tablesFK) {
         if (tablePK == null) throw new NullParameter("tablesFK");
         for (R pk : tablesFK) {
             getJoins().add(new JoinWrapper(type, pk, tablePK.colID()));
@@ -179,7 +179,7 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-    default <R extends EntityRelation> Q joinThrough(JoinType type, Set<String> totables, R... throughTables) {
+    default <R extends RelatedTo> Q joinThrough(JoinType type, Set<String> totables, R... throughTables) {
         if (throughTables == null) return (Q) this;
         Set<String> src = new HashSet<>();
         src.add(getEntityName());
@@ -188,7 +188,7 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-    default <E extends Entity, R extends EntityRelation> Q joinRoute(JoinType type, E queryEntity, R... joinedTables) {
+    default <E extends Entity, R extends RelatedTo> Q joinRoute(JoinType type, E queryEntity, R... joinedTables) {
         if (queryEntity == null || joinedTables == null) return (Q) this;
         Set<String> src = new HashSet<>();
         src.add(queryEntity.getEntityName());
@@ -288,7 +288,7 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
-    default <R extends EntityRelation> Q joinWhere(JoinType type, R joinedTable, Where where) {
+    default <R extends RelatedTo> Q joinWhere(JoinType type, R joinedTable, Where where) {
         getJoins().add(new JoinWrapper(type, joinedTable, where));
         return (Q) this;
     }

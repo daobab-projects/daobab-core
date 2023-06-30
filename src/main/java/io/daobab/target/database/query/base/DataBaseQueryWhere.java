@@ -1,14 +1,14 @@
 package io.daobab.target.database.query.base;
 
-import io.daobab.model.*;
+import io.daobab.model.Column;
+import io.daobab.model.Entity;
+import io.daobab.model.RelatedTo;
 import io.daobab.query.base.QueryWhere;
-import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.WhereNot;
 import io.daobab.statement.where.WhereOr;
 import io.daobab.target.database.query.DataBaseQueryBase;
 import io.daobab.target.database.query.frozen.DaoParam;
 
-import java.util.Collection;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -49,57 +49,57 @@ public interface DataBaseQueryWhere<Q extends DataBaseQueryBase> extends QueryWh
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereEqual(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereEqual(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().equal(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereNotEqual(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereNotEqual(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().notEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereGreater(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereGreater(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().greater(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereGreaterOrEqual(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereGreaterOrEqual(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().greaterOrEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereLess(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereLess(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().less(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereLessOrEqual(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereLessOrEqual(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().lessOrEqual(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereLike(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereLike(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().like(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereInCollectionParam(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereInCollectionParam(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().inFieldsParam(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereNotInCollectionParam(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereNotInCollectionParam(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().notInFieldsParam(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereInFieldsParam(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereInFieldsParam(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().inFieldsParam(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereNotInFieldsParam(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereNotInFieldsParam(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().notInFieldsParam(column, val));
         return (Q) this;
     }
@@ -109,12 +109,12 @@ public interface DataBaseQueryWhere<Q extends DataBaseQueryBase> extends QueryWh
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereIn(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereIn(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().in(column, val));
         return (Q) this;
     }
 
-    default <E extends Entity, F, R extends EntityRelation> Q whereNotIn(Column<E, F, R> column, DaoParam val) {
+    default <E extends Entity, F, R extends RelatedTo> Q whereNotIn(Column<E, F, R> column, DaoParam val) {
         setWhereWrapper(new DataBaseWhereAnd().notIn(column, val));
         return (Q) this;
     }

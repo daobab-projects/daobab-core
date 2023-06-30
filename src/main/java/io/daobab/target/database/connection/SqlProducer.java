@@ -3,7 +3,6 @@ package io.daobab.target.database.connection;
 import io.daobab.converter.TypeConverter;
 import io.daobab.dict.DictDatabaseType;
 import io.daobab.error.DaobabException;
-import io.daobab.error.SqlInjectionDetected;
 import io.daobab.model.*;
 import io.daobab.query.base.QueryExpressionProvider;
 import io.daobab.query.base.QuerySpecialParameters;
@@ -31,8 +30,8 @@ import io.daobab.target.database.query.DataBaseQueryDelete;
 import io.daobab.target.database.query.DataBaseQueryInsert;
 import io.daobab.target.database.query.DataBaseQueryUpdate;
 import io.daobab.target.database.query.frozen.DaoParam;
-import io.daobab.target.database.query.frozen.ParameterInjectionPoint;
 import io.daobab.target.database.query.frozen.FrozenQueryProvider;
+import io.daobab.target.database.query.frozen.ParameterInjectionPoint;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -581,7 +580,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             }
 
             @SuppressWarnings("unchecked")
-            Column<Entity, Object, EntityRelation> keyFromWrapper = (Column<Entity, Object, EntityRelation>) where.getKeyForPointer(i);
+            Column<Entity, Object, RelatedTo> keyFromWrapper = (Column<Entity, Object, RelatedTo>) where.getKeyForPointer(i);
 
             if (keyFromWrapper != null && value != null) {
 
@@ -604,7 +603,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                     value = fieldsProvider.findMany();
                 } else if (value instanceof EntitiesProvider) {
                     EntitiesProvider<?> wr = (EntitiesProvider<?>) value;
-                    value = wr.findMany().stream().map(e -> keyFromWrapper.getValueOf((EntityRelation) e)).collect(Collectors.toList());
+                    value = wr.findMany().stream().map(e -> keyFromWrapper.getValueOf((RelatedTo) e)).collect(Collectors.toList());
                 }
             }
 
@@ -668,7 +667,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
      * Puts a key into the query
      */
     @SuppressWarnings("rawtypes")
-    default void appendKey(final StringBuilder sb, IdentifierStorage storage, Column<Entity, Object, EntityRelation> keyFromWrapper, Operator relation) {
+    default void appendKey(final StringBuilder sb, IdentifierStorage storage, Column<Entity, Object, RelatedTo> keyFromWrapper, Operator relation) {
         if (keyFromWrapper instanceof ColumnFunction) {
             ColumnFunction<?, ?, ?, ?> function = (ColumnFunction<?, ?, ?, ?>) keyFromWrapper;
             sb.append(columnFunctionToExpression(function, storage, true));
@@ -778,7 +777,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     @SuppressWarnings({"rawtypes", "java:S3776"})
-    default <E extends Entity, F, R extends EntityRelation> StringBuilder toColumnFunctionQueryExpression(Column<E, F, R> column, String stringIdentifier, IdentifierStorage storage, String mode, Map<String, Object> params) {
+    default <E extends Entity, F, R extends RelatedTo> StringBuilder toColumnFunctionQueryExpression(Column<E, F, R> column, String stringIdentifier, IdentifierStorage storage, String mode, Map<String, Object> params) {
         StringBuilder sb = new StringBuilder();
         sb.append(mode).append(OPEN_BRACKET);
 
@@ -906,7 +905,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     @SuppressWarnings("rawtypes")
-    default <E extends Entity, F, R extends EntityRelation> StringBuilder toCastColumnRelationQueryExpression(Column<E, F, R> column, IdentifierStorage storage, String mode, CastType type) {
+    default <E extends Entity, F, R extends RelatedTo> StringBuilder toCastColumnRelationQueryExpression(Column<E, F, R> column, IdentifierStorage storage, String mode, CastType type) {
         StringBuilder sb = new StringBuilder();
         sb.append(mode).append(OPEN_BRACKET);
         if (column instanceof ColumnFunction) {
@@ -920,7 +919,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    default <E extends Entity, F, R extends EntityRelation> StringBuilder toManyArgumentsFunctionQueryExpression(Column<E, F, R> column, IdentifierStorage storage, String mode) {
+    default <E extends Entity, F, R extends RelatedTo> StringBuilder toManyArgumentsFunctionQueryExpression(Column<E, F, R> column, IdentifierStorage storage, String mode) {
         StringBuilder sb = new StringBuilder();
         sb.append(mode).append(OPEN_BRACKET);
 

@@ -1,7 +1,7 @@
 package io.daobab.statement.function;
 
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.statement.function.type.ColumnFunction;
 
@@ -632,11 +632,11 @@ public interface FunctionWhispererBuffer {
 //        return new ColumnFunction<>(DictFunctionPostgreSql.SUM, clazz, "+", columns);
 //    }
 //
-    default <C, E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, C> count(ColumnOrQuery<E, F, R> columnOrQuery) {
+    default <C, E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, C> count(ColumnOrQuery<E, F, R> columnOrQuery) {
         return new ColumnFunction<>(columnOrQuery, DictFunctionPostgreSql.COUNT);
     }
 
-    default <E extends Entity, F, R extends EntityRelation> ColumnFunction<E, F, R, Long> count(E entity) {
+    default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Long> count(E entity) {
         return new ColumnFunction<>(DictFunctionPostgreSql.COUNT, Long.class, entity);
     }
 //

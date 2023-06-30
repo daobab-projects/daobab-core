@@ -2,8 +2,8 @@ package io.daobab.converter.json.conversion;
 
 import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
 import io.daobab.model.Field;
+import io.daobab.model.RelatedTo;
 import io.daobab.model.TableColumn;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class EntityJsonConversion<E extends Entity> {
         for (int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
             FieldJsonConversion fieldJsonConversion = fieldJsonConversions.get(i);
-            fieldJsonConversion.toJson(sb, field.getValue((EntityRelation) entity));
+            fieldJsonConversion.toJson(sb, field.getValue((RelatedTo) entity));
             if (i != maxSizeMinus1) {
                 sb.append(",");
             }
@@ -64,7 +64,7 @@ public class EntityJsonConversion<E extends Entity> {
         for (FieldJsonConversion fieldJsonConversion : fieldJsonConversions) {
             String fieldName = fieldJsonConversion.fieldName;
 
-            entity = (E) fieldJsonConversion.targetField.setValue((EntityRelation) entity, fieldJsonConversion.fromJson(map.get(fieldName)));
+            entity = (E) fieldJsonConversion.targetField.setValue((RelatedTo) entity, fieldJsonConversion.fromJson(map.get(fieldName)));
         }
         return entity;
     }

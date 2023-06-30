@@ -169,7 +169,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public <E extends Entity, F, R extends EntityRelation> F executeInsert(QuerySpecialParameters insertQueryParameters, Connection conn, ILoggerBean loggerBean, Column<E, F, R> pk) {
+    public <E extends Entity, F, R extends RelatedTo> F executeInsert(QuerySpecialParameters insertQueryParameters, Connection conn, ILoggerBean loggerBean, Column<E, F, R> pk) {
         PreparedStatement stmt = null;
         try {
             stmt = conn.prepareStatement(insertQueryParameters.getQuery().toString(), Statement.RETURN_GENERATED_KEYS);

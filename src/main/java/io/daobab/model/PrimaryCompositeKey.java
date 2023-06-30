@@ -16,7 +16,7 @@ import io.daobab.transaction.Propagation;
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes", "UnusedReturnValue", "unused"})
-public interface PrimaryCompositeKey<E extends Entity, K extends Composite> extends EntityRelation<E>, Composite<E>, QueryWhisperer {
+public interface PrimaryCompositeKey<E extends Entity, K extends Composite> extends RelatedTo<E>, Composite<E>, QueryWhisperer {
 
 
     CompositeColumns<K> colCompositeId();
@@ -28,7 +28,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
         WhereAnd where = new WhereAnd();
         for (TableColumn tableColumn : colCompositeId()) {
             Column column = tableColumn.getColumn();
-            where.equal(column, column.getValue((EntityRelation) keyEntity));
+            where.equal(column, column.getValue((RelatedTo) keyEntity));
         }
         return where;
     }
@@ -116,7 +116,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setInfoColumns((EntityRelation) this, columns().toArray(new TableColumn[0])))
+        target.update(SetFields.setInfoColumns((RelatedTo) this, columns().toArray(new TableColumn[0])))
                 .where(getCompositeKeyWhere(this))
                 .execute();
         return (E) this;
@@ -164,7 +164,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
         return target.select((E) this).where(getCompositeKeyWhere(this)).findOne();
     }
 
-    default <F, R extends EntityRelation> E findByColumnValue(QueryTarget target, Column<E, F, R> column, F value) {
+    default <F, R extends RelatedTo> E findByColumnValue(QueryTarget target, Column<E, F, R> column, F value) {
         return target.select((E) this).whereEqual(column, value).findOne();
     }
 

@@ -40,7 +40,7 @@ public interface ResultSetReader {
     int executeUpdate(QuerySpecialParameters insertQueryParameters, Connection conn);
 
     @SuppressWarnings("rawtypes")
-    <E extends Entity, F, R extends EntityRelation> F executeInsert(QuerySpecialParameters insertQueryParameters, Connection conn, ILoggerBean loggerBean, Column<E, F, R> pk);
+    <E extends Entity, F, R extends RelatedTo> F executeInsert(QuerySpecialParameters insertQueryParameters, Connection conn, ILoggerBean loggerBean, Column<E, F, R> pk);
 
     <F> F getSequenceNextId(Connection conn, String sequenceName, Class<F> fieldClazz);
 }

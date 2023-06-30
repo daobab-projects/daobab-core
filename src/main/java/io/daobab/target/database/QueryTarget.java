@@ -79,7 +79,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     }
 
 
-    default <E extends Entity, F, R extends EntityRelation> DataBaseQueryUpdate<E> update(Column<E, F, R> column, F value) {
+    default <E extends Entity, F, R extends RelatedTo> DataBaseQueryUpdate<E> update(Column<E, F, R> column, F value) {
         SetFields sf = new SetFields().setValue(column, value);
         return new DataBaseQueryUpdate<>(this, sf);
     }
@@ -107,7 +107,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return new DataBaseQueryEntity<>(this, entity);
     }
 
-    default <E extends Entity & PrimaryKey<E, F, R>, T extends Entity & EntityRelation<T>, F, R extends EntityRelation<?>> DataBaseQueryEntity<T> selectRelated(E entity, T rel) {
+    default <E extends Entity & PrimaryKey<E, F, R>, T extends Entity & RelatedTo<T>, F, R extends RelatedTo<?>> DataBaseQueryEntity<T> selectRelated(E entity, T rel) {
         return select(rel).whereEqual(entity.colID().transformTo(rel), entity.getId());
     }
 
@@ -120,11 +120,11 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return new DataBaseQueryField<>(this, column).findMany();
     }
 
-    default <E extends Entity & PrimaryKey<E, F, ? extends EntityRelation>, F> E findOneByPk(E entity, F id) {
+    default <E extends Entity & PrimaryKey<E, F, ? extends RelatedTo>, F> E findOneByPk(E entity, F id) {
         return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.colID(), id).findOne();
     }
 
-    default <E extends Entity & PrimaryKey<E, F, ? extends EntityRelation>, F> Entities<E> findManyByPk(E entity, F id) {
+    default <E extends Entity & PrimaryKey<E, F, ? extends RelatedTo>, F> Entities<E> findManyByPk(E entity, F id) {
         return new DataBaseQueryEntity<>(this, entity).whereEqual(entity.colID(), id).findMany();
     }
 

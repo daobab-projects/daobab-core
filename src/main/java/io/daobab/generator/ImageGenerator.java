@@ -2,7 +2,7 @@ package io.daobab.generator;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.database.DaobabDataBaseMetaData;
 import io.daobab.target.database.meta.MetaDataTables;
@@ -75,7 +75,7 @@ public class ImageGenerator implements MetaDataTables {
 
     }
 
-    private <E extends Entity, R extends EntityRelation<E>> String getFreeColumnName(List<E> list, String name, Column<E, String, R> column) {
+    private <E extends Entity, R extends RelatedTo<E>> String getFreeColumnName(List<E> list, String name, Column<E, String, R> column) {
         //jesli nazwa jest zabroniona - zmien
         //dodaj typ
         int counter = 0;
@@ -86,7 +86,7 @@ public class ImageGenerator implements MetaDataTables {
         return counter == 0 ? name : name + counter;
     }
 
-    private <E extends Entity, R extends EntityRelation<E>> String getFreeName(List<E> list, String name, Column<E, String, R> column) {
+    private <E extends Entity, R extends RelatedTo<E>> String getFreeName(List<E> list, String name, Column<E, String, R> column) {
         int counter = 0;
         while (isNameInUse(list, name, counter, column)) {
             counter++;
@@ -96,7 +96,7 @@ public class ImageGenerator implements MetaDataTables {
     }
 
 
-    private <E extends Entity, R extends EntityRelation<E>> boolean isNameInUse(List<E> list, String name, int counter, Column<E, String, R> column) {
+    private <E extends Entity, R extends RelatedTo<E>> boolean isNameInUse(List<E> list, String name, int counter, Column<E, String, R> column) {
         for (E entity : list) {
             if (column.getValueOf((R) entity).equalsIgnoreCase(counter == 0 ? name : name + counter)) {
                 return true;

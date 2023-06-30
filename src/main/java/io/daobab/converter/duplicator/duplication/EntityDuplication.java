@@ -3,8 +3,8 @@ package io.daobab.converter.duplicator.duplication;
 import io.daobab.converter.duplicator.DuplicatorManager;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
 import io.daobab.model.Field;
+import io.daobab.model.RelatedTo;
 import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.single.Entities;
 
@@ -50,7 +50,7 @@ public class EntityDuplication<E extends Entity> {
         for (int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
             FieldDuplication fieldJsonConversion = fieldJsonConversions.get(i);
-            rv = (E) field.setValue((EntityRelation) rv, fieldJsonConversion.duplicate(field.getValue((EntityRelation) entity)));
+            rv = (E) field.setValue((RelatedTo) rv, fieldJsonConversion.duplicate(field.getValue((RelatedTo) entity)));
 
     }
         return rv;

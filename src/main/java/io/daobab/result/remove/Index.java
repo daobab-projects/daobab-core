@@ -2,7 +2,7 @@ package io.daobab.result.remove;
 
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.result.EntitiesBufferIndexed;
 import io.daobab.result.FakePkEntity;
 import io.daobab.statement.condition.Operator;
@@ -18,7 +18,7 @@ public abstract class Index<E extends Entity, F> {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final Column<E, ?, EntityRelation> indexedColumn;
+    private final Column<E, ?, RelatedTo> indexedColumn;
 
     protected List<E> nullValuesEntities = new ArrayList<>();
     protected TreeMap<F, List<E>> fieldEntitiesMap = new TreeMap<>();
@@ -31,7 +31,7 @@ public abstract class Index<E extends Entity, F> {
     private double efficiency = 0;
 
     //Invoked internally. Initialisation is redundand
-    protected Index(Column<E, ?, EntityRelation> indexedColumn, Map<F, List<E>> fieldEntitiesMap, List<E> nullValuesEntities) {
+    protected Index(Column<E, ?, RelatedTo> indexedColumn, Map<F, List<E>> fieldEntitiesMap, List<E> nullValuesEntities) {
         this.indexedColumn = indexedColumn;
         this.fieldEntitiesMap.putAll(fieldEntitiesMap);
         this.nullValuesEntities = nullValuesEntities;
@@ -42,7 +42,7 @@ public abstract class Index<E extends Entity, F> {
     }
 
 
-    public Index(Column<E, ?, EntityRelation> indexedColumn, EntitiesBufferIndexed<E> buffer) {
+    public Index(Column<E, ?, RelatedTo> indexedColumn, EntitiesBufferIndexed<E> buffer) {
         this.indexedColumn = indexedColumn;
         init(buffer);
         double indexSize = fieldEntitiesMap.size();
@@ -60,7 +60,7 @@ public abstract class Index<E extends Entity, F> {
     }
 
     protected <F> F getColumnValue(FakePkEntity<Number, E> entity) {
-        return (F) indexedColumn.getValue((EntityRelation) entity.getEntity());
+        return (F) indexedColumn.getValue((RelatedTo) entity.getEntity());
     }
 
     private void init(EntitiesBufferIndexed<E> elements) {
@@ -297,9 +297,9 @@ public abstract class Index<E extends Entity, F> {
 //        else return low;
 //    }
 
-    protected abstract Index<E, F> newInstance(Column<E, ?, EntityRelation> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E> nullValuesAsPK);
+    protected abstract Index<E, F> newInstance(Column<E, ?, RelatedTo> indexedColumn, NavigableMap<F, List<E>> oneToManyMap, List<E> nullValuesAsPK);
 
-    public Column<E, ?, EntityRelation> getIndexedColumn() {
+    public Column<E, ?, RelatedTo> getIndexedColumn() {
         return indexedColumn;
     }
 

@@ -91,7 +91,7 @@ public class ProcedureParameters {
     }
 
     @SuppressWarnings("rawtypes")
-    protected <E extends Entity, F, R extends EntityRelation> void specifyValue(int position, Column<E, F, R> column) {
+    protected <E extends Entity, F, R extends RelatedTo> void specifyValue(int position, Column<E, F, R> column) {
         if (position > (length + 1))
             throw new DaobabException("position greater than allowed value which is " + length);
         if (position <= 0) throw new DaobabException("position must be greater than 0 ");

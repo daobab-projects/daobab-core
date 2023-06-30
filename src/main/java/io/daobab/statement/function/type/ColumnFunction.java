@@ -3,7 +3,7 @@ package io.daobab.statement.function.type;
 import io.daobab.error.MandatoryFunctionParameter;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityRelation;
+import io.daobab.model.RelatedTo;
 import io.daobab.model.dummy.DummyColumnTemplate;
 import io.daobab.query.base.Query;
 import io.daobab.query.marker.ColumnOrQuery;
@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class ColumnFunction<E extends Entity, F, R extends EntityRelation, C> implements Column<E, C, R> {
+public class ColumnFunction<E extends Entity, F, R extends RelatedTo, C> implements Column<E, C, R> {
 
     public static final String KEY_VALUES = "VALUES";
     public static final String BEFORE_COL3 = "BEFORE_COL3";

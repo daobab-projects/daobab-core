@@ -92,7 +92,7 @@ public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E
     }
 
     @SuppressWarnings("rawtypes")
-    public <F, R extends EntityRelation> BufferQueryUpdate<E> set(Column<E, F, R> key, R value) {
+    public <F, R extends RelatedTo> BufferQueryUpdate<E> set(Column<E, F, R> key, R value) {
         set(new SetFields().setValue(key, value));
         return this;
     }

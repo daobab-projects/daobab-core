@@ -117,7 +117,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
 
             BitBufferIndexBase index = indexRepository[pointer];
             if (index != null) {
-                index.removeValue(column.getValueOf((EntityRelation) entityToRemove), position);
+                index.removeValue(column.getValueOf((RelatedTo) entityToRemove), position);
             }
         }
 
@@ -138,7 +138,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
         for (TableColumn tableColumn : getColumnsForTable(entity)) {
             Column column = tableColumn.getColumn();
             Integer pointer = columnsOrder.get(column.getColumnName());
-            Object value = column.getValueOf((EntityRelation) entity);
+            Object value = column.getValueOf((RelatedTo) entity);
             if (pointer == null) {
                 Map<String, Object> additionalValues = additionalParameters.getOrDefault(entityLocation, new HashMap<>());
                 additionalValues.put(column.toString(), value);
@@ -201,13 +201,13 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
             if (posCol == null) {
                 HashMap<String, Object> additionalValues = additionalParameters.get(entityLocation);
                 if (additionalValues != null) {
-                    rv = (Plate) column.setValue((EntityRelation) rv, additionalValues.get(column.toString()));
+                    rv = (Plate) column.setValue((RelatedTo) rv, additionalValues.get(column.toString()));
                 }
                 cnt++;
                 continue;
             }
             pageBuffer.position(0);
-            rv = (Plate) column.setValue((EntityRelation) rv, bitFields[cnt].readValue(pageBuffer, posEntity + posCol));
+            rv = (Plate) column.setValue((RelatedTo) rv, bitFields[cnt].readValue(pageBuffer, posEntity + posCol));
             cnt++;
         }
         return rv;
