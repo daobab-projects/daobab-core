@@ -38,7 +38,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     private transient StatisticCollector statistic;
     private boolean statisticEnabled = false;
 
-    private transient AccessProtector accessProtector = new BasicAccessProtector();
+    private transient AccessProtector accessProtector = new BasicAccessProtector(this);
 
     public PlateBuffer() {
     }
@@ -54,6 +54,11 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     @Override
     public boolean isTransactionActive() {
         return transactionActive;
+    }
+
+    @Override
+    public String getEntityName(Class<? extends Entity> entityClass) {
+        return Plate.class.getName();
     }
 
     @Override

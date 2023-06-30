@@ -4,6 +4,8 @@ import io.daobab.error.AccessDenied;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.TableColumn;
+import io.daobab.target.Target;
+import io.daobab.target.database.QueryTarget;
 
 import java.util.*;
 
@@ -18,11 +20,17 @@ public class BasicAccessProtector implements AccessProtector {
     private DefaultAccessStrategy defaultAccessStrategy = DefaultAccessStrategy.ALLOW;
     private boolean enabled = false;
 
+    private final Target target;
+
+    public BasicAccessProtector(Target target) {
+        this.target = target;
+    }
+
     @Override
     public AccessProtector setEntityAccess(Entity entity, Access... accessRights) {
         Set<Access> ar = new HashSet<>();
         Collections.addAll(ar, accessRights);
-        entityRights.put(entity.getEntityName(), ar);
+        entityRights.put(target.getEntityName(entity.getEntityClass()), ar);
         setEnabled(true);
         return this;
     }
@@ -47,12 +55,12 @@ public class BasicAccessProtector implements AccessProtector {
     }
 
     @Override
-    public AccessProtector setEntityAccess(Access accessRights, Entity... entities) {
+    public AccessProtector setEntityAccess(QueryTarget target, Access accessRights, Entity... entities) {
         if (accessRights == null || entities == null) return this;
         for (Entity entity : entities) {
-            Set<Access> ar = entityRights.getOrDefault(entity.getEntityName(), new HashSet<>());
+            Set<Access> ar = entityRights.getOrDefault(target.getEntityName(entity.getEntityClass()), new HashSet<>());
             Collections.addAll(ar, accessRights);
-            entityRights.put(entity.getEntityName(), ar);
+            entityRights.put(target.getEntityName(entity.getEntityClass()), ar);
         }
         setEnabled(true);
         return this;
@@ -156,7 +164,7 @@ public class BasicAccessProtector implements AccessProtector {
 
     @Override
     public boolean isEntityAllowedFor(Entity entity, OperationType operation) {
-        return isEntityAllowedFor(entity.getEntityName(), operation);
+        return isEntityAllowedFor(target.getEntityName(entity.getEntityClass()), operation);
     }
 
     @Override
@@ -170,7 +178,7 @@ public class BasicAccessProtector implements AccessProtector {
     public boolean isColumnAllowedFor(Column column, OperationType operation) {
         if (!isEnabled()) return true;
         Set<Access> rights = columnRights.get(column);
-        boolean entityIsAllowed = isEntityAllowedFor(column.getEntityName(), operation);
+        boolean entityIsAllowed = isEntityAllowedFor(target.getEntityName(column.getEntityClass()), operation);
         if (!entityIsAllowed) {
             return false;
         }

@@ -63,7 +63,7 @@ public interface RequestDate<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return getEntityClass().getName() + "." + getFieldName();
             }
 
             @Override

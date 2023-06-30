@@ -56,7 +56,7 @@ public abstract class Index<E extends Entity, F> {
         if (indexSize == 1) {
             worthless = true;
         }
-        log.info("Index created for column {}, Total elements: {} indexed size: {}. Index considered as {}", indexedColumn.getEntityName() + "." + indexedColumn.getColumnName(), buffer.size(), indexSize, worthless ? "worthless" : "useful");
+        log.info("Index created for column {}, Total elements: {} indexed size: {}. Index considered as {}", indexedColumn.getEntityClass().getName() + "." + indexedColumn.getColumnName(), buffer.size(), indexSize, worthless ? "worthless" : "useful");
     }
 
     protected <F> F getColumnValue(FakePkEntity<Number, E> entity) {

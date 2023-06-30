@@ -67,7 +67,7 @@ public interface SpecialFeatures<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return getEntityClass().getName() + "." + getFieldName();
             }
 
             @Override

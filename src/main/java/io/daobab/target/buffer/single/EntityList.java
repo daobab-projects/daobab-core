@@ -48,9 +48,10 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     private final Class<E> entityClazz;
     private final transient ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private boolean statisticEnabled = false;
-    private transient AccessProtector accessProtector = new BasicAccessProtector();
+    private transient AccessProtector accessProtector = new BasicAccessProtector(this);
     private final transient Lock readLock = readWriteLock.readLock();
     private final transient Lock writeLock = readWriteLock.writeLock();
+
 
     private transient StatisticCollector statistic;
 
@@ -71,6 +72,11 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     @Override
     public boolean isTransactionActive() {
         throw new TargetDoesNotSupport();
+    }
+
+    @Override
+    public String getEntityName(Class<? extends Entity> entityClass) {
+        return entityClass.getName();
     }
 
     @Override

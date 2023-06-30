@@ -5,6 +5,7 @@ import io.daobab.error.DaobabException;
 import io.daobab.error.NullEntityException;
 import io.daobab.model.Column;
 import io.daobab.model.ColumnHaving;
+import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.query.frozen.DaoParam;
 import io.daobab.target.database.query.frozen.ParameterInjectionPoint;
 
@@ -23,7 +24,6 @@ public final class IdentifierStorage {
     private final Map<String, String> queryIdentifiers = new HashMap<>();
     private final Map<String, String> joinIdentifiers = new HashMap<>();
     private final List<String> queryEntities = new ArrayList<>();
-
     private final List<ParameterInjectionPoint> queryParameters = new ArrayList<>();
 
     public void registerIdentifiers(String... entities) {
@@ -44,13 +44,13 @@ public final class IdentifierStorage {
         queryParameters.add(new ParameterInjectionPoint(param,typeConverter));
     }
 
-    public StringBuilder getIdentifierForColumn(Column<?, ?, ?> field) {
+    public StringBuilder getIdentifierForColumn(QueryTarget target, Column<?, ?, ?> field) {
         StringBuilder sb = new StringBuilder();
         if (field == null) return sb;
         if (field instanceof ColumnHaving) {
             sb.append(field.getColumnName());
         } else {
-            sb.append(getIdentifierFor(field.getEntityName()))
+            sb.append(getIdentifierFor(target.getEntityName(field.getEntityClass())))
                     .append(".")
                     .append(field.getColumnName());
         }

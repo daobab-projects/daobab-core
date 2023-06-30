@@ -9,17 +9,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FlatPlateImpl extends HashMap<String,Object> implements FlatPlate{
+public class FlatPlateImpl extends HashMap<String, Object> implements FlatPlate {
 
     final Map<String, FieldJsonConversion> plateJsonConversion;
-    public FlatPlateImpl(Map<String, FieldJsonConversion> plateJsonConversion){
-        this.plateJsonConversion=plateJsonConversion;
-    }
 
-    @Override
-    public String getEntityName() {
-        return this.getClass().getSimpleName();
+    public FlatPlateImpl(Map<String, FieldJsonConversion> plateJsonConversion) {
+        this.plateJsonConversion = plateJsonConversion;
     }
+//
+//    @Override
+//    public String getEntityName() {
+//        return this.getClass().getSimpleName();
+//    }
 
     @Override
     public List<TableColumn> columns() {

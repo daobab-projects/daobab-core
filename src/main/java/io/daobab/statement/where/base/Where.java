@@ -9,6 +9,7 @@ import io.daobab.statement.inner.InnerQueryFieldsProvider;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.statement.where.WhereNot;
 import io.daobab.statement.where.WhereOr;
+import io.daobab.target.Target;
 import io.daobab.target.buffer.single.Entities;
 
 import java.util.*;
@@ -392,16 +393,16 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W) this;
     }
 
-    public Set<String> getAllDaoInWhereClause() {
+    public Set<String> getAllDaoInWhereClause(Target target) {
         Set<String> rv = new HashSet<>();
         for (int i = 1; i < getCounter(); i++) {
             Field<?, ?, ?> key = getKeyForPointer(i);
 
             Object val = getValueForPointer(i);
             if (val instanceof Where) {
-                rv.addAll(((Where) val).getAllDaoInWhereClause());
+                rv.addAll(((Where) val).getAllDaoInWhereClause(target));
             }
-            if (key != null) rv.add(key.getEntityName());
+            if (key != null) rv.add(target.getEntityName(key.getEntityClass()));
         }
 
         return rv;
@@ -425,11 +426,6 @@ public abstract class Where<W extends Where> extends WhereBase {
             @Override
             public String getFieldName() {
                 return column.getFieldName();
-            }
-
-            @Override
-            public String getEntityName() {
-                return select.getEntityName();
             }
 
             @Override

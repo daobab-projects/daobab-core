@@ -1,10 +1,6 @@
 package io.daobab.test.dao.table;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.test.dao.column.ActorId;
 import io.daobab.test.dao.column.FirstName;
 import io.daobab.test.dao.column.LastName;
@@ -15,9 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@TableName("ACTOR")
 public class Actor extends Table<Actor> implements
         ActorId<Actor>,
         FirstName<Actor>,
@@ -26,10 +20,6 @@ public class Actor extends Table<Actor> implements
 
         PrimaryKey<Actor, Integer, ActorId> {
 
-    @Override
-    public String getEntityName() {
-        return "ACTOR";
-    }
 
     @Override
     public List<TableColumn> columns() {

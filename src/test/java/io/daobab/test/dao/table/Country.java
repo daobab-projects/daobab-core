@@ -1,10 +1,6 @@
 package io.daobab.test.dao.table;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.test.dao.column.CountryId;
 import io.daobab.test.dao.column.LastUpdate;
 
@@ -13,20 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@TableName("COUNTRY")
 public class Country extends Table<Country> implements
         CountryId<Country>,
         io.daobab.test.dao.column.Country<Country>,
         LastUpdate<Country>,
 
         PrimaryKey<Country, Integer, CountryId> {
-
-    @Override
-    public String getEntityName() {
-        return "COUNTRY";
-    }
 
     @Override
     public List<TableColumn> columns() {

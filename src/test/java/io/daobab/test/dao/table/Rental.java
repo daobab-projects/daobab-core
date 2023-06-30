@@ -1,10 +1,6 @@
 package io.daobab.test.dao.table;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.test.dao.column.*;
 
 import java.math.BigDecimal;
@@ -13,9 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@TableName("RENTAL")
 public class Rental extends Table<Rental> implements
         RentalId<Rental>,
         RentalDate<Rental>,
@@ -26,11 +20,6 @@ public class Rental extends Table<Rental> implements
         LastUpdate<Rental>,
 
         PrimaryKey<Rental, BigDecimal, RentalId> {
-
-    @Override
-    public String getEntityName() {
-        return "RENTAL";
-    }
 
     @Override
     public List<TableColumn> columns() {

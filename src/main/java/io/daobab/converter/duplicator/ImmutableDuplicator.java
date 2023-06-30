@@ -1,6 +1,5 @@
 package io.daobab.converter.duplicator;
 
-import java.time.LocalDate;
 
 public class ImmutableDuplicator<T> extends Duplicator<T> {
 

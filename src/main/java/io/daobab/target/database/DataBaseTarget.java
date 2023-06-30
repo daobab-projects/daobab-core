@@ -217,7 +217,7 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     public MetaColumn getMetaDataForColumn(Column<?, ?, ?> column) {
         if (column == null) throw new MandatoryColumn();
         return getMetaData().select(tabMetaColumn).where(new WhereAnd()
-                        .equal(tabMetaColumn.colTableName(), column.getEntityName())
+                        .equal(tabMetaColumn.colTableName(), getEntityName(column.getEntityClass()))
                         .equal(tabMetaColumn.colColumnName(), column.getColumnName()))
                 .findOne();
     }
@@ -225,7 +225,7 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     public <E extends Entity> MetaTable getMetaDataForTable(E entity) {
         if (entity == null) throw new MandatoryEntity();
         return getMetaData().select(tabMetaTable)
-                .whereEqual(tabMetaTable.colTableName(), entity.getEntityName())
+                .whereEqual(tabMetaTable.colTableName(), getEntityName(entity.getEntityClass()))
                 .findOne();
     }
 

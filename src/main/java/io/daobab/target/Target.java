@@ -20,5 +20,7 @@ public interface Target extends ILoggerBean, AccessProtectorProvider {
 
     boolean isTransactionActive();
 
+    String getEntityName(Class<? extends Entity> entityClass);
+
 
 }

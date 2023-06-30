@@ -1,7 +1,10 @@
 package io.daobab.target.database.meta.table;
 
+import io.daobab.model.TableName;
+
 import java.util.Map;
 
+@TableName("META_VIEW")
 public class MetaView extends MetaTable {
 
     public MetaView() {
@@ -12,8 +15,4 @@ public class MetaView extends MetaTable {
         super(parameters);
     }
 
-    @Override
-    public String getEntityName() {
-        return "META_VIEW";
-    }
 }

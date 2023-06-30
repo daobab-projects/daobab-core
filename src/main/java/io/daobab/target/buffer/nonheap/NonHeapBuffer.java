@@ -54,7 +54,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     protected List<Integer> locations = new ArrayList<>();
     protected LinkedList<Integer> removed = new LinkedList<>();
     protected Map<Integer, HashMap<String, Object>> additionalParameters = new HashMap<>();
-    private AccessProtector accessProtector = new BasicAccessProtector();
+    private AccessProtector accessProtector = new BasicAccessProtector(this);
 
     protected final BitFieldRegistry bitFieldRegistry;
 

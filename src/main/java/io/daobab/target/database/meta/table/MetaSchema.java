@@ -1,10 +1,7 @@
 package io.daobab.target.database.meta.table;
 
 
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.target.database.meta.column.MetaCatalogName;
 import io.daobab.target.database.meta.column.MetaSchemaName;
 import io.daobab.target.database.meta.column.Remarks;
@@ -14,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@TableName("META_SCHEMA")
 @SuppressWarnings("rawtypes")
 public class MetaSchema extends Table<MetaSchema> implements
         Remarks<MetaSchema>,
@@ -29,11 +27,6 @@ public class MetaSchema extends Table<MetaSchema> implements
         super(parameters);
     }
 
-
-    @Override
-    public String getEntityName() {
-        return "META_SCHEMA";
-    }
 
     @Override
     public List<TableColumn> columns() {

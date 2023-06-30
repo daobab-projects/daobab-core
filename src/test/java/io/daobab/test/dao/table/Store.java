@@ -1,10 +1,6 @@
 package io.daobab.test.dao.table;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import io.daobab.model.Column;
-import io.daobab.model.PrimaryKey;
-import io.daobab.model.Table;
-import io.daobab.model.TableColumn;
+import io.daobab.model.*;
 import io.daobab.test.dao.column.AddressId;
 import io.daobab.test.dao.column.LastUpdate;
 import io.daobab.test.dao.column.ManagerStaffId;
@@ -15,10 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
-
-@JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
+@TableName("STORE")
 public class Store extends Table<Store> implements
         StoreId<Store>,
         ManagerStaffId<Store>,
@@ -34,11 +27,6 @@ public class Store extends Table<Store> implements
 
     public Store(Map<String, Object> parameters) {
         super(parameters);
-    }
-
-    @Override
-    public String getEntityName() {
-        return "STORE";
     }
 
     @Override

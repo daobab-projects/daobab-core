@@ -9,7 +9,6 @@ import io.daobab.target.Target;
  */
 public interface Entity extends ColumnsProvider, JsonProvider {
 
-    String getEntityName();
 
     Class<? extends Entity> getEntityClass();
 

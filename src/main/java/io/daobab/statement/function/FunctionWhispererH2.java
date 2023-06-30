@@ -1,5 +1,6 @@
 package io.daobab.statement.function;
 
+import io.daobab.converter.duplicator.duplication.EntityDuplication;
 import io.daobab.error.MandatoryFunctionParameter;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
@@ -670,11 +671,11 @@ public interface FunctionWhispererH2 {
     }
 
     default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, String> diskSpaceUsed(Entity entity) {
-        if (entity == null || entity.getEntityName() == null) {
+        if (entity == null) {
             throw new MandatoryFunctionParameter(DictFunctionH2.DISK_SPACE_USED);
         }
         NoParamFunction<E, F, R, String> rv = new NoParamFunction<>(DictFunctionH2.DISK_SPACE_USED, String.class);
-        rv.setKeyValue(ColumnFunction.AFTER_COL, entity.getEntityName());
+        rv.setKeyValue(ColumnFunction.AFTER_COL, EntityDuplication.getEntityNameByInstance(entity, null));
         return rv;
     }
 

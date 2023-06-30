@@ -61,7 +61,7 @@ public interface MetaSchemaName<E extends Entity> extends RelatedTo<E>, MapHandl
 
             @Override
             public String toString() {
-                return getEntityName() + "." + getFieldName();
+                return getEntityClass().getName() + "." + getFieldName();
             }
 
             @Override

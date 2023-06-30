@@ -1,5 +1,6 @@
 package io.daobab.query.marschal;
 
+import io.daobab.converter.duplicator.duplication.EntityDuplication;
 import io.daobab.error.MandatoryTargetException;
 import io.daobab.error.NoEntitiesIntoTargetException;
 import io.daobab.generator.DictRemoteKey;
@@ -42,7 +43,7 @@ public interface Marshaller {
         Map<String, Object> rv = new HashMap<>();
 
         rv.put(DictRemoteKey.FIELD, column.getFieldName());
-        rv.put(DictRemoteKey.ENTITY_NAME, column.getInstance().getEntityName());
+        rv.put(DictRemoteKey.ENTITY_NAME, EntityDuplication.getEntityName(column.getEntityClass(), null));
 
 
         return rv;
@@ -68,7 +69,7 @@ public interface Marshaller {
         if (target == null) throw new MandatoryTargetException();
 
         for (Entity targetentity : target.getTables()) {
-            if (targetentity.getEntityName().equals(entity)) {
+            if (target.getEntityName(targetentity.getEntityClass()).equals(entity)) {
                 return targetentity;
             }
         }

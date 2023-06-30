@@ -13,7 +13,10 @@ import io.daobab.model.TableColumn;
 import io.daobab.query.base.*;
 import io.daobab.query.marschal.Marshaller;
 import io.daobab.statement.base.IdentifierStorage;
-import io.daobab.statement.condition.*;
+import io.daobab.statement.condition.Having;
+import io.daobab.statement.condition.Limit;
+import io.daobab.statement.condition.Order;
+import io.daobab.statement.condition.SetOperator;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.statement.join.JoinWrapper;
 import io.daobab.statement.where.WhereAnd;
@@ -124,7 +127,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         if (target == null) throw new MandatoryTargetException();
         if (entity == null) throw new NullEntityException();
         setTarget(target);
-        setEntityName(entity.getEntityName());
+        setEntityName(target.getEntityName(entity.getEntityClass()));
         setEntityClass(entity.getEntityClass());
         IdentifierStorage storage = new IdentifierStorage();
         storage.registerIdentifiers(getEntityName());
@@ -389,7 +392,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
             return new TableColumn(column);
         }
 
-        if (column.getEntityName().equals("DUAL")) {
+        if (target.getEntityName(column.getEntityClass()).equals("DUAL")) {
             return new TableColumn(column);
         }
 
@@ -411,7 +414,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     public <E extends Entity> Q from(E entity) {
         if (entity == null) throw new NullEntityException();
-        setEntityName(entity.getEntityName());
+        setEntityName(target.getEntityName(entity.getEntityClass()));
         setEntityClass(entity.getEntityClass());
         IdentifierStorage storage = new IdentifierStorage();
         setIdentifierStorage(storage);

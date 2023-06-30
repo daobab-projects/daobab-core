@@ -3,6 +3,7 @@ package io.daobab.target.protection;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.TableColumn;
+import io.daobab.target.database.QueryTarget;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface AccessProtector {
 
     AccessProtector setColumnAccess(Column column, Access... accessRights);
 
-    AccessProtector setEntityAccess(Access accessRights, Entity... entities);
+    AccessProtector setEntityAccess(QueryTarget target, Access accessRights, Entity... entities);
 
     AccessProtector setEntityAccess(Access accessRights, String... entities);
 
