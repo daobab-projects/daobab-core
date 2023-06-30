@@ -1,5 +1,7 @@
 package io.daobab.target.database.connection;
 
+import io.daobab.clone.EntityBuilder;
+import io.daobab.clone.EntityDuplicator;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.NoSequenceException;
@@ -47,7 +49,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <E extends Entity> E readEntity(QueryTarget target, ResultSet rs, E entity, List<TableColumn> columns) {
+    public <E extends Entity> E readEntity(QueryTarget target, ResultSet rs, Class<E> entityClass, List<TableColumn> columns) {
 
         Column[] columnsArr = new Column[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
@@ -59,19 +61,15 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
             typeConvertersArr[i] = target.getConverterManager().getConverter(columnsArr[i]).orElse(null);
         }
 
+        EntityBuilder<E> builder = EntityDuplicator.builder(entityClass);
+
         for (int i = 0; i < columns.size(); i++) {
-            entity = (E) columnsArr[i].setValue((EntityRelation) entity, readCell(typeConvertersArr[i], rs, i + 1, columnsArr[i]));
+            builder.add(columnsArr[i], readCell(typeConvertersArr[i], rs, i + 1, columnsArr[i]));
+//            entity = (E) columnsArr[i].setValue((EntityRelation) entity, readCell(typeConvertersArr[i], rs, i + 1, columnsArr[i]));
         }
-        return entity;
+        return builder.build();
     }
 
-//    @SuppressWarnings({"unchecked", "rawtypes"})
-//    public <E extends Entity> E readEntity(ResultSet rs, E entity, Column[] columnsArr, DatabaseTypeConverter<?, ?>[] typeConverters) {
-//        for (int i = 0; i < columnsArr.length; i++) {
-//            columnsArr[i].setValue((EntityRelation) entity, readCell(typeConverters[i], rs, i + 1, columnsArr[i]));
-//        }
-//        return entity;
-//    }
 
     @Override
     public Timestamp toTimeZone(Timestamp timestamp, TimeZone timeZone) {

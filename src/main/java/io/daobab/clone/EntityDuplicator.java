@@ -23,6 +23,10 @@ public final class EntityDuplicator {
     private EntityDuplicator() {
     }
 
+    public static <E extends Entity> EntityBuilder<E> builder(Class<E> entityClass) {
+        return new EntityBuilder<>(entityClass);
+    }
+
     public static <E extends Entity> E createEntity(Class<E> entityClass) {
         return createEntity(entityClass, new HashMap<>());
     }

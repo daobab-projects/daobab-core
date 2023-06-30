@@ -98,5 +98,9 @@ public abstract class Table<E extends Table> implements EntityMap<E>, JsonProvid
         return parameters;
     }
 
+    public E clone() {
+        return (E) EntityDuplicator.cloneEntity(this);
+    }
+
 
 }

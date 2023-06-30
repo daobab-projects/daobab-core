@@ -20,7 +20,7 @@ public interface ResultSetReader {
 
     <O extends ProcedureParameters> O readProcedure(ResultSet rs, O out) throws SQLException;
 
-    <E extends Entity> E readEntity(QueryTarget target, ResultSet rs, E entity, List<TableColumn> columns);
+    <E extends Entity> E readEntity(QueryTarget target, ResultSet rs, Class<E> entityClass, List<TableColumn> columns);
 
     Timestamp toTimeZone(Timestamp timestamp, TimeZone timeZone);
 
