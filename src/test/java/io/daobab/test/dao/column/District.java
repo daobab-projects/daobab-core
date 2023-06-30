@@ -20,8 +20,7 @@ public interface District<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setDistrict(String val) {
-        setColumnParam("District", val);
-        return (E) this;
+        return setColumnParam("District", val);
     }
 
     default Column<E, String, District> colDistrict() {
@@ -54,9 +53,9 @@ public interface District<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(District entity, String param) {
+            public District setValue(District entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "District");
-                entity.setDistrict(param);
+                return (District) entity.setDistrict(param);
             }
 
             @Override

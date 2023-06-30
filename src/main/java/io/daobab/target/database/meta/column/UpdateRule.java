@@ -16,8 +16,7 @@ public interface UpdateRule<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setUpdateRule(MetaRule val) {
-        setColumnParam("UpdateRule", val);
-        return (E) this;
+        return setColumnParam("UpdateRule", val);
     }
 
     default Column<E, MetaRule, UpdateRule> colUpdateRule() {
@@ -50,9 +49,9 @@ public interface UpdateRule<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(UpdateRule entity, MetaRule param) {
+            public UpdateRule setValue(UpdateRule entity, MetaRule param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "UpdateRule");
-                entity.setUpdateRule(param);
+                return (UpdateRule) entity.setUpdateRule(param);
             }
 
             @Override

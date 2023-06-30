@@ -15,8 +15,7 @@ public interface MetaColumnDefault<E extends EntityMap> extends EntityRelationMa
     }
 
     default E setColumnDefault(String val) {
-        setColumnParam("ColumnDefault", val);
-        return (E) this;
+        return setColumnParam("ColumnDefault", val);
     }
 
     default Column<E, String, MetaColumnDefault> colColumnDefault() {
@@ -49,9 +48,9 @@ public interface MetaColumnDefault<E extends EntityMap> extends EntityRelationMa
             }
 
             @Override
-            public void setValue(MetaColumnDefault entity, String param) {
+            public MetaColumnDefault setValue(MetaColumnDefault entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ColumnDefault");
-                entity.setColumnDefault(param);
+                return (MetaColumnDefault) entity.setColumnDefault(param);
             }
 
             @Override

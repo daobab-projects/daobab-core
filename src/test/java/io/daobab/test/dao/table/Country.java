@@ -20,7 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
-public class Country extends Table implements
+public class Country extends Table<Country> implements
         CountryId<Country>,
         io.daobab.test.dao.column.Country<Country>,
         LastUpdate<Country>,

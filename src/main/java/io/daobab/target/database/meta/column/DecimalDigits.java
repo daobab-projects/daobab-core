@@ -15,8 +15,7 @@ public interface DecimalDigits<E extends EntityMap> extends EntityRelationMap<E>
     }
 
     default E setDecimalDigits(Integer val) {
-        setColumnParam("DecimalDigits", val);
-        return (E) this;
+        return setColumnParam("DecimalDigits", val);
     }
 
     default Column<E, Integer, DecimalDigits> colDecimalDigits() {
@@ -49,9 +48,9 @@ public interface DecimalDigits<E extends EntityMap> extends EntityRelationMap<E>
             }
 
             @Override
-            public void setValue(DecimalDigits entity, Integer param) {
+            public DecimalDigits setValue(DecimalDigits entity, Integer param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "DecimalDigits");
-                entity.setDecimalDigits(param);
+                return (DecimalDigits) entity.setDecimalDigits(param);
             }
 
             @Override

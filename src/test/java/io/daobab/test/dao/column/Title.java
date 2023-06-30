@@ -20,8 +20,7 @@ public interface Title<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setTitle(String val) {
-        setColumnParam("Title", val);
-        return (E) this;
+        return setColumnParam("Title", val);
     }
 
     default Column<E, String, Title> colTitle() {
@@ -54,9 +53,9 @@ public interface Title<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Title entity, String param) {
+            public Title setValue(Title entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Title");
-                entity.setTitle(param);
+                return (Title) entity.setTitle(param);
             }
 
             @Override

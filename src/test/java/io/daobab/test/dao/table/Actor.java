@@ -22,7 +22,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
-public class Actor extends Table implements
+public class Actor extends Table<Actor> implements
         ActorId<Actor>,
         FirstName<Actor>,
         LastName<Actor>,

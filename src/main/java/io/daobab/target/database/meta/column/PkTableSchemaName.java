@@ -15,8 +15,7 @@ public interface PkTableSchemaName<E extends EntityMap> extends EntityRelationMa
     }
 
     default E setPkSchemaName(String val) {
-        setColumnParam("PkSchemaName", val);
-        return (E) this;
+        return setColumnParam("PkSchemaName", val);
     }
 
     default Column<E, String, PkTableSchemaName> colPkSchemaName() {
@@ -49,9 +48,9 @@ public interface PkTableSchemaName<E extends EntityMap> extends EntityRelationMa
             }
 
             @Override
-            public void setValue(PkTableSchemaName entity, String param) {
+            public PkTableSchemaName setValue(PkTableSchemaName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PkSchemaName");
-                entity.setPkSchemaName(param);
+                return (PkTableSchemaName) entity.setPkSchemaName(param);
             }
 
             @Override

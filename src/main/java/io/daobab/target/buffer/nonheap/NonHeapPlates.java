@@ -201,13 +201,13 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
             if (posCol == null) {
                 HashMap<String, Object> additionalValues = additionalParameters.get(entityLocation);
                 if (additionalValues != null) {
-                    column.setValue((EntityRelation) rv, additionalValues.get(column.toString()));
+                    rv = (Plate) column.setValue((EntityRelation) rv, additionalValues.get(column.toString()));
                 }
                 cnt++;
                 continue;
             }
             pageBuffer.position(0);
-            column.setValue((EntityRelation) rv, bitFields[cnt].readValue(pageBuffer, posEntity + posCol));
+            rv = (Plate) column.setValue((EntityRelation) rv, bitFields[cnt].readValue(pageBuffer, posEntity + posCol));
             cnt++;
         }
         return rv;

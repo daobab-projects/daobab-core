@@ -18,7 +18,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
-public class Customer extends Table implements
+public class Customer extends Table<Customer> implements
         CustomerId<Customer>,
         StoreId<Customer>,
         FirstName<Customer>,

@@ -1,10 +1,10 @@
 package io.daobab.target.buffer.remote;
 
+import io.daobab.clone.EntityDuplicator;
 import io.daobab.error.ReadRemoteException;
 import io.daobab.error.RemoteDaobabException;
 import io.daobab.error.RemoteTargetCanNotHandleOpenedTransactionException;
 import io.daobab.model.Entity;
-import io.daobab.model.EntityMap;
 import io.daobab.model.Plate;
 import io.daobab.model.ResponseWrapper;
 import io.daobab.query.base.Query;
@@ -61,9 +61,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
         List<E> rv = new ArrayList<>();
         try {
             for (Map<String, Object> map : listmap) {
-                EntityMap entity = (EntityMap) query.getEntityClass().getDeclaredConstructor().newInstance();
-                entity.putAll(map);
-                rv.add((E) entity);
+                rv.add(EntityDuplicator.createEntity(query.getEntityClass(), map));
             }
 
             return new EntityList<>(rv, query.getEntityClass());
@@ -79,14 +77,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
         if (Integer.parseInt(response.getStatus()) < 0) {
             throw new RemoteDaobabException(response);
         }
-
-        try {
-            EntityMap rv = (EntityMap) query.getEntityClass().getDeclaredConstructor().newInstance();
-            rv.putAll((Map<String, Object>) response.getContent());
-            return (E) rv;
-        } catch (Exception e) {
-            throw new ReadRemoteException(e);
-        }
+        return EntityDuplicator.createEntity(query.getEntityClass(), (Map<String, Object>) response.getContent());
     }
 
     @SuppressWarnings("unchecked")

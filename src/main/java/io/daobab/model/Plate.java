@@ -168,7 +168,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
             rv = entityClass.getDeclaredConstructor().newInstance();
 
             for (TableColumn column : rv.columns()) {
-                column.getColumn().setValue((EntityRelation) rv, getValue(column.getColumn()));
+                rv = (E) column.getColumn().setValue((EntityRelation) rv, getValue(column.getColumn()));
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new DaobabEntityCreationException(entityClass, e);
@@ -226,7 +226,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
                 if (!col.getColumn().getEntityClass().equals(targetTypeClass)) {
                     throw new DaobabException("Invalid class");
                 }
-                col.getColumn().setValue((EntityRelation) entity, getValue(col.getColumn()));
+                entity = (E) col.getColumn().setValue((EntityRelation) entity, getValue(col.getColumn()));
 //                entity.setColumnParam(col.getColumn().getFieldName(), getValue(col.getColumn()));
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {

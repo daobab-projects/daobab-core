@@ -21,8 +21,7 @@ public interface ReturnDate<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setReturnDate(Timestamp val) {
-        setColumnParam("ReturnDate", val);
-        return (E) this;
+        return setColumnParam("ReturnDate", val);
     }
 
     default Column<E, Timestamp, ReturnDate> colReturnDate() {
@@ -55,9 +54,9 @@ public interface ReturnDate<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(ReturnDate entity, Timestamp param) {
+            public ReturnDate setValue(ReturnDate entity, Timestamp param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ReturnDate");
-                entity.setReturnDate(param);
+                return (ReturnDate) entity.setReturnDate(param);
             }
 
             @Override

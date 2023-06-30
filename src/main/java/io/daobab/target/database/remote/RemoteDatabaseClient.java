@@ -1,9 +1,13 @@
 package io.daobab.target.database.remote;
 
+import io.daobab.clone.EntityDuplicator;
 import io.daobab.error.ReadRemoteException;
 import io.daobab.error.RemoteDaobabException;
 import io.daobab.error.RemoteTargetCanNotHandleOpenedTransactionException;
-import io.daobab.model.*;
+import io.daobab.model.Entity;
+import io.daobab.model.Plate;
+import io.daobab.model.ProcedureParameters;
+import io.daobab.model.ResponseWrapper;
 import io.daobab.query.base.Query;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.single.Entities;
@@ -60,17 +64,13 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
 
         List<Map<String, Object>> listmap = (List<Map<String, Object>>) response.getContent();
         List<E> rv = new ArrayList<>();
-        try {
-            for (Map<String, Object> map : listmap) {
-                EntityMap entity = (EntityMap) query.getEntityClass().getDeclaredConstructor().newInstance();
-                entity.putAll(map);
-                rv.add((E) entity);
-            }
 
-            return new EntityList<>(rv, query.getEntityClass());
-        } catch (Exception e) {
-            throw new ReadRemoteException(e);
+        for (Map<String, Object> map : listmap) {
+            rv.add(EntityDuplicator.createEntity(query.getEntityClass(), map));
         }
+
+        return new EntityList<>(rv, query.getEntityClass());
+
     }
 
     @SuppressWarnings("unchecked")
@@ -81,13 +81,8 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
             throw new RemoteDaobabException(response);
         }
 
-        try {
-            EntityMap rv = (EntityMap) query.getEntityClass().getDeclaredConstructor().newInstance();
-            rv.putAll((Map<String, Object>) response.getContent());
-            return (E) rv;
-        } catch (Exception e) {
-            throw new ReadRemoteException(e);
-        }
+        return EntityDuplicator.createEntity(query.getEntityClass(), (Map<String, Object>) response.getContent());
+
     }
 
     @SuppressWarnings("unchecked")

@@ -15,8 +15,7 @@ public interface Ascending<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setAscending(String val) {
-        setColumnParam("Ascending", val);
-        return (E) this;
+        return setColumnParam("Ascending", val);
     }
 
     default Column<E, String, Ascending> colAscending() {
@@ -49,9 +48,9 @@ public interface Ascending<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Ascending entity, String param) {
+            public Ascending setValue(Ascending entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Ascending");
-                entity.setAscending(param);
+                return (Ascending) entity.setAscending(param);
             }
 
             @Override

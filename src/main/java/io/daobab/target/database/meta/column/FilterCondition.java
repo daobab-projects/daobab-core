@@ -15,8 +15,7 @@ public interface FilterCondition<E extends EntityMap> extends EntityRelationMap<
     }
 
     default E setFilterCondition(String val) {
-        setColumnParam("FilterCondition", val);
-        return (E) this;
+        return setColumnParam("FilterCondition", val);
     }
 
     default Column<E, String, FilterCondition> colFilterCondition() {
@@ -49,10 +48,10 @@ public interface FilterCondition<E extends EntityMap> extends EntityRelationMap<
             }
 
             @Override
-            public void setValue(FilterCondition entity, String param) {
+            public FilterCondition setValue(FilterCondition entity, String param) {
                 if (entity == null)
                     throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FilterCondition");
-                entity.setFilterCondition(param);
+                return (FilterCondition) entity.setFilterCondition(param);
             }
 
             @Override

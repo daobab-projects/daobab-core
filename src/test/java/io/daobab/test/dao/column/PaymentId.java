@@ -20,8 +20,7 @@ public interface PaymentId<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setPaymentId(Integer val) {
-        setColumnParam("PaymentId", val);
-        return (E) this;
+        return setColumnParam("PaymentId", val);
     }
 
     default Column<E, Integer, PaymentId> colPaymentId() {
@@ -54,9 +53,9 @@ public interface PaymentId<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(PaymentId entity, Integer param) {
+            public PaymentId setValue(PaymentId entity, Integer param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PaymentId");
-                entity.setPaymentId(param);
+                return (PaymentId) entity.setPaymentId(param);
             }
 
             @Override

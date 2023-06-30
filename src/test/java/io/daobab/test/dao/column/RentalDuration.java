@@ -20,8 +20,7 @@ public interface RentalDuration<E extends EntityMap> extends EntityRelationMap<E
     }
 
     default E setRentalDuration(Integer val) {
-        setColumnParam("RentalDuration", val);
-        return (E) this;
+        return setColumnParam("RentalDuration", val);
     }
 
     default Column<E, Integer, RentalDuration> colRentalDuration() {
@@ -54,9 +53,9 @@ public interface RentalDuration<E extends EntityMap> extends EntityRelationMap<E
             }
 
             @Override
-            public void setValue(RentalDuration entity, Integer param) {
+            public RentalDuration setValue(RentalDuration entity, Integer param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RentalDuration");
-                entity.setRentalDuration(param);
+                return (RentalDuration) entity.setRentalDuration(param);
             }
 
             @Override

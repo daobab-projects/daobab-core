@@ -15,8 +15,7 @@ public interface ColumnCount<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setColumnCount(Integer val) {
-        setColumnParam("ColumnCount", val);
-        return (E) this;
+        return setColumnParam("ColumnCount", val);
     }
 
     default Column<E, Integer, ColumnCount> colColumnCount() {
@@ -49,9 +48,9 @@ public interface ColumnCount<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(ColumnCount entity, Integer param) {
+            public ColumnCount setValue(ColumnCount entity, Integer param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ColumnCount");
-                entity.setColumnCount(param);
+                return (ColumnCount) entity.setColumnCount(param);
             }
 
             @Override

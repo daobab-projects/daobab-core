@@ -28,8 +28,7 @@ public interface PrimaryKey<E extends Entity, F, R extends EntityRelation> exten
 
     @SuppressWarnings("unchecked")
     default E setId(F val) {
-        colID().setValue((R) this, val);
-        return (E) this;
+        return (E) colID().setValue((R) this, val);
     }
 
 

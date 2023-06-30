@@ -21,8 +21,7 @@ public interface Amount<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setAmount(BigDecimal val) {
-        setColumnParam("Amount", val);
-        return (E) this;
+        return setColumnParam("Amount", val);
     }
 
     default Column<E, BigDecimal, Amount> colAmount() {
@@ -55,9 +54,9 @@ public interface Amount<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Amount entity, BigDecimal param) {
+            public Amount setValue(Amount entity, BigDecimal param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Amount");
-                entity.setAmount(param);
+                return (Amount) entity.setAmount(param);
             }
 
             @Override

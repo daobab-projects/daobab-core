@@ -20,8 +20,7 @@ public interface SpecialFeatures<E extends EntityMap> extends EntityRelationMap<
     }
 
     default E setSpecialFeatures(String val) {
-        setColumnParam("SpecialFeatures", val);
-        return (E) this;
+        return setColumnParam("SpecialFeatures", val);
     }
 
     default Column<E, String, SpecialFeatures> colSpecialFeatures() {
@@ -54,10 +53,10 @@ public interface SpecialFeatures<E extends EntityMap> extends EntityRelationMap<
             }
 
             @Override
-            public void setValue(SpecialFeatures entity, String param) {
+            public SpecialFeatures setValue(SpecialFeatures entity, String param) {
                 if (entity == null)
                     throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "SpecialFeatures");
-                entity.setSpecialFeatures(param);
+                return (SpecialFeatures) entity.setSpecialFeatures(param);
             }
 
             @Override

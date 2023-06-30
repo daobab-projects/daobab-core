@@ -8,8 +8,9 @@ import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-public class MetaPrimaryKey extends Table implements
+public class MetaPrimaryKey extends Table<MetaPrimaryKey> implements
         MetaCatalogName<MetaPrimaryKey>,
         MetaSchemaName<MetaPrimaryKey>,
         MetaTableName<MetaPrimaryKey>,
@@ -18,6 +19,14 @@ public class MetaPrimaryKey extends Table implements
         TableColumnName<MetaPrimaryKey>,
         PkName<MetaPrimaryKey>,
         KeySeq<MetaPrimaryKey> {
+
+    public MetaPrimaryKey() {
+        super();
+    }
+
+    public MetaPrimaryKey(Map<String, Object> parameters) {
+        super(parameters);
+    }
 
     @Override
     public String getEntityName() {

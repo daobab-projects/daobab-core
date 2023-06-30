@@ -15,8 +15,7 @@ public interface FkTableCatalogName<E extends EntityMap> extends EntityRelationM
     }
 
     default E setFkCatalogName(String val) {
-        setColumnParam("FkTableCatalogName", val);
-        return (E) this;
+        return setColumnParam("FkTableCatalogName", val);
     }
 
     default Column<E, String, FkTableCatalogName> colFkCatalogName() {
@@ -50,10 +49,10 @@ public interface FkTableCatalogName<E extends EntityMap> extends EntityRelationM
             }
 
             @Override
-            public void setValue(FkTableCatalogName entity, String param) {
+            public FkTableCatalogName setValue(FkTableCatalogName entity, String param) {
                 if (entity == null)
                     throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FkTableCatalogName");
-                entity.setFkCatalogName(param);
+                return (FkTableCatalogName) entity.setFkCatalogName(param);
             }
 
             @Override

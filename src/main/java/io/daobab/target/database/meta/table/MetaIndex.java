@@ -8,8 +8,9 @@ import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-public class MetaIndex extends Table implements
+public class MetaIndex extends Table<MetaIndex> implements
         MetaCatalogName<MetaIndex>,
         MetaSchemaName<MetaIndex>,
         MetaTableName<MetaIndex>,
@@ -22,6 +23,14 @@ public class MetaIndex extends Table implements
         Cardinality<MetaIndex>,
         TableColumnName<MetaIndex>,
         FilterCondition<MetaIndex> {
+
+    public MetaIndex() {
+        super();
+    }
+
+    public MetaIndex(Map<String, Object> parameters) {
+        super(parameters);
+    }
 
     @Override
     public String getEntityName() {

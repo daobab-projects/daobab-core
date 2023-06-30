@@ -20,8 +20,7 @@ public interface Active<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setActive(Boolean val) {
-        setColumnParam("Active", val);
-        return (E) this;
+        return setColumnParam("Active", val);
     }
 
     default Column<E, Boolean, Active> colActive() {
@@ -54,9 +53,9 @@ public interface Active<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Active entity, Boolean param) {
+            public Active setValue(Active entity, Boolean param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Active");
-                entity.setActive(param);
+                return (Active) entity.setActive(param);
             }
 
             @Override

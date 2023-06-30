@@ -56,7 +56,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
             if (SEQUENCE.equals(idgeneratorType)) {
                 setSequenceName(pk.getSequenceName());
             } else if (GENERATOR.equals(idgeneratorType)) {
-                pk.colID().setValue((EntityRelation) entity, target.getPrimaryKeyGenerator(pk).generateId(target));
+                entity = (E) pk.colID().setValue((EntityRelation) entity, target.getPrimaryKeyGenerator(pk).generateId(target));
             }
 
             setIdGenerator(idgeneratorType);

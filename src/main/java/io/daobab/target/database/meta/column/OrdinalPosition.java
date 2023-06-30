@@ -15,8 +15,7 @@ public interface OrdinalPosition<E extends EntityMap> extends EntityRelationMap<
     }
 
     default E setOrdinalPosition(Integer val) {
-        setColumnParam("OrdinalPosition", val);
-        return (E) this;
+        return setColumnParam("OrdinalPosition", val);
     }
 
     default Column<E, Integer, OrdinalPosition> colOrdinalPosition() {
@@ -49,10 +48,10 @@ public interface OrdinalPosition<E extends EntityMap> extends EntityRelationMap<
             }
 
             @Override
-            public void setValue(OrdinalPosition entity, Integer param) {
+            public OrdinalPosition setValue(OrdinalPosition entity, Integer param) {
                 if (entity == null)
                     throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "OrdinalPosition");
-                entity.setOrdinalPosition(param);
+                return (OrdinalPosition) entity.setOrdinalPosition(param);
             }
 
             @Override

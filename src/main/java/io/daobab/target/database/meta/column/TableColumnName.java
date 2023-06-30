@@ -15,8 +15,7 @@ public interface TableColumnName<E extends EntityMap> extends EntityRelationMap<
     }
 
     default E setTableColumnName(String val) {
-        setColumnParam("TableColumnName", val);
-        return (E) this;
+        return setColumnParam("TableColumnName", val);
     }
 
     default Column<E, String, TableColumnName> colTableColumnName() {
@@ -49,10 +48,10 @@ public interface TableColumnName<E extends EntityMap> extends EntityRelationMap<
             }
 
             @Override
-            public void setValue(TableColumnName entity, String param) {
+            public TableColumnName setValue(TableColumnName entity, String param) {
                 if (entity == null)
                     throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "TableColumnName");
-                entity.setTableColumnName(param);
+                return (TableColumnName) entity.setTableColumnName(param);
             }
 
             @Override

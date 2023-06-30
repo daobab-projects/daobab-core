@@ -15,8 +15,7 @@ public interface TableType<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setTableType(String val) {
-        setColumnParam("TableType", val);
-        return (E) this;
+        return setColumnParam("TableType", val);
     }
 
     default Column<E, String, TableType> colTableType() {
@@ -49,10 +48,10 @@ public interface TableType<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(TableType entity, String param) {
+            public TableType setValue(TableType entity, String param) {
                 if (entity == null)
                     throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "TableType");
-                entity.setTableType(param);
+                return (TableType) entity.setTableType(param);
             }
 
             @Override

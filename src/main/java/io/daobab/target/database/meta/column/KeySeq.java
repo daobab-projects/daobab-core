@@ -15,8 +15,7 @@ public interface KeySeq<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setKeySeq(String val) {
-        setColumnParam("KeySeq", val);
-        return (E) this;
+        return setColumnParam("KeySeq", val);
     }
 
     default Column<E, String, KeySeq> colKeySeq() {
@@ -49,9 +48,9 @@ public interface KeySeq<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(KeySeq entity, String param) {
+            public KeySeq setValue(KeySeq entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "KeySeq");
-                entity.setKeySeq(param);
+                return (KeySeq) entity.setKeySeq(param);
             }
 
             @Override

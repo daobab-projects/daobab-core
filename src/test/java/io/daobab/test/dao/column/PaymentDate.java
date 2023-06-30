@@ -21,8 +21,7 @@ public interface PaymentDate<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setPaymentDate(Timestamp val) {
-        setColumnParam("PaymentDate", val);
-        return (E) this;
+        return setColumnParam("PaymentDate", val);
     }
 
     default Column<E, Timestamp, PaymentDate> colPaymentDate() {
@@ -55,9 +54,9 @@ public interface PaymentDate<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(PaymentDate entity, Timestamp param) {
+            public PaymentDate setValue(PaymentDate entity, Timestamp param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PaymentDate");
-                entity.setPaymentDate(param);
+                return (PaymentDate) entity.setPaymentDate(param);
             }
 
             @Override

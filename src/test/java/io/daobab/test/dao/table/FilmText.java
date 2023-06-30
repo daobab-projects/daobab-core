@@ -21,7 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
-public class FilmText extends Table implements
+public class FilmText extends Table<FilmText> implements
         FilmId<FilmText>,
         Title<FilmText>,
         Description<FilmText>,

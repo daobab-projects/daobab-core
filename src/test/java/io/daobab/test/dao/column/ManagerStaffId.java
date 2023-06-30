@@ -20,8 +20,7 @@ public interface ManagerStaffId<E extends EntityMap> extends EntityRelationMap<E
     }
 
     default E setManagerStaffId(Integer val) {
-        setColumnParam("ManagerStaffId", val);
-        return (E) this;
+        return setColumnParam("ManagerStaffId", val);
     }
 
     default Column<E, Integer, ManagerStaffId> colManagerStaffId() {
@@ -54,9 +53,9 @@ public interface ManagerStaffId<E extends EntityMap> extends EntityRelationMap<E
             }
 
             @Override
-            public void setValue(ManagerStaffId entity, Integer param) {
+            public ManagerStaffId setValue(ManagerStaffId entity, Integer param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ManagerStaffId");
-                entity.setManagerStaffId(param);
+                return (ManagerStaffId) entity.setManagerStaffId(param);
             }
 
             @Override

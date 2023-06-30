@@ -20,8 +20,7 @@ public interface Rating<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setRating(String val) {
-        setColumnParam("Rating", val);
-        return (E) this;
+        return setColumnParam("Rating", val);
     }
 
     default Column<E, String, Rating> colRating() {
@@ -54,9 +53,9 @@ public interface Rating<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Rating entity, String param) {
+            public Rating setValue(Rating entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Rating");
-                entity.setRating(param);
+                return (Rating) entity.setRating(param);
             }
 
             @Override

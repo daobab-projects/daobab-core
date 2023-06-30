@@ -20,8 +20,7 @@ public interface Email<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setEmail(String val) {
-        setColumnParam("Email", val);
-        return (E) this;
+        return setColumnParam("Email", val);
     }
 
     default Column<E, String, Email> colEmail() {
@@ -54,9 +53,9 @@ public interface Email<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Email entity, String param) {
+            public Email setValue(Email entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Email");
-                entity.setEmail(param);
+                return (Email) entity.setEmail(param);
             }
 
             @Override

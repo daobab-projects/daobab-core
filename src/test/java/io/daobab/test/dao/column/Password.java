@@ -20,8 +20,7 @@ public interface Password<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setPassword(String val) {
-        setColumnParam("Password", val);
-        return (E) this;
+        return setColumnParam("Password", val);
     }
 
     default Column<E, String, Password> colPassword() {
@@ -54,9 +53,9 @@ public interface Password<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Password entity, String param) {
+            public Password setValue(Password entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Password");
-                entity.setPassword(param);
+                return (Password) entity.setPassword(param);
             }
 
             @Override

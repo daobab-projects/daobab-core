@@ -24,7 +24,7 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
 
     F getValue(R entity);
 
-    void setValue(R entity, F value);
+    R setValue(R entity, F value);
 
 
     E getInstance();
@@ -65,8 +65,8 @@ public interface Field<E extends Entity, F, R extends EntityRelation> {
             }
 
             @Override
-            public void setValue(R entity, F value) {
-                this.setValue(entity, value);
+            public R setValue(R entity, F value) {
+                return this.setValue(entity, value);
             }
 
             @Override

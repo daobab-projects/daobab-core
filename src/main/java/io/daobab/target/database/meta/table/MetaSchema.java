@@ -12,14 +12,23 @@ import io.daobab.target.database.meta.column.Remarks;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings("rawtypes")
-public class MetaSchema extends Table implements
+public class MetaSchema extends Table<MetaSchema> implements
         Remarks<MetaSchema>,
         MetaCatalogName<MetaSchema>,
         MetaSchemaName<MetaSchema>,
         PrimaryKey<MetaSchema, String, MetaSchemaName> {
+
+    public MetaSchema() {
+        super();
+    }
+
+    public MetaSchema(Map<String, Object> parameters) {
+        super(parameters);
+    }
 
 
     @Override

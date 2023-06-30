@@ -15,8 +15,7 @@ public interface Nullable<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setNullable(Boolean val) {
-        setColumnParam("Nullable", val);
-        return (E) this;
+        return setColumnParam("Nullable", val);
     }
 
     default Column<E, Boolean, Nullable> colNullable() {
@@ -49,9 +48,9 @@ public interface Nullable<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Nullable entity, Boolean param) {
+            public Nullable setValue(Nullable entity, Boolean param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Nullable");
-                entity.setNullable(param);
+                return (Nullable) entity.setNullable(param);
             }
 
             @Override

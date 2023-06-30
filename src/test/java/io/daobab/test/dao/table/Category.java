@@ -18,7 +18,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 @IdGenerator(type = IdGeneratorType.SEQUENCE, sequenceName = "CATEGORY_SEQ")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
-public class Category extends Table implements
+public class Category extends Table<Category> implements
         CategoryId<Category>,
         Name<Category>,
         LastUpdate<Category>,

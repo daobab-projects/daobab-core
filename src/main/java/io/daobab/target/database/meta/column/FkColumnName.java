@@ -15,8 +15,7 @@ public interface FkColumnName<E extends EntityMap> extends EntityRelationMap<E> 
     }
 
     default E setFkColumnName(String val) {
-        setColumnParam("FkColumnName", val);
-        return (E) this;
+        return setColumnParam("FkColumnName", val);
     }
 
     default Column<E, String, FkColumnName> colFkColumnName() {
@@ -49,9 +48,9 @@ public interface FkColumnName<E extends EntityMap> extends EntityRelationMap<E> 
             }
 
             @Override
-            public void setValue(FkColumnName entity, String param) {
+            public FkColumnName setValue(FkColumnName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FkColumnName");
-                entity.setFkColumnName(param);
+                return (FkColumnName) entity.setFkColumnName(param);
             }
 
             @Override

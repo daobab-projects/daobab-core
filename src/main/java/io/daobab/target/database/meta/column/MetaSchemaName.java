@@ -15,8 +15,7 @@ public interface MetaSchemaName<E extends EntityMap> extends EntityRelationMap<E
     }
 
     default E setSchemaName(String val) {
-        setColumnParam("SchemaName", val);
-        return (E) this;
+        return setColumnParam("SchemaName", val);
     }
 
     default Column<E, String, MetaSchemaName> colSchemaName() {
@@ -49,9 +48,9 @@ public interface MetaSchemaName<E extends EntityMap> extends EntityRelationMap<E
             }
 
             @Override
-            public void setValue(MetaSchemaName entity, String param) {
+            public MetaSchemaName setValue(MetaSchemaName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "SchemaName");
-                entity.setSchemaName(param);
+                return (MetaSchemaName) entity.setSchemaName(param);
             }
 
             @Override

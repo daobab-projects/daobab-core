@@ -17,7 +17,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
-public class Staff extends Table implements
+public class Staff extends Table<Staff> implements
         StaffId<Staff>,
         FirstName<Staff>,
         LastName<Staff>,

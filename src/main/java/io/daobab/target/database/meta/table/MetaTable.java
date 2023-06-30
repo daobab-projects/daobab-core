@@ -10,9 +10,10 @@ import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-public class MetaTable extends Table implements
+public class MetaTable extends Table<MetaTable> implements
         Remarks<MetaTable>,
         MetaTableName<MetaTable>,
         MetaSchemaName<MetaTable>,
@@ -22,6 +23,14 @@ public class MetaTable extends Table implements
         TableType<MetaTable>,
 
         PrimaryKey<MetaTable, String, MetaTableName> {
+
+    public MetaTable() {
+        super();
+    }
+
+    public MetaTable(Map<String, Object> parameters) {
+        super(parameters);
+    }
 
 
     @Override

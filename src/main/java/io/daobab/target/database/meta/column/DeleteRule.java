@@ -16,8 +16,7 @@ public interface DeleteRule<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setDeleteRule(MetaRule val) {
-        setColumnParam("DeleteRule", val);
-        return (E) this;
+        return setColumnParam("DeleteRule", val);
     }
 
     default Column<E, MetaRule, DeleteRule> colDeleteRule() {
@@ -50,9 +49,9 @@ public interface DeleteRule<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(DeleteRule entity, MetaRule param) {
+            public DeleteRule setValue(DeleteRule entity, MetaRule param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "DeleteRule");
-                entity.setDeleteRule(param);
+                return (DeleteRule) entity.setDeleteRule(param);
             }
 
             @Override

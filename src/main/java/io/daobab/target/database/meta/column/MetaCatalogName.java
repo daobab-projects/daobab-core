@@ -15,8 +15,7 @@ public interface MetaCatalogName<E extends EntityMap> extends EntityRelationMap<
     }
 
     default E setCatalogName(String val) {
-        setColumnParam("CatalogName", val);
-        return (E) this;
+        return setColumnParam("CatalogName", val);
     }
 
     default Column<E, String, MetaCatalogName> colCatalogName() {
@@ -49,9 +48,9 @@ public interface MetaCatalogName<E extends EntityMap> extends EntityRelationMap<
             }
 
             @Override
-            public void setValue(MetaCatalogName entity, String param) {
+            public MetaCatalogName setValue(MetaCatalogName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CatalogName");
-                entity.setCatalogName(param);
+                return (MetaCatalogName) entity.setCatalogName(param);
             }
 
             @Override

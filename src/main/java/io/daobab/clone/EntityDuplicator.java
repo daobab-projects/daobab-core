@@ -24,8 +24,12 @@ public final class EntityDuplicator {
     }
 
     public static <E extends Entity> E createEntity(Class<E> entityClass) {
+        return createEntity(entityClass, new HashMap<>());
+    }
+
+    public static <E extends Entity> E createEntity(Class<E> entityClass, Map<String, Object> map) {
         try {
-            return entityClass.getDeclaredConstructor().newInstance();
+            return entityClass.getDeclaredConstructor(Map.class).newInstance(Collections.unmodifiableMap(new LinkedHashMap<>(map)));
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                  InvocationTargetException e) {
             throw new DaobabEntityCreationException(entityClass, e);

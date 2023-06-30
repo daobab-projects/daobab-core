@@ -16,8 +16,7 @@ public interface Datatype<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setDatatype(JdbcType val) {
-        setColumnParam("Datatype", val);
-        return (E) this;
+        return setColumnParam("Datatype", val);
     }
 
     default Column<E, JdbcType, Datatype> colDatatype() {
@@ -50,9 +49,9 @@ public interface Datatype<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Datatype entity, JdbcType param) {
+            public Datatype setValue(Datatype entity, JdbcType param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Datatype");
-                entity.setDatatype(param);
+                return (Datatype) entity.setDatatype(param);
             }
 
             @Override

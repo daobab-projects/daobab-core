@@ -1,5 +1,6 @@
 package io.daobab.target.database;
 
+import io.daobab.clone.EntityDuplicator;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
@@ -22,7 +23,6 @@ import io.daobab.target.database.query.*;
 import io.daobab.target.database.query.frozen.FrozenDataBaseQueryEntity;
 import io.daobab.target.database.query.frozen.FrozenDataBaseQueryField;
 import io.daobab.target.database.query.frozen.FrozenDataBaseQueryPlate;
-import io.daobab.target.database.query.frozen.FrozenQueryProvider;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.OperationType;
@@ -32,7 +32,9 @@ import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 import static java.lang.String.format;
@@ -400,18 +402,20 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
                 }
 
+                Map<String, Object> params = new HashMap<>();
+
                 while (rs.next()) {
-                    E entity = clazz.getDeclaredConstructor().newInstance();
 
                     for (int i = 0; i < columns.size(); i++) {
                         Column col = columnsArray[i];
                         if (typeConvertersArr[i].isEntityConverter()) {
-                            rsReader.readCell((KeyableCache) typeConvertersArr[i], rs, i + 1, columnsArray[i], e -> col.setValue((EntityRelation) entity, e));
+                            rsReader.readCell((KeyableCache) typeConvertersArr[i], rs, i + 1, columnsArray[i], e -> params.put(col.getFieldName(), e));
                         } else {
-                            columnsArray[i].setValue((EntityRelation) entity, rsReader.readCell(typeConvertersArr[i], rs, i + 1, columnsArray[i]));
+                            params.put(col.getFieldName(), rsReader.readCell(typeConvertersArr[i], rs, i + 1, columnsArray[i]));
                         }
                     }
 
+                    E entity = EntityDuplicator.createEntity(clazz, params);
                     entity.afterSelect(this);
                     rv.add(entity);
                 }
@@ -468,16 +472,20 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 }
 
                 while (rs.next()) {
-                    E entity = clazz.getDeclaredConstructor().newInstance();
+
+
+                    Map<String, Object> params = new HashMap<>();
 
                     for (int i = 0; i < columns.size(); i++) {
                         Column col = columnsArray[i];
                         if (typeConvertersArr[i].isEntityConverter()) {
-                            rsReader.readCell((KeyableCache) typeConvertersArr[i], rs, i + 1, col, e -> col.setValue((EntityRelation) entity, e));
+                            rsReader.readCell((KeyableCache) typeConvertersArr[i], rs, i + 1, col, e -> params.put(col.getFieldName(), e));
                         } else {
-                            col.setValue((EntityRelation) entity, rsReader.readCell(typeConvertersArr[i], rs, i + 1, col));
+                            params.put(col.getFieldName(), rsReader.readCell(typeConvertersArr[i], rs, i + 1, col));
                         }
                     }
+
+                    E entity = EntityDuplicator.createEntity(clazz, params);
 
                     entity.afterSelect(this);
                     rv.add(entity);
@@ -500,10 +508,10 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             } catch (SQLException e) {
                 if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQuery, e);
                 throw new DaobabSQLException(e);
-            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException |
-                     InvocationTargetException e1) {
-                if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQuery, e1);
-                throw new DaobabEntityCreationException(clazz, e1);
+//            } catch (IllegalAccessException | InstantiationException | NoSuchMethodException |
+//                     InvocationTargetException e1) {
+//                if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQuery, e1);
+//                throw new DaobabEntityCreationException(clazz, e1);
             } finally {
                 rsReader.closeStatement(stmt, this);
             }
@@ -527,7 +535,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
                 if (rs.next()) {
                     E entity = clazz.getDeclaredConstructor().newInstance();
-                    rsReader.readEntity(this, rs, entity, frozen.getOriginalQuery().getFields());
+                    entity = rsReader.readEntity(this, rs, entity, frozen.getOriginalQuery().getFields());
                     entity.afterSelect(this);
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozen, 1);
                     return entity;

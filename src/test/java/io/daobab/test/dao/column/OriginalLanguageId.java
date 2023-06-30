@@ -20,8 +20,7 @@ public interface OriginalLanguageId<E extends EntityMap> extends EntityRelationM
     }
 
     default E setOriginalLanguageId(Integer val) {
-        setColumnParam("OriginalLanguageId", val);
-        return (E) this;
+        return setColumnParam("OriginalLanguageId", val);
     }
 
     default Column<E, Integer, OriginalLanguageId> colOriginalLanguageId() {
@@ -55,10 +54,10 @@ public interface OriginalLanguageId<E extends EntityMap> extends EntityRelationM
             }
 
             @Override
-            public void setValue(OriginalLanguageId entity, Integer param) {
+            public OriginalLanguageId setValue(OriginalLanguageId entity, Integer param) {
                 if (entity == null)
                     throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "OriginalLanguageId");
-                entity.setOriginalLanguageId(param);
+                return (OriginalLanguageId) entity.setOriginalLanguageId(param);
             }
 
             @Override

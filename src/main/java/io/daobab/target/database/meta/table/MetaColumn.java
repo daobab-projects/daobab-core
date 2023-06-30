@@ -8,8 +8,9 @@ import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-public class MetaColumn extends Table implements
+public class MetaColumn extends Table<MetaColumn> implements
         MetaColumnName<MetaColumn>,
         MetaColumnSize<MetaColumn>,
         DecimalDigits<MetaColumn>,
@@ -24,6 +25,14 @@ public class MetaColumn extends Table implements
         OrdinalPosition<MetaColumn>,
         FieldClass<MetaColumn>,
         Datatype<MetaColumn> {
+
+    public MetaColumn() {
+        super();
+    }
+
+    public MetaColumn(Map<String, Object> parameters) {
+        super(parameters);
+    }
 
     @Override
     public String getEntityName() {

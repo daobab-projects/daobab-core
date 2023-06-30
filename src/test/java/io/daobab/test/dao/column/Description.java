@@ -20,8 +20,7 @@ public interface Description<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setDescription(String val) {
-        setColumnParam("Description", val);
-        return (E) this;
+        return setColumnParam("Description", val);
     }
 
     default Column<E, String, Description> colDescription() {
@@ -54,9 +53,9 @@ public interface Description<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Description entity, String param) {
+            public Description setValue(Description entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Description");
-                entity.setDescription(param);
+                return (Description) entity.setDescription(param);
             }
 
             @Override

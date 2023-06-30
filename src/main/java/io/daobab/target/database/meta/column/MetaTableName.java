@@ -15,8 +15,7 @@ public interface MetaTableName<E extends EntityMap> extends EntityRelationMap<E>
     }
 
     default E setTableName(String val) {
-        setColumnParam("TableName", val);
-        return (E) this;
+        return setColumnParam("TableName", val);
     }
 
     default Column<E, String, MetaTableName> colTableName() {
@@ -49,9 +48,9 @@ public interface MetaTableName<E extends EntityMap> extends EntityRelationMap<E>
             }
 
             @Override
-            public void setValue(MetaTableName entity, String param) {
+            public MetaTableName setValue(MetaTableName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "TableName");
-                entity.setTableName(param);
+                return (MetaTableName) entity.setTableName(param);
             }
 
             @Override

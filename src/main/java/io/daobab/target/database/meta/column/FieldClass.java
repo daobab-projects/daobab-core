@@ -15,8 +15,7 @@ public interface FieldClass<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setFieldClass(Class val) {
-        setColumnParam("FieldClass", val);
-        return (E) this;
+        return setColumnParam("FieldClass", val);
     }
 
     default Column<E, Class, FieldClass> colFieldClass() {
@@ -49,9 +48,9 @@ public interface FieldClass<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(FieldClass entity, Class param) {
+            public FieldClass setValue(FieldClass entity, Class param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FieldClass");
-                entity.setFieldClass(param);
+                return (FieldClass) entity.setFieldClass(param);
             }
 
             @Override

@@ -15,8 +15,7 @@ public interface MetaIndexName<E extends EntityMap> extends EntityRelationMap<E>
     }
 
     default E setIndexName(String val) {
-        setColumnParam("IndexName", val);
-        return (E) this;
+        return setColumnParam("IndexName", val);
     }
 
     default Column<E, String, MetaIndexName> colIndexName() {
@@ -49,9 +48,9 @@ public interface MetaIndexName<E extends EntityMap> extends EntityRelationMap<E>
             }
 
             @Override
-            public void setValue(MetaIndexName entity, String param) {
+            public MetaIndexName setValue(MetaIndexName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "IndexName");
-                entity.setIndexName(param);
+                return (MetaIndexName) entity.setIndexName(param);
             }
 
             @Override

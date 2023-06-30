@@ -20,8 +20,7 @@ public interface Picture<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setPicture(byte[] val) {
-        setColumnParam("Picture", val);
-        return (E) this;
+        return setColumnParam("Picture", val);
     }
 
     default Column<E, byte[], Picture> colPicture() {
@@ -54,9 +53,9 @@ public interface Picture<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Picture entity, byte[] param) {
+            public Picture setValue(Picture entity, byte[] param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Picture");
-                entity.setPicture(param);
+                return (Picture) entity.setPicture(param);
             }
 
             @Override

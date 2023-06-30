@@ -20,7 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
-public class Rental extends Table implements
+public class Rental extends Table<Rental> implements
         RentalId<Rental>,
         RentalDate<Rental>,
         InventoryId<Rental>,

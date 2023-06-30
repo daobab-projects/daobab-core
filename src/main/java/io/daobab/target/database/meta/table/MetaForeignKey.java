@@ -8,8 +8,9 @@ import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-public class MetaForeignKey extends Table implements
+public class MetaForeignKey extends Table<MetaForeignKey> implements
         PkTableCatalogName<MetaForeignKey>,
         PkTableSchemaName<MetaForeignKey>,
         PkTableName<MetaForeignKey>,
@@ -23,6 +24,14 @@ public class MetaForeignKey extends Table implements
         DeleteRule<MetaForeignKey>,
         FkName<MetaForeignKey>,
         PkName<MetaForeignKey> {
+
+    public MetaForeignKey() {
+        super();
+    }
+
+    public MetaForeignKey(Map<String, Object> parameters) {
+        super(parameters);
+    }
 
     @Override
     public String getEntityName() {

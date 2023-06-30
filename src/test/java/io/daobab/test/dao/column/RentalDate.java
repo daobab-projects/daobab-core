@@ -21,8 +21,7 @@ public interface RentalDate<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setRentalDate(Timestamp val) {
-        setColumnParam("RentalDate", val);
-        return (E) this;
+        return setColumnParam("RentalDate", val);
     }
 
     default Column<E, Timestamp, RentalDate> colRentalDate() {
@@ -55,9 +54,9 @@ public interface RentalDate<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(RentalDate entity, Timestamp param) {
+            public RentalDate setValue(RentalDate entity, Timestamp param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RentalDate");
-                entity.setRentalDate(param);
+                return (RentalDate) entity.setRentalDate(param);
             }
 
             @Override

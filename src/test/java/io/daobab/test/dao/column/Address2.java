@@ -20,8 +20,7 @@ public interface Address2<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setAddress2(String val) {
-        setColumnParam("Address2", val);
-        return (E) this;
+        return setColumnParam("Address2", val);
     }
 
     default Column<E, String, Address2> colAddress2() {
@@ -54,9 +53,9 @@ public interface Address2<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Address2 entity, String param) {
+            public Address2 setValue(Address2 entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Address2");
-                entity.setAddress2(param);
+                return (Address2) entity.setAddress2(param);
             }
 
             @Override

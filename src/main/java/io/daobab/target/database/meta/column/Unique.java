@@ -15,8 +15,7 @@ public interface Unique<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setUnique(Boolean val) {
-        setColumnParam("Unique", val);
-        return (E) this;
+        return setColumnParam("Unique", val);
     }
 
     default Column<E, Boolean, Unique> colUnique() {
@@ -49,9 +48,9 @@ public interface Unique<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Unique entity, Boolean param) {
+            public Unique setValue(Unique entity, Boolean param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Unique");
-                entity.setUnique(param);
+                return (Unique) entity.setUnique(param);
             }
 
             @Override

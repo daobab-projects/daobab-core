@@ -20,8 +20,7 @@ public interface Length<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setLength(Integer val) {
-        setColumnParam("Length", val);
-        return (E) this;
+        return setColumnParam("Length", val);
     }
 
     default Column<E, Integer, Length> colLength() {
@@ -54,9 +53,9 @@ public interface Length<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Length entity, Integer param) {
+            public Length setValue(Length entity, Integer param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Length");
-                entity.setLength(param);
+                return (Length) entity.setLength(param);
             }
 
             @Override

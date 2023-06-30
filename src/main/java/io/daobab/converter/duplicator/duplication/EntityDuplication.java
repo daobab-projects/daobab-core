@@ -46,10 +46,11 @@ public class EntityDuplication<E extends Entity> {
             throw new DaobabEntityCreationException(entity.getEntityClass(), e);
         }
 
+
         for (int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
             FieldDuplication fieldJsonConversion = fieldJsonConversions.get(i);
-            field.setValue((EntityRelation) rv,fieldJsonConversion.duplicate(field.getValue((EntityRelation) entity)));
+            rv = (E) field.setValue((EntityRelation) rv, fieldJsonConversion.duplicate(field.getValue((EntityRelation) entity)));
 
     }
         return rv;

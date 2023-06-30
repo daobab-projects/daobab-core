@@ -20,8 +20,7 @@ public interface CategoryId<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setCategoryId(Integer val) {
-        setColumnParam("CategoryId", val);
-        return (E) this;
+        return setColumnParam("CategoryId", val);
     }
 
     default Column<E, Integer, CategoryId> colCategoryId() {
@@ -54,9 +53,9 @@ public interface CategoryId<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(CategoryId entity, Integer param) {
+            public CategoryId setValue(CategoryId entity, Integer param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CategoryId");
-                entity.setCategoryId(param);
+                return (CategoryId) entity.setCategoryId(param);
             }
 
             @Override

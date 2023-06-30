@@ -20,8 +20,7 @@ public interface Phone<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setPhone(String val) {
-        setColumnParam("Phone", val);
-        return (E) this;
+        return setColumnParam("Phone", val);
     }
 
     default Column<E, String, Phone> colPhone() {
@@ -54,9 +53,9 @@ public interface Phone<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Phone entity, String param) {
+            public Phone setValue(Phone entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Phone");
-                entity.setPhone(param);
+                return (Phone) entity.setPhone(param);
             }
 
             @Override

@@ -64,7 +64,7 @@ public class EntityJsonConversion<E extends Entity> {
         for (FieldJsonConversion fieldJsonConversion : fieldJsonConversions) {
             String fieldName = fieldJsonConversion.fieldName;
 
-            fieldJsonConversion.targetField.setValue((EntityRelation) entity, fieldJsonConversion.fromJson(map.get(fieldName)));
+            entity = (E) fieldJsonConversion.targetField.setValue((EntityRelation) entity, fieldJsonConversion.fromJson(map.get(fieldName)));
         }
         return entity;
     }

@@ -20,8 +20,7 @@ public interface FirstName<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setFirstName(String val) {
-        setColumnParam("FirstName", val);
-        return (E) this;
+        return setColumnParam("FirstName", val);
     }
 
     default Column<E, String, FirstName> colFirstName() {
@@ -54,9 +53,9 @@ public interface FirstName<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(FirstName entity, String param) {
+            public FirstName setValue(FirstName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FirstName");
-                entity.setFirstName(param);
+                return (FirstName) entity.setFirstName(param);
             }
 
             @Override

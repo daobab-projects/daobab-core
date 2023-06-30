@@ -8,14 +8,24 @@ import io.daobab.model.TableColumn;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("rawtypes")
-public class MetaEntity extends Table {
+public class MetaEntity extends Table<MetaEntity> {
 
-    private final String tableName;
+    private String tableName;
+
+    public MetaEntity() {
+        super();
+    }
+
+    public MetaEntity(Map<String, Object> parameters) {
+        super(parameters);
+    }
     List<TableColumn> columnList = new ArrayList<>();
 
     public MetaEntity(String tableName) {
+        this();
         this.tableName = tableName;
     }
 
@@ -77,7 +87,7 @@ public class MetaEntity extends Table {
             }
 
             @Override
-            public void setValue(EntityRelation entity, Object value) {
+            public EntityRelation setValue(EntityRelation entity, Object value) {
                 throw new DaobabException("Operation cannot be done");
             }
 

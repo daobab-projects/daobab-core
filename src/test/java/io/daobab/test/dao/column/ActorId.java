@@ -20,8 +20,7 @@ public interface ActorId<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setActorId(Integer val) {
-        setColumnParam("ActorId", val);
-        return (E) this;
+        return setColumnParam("ActorId", val);
     }
 
     default Column<E, Integer, ActorId> colActorId() {
@@ -54,9 +53,9 @@ public interface ActorId<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(ActorId entity, Integer param) {
+            public ActorId setValue(ActorId entity, Integer param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ActorId");
-                entity.setActorId(param);
+                return (ActorId) entity.setActorId(param);
             }
 
             @Override

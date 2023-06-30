@@ -3,20 +3,19 @@ package io.daobab.target.database.meta.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 
 import java.util.Objects;
 
-public interface CamelName<E extends EntityMap> extends EntityRelationMap<E> {
+public interface CamelName<E extends Entity> extends EntityRelationMap<E> {
 
     default String getCamelName() {
         return getColumnParam("CamelName");
     }
 
     default E setCamelName(String val) {
-        setColumnParam("CamelName", val);
-        return (E) this;
+        return setColumnParam("CamelName", val);
     }
 
     default Column<E, String, CamelName> colCamelName() {
@@ -49,9 +48,9 @@ public interface CamelName<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(CamelName entity, String param) {
+            public CamelName setValue(CamelName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CamelName");
-                entity.setCamelName(param);
+                return (CamelName) entity.setColumnParam("CamelName", param);
             }
 
             @Override

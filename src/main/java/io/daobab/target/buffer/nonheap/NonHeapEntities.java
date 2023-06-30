@@ -235,7 +235,7 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
                 if (posCol == null) {
                     HashMap<String, Object> additionalValues = additionalParameters.get(entityLocation);
                     if (additionalValues != null) {
-                        column.setValue((EntityRelation) rv, additionalValues.get(column.toString()));
+                        rv = (E) column.setValue((EntityRelation) rv, additionalValues.get(column.toString()));
                     }
                     cnt++;
                     continue;

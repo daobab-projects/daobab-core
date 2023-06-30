@@ -21,8 +21,7 @@ public interface ReplacementCost<E extends EntityMap> extends EntityRelationMap<
     }
 
     default E setReplacementCost(BigDecimal val) {
-        setColumnParam("ReplacementCost", val);
-        return (E) this;
+        return setColumnParam("ReplacementCost", val);
     }
 
     default Column<E, BigDecimal, ReplacementCost> colReplacementCost() {
@@ -55,10 +54,10 @@ public interface ReplacementCost<E extends EntityMap> extends EntityRelationMap<
             }
 
             @Override
-            public void setValue(ReplacementCost entity, BigDecimal param) {
+            public ReplacementCost setValue(ReplacementCost entity, BigDecimal param) {
                 if (entity == null)
                     throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ReplacementCost");
-                entity.setReplacementCost(param);
+                return (ReplacementCost) entity.setReplacementCost(param);
             }
 
             @Override

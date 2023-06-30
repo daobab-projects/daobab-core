@@ -6,7 +6,6 @@ import io.daobab.error.NoSequenceException;
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.*;
 import io.daobab.query.base.QuerySpecialParameters;
-import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.converter.KeyableCache;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
@@ -61,18 +60,18 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
         }
 
         for (int i = 0; i < columns.size(); i++) {
-            columnsArr[i].setValue((EntityRelation) entity, readCell(typeConvertersArr[i], rs, i + 1, columnsArr[i]));
+            entity = (E) columnsArr[i].setValue((EntityRelation) entity, readCell(typeConvertersArr[i], rs, i + 1, columnsArr[i]));
         }
         return entity;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public <E extends Entity> E readEntity(ResultSet rs, E entity, Column[] columnsArr, DatabaseTypeConverter<?, ?>[] typeConverters) {
-        for (int i = 0; i < columnsArr.length; i++) {
-            columnsArr[i].setValue((EntityRelation) entity, readCell(typeConverters[i], rs, i + 1, columnsArr[i]));
-        }
-        return entity;
-    }
+//    @SuppressWarnings({"unchecked", "rawtypes"})
+//    public <E extends Entity> E readEntity(ResultSet rs, E entity, Column[] columnsArr, DatabaseTypeConverter<?, ?>[] typeConverters) {
+//        for (int i = 0; i < columnsArr.length; i++) {
+//            columnsArr[i].setValue((EntityRelation) entity, readCell(typeConverters[i], rs, i + 1, columnsArr[i]));
+//        }
+//        return entity;
+//    }
 
     @Override
     public Timestamp toTimeZone(Timestamp timestamp, TimeZone timeZone) {

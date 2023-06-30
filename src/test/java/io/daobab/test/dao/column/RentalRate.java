@@ -21,8 +21,7 @@ public interface RentalRate<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setRentalRate(BigDecimal val) {
-        setColumnParam("RentalRate", val);
-        return (E) this;
+        return setColumnParam("RentalRate", val);
     }
 
     default Column<E, BigDecimal, RentalRate> colRentalRate() {
@@ -55,9 +54,9 @@ public interface RentalRate<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(RentalRate entity, BigDecimal param) {
+            public RentalRate setValue(RentalRate entity, BigDecimal param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RentalRate");
-                entity.setRentalRate(param);
+                return (RentalRate) entity.setRentalRate(param);
             }
 
             @Override

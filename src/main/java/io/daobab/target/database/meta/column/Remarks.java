@@ -15,8 +15,7 @@ public interface Remarks<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setRemarks(String val) {
-        setColumnParam("Remarks", val);
-        return (E) this;
+        return setColumnParam("Remarks", val);
     }
 
     default Column<E, String, Remarks> colRemarks() {
@@ -49,9 +48,9 @@ public interface Remarks<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Remarks entity, String param) {
+            public Remarks setValue(Remarks entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Remarks");
-                entity.setRemarks(param);
+                return (Remarks) entity.setRemarks(param);
             }
 
             @Override

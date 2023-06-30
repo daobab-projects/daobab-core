@@ -21,8 +21,7 @@ public interface CreateDate<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setCreateDate(Timestamp val) {
-        setColumnParam("CreateDate", val);
-        return (E) this;
+        return setColumnParam("CreateDate", val);
     }
 
     default Column<E, Timestamp, CreateDate> colCreateDate() {
@@ -55,9 +54,9 @@ public interface CreateDate<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(CreateDate entity, Timestamp param) {
+            public CreateDate setValue(CreateDate entity, Timestamp param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CreateDate");
-                entity.setCreateDate(param);
+                return (CreateDate) entity.setCreateDate(param);
             }
 
             @Override

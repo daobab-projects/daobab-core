@@ -14,6 +14,7 @@ public interface Column<E extends Entity, F, R extends EntityRelation> extends F
         final String cn = getColumnName();
         final String fn = getFieldName();
         final Class<F> fieldClazz = getFieldClass();
+        final F value = getValue((R) entity);
         return new Column<T, F, R>() {
 
             @Override
@@ -33,12 +34,12 @@ public interface Column<E extends Entity, F, R extends EntityRelation> extends F
 
             @Override
             public F getValue(R entity) {
-                return this.getValue(entity);
+                return value;
             }
 
             @Override
-            public void setValue(R entity, F value) {
-                this.setValue(entity, value);
+            public R setValue(R entity, F value) {
+                return this.setValue(entity, value);
             }
 
             @Override
@@ -76,8 +77,8 @@ public interface Column<E extends Entity, F, R extends EntityRelation> extends F
             }
 
             @Override
-            public void setValue(R entity, F value) {
-                this.setValue(entity, value);
+            public R setValue(R entity, F value) {
+                return this.setValue(entity, value);
             }
 
             @Override

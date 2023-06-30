@@ -20,8 +20,7 @@ public interface CountryId<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setCountryId(Integer val) {
-        setColumnParam("CountryId", val);
-        return (E) this;
+        return setColumnParam("CountryId", val);
     }
 
     default Column<E, Integer, CountryId> colCountryId() {
@@ -54,9 +53,9 @@ public interface CountryId<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(CountryId entity, Integer param) {
+            public CountryId setValue(CountryId entity, Integer param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CountryId");
-                entity.setCountryId(param);
+                return (CountryId) entity.setCountryId(param);
             }
 
             @Override

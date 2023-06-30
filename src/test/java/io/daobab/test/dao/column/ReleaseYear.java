@@ -21,8 +21,7 @@ public interface ReleaseYear<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setReleaseYear(Date val) {
-        setColumnParam("ReleaseYear", val);
-        return (E) this;
+        return setColumnParam("ReleaseYear", val);
     }
 
     default Column<E, Date, ReleaseYear> colReleaseYear() {
@@ -55,9 +54,9 @@ public interface ReleaseYear<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(ReleaseYear entity, Date param) {
+            public ReleaseYear setValue(ReleaseYear entity, Date param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ReleaseYear");
-                entity.setReleaseYear(param);
+                return (ReleaseYear) entity.setReleaseYear(param);
             }
 
             @Override

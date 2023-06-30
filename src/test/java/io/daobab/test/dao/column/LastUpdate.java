@@ -21,8 +21,7 @@ public interface LastUpdate<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setLastUpdate(Timestamp val) {
-        setColumnParam("LastUpdate", val);
-        return (E) this;
+        return setColumnParam("LastUpdate", val);
     }
 
     default Column<E, Timestamp, LastUpdate> colLastUpdate() {
@@ -55,9 +54,9 @@ public interface LastUpdate<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(LastUpdate entity, Timestamp param) {
+            public LastUpdate setValue(LastUpdate entity, Timestamp param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "LastUpdate");
-                entity.setLastUpdate(param);
+                return (LastUpdate) entity.setLastUpdate(param);
             }
 
             @Override

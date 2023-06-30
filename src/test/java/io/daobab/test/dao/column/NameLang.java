@@ -21,8 +21,7 @@ public interface NameLang<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setName(Lang val) {
-        setColumnParam("Name", val);
-        return (E) this;
+        return setColumnParam("Name", val);
     }
 
     default Column<E, Lang, NameLang> colName() {
@@ -56,9 +55,9 @@ public interface NameLang<E extends EntityMap> extends EntityRelationMap<E> {
 
 
             @Override
-            public void setValue(NameLang entity, Lang param) {
+            public NameLang setValue(NameLang entity, Lang param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Name");
-                entity.setName(param);
+                return (NameLang) entity.setName(param);
             }
 
             public void setValue(NameLang entity, String param) {

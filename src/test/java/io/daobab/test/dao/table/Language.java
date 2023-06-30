@@ -21,7 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
-public class Language extends Table implements
+public class Language extends Table<Language> implements
         LanguageId<Language>,
         NameLang<Language>,
         LastUpdate<Language>,

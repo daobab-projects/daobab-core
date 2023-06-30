@@ -3,20 +3,19 @@ package io.daobab.target.database.meta.column;
 import io.daobab.error.AttemptToReadFromNullEntityException;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.Column;
-import io.daobab.model.EntityMap;
+import io.daobab.model.Entity;
 import io.daobab.model.EntityRelationMap;
 
 import java.util.Objects;
 
-public interface Cardinality<E extends EntityMap> extends EntityRelationMap<E> {
+public interface Cardinality<E extends Entity> extends EntityRelationMap<E> {
 
     default Integer getCardinality() {
         return getColumnParam("Cardinality");
     }
 
     default E setCardinality(Integer val) {
-        setColumnParam("Cardinality", val);
-        return (E) this;
+        return setColumnParam("Cardinality", val);
     }
 
     default Column<E, Integer, Cardinality> colCardinality() {
@@ -49,10 +48,10 @@ public interface Cardinality<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(Cardinality entity, Integer param) {
+            public Cardinality setValue(Cardinality entity, Integer param) {
                 if (entity == null)
                     throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Cardinality");
-                entity.setCardinality(param);
+                return (Cardinality) entity.setCardinality(param);
             }
 
             @Override

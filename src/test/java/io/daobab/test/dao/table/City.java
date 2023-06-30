@@ -21,7 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, setterVisibility = NONE)
-public class City extends Table implements
+public class City extends Table<City> implements
         CityId<City>,
         io.daobab.test.dao.column.City<City>,
         CountryId<City>,

@@ -20,8 +20,7 @@ public interface PostalCode<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setPostalCode(String val) {
-        setColumnParam("PostalCode", val);
-        return (E) this;
+        return setColumnParam("PostalCode", val);
     }
 
     default Column<E, String, PostalCode> colPostalCode() {
@@ -54,9 +53,9 @@ public interface PostalCode<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(PostalCode entity, String param) {
+            public PostalCode setValue(PostalCode entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PostalCode");
-                entity.setPostalCode(param);
+                return (PostalCode) entity.setPostalCode(param);
             }
 
             @Override

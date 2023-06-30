@@ -16,8 +16,7 @@ public interface MetaColumnName<E extends EntityMap> extends EntityRelationMap<E
 
     @SuppressWarnings("unchecked")
     default E setColumnName(String val) {
-        setColumnParam("ColumnName", val);
-        return (E) this;
+        return setColumnParam("ColumnName", val);
     }
 
     @SuppressWarnings("rawtypes")
@@ -53,9 +52,9 @@ public interface MetaColumnName<E extends EntityMap> extends EntityRelationMap<E
 
             @SuppressWarnings("rawtypes")
             @Override
-            public void setValue(MetaColumnName entity, String param) {
+            public MetaColumnName setValue(MetaColumnName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ColumnName");
-                entity.setColumnName(param);
+                return (MetaColumnName) entity.setColumnName(param);
             }
 
             @Override

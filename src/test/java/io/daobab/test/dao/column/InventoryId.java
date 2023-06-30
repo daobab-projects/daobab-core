@@ -21,8 +21,7 @@ public interface InventoryId<E extends EntityMap> extends EntityRelationMap<E> {
     }
 
     default E setInventoryId(BigDecimal val) {
-        setColumnParam("InventoryId", val);
-        return (E) this;
+        return setColumnParam("InventoryId", val);
     }
 
     default Column<E, BigDecimal, InventoryId> colInventoryId() {
@@ -55,9 +54,9 @@ public interface InventoryId<E extends EntityMap> extends EntityRelationMap<E> {
             }
 
             @Override
-            public void setValue(InventoryId entity, BigDecimal param) {
+            public InventoryId setValue(InventoryId entity, BigDecimal param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "InventoryId");
-                entity.setInventoryId(param);
+                return (InventoryId) entity.setInventoryId(param);
             }
 
             @Override

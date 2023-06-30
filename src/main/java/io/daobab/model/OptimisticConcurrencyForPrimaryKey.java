@@ -70,9 +70,7 @@ public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKe
         } else {
             throw new DaobabException("Optimistic Concurrency Control Exception for Entity " + entityToUpdate.getEntityName() + " pointed OCC column has to be either Number or Date related type ");
         }
-        getOCCColumn().setValue((R) entityToUpdate, (F) val);
-
-        return entityToUpdate;
+        return (E) getOCCColumn().setValue((R) entityToUpdate, (F) val);
     }
 
     Column<E, F, R> getOCCColumn();

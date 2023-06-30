@@ -15,8 +15,7 @@ public interface MetaColumnSize<E extends EntityMap> extends EntityRelationMap<E
     }
 
     default E setColumnSize(Integer val) {
-        setColumnParam("ColumnSize", val);
-        return (E) this;
+        return setColumnParam("ColumnSize", val);
     }
 
     default Column<E, Integer, MetaColumnSize> colColumnSize() {
@@ -49,9 +48,9 @@ public interface MetaColumnSize<E extends EntityMap> extends EntityRelationMap<E
             }
 
             @Override
-            public void setValue(MetaColumnSize entity, Integer param) {
+            public MetaColumnSize setValue(MetaColumnSize entity, Integer param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ColumnSize");
-                entity.setColumnSize(param);
+                return (MetaColumnSize) entity.setColumnSize(param);
             }
 
             @Override
