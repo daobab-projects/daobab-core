@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ProcedureParameters {
 
-    private final Plate plate;
+    private Plate plate;
 
     private final List<Column<?, ?, ?>> columns = new ArrayList<>();
     private final int length;
@@ -27,7 +27,7 @@ public class ProcedureParameters {
         plate = new Plate(entity.columns());
     }
 
-    public <E extends Entity> ProcedureParameters(TableColumn... columns) {
+    public ProcedureParameters(TableColumn... columns) {
         if (columns == null) {
             throw new MandatoryColumn();
         }
@@ -39,6 +39,19 @@ public class ProcedureParameters {
         plate = new Plate(tableColumns);
     }
 
+    public <E extends Entity> ProcedureParameters(Column<?, ?, ?>... columns) {
+        this(columns == null ? 0 : columns.length);
+        if (columns == null) {
+            throw new MandatoryColumn();
+        }
+        for (int i = 0; i < columns.length; i++) {
+            specifyValue(i + 1, columns[i]);
+        }
+    }
+
+    public ProcedureParameters(int length) {
+        this.length = length;
+    }
 
     public <F> F getValue(Column<?, F, ?> column) {
         return plate.getValue(column);
