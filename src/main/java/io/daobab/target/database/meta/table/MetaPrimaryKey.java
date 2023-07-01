@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@TableName("PRIMARY_KEY")
+@TableName(value = "PRIMARY_KEY")
 public class MetaPrimaryKey extends Table<MetaPrimaryKey> implements
         MetaCatalogName<MetaPrimaryKey>,
         MetaSchemaName<MetaPrimaryKey>,

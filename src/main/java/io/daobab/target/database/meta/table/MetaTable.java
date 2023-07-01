@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName("META_TABLE")
+@TableName(value = "META_TABLE")
 public class MetaTable extends Table<MetaTable> implements
         Remarks<MetaTable>,
         MetaTableName<MetaTable>,

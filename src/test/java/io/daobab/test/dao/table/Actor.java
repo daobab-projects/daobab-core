@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName("ACTOR")
+@TableName(value = "ACTOR")
 public class Actor extends Table<Actor> implements
         ActorId<Actor>,
         FirstName<Actor>,

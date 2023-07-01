@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@TableName("STATISTIC")
+@TableName(value = "STATISTIC")
 public class StatisticRecord extends Table<StatisticRecord> implements
         Key<StatisticRecord>,
         Remarks<StatisticRecord>,

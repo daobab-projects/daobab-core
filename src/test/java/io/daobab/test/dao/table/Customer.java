@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName("CUSTOMER")
+@TableName(value = "CUSTOMER")
 public class Customer extends Table<Customer> implements
         CustomerId<Customer>,
         StoreId<Customer>,

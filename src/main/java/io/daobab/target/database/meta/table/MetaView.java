@@ -4,7 +4,7 @@ import io.daobab.model.TableName;
 
 import java.util.Map;
 
-@TableName("META_VIEW")
+@TableName(value = "META_VIEW")
 public class MetaView extends MetaTable {
 
     public MetaView() {

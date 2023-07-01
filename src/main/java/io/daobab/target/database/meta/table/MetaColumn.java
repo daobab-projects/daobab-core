@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@TableName("META_COLUMN")
+@TableName(value = "META_COLUMN")
 public class MetaColumn extends Table<MetaColumn> implements
         MetaColumnName<MetaColumn>,
         MetaColumnSize<MetaColumn>,

@@ -1,13 +1,7 @@
 package io.daobab.target.statistic.column;
 
-import io.daobab.error.AttemptToReadFromNullEntityException;
-import io.daobab.error.AttemptToWriteIntoNullEntityException;
-import io.daobab.model.Column;
-import io.daobab.model.Entity;
-import io.daobab.model.MapHandler;
-import io.daobab.model.RelatedTo;
-
-import java.util.Objects;
+import io.daobab.creation.ColumnCache;
+import io.daobab.model.*;
 
 public interface ExecutionTime<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
@@ -19,60 +13,11 @@ public interface ExecutionTime<E extends Entity> extends RelatedTo<E>, MapHandle
         return storeParam("ExecutionTime", val);
     }
 
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, Long, ExecutionTime> colExecutionTime() {
-        return new Column<E, Long, ExecutionTime>() {
-
-            @Override
-            public String getColumnName() {
-                return "EXECUTION_TIME";
-            }
-
-            @Override
-            public String getFieldName() {
-                return "ExecutionTime";
-            }
-
-            @Override
-            public E getInstance() {
-                return getEntity();
-            }
-
-            @Override
-            public Class<Long> getFieldClass() {
-                return Long.class;
-            }
-
-            @Override
-            public Long getValue(ExecutionTime entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ExecutionTime");
-                return entity.getExecutionTime();
-            }
-
-            @Override
-            public ExecutionTime setValue(ExecutionTime entity, Long param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ExecutionTime");
-                return (ExecutionTime) entity.setExecutionTime(param);
-            }
-
-            @Override
-            public int hashCode() {
-                return toString().hashCode();
-            }
-
-            @Override
-            public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (this == obj) return true;
-                if (obj == null) return false;
-                if (getClass() != obj.getClass()) return false;
-                Column other = (Column) obj;
-                return Objects.equals(hashCode(), other.hashCode());
-            }
-        };
+        return ColumnCache.INSTANCE.getColumn("ExecutionTime", "EXECUTION_TIME", (Table<?>) this, Long.class);
     }
+
 
 }

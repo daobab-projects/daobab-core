@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 
 
-@TableName("CATEGORY")
+@TableName(value = "CATEGORY")
 @IdGenerator(type = IdGeneratorType.SEQUENCE, sequenceName = "CATEGORY_SEQ")
 public class Category extends Table<Category> implements
         CategoryId<Category>,

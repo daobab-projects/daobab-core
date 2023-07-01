@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName("ADDRESS")
+@TableName(value = "ADDRESS")
 public class Address extends Table<Address> implements
         AddressId<Address>,
         io.daobab.test.dao.column.Address<Address>,

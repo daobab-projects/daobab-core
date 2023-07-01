@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName("STORE")
+@TableName(value = "STORE")
 public class Store extends Table<Store> implements
         StoreId<Store>,
         ManagerStaffId<Store>,

@@ -1,13 +1,7 @@
 package io.daobab.target.statistic.column;
 
-import io.daobab.error.AttemptToReadFromNullEntityException;
-import io.daobab.error.AttemptToWriteIntoNullEntityException;
-import io.daobab.model.Column;
-import io.daobab.model.Entity;
-import io.daobab.model.MapHandler;
-import io.daobab.model.RelatedTo;
-
-import java.util.Objects;
+import io.daobab.creation.ColumnCache;
+import io.daobab.model.*;
 
 public interface RelatedEntity<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
@@ -19,60 +13,11 @@ public interface RelatedEntity<E extends Entity> extends RelatedTo<E>, MapHandle
         return storeParam("RelatedEntity", val);
     }
 
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, RelatedEntity> colRelatedEntity() {
-        return new Column<E, String, RelatedEntity>() {
-
-            @Override
-            public String getColumnName() {
-                return "RELATED_ENTITY";
-            }
-
-            @Override
-            public String getFieldName() {
-                return "RelatedEntity";
-            }
-
-            @Override
-            public E getInstance() {
-                return getEntity();
-            }
-
-            @Override
-            public Class<String> getFieldClass() {
-                return String.class;
-            }
-
-            @Override
-            public String getValue(RelatedEntity entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "RelatedEntity");
-                return entity.getRelatedEntity();
-            }
-
-            @Override
-            public RelatedEntity setValue(RelatedEntity entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RelatedEntity");
-                return (RelatedEntity) entity.setRelatedEntity(param);
-            }
-
-            @Override
-            public int hashCode() {
-                return toString().hashCode();
-            }
-
-            @Override
-            public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (this == obj) return true;
-                if (obj == null) return false;
-                if (getClass() != obj.getClass()) return false;
-                Column other = (Column) obj;
-                return Objects.equals(hashCode(), other.hashCode());
-            }
-        };
+        return ColumnCache.INSTANCE.getColumn("RelatedEntity", "RELATED_ENTITY", (Table<?>) this, String.class);
     }
+
 
 }

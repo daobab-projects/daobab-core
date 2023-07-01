@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@TableName("FOREIGN_KEY")
+@TableName(value = "FOREIGN_KEY")
 public class MetaForeignKey extends Table<MetaForeignKey> implements
         PkTableCatalogName<MetaForeignKey>,
         PkTableSchemaName<MetaForeignKey>,

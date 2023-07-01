@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName("LANGUAGE")
+@TableName(value = "LANGUAGE")
 public class Language extends Table<Language> implements
         LanguageId<Language>,
         NameLang<Language>,

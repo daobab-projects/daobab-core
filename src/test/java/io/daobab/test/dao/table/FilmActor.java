@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName("FILM_ACTOR")
+@TableName(value = "FILM_ACTOR")
 public class FilmActor extends Table<FilmActor> implements
         ActorId<FilmActor>,
         FilmId<FilmActor>,

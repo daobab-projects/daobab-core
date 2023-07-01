@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@TableName("META_INDEX")
+@TableName(value = "META_INDEX")
 public class MetaIndex extends Table<MetaIndex> implements
         MetaCatalogName<MetaIndex>,
         MetaSchemaName<MetaIndex>,

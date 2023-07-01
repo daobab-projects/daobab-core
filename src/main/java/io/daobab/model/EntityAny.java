@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-@TableName("DAOBAB_ANY_ENTITY_SPECIAL_CLASS")
+@TableName(value = "DAOBAB_ANY_ENTITY_SPECIAL_CLASS")
 public final class EntityAny extends Table<EntityAny> {
 
     @Override

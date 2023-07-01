@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName("META_SCHEMA")
+@TableName(value = "META_SCHEMA")
 @SuppressWarnings("rawtypes")
 public class MetaSchema extends Table<MetaSchema> implements
         Remarks<MetaSchema>,

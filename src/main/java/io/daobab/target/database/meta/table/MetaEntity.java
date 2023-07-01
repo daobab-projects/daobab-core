@@ -47,7 +47,7 @@ public class MetaEntity extends Table<MetaEntity> implements TableNameMethod {
     }
 
     @Override
-    public String getEntityName() {
+    public String tableName() {
         return tableName;
     }
 

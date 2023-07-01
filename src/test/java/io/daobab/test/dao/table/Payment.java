@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName("PAYMENT")
+@TableName(value = "PAYMENT")
 public class Payment extends Table<Payment> implements
         PaymentId<Payment>,
         CustomerId<Payment>,
