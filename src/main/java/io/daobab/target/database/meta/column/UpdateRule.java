@@ -13,11 +13,11 @@ import java.util.Objects;
 public interface UpdateRule<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default MetaRule getUpdateRule() {
-        return getColumnParam("UpdateRule");
+        return readParam("UpdateRule");
     }
 
     default E setUpdateRule(MetaRule val) {
-        return setColumnParam("UpdateRule", val);
+        return storeParam("UpdateRule", val);
     }
 
     default Column<E, MetaRule, UpdateRule> colUpdateRule() {

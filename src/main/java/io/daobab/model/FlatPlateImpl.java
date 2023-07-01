@@ -43,7 +43,7 @@ public class FlatPlateImpl extends HashMap<String, Object> implements FlatPlate 
     }
 
     @Override
-    public Class<? extends Entity> getEntityClass() {
+    public Class<? extends Entity> entityClass() {
         return this.getClass();
     }
 

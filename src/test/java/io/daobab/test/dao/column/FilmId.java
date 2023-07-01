@@ -17,11 +17,11 @@ public interface FilmId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: SMALLINT
      */
     default Integer getFilmId() {
-        return getColumnParam("FilmId");
+        return readParam("FilmId");
     }
 
     default E setFilmId(Integer val) {
-        return setColumnParam("FilmId", val);
+        return storeParam("FilmId", val);
     }
 
     default Column<E, Integer, FilmId> colFilmId() {

@@ -17,11 +17,11 @@ public interface OriginalLanguageId<E extends Entity> extends RelatedTo<E>, MapH
      * db type: TINYINT
      */
     default Integer getOriginalLanguageId() {
-        return getColumnParam("OriginalLanguageId");
+        return readParam("OriginalLanguageId");
     }
 
     default E setOriginalLanguageId(Integer val) {
-        return setColumnParam("OriginalLanguageId", val);
+        return storeParam("OriginalLanguageId", val);
     }
 
     default Column<E, Integer, OriginalLanguageId> colOriginalLanguageId() {

@@ -18,11 +18,11 @@ public interface LastUpdate<E extends Entity> extends RelatedTo<E>, MapHandler<E
      * db type: TIMESTAMP
      */
     default Timestamp getLastUpdate() {
-        return getColumnParam("LastUpdate");
+        return readParam("LastUpdate");
     }
 
     default E setLastUpdate(Timestamp val) {
-        return setColumnParam("LastUpdate", val);
+        return storeParam("LastUpdate", val);
     }
 
     default Column<E, Timestamp, LastUpdate> colLastUpdate() {

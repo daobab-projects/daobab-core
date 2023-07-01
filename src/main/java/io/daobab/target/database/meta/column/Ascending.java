@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface Ascending<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getAscending() {
-        return getColumnParam("Ascending");
+        return readParam("Ascending");
     }
 
     default E setAscending(String val) {
-        return setColumnParam("Ascending", val);
+        return storeParam("Ascending", val);
     }
 
     default Column<E, String, Ascending> colAscending() {

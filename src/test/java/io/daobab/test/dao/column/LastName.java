@@ -17,11 +17,11 @@ public interface LastName<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
      * db type: VARCHAR
      */
     default String getLastName() {
-        return getColumnParam("LastName");
+        return readParam("LastName");
     }
 
     default E setLastName(String val) {
-        return setColumnParam("LastName", val);
+        return storeParam("LastName", val);
     }
 
     default Column<E, String, LastName> colLastName() {

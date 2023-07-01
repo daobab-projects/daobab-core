@@ -13,12 +13,12 @@ import java.util.Objects;
 public interface RequestType<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default QueryType getRequestType() {
-        return getColumnParam("RequestType");
+        return readParam("RequestType");
     }
 
     @SuppressWarnings("unchecked")
     default E setRequestType(QueryType val) {
-        return setColumnParam("RequestType", val);
+        return storeParam("RequestType", val);
     }
 
     default Column<E, QueryType, RequestType<E>> colRequestType() {

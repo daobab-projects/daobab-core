@@ -17,11 +17,11 @@ public interface StaffId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: TINYINT
      */
     default Integer getStaffId() {
-        return getColumnParam("StaffId");
+        return readParam("StaffId");
     }
 
     default E setStaffId(Integer val) {
-        return setColumnParam("StaffId", val);
+        return storeParam("StaffId", val);
     }
 
     default Column<E, Integer, StaffId> colStaffId() {

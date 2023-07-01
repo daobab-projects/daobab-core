@@ -225,7 +225,7 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     public <E extends Entity> MetaTable getMetaDataForTable(E entity) {
         if (entity == null) throw new MandatoryEntity();
         return getMetaData().select(tabMetaTable)
-                .whereEqual(tabMetaTable.colTableName(), getEntityName(entity.getEntityClass()))
+                .whereEqual(tabMetaTable.colTableName(), getEntityName(entity.entityClass()))
                 .findOne();
     }
 

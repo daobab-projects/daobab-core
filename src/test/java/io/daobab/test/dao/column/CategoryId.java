@@ -17,11 +17,11 @@ public interface CategoryId<E extends Entity> extends RelatedTo<E>, MapHandler<E
      * db type: TINYINT
      */
     default Integer getCategoryId() {
-        return getColumnParam("CategoryId");
+        return readParam("CategoryId");
     }
 
     default E setCategoryId(Integer val) {
-        return setColumnParam("CategoryId", val);
+        return storeParam("CategoryId", val);
     }
 
     default Column<E, Integer, CategoryId> colCategoryId() {

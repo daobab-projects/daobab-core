@@ -18,12 +18,12 @@ public interface ResponseDate<E extends Entity> extends RelatedTo<E>, MapHandler
      * db type: TIMESTAMP
      */
     default Timestamp getResponseDate() {
-        return getColumnParam("ResponseDate");
+        return readParam("ResponseDate");
     }
 
     @SuppressWarnings("unchecked")
     default E setResponseDate(Timestamp val) {
-        return setColumnParam("ResponseDate", val);
+        return storeParam("ResponseDate", val);
     }
 
     default Column<E, Timestamp, ResponseDate> colResponseDate() {

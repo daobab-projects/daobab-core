@@ -26,13 +26,13 @@ public class EntityBuilder<E extends Entity> {
         return this;
     }
 
-    public <F, R extends RelatedTo> EntityBuilder<E> addValue(Field<?, F, R> column, R relation) {
+    public <F, R extends RelatedTo> EntityBuilder<E> addRelatedValue(Field<?, F, R> column, R relation) {
         params.put(column.getFieldName(), column.getValue(relation));
         return this;
     }
 
     public EntityBuilder<E> addAll(Table<?> entity) {
-        params.putAll(entity.getDtoParameterMap());
+        params.putAll(entity.accessParameterMap());
         return this;
     }
 

@@ -15,12 +15,11 @@ public interface Dummy<E extends Entity> extends RelatedTo<E>, MapHandler<E>, En
      * db type: VARCHAR
      */
     default String getDummy() {
-        return getColumnParam("Dummy");
+        return readParam("Dummy");
     }
 
-    @SuppressWarnings("unchecked")
     default E setDummy(String val) {
-        return setColumnParam("Dummy", val);
+        return storeParam("Dummy", val);
     }
 
     @SuppressWarnings("rawtypes")

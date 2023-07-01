@@ -18,11 +18,11 @@ public interface RentalId<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
      * db type: INTEGER
      */
     default BigDecimal getRentalId() {
-        return getColumnParam("RentalId");
+        return readParam("RentalId");
     }
 
     default E setRentalId(BigDecimal val) {
-        return setColumnParam("RentalId", val);
+        return storeParam("RentalId", val);
     }
 
     default Column<E, BigDecimal, RentalId> colRentalId() {

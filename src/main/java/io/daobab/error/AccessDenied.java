@@ -11,7 +11,7 @@ import io.daobab.target.protection.OperationType;
 public class AccessDenied extends DaobabException {
 
     public AccessDenied(Entity entity, OperationType operation) {
-        this(EntityDuplication.getEntityName(entity.getEntityClass(), null), operation);
+        this(EntityDuplication.getEntityName(entity.entityClass(), null), operation);
     }
 
     public AccessDenied(String entityName, OperationType operation) {

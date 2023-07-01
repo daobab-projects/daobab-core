@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface MetaColumnSize<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default Integer getColumnSize() {
-        return getColumnParam("ColumnSize");
+        return readParam("ColumnSize");
     }
 
     default E setColumnSize(Integer val) {
-        return setColumnParam("ColumnSize", val);
+        return storeParam("ColumnSize", val);
     }
 
     default Column<E, Integer, MetaColumnSize> colColumnSize() {

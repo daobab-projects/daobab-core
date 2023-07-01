@@ -18,11 +18,11 @@ public interface InventoryId<E extends Entity> extends RelatedTo<E>, MapHandler<
      * db type: INTEGER
      */
     default BigDecimal getInventoryId() {
-        return getColumnParam("InventoryId");
+        return readParam("InventoryId");
     }
 
     default E setInventoryId(BigDecimal val) {
-        return setColumnParam("InventoryId", val);
+        return storeParam("InventoryId", val);
     }
 
     default Column<E, BigDecimal, InventoryId> colInventoryId() {

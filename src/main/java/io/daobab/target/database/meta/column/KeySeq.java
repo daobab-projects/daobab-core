@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface KeySeq<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getKeySeq() {
-        return getColumnParam("KeySeq");
+        return readParam("KeySeq");
     }
 
     default E setKeySeq(String val) {
-        return setColumnParam("KeySeq", val);
+        return storeParam("KeySeq", val);
     }
 
     default Column<E, String, KeySeq> colKeySeq() {

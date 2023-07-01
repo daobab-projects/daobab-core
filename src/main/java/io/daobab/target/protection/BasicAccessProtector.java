@@ -30,7 +30,7 @@ public class BasicAccessProtector implements AccessProtector {
     public AccessProtector setEntityAccess(Entity entity, Access... accessRights) {
         Set<Access> ar = new HashSet<>();
         Collections.addAll(ar, accessRights);
-        entityRights.put(target.getEntityName(entity.getEntityClass()), ar);
+        entityRights.put(target.getEntityName(entity.entityClass()), ar);
         setEnabled(true);
         return this;
     }
@@ -58,9 +58,9 @@ public class BasicAccessProtector implements AccessProtector {
     public AccessProtector setEntityAccess(QueryTarget target, Access accessRights, Entity... entities) {
         if (accessRights == null || entities == null) return this;
         for (Entity entity : entities) {
-            Set<Access> ar = entityRights.getOrDefault(target.getEntityName(entity.getEntityClass()), new HashSet<>());
+            Set<Access> ar = entityRights.getOrDefault(target.getEntityName(entity.entityClass()), new HashSet<>());
             Collections.addAll(ar, accessRights);
-            entityRights.put(target.getEntityName(entity.getEntityClass()), ar);
+            entityRights.put(target.getEntityName(entity.entityClass()), ar);
         }
         setEnabled(true);
         return this;
@@ -164,7 +164,7 @@ public class BasicAccessProtector implements AccessProtector {
 
     @Override
     public boolean isEntityAllowedFor(Entity entity, OperationType operation) {
-        return isEntityAllowedFor(target.getEntityName(entity.getEntityClass()), operation);
+        return isEntityAllowedFor(target.getEntityName(entity.entityClass()), operation);
     }
 
     @Override

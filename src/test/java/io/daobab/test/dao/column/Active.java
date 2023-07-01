@@ -11,11 +11,11 @@ public interface Active<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: BOOLEAN
      */
     default Boolean getActive() {
-        return getColumnParam("Active");
+        return readParam("Active");
     }
 
     default E setActive(Boolean val) {
-        return setColumnParam("Active", val);
+        return storeParam("Active", val);
     }
 
     @SuppressWarnings("unchecked")

@@ -229,7 +229,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
     }
 
     public Optional<MetaTable> getMetaTable(Entity entity) {
-        return Optional.ofNullable(quickAccessMetaTable.get(getEntityName(entity.getEntityClass())));
+        return Optional.ofNullable(quickAccessMetaTable.get(getEntityName(entity.entityClass())));
     }
 
 

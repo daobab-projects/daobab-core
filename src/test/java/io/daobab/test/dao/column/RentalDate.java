@@ -18,11 +18,11 @@ public interface RentalDate<E extends Entity> extends RelatedTo<E>, MapHandler<E
      * db type: TIMESTAMP
      */
     default Timestamp getRentalDate() {
-        return getColumnParam("RentalDate");
+        return readParam("RentalDate");
     }
 
     default E setRentalDate(Timestamp val) {
-        return setColumnParam("RentalDate", val);
+        return storeParam("RentalDate", val);
     }
 
     default Column<E, Timestamp, RentalDate> colRentalDate() {

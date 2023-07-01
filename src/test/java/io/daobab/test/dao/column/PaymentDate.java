@@ -18,11 +18,11 @@ public interface PaymentDate<E extends Entity> extends RelatedTo<E>, MapHandler<
      * db type: TIMESTAMP
      */
     default Timestamp getPaymentDate() {
-        return getColumnParam("PaymentDate");
+        return readParam("PaymentDate");
     }
 
     default E setPaymentDate(Timestamp val) {
-        return setColumnParam("PaymentDate", val);
+        return storeParam("PaymentDate", val);
     }
 
     default Column<E, Timestamp, PaymentDate> colPaymentDate() {

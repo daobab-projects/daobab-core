@@ -17,11 +17,11 @@ public interface Picture<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: VARBINARY
      */
     default byte[] getPicture() {
-        return getColumnParam("Picture");
+        return readParam("Picture");
     }
 
     default E setPicture(byte[] val) {
-        return setColumnParam("Picture", val);
+        return storeParam("Picture", val);
     }
 
     default Column<E, byte[], Picture> colPicture() {

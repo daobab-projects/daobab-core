@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface FkTableSchemaName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getFkSchemaName() {
-        return getColumnParam("FkSchemaName");
+        return readParam("FkSchemaName");
     }
 
     default E setFkSchemaName(String val) {
-        return setColumnParam("FkSchemaName", val);
+        return storeParam("FkSchemaName", val);
     }
 
     default Column<E, String, FkTableSchemaName> colFkSchemaName() {

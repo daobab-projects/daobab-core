@@ -11,8 +11,11 @@ import java.util.Objects;
 
 public class ColumnCreator {
 
+    private ColumnCreator() {
+    }
 
-    public static <E extends Table, F, R extends RelatedTo<E> & MapHandler<E>> Column<E, F, R> createColumn(String fieldName, String columnName, E entity, Class<F> clazz) {
+
+    public static <E extends Table<?>, F, R extends RelatedTo<E> & MapHandler<E>> Column<E, F, R> createColumn(String fieldName, String columnName, E entity, Class<F> clazz) {
 
         return new Column<E, F, R>() {
 
@@ -39,13 +42,13 @@ public class ColumnCreator {
             @Override
             public F getValue(R entity) {
                 if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), fieldName);
-                return entity.getColumnParam(fieldName);
+                return entity.readParam(fieldName);
             }
 
             @Override
             public R setValue(R entity, F param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), fieldName);
-                return (R) entity.setColumnParam(fieldName, param);
+                return (R) entity.storeParam(fieldName, param);
             }
 
             @Override

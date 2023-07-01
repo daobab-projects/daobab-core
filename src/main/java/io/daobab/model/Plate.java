@@ -171,7 +171,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         EntityBuilder<E> builder = EntityCreator.builder(entityClass);
 
         for (TableColumn column : builder.getEntityColumns()) {
-            builder.addValue(column.getColumn(), (RelatedTo) getValue(column.getColumn()));
+            builder.addRelatedValue(column.getColumn(), (RelatedTo) getValue(column.getColumn()));
         }
 
         return builder.build();

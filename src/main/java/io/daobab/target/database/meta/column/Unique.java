@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface Unique<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default Boolean getUnique() {
-        return getColumnParam("Unique");
+        return readParam("Unique");
     }
 
     default E setUnique(Boolean val) {
-        return setColumnParam("Unique", val);
+        return storeParam("Unique", val);
     }
 
     default Column<E, Boolean, Unique> colUnique() {

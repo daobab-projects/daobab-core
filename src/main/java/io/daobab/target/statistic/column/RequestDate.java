@@ -14,11 +14,11 @@ public interface RequestDate<E extends Entity> extends RelatedTo<E>, MapHandler<
 
 
     default Timestamp getRequestDate() {
-        return getColumnParam("RequestDate");
+        return readParam("RequestDate");
     }
 
     default E setRequestDate(Timestamp val) {
-        return setColumnParam("RequestDate", val);
+        return storeParam("RequestDate", val);
     }
 
     default Column<E, Timestamp, RequestDate> colRequestDate() {

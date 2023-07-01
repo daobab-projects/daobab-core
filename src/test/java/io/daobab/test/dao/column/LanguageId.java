@@ -17,11 +17,11 @@ public interface LanguageId<E extends Entity> extends RelatedTo<E>, MapHandler<E
      * db type: TINYINT
      */
     default Integer getLanguageId() {
-        return getColumnParam("LanguageId");
+        return readParam("LanguageId");
     }
 
     default E setLanguageId(Integer val) {
-        return setColumnParam("LanguageId", val);
+        return storeParam("LanguageId", val);
     }
 
     default Column<E, Integer, LanguageId> colLanguageId() {

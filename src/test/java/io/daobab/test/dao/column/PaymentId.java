@@ -17,11 +17,11 @@ public interface PaymentId<E extends Entity> extends RelatedTo<E>, MapHandler<E>
      * db type: SMALLINT
      */
     default Integer getPaymentId() {
-        return getColumnParam("PaymentId");
+        return readParam("PaymentId");
     }
 
     default E setPaymentId(Integer val) {
-        return setColumnParam("PaymentId", val);
+        return storeParam("PaymentId", val);
     }
 
     default Column<E, Integer, PaymentId> colPaymentId() {

@@ -17,11 +17,11 @@ public interface Country<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: VARCHAR
      */
     default String getCountry() {
-        return getColumnParam("Country");
+        return readParam("Country");
     }
 
     default E setCountry(String val) {
-        return setColumnParam("Country", val);
+        return storeParam("Country", val);
     }
 
     default Column<E, String, Country> colCountry() {

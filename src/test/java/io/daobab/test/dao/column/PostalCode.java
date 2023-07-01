@@ -17,11 +17,11 @@ public interface PostalCode<E extends Entity> extends RelatedTo<E>, MapHandler<E
      * db type: VARCHAR
      */
     default String getPostalCode() {
-        return getColumnParam("PostalCode");
+        return readParam("PostalCode");
     }
 
     default E setPostalCode(String val) {
-        return setColumnParam("PostalCode", val);
+        return storeParam("PostalCode", val);
     }
 
     default Column<E, String, PostalCode> colPostalCode() {

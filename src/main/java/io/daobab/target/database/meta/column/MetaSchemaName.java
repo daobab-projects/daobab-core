@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface MetaSchemaName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getSchemaName() {
-        return getColumnParam("SchemaName");
+        return readParam("SchemaName");
     }
 
     default E setSchemaName(String val) {
-        return setColumnParam("SchemaName", val);
+        return storeParam("SchemaName", val);
     }
 
     default Column<E, String, MetaSchemaName> colSchemaName() {

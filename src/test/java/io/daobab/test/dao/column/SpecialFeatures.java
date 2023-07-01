@@ -17,11 +17,11 @@ public interface SpecialFeatures<E extends Entity> extends RelatedTo<E>, MapHand
      * db type: VARCHAR
      */
     default String getSpecialFeatures() {
-        return getColumnParam("SpecialFeatures");
+        return readParam("SpecialFeatures");
     }
 
     default E setSpecialFeatures(String val) {
-        return setColumnParam("SpecialFeatures", val);
+        return storeParam("SpecialFeatures", val);
     }
 
     default Column<E, String, SpecialFeatures> colSpecialFeatures() {

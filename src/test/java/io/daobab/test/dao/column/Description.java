@@ -17,11 +17,11 @@ public interface Description<E extends Entity> extends RelatedTo<E>, MapHandler<
      * db type: VARCHAR
      */
     default String getDescription() {
-        return getColumnParam("Description");
+        return readParam("Description");
     }
 
     default E setDescription(String val) {
-        return setColumnParam("Description", val);
+        return storeParam("Description", val);
     }
 
     default Column<E, String, Description> colDescription() {

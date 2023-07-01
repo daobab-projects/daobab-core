@@ -18,11 +18,11 @@ public interface ReplacementCost<E extends Entity> extends RelatedTo<E>, MapHand
      * db type: DECIMAL
      */
     default BigDecimal getReplacementCost() {
-        return getColumnParam("ReplacementCost");
+        return readParam("ReplacementCost");
     }
 
     default E setReplacementCost(BigDecimal val) {
-        return setColumnParam("ReplacementCost", val);
+        return storeParam("ReplacementCost", val);
     }
 
     default Column<E, BigDecimal, ReplacementCost> colReplacementCost() {

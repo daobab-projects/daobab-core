@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface ColumnCount<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default Integer getColumnCount() {
-        return getColumnParam("ColumnCount");
+        return readParam("ColumnCount");
     }
 
     default E setColumnCount(Integer val) {
-        return setColumnParam("ColumnCount", val);
+        return storeParam("ColumnCount", val);
     }
 
     default Column<E, Integer, ColumnCount> colColumnCount() {

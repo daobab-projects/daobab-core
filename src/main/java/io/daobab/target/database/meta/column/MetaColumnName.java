@@ -12,12 +12,12 @@ import java.util.Objects;
 public interface MetaColumnName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getColumnName() {
-        return getColumnParam("ColumnName");
+        return readParam("ColumnName");
     }
 
     @SuppressWarnings("unchecked")
     default E setColumnName(String val) {
-        return setColumnParam("ColumnName", val);
+        return storeParam("ColumnName", val);
     }
 
     @SuppressWarnings("rawtypes")

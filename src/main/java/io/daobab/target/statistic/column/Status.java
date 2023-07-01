@@ -13,11 +13,11 @@ import java.util.Objects;
 public interface Status<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default CallStatus getStatus() {
-        return getColumnParam("Status");
+        return readParam("Status");
     }
 
     default E setStatus(CallStatus val) {
-        return setColumnParam("Status", val);
+        return storeParam("Status", val);
     }
 
     default Column<E, CallStatus, Status> colStatus() {

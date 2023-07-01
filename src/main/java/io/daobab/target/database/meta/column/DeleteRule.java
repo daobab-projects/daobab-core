@@ -13,11 +13,11 @@ import java.util.Objects;
 public interface DeleteRule<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default MetaRule getDeleteRule() {
-        return getColumnParam("DeleteRule");
+        return readParam("DeleteRule");
     }
 
     default E setDeleteRule(MetaRule val) {
-        return setColumnParam("DeleteRule", val);
+        return storeParam("DeleteRule", val);
     }
 
     default Column<E, MetaRule, DeleteRule> colDeleteRule() {

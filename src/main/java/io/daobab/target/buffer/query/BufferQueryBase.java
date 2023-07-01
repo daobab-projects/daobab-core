@@ -127,8 +127,8 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
         if (target == null) throw new MandatoryTargetException();
         if (entity == null) throw new NullEntityException();
         setTarget(target);
-        setEntityName(target.getEntityName(entity.getEntityClass()));
-        setEntityClass(entity.getEntityClass());
+        setEntityName(target.getEntityName(entity.entityClass()));
+        setEntityClass(entity.entityClass());
         IdentifierStorage storage = new IdentifierStorage();
         storage.registerIdentifiers(getEntityName());
         setIdentifierStorage(storage);
@@ -327,7 +327,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
         Entity ent = Marshaller.fromRemote(target, (String) remoteEntityName);
 
-        if (ent != null) setEntityClass(ent.getEntityClass());
+        if (ent != null) setEntityClass(ent.entityClass());
         setEntityName((String) remoteEntityName);
 
         if (where != null) {
@@ -414,8 +414,8 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     public <E extends Entity> Q from(E entity) {
         if (entity == null) throw new NullEntityException();
-        setEntityName(target.getEntityName(entity.getEntityClass()));
-        setEntityClass(entity.getEntityClass());
+        setEntityName(target.getEntityName(entity.entityClass()));
+        setEntityClass(entity.entityClass());
         IdentifierStorage storage = new IdentifierStorage();
         setIdentifierStorage(storage);
         getIdentifierStorage().registerIdentifiers(getEntityName());

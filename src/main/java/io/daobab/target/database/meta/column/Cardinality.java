@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface Cardinality<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default Integer getCardinality() {
-        return getColumnParam("Cardinality");
+        return readParam("Cardinality");
     }
 
     default E setCardinality(Integer val) {
-        return setColumnParam("Cardinality", val);
+        return storeParam("Cardinality", val);
     }
 
     default Column<E, Integer, Cardinality> colCardinality() {

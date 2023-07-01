@@ -13,11 +13,11 @@ import java.util.Objects;
 public interface Datatype<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default JdbcType getDatatype() {
-        return getColumnParam("Datatype");
+        return readParam("Datatype");
     }
 
     default E setDatatype(JdbcType val) {
-        return setColumnParam("Datatype", val);
+        return storeParam("Datatype", val);
     }
 
     default Column<E, JdbcType, Datatype> colDatatype() {

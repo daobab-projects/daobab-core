@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface MetaIndexName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getIndexName() {
-        return getColumnParam("IndexName");
+        return readParam("IndexName");
     }
 
     default E setIndexName(String val) {
-        return setColumnParam("IndexName", val);
+        return storeParam("IndexName", val);
     }
 
     default Column<E, String, MetaIndexName> colIndexName() {

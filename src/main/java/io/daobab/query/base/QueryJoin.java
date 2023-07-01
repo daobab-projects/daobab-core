@@ -184,7 +184,7 @@ public interface QueryJoin<Q extends Query> {
         if (throughTables == null) return (Q) this;
         Set<String> src = new HashSet<>();
         src.add(getEntityName());
-        List<String> tables = Arrays.stream(throughTables).map(e -> target.getEntityName(e.getEntityClass())).collect(Collectors.toCollection(LinkedList::new));
+        List<String> tables = Arrays.stream(throughTables).map(e -> target.getEntityName(e.entityClass())).collect(Collectors.toCollection(LinkedList::new));
         setJoins(JoinTracker.calculateThrougth(getTarget(), getTarget().getTables(), src, totables, getJoins(), tables));
         return (Q) this;
     }
@@ -192,8 +192,8 @@ public interface QueryJoin<Q extends Query> {
     default <E extends Entity, R extends RelatedTo> Q joinRoute(QueryTarget target, JoinType type, E queryEntity, R... joinedTables) {
         if (queryEntity == null || joinedTables == null) return (Q) this;
         Set<String> src = new HashSet<>();
-        src.add(target.getEntityName(queryEntity.getEntityClass()));
-        Set<String> tables = Arrays.stream(joinedTables).map(e -> target.getEntityName(e.getEntityClass())).collect(Collectors.toSet());
+        src.add(target.getEntityName(queryEntity.entityClass()));
+        Set<String> tables = Arrays.stream(joinedTables).map(e -> target.getEntityName(e.entityClass())).collect(Collectors.toSet());
         setJoins(JoinTracker.calculateJoins(getTarget(), getTarget().getTables(), src, tables, getJoins()));
         return (Q) this;
     }

@@ -37,8 +37,8 @@ public class TypeConverterPrimaryKeyToManyCache<F, E extends Entity & PrimaryKey
     private final E srcEntity;
 
     public TypeConverterPrimaryKeyToManyCache(QueryTarget target, TypeConverterPKBasedList<F, E2> rootConverter, E srcEntity, E2 destEntity) {
-        System.out.println(">>> srcEntity: " + target.getEntityName(srcEntity.getEntityClass()));
-        System.out.println(">>> dstEntity: " + target.getEntityName(destEntity.getEntityClass()));
+        System.out.println(">>> srcEntity: " + target.getEntityName(srcEntity.entityClass()));
+        System.out.println(">>> dstEntity: " + target.getEntityName(destEntity.entityClass()));
         this.rootConverter = rootConverter;
         this.target = target;
         this.srcEntity = srcEntity;

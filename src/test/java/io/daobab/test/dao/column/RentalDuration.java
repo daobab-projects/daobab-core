@@ -17,11 +17,11 @@ public interface RentalDuration<E extends Entity> extends RelatedTo<E>, MapHandl
      * db type: TINYINT
      */
     default Integer getRentalDuration() {
-        return getColumnParam("RentalDuration");
+        return readParam("RentalDuration");
     }
 
     default E setRentalDuration(Integer val) {
-        return setColumnParam("RentalDuration", val);
+        return storeParam("RentalDuration", val);
     }
 
     default Column<E, Integer, RentalDuration> colRentalDuration() {

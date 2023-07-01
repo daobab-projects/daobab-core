@@ -18,11 +18,11 @@ public interface NameLang<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
      * db type: VARCHAR
      */
     default Lang getName() {
-        return getColumnParam("Name");
+        return readParam("Name");
     }
 
     default E setName(Lang val) {
-        return setColumnParam("Name", val);
+        return storeParam("Name", val);
     }
 
     default Column<E, Lang, NameLang> colName() {

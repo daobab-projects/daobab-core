@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface TableColumnName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getTableColumnName() {
-        return getColumnParam("TableColumnName");
+        return readParam("TableColumnName");
     }
 
     default E setTableColumnName(String val) {
-        return setColumnParam("TableColumnName", val);
+        return storeParam("TableColumnName", val);
     }
 
     default Column<E, String, TableColumnName> colTableColumnName() {

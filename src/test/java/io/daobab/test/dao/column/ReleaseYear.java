@@ -18,11 +18,11 @@ public interface ReleaseYear<E extends Entity> extends RelatedTo<E>, MapHandler<
      * db type: DATE
      */
     default Date getReleaseYear() {
-        return getColumnParam("ReleaseYear");
+        return readParam("ReleaseYear");
     }
 
     default E setReleaseYear(Date val) {
-        return setColumnParam("ReleaseYear", val);
+        return storeParam("ReleaseYear", val);
     }
 
     default Column<E, Date, ReleaseYear> colReleaseYear() {

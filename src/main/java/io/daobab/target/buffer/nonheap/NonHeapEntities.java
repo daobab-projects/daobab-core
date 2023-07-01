@@ -38,7 +38,7 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
         super(bitFieldRegistry);
         E entity = entities == null || entities.isEmpty() ? null : entities.get(0);
         adjustForCapacity(8);//1 << pageMaxCapacityBytes;
-        this.entityClass = (Class<E>) entity.getEntityClass();
+        this.entityClass = (Class<E>) entity.entityClass();
         this.columns = getColumnsForTable(entity);
         List<TableColumn> columns = getColumnsForTable(entity);
         columnsOrder = new HashMap<>();
@@ -100,7 +100,7 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
     public NonHeapEntities(E entity, int capacity, BitFieldRegistry bitFieldRegistry) {
         super(bitFieldRegistry);
         adjustForCapacity(capacity);//1 << pageMaxCapacityBytes;
-        this.entityClass = (Class<E>) entity.getEntityClass();
+        this.entityClass = (Class<E>) entity.entityClass();
         this.columns = getColumnsForTable(entity);
         List<TableColumn> columns = entity.columns();
         columnsOrder = new HashMap<>();

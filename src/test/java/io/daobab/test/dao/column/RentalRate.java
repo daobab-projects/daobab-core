@@ -18,11 +18,11 @@ public interface RentalRate<E extends Entity> extends RelatedTo<E>, MapHandler<E
      * db type: DECIMAL
      */
     default BigDecimal getRentalRate() {
-        return getColumnParam("RentalRate");
+        return readParam("RentalRate");
     }
 
     default E setRentalRate(BigDecimal val) {
-        return setColumnParam("RentalRate", val);
+        return storeParam("RentalRate", val);
     }
 
     default Column<E, BigDecimal, RentalRate> colRentalRate() {

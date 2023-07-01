@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface ErrorDesc<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getErrorDesc() {
-        return getColumnParam("ErrorDesc");
+        return readParam("ErrorDesc");
     }
 
     default E setErrorDesc(String val) {
-        return setColumnParam("ErrorDesc", val);
+        return storeParam("ErrorDesc", val);
     }
 
     default Column<E, String, ErrorDesc> colErrorDesc() {

@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface MetaTableName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getTableName() {
-        return getColumnParam("TableName");
+        return readParam("TableName");
     }
 
     default E setTableName(String val) {
-        return setColumnParam("TableName", val);
+        return storeParam("TableName", val);
     }
 
     default Column<E, String, MetaTableName> colTableName() {

@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface Nullable<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default Boolean getNullable() {
-        return getColumnParam("Nullable");
+        return readParam("Nullable");
     }
 
     default E setNullable(Boolean val) {
-        return setColumnParam("Nullable", val);
+        return storeParam("Nullable", val);
     }
 
     default Column<E, Boolean, Nullable> colNullable() {

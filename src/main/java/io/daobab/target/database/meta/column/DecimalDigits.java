@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface DecimalDigits<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default Integer getDecimalDigits() {
-        return getColumnParam("DecimalDigits");
+        return readParam("DecimalDigits");
     }
 
     default E setDecimalDigits(Integer val) {
-        return setColumnParam("DecimalDigits", val);
+        return storeParam("DecimalDigits", val);
     }
 
     default Column<E, Integer, DecimalDigits> colDecimalDigits() {

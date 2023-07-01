@@ -17,11 +17,11 @@ public interface Rating<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: VARCHAR
      */
     default String getRating() {
-        return getColumnParam("Rating");
+        return readParam("Rating");
     }
 
     default E setRating(String val) {
-        return setColumnParam("Rating", val);
+        return storeParam("Rating", val);
     }
 
     default Column<E, String, Rating> colRating() {

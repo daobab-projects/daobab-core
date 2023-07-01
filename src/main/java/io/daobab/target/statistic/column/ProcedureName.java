@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface ProcedureName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getProcedureName() {
-        return getColumnParam("ProcedureName");
+        return readParam("ProcedureName");
     }
 
     default E setProcedureName(String val) {
-        return setColumnParam("ProcedureName", val);
+        return storeParam("ProcedureName", val);
     }
 
     default Column<E, String, ProcedureName> colProcedureName() {

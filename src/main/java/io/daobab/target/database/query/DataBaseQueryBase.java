@@ -136,8 +136,8 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         if (target == null) throw new MandatoryTargetException();
         if (entity == null) throw new NullEntityException();
         setTarget(target);
-        setEntityName(target.getEntityName(entity.getEntityClass()));
-        setEntityClass(entity.getEntityClass());
+        setEntityName(target.getEntityName(entity.entityClass()));
+        setEntityClass(entity.entityClass());
         IdentifierStorage storage = new IdentifierStorage();
         storage.registerIdentifiers(getEntityName());
         setIdentifierStorage(storage);
@@ -358,7 +358,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
         Entity ent = Marshaller.fromRemote(target, (String) remoteEntityName);
 
-        if (ent != null) setEntityClass(ent.getEntityClass());
+        if (ent != null) setEntityClass(ent.entityClass());
         setEntityName((String) remoteEntityName);
 
         if (where != null) {
@@ -444,7 +444,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     public <E1 extends Entity> Q from(E1 entity) {
         if (entity == null) throw new NullEntityException();
         setEntityName(target.getEntityName(entityClass));
-        setEntityClass(entity.getEntityClass());
+        setEntityClass(entity.entityClass());
         setIdentifierStorage(new IdentifierStorage());
         getIdentifierStorage().registerIdentifiers(getEntityName());
         return (Q) this;

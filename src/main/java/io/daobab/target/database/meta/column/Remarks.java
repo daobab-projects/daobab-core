@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface Remarks<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getRemarks() {
-        return getColumnParam("Remarks");
+        return readParam("Remarks");
     }
 
     default E setRemarks(String val) {
-        return setColumnParam("Remarks", val);
+        return storeParam("Remarks", val);
     }
 
     default Column<E, String, Remarks> colRemarks() {

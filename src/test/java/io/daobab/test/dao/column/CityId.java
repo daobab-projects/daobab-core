@@ -17,11 +17,11 @@ public interface CityId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: SMALLINT
      */
     default Integer getCityId() {
-        return getColumnParam("CityId");
+        return readParam("CityId");
     }
 
     default E setCityId(Integer val) {
-        return setColumnParam("CityId", val);
+        return storeParam("CityId", val);
     }
 
     default Column<E, Integer, CityId> colCityId() {

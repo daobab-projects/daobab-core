@@ -69,7 +69,7 @@ public interface Marshaller {
         if (target == null) throw new MandatoryTargetException();
 
         for (Entity targetentity : target.getTables()) {
-            if (target.getEntityName(targetentity.getEntityClass()).equals(entity)) {
+            if (target.getEntityName(targetentity.entityClass()).equals(entity)) {
                 return targetentity;
             }
         }

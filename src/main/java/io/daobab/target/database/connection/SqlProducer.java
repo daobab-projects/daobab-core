@@ -276,7 +276,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
         for (JoinWrapper<?> joinWrapper : base.getJoins()) {
             storage.getIdentifierForColumn(base.getTarget(), joinWrapper.getByColumn());
-            storage.registerIdentifierForJoinClause(getEntityName(joinWrapper.getTable().getEntityClass()));
+            storage.registerIdentifierForJoinClause(getEntityName(joinWrapper.getTable().entityClass()));
         }
 
         sb.append(LINE_SEPARATOR);
@@ -535,9 +535,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         return new StringBuilder()
                 .append(joinWrapper.getType().toString())
                 .append(SPACE)
-                .append(getEntityName(joinWrapper.getTable().getEntityClass()))
+                .append(getEntityName(joinWrapper.getTable().entityClass()))
                 .append(SPACE)
-                .append(storage.getIdentifierFor(getEntityName(joinWrapper.getTable().getEntityClass())))
+                .append(storage.getIdentifierFor(getEntityName(joinWrapper.getTable().entityClass())))
                 .append(" on ")
                 .append(whereToExpression(target, joinWrapper.getWhere(), storage));
     }

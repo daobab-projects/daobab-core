@@ -18,11 +18,11 @@ public interface CreateDate<E extends Entity> extends RelatedTo<E>, MapHandler<E
      * db type: TIMESTAMP
      */
     default Timestamp getCreateDate() {
-        return getColumnParam("CreateDate");
+        return readParam("CreateDate");
     }
 
     default E setCreateDate(Timestamp val) {
-        return setColumnParam("CreateDate", val);
+        return storeParam("CreateDate", val);
     }
 
     default Column<E, Timestamp, CreateDate> colCreateDate() {

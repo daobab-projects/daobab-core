@@ -70,7 +70,7 @@ public class JoinTracker {
                 Column column = tableColumn.getColumn();
                 for (int r = 0; r < bunch.size(); r++) {
                     Entity right = bunch.get(r);
-                    if (target.getEntityName(left.getEntityClass()).equals(target.getEntityName(right.getEntityClass())))
+                    if (target.getEntityName(left.entityClass()).equals(target.getEntityName(right.entityClass())))
                         continue;
                     for (TableColumn tableColumnRight : right.columns()) {
                         Column columnRight = tableColumnRight.getColumn();
@@ -112,7 +112,7 @@ public class JoinTracker {
     public static boolean addedAlready(JoinWrapper jw, List<JoinWrapper> list) {
         if (jw == null || list == null) return true;
         for (JoinWrapper a : list) {
-            if (a.getTable().getEntityClass().equals(jw.getTable().getEntityClass())
+            if (a.getTable().entityClass().equals(jw.getTable().entityClass())
                     && a.getType().equals(jw.getType())
                     && a.getByColumn().getColumnName().equals(jw.getByColumn().getColumnName())
             ) return true;
@@ -122,14 +122,14 @@ public class JoinTracker {
 
     public static Vertex getByEntity(Entity entity, List<Vertex> list) {
         for (Vertex v : list) {
-            if (v.getEntity().getEntityClass().equals(entity.getEntityClass())) return v;
+            if (v.getEntity().entityClass().equals(entity.entityClass())) return v;
         }
         return null;
     }
 
     public static Edge getEdge(Vertex from, Vertex to, List<Edge> edges) {
         for (Edge e : edges) {
-            if ((e.getFromNode().getEntityClass().equals(from.getEntity().getEntityClass()) && e.getToNode().getEntityClass().equals(to.getEntity().getEntityClass()))) {
+            if ((e.getFromNode().entityClass().equals(from.getEntity().entityClass()) && e.getToNode().entityClass().equals(to.getEntity().entityClass()))) {
                 return e;
             }
         }
@@ -162,7 +162,7 @@ public class JoinTracker {
 
         for (String name : names) {
             for (Entity entity : allEntities) {
-                if (name.equals(target.getEntityName(entity.getEntityClass()))) {
+                if (name.equals(target.getEntityName(entity.entityClass()))) {
                     rv.add(entity);
                     break;
                 }

@@ -17,11 +17,11 @@ public interface Password<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
      * db type: VARCHAR
      */
     default String getPassword() {
-        return getColumnParam("Password");
+        return readParam("Password");
     }
 
     default E setPassword(String val) {
-        return setColumnParam("Password", val);
+        return storeParam("Password", val);
     }
 
     default Column<E, String, Password> colPassword() {

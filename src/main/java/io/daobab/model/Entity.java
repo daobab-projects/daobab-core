@@ -10,7 +10,7 @@ import io.daobab.target.Target;
 public interface Entity extends ColumnsProvider, JsonProvider {
 
 
-    Class<? extends Entity> getEntityClass();
+    Class<? extends Entity> entityClass();
 
     <T extends Target & QueryHandler> void beforeInsert(T target);
 

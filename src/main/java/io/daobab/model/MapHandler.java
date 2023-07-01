@@ -1,11 +1,15 @@
 package io.daobab.model;
 
+import java.util.Map;
+
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface MapHandler<E extends Entity> {
 
-    <X> X getColumnParam(String key);
+    <X> X readParam(String key);
 
-    <X> E setColumnParam(String key, X param);
+    <X> E storeParam(String key, X param);
+
+    Map<String, Object> accessParameterMap();
 }

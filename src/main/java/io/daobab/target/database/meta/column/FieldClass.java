@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface FieldClass<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default Class getFieldClass() {
-        return getColumnParam("FieldClass");
+        return readParam("FieldClass");
     }
 
     default E setFieldClass(Class val) {
-        return setColumnParam("FieldClass", val);
+        return storeParam("FieldClass", val);
     }
 
     default Column<E, Class, FieldClass> colFieldClass() {

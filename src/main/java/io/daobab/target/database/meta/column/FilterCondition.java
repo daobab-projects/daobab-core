@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface FilterCondition<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getFilterCondition() {
-        return getColumnParam("FilterCondition");
+        return readParam("FilterCondition");
     }
 
     default E setFilterCondition(String val) {
-        return setColumnParam("FilterCondition", val);
+        return storeParam("FilterCondition", val);
     }
 
     default Column<E, String, FilterCondition> colFilterCondition() {

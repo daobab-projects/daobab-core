@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface OrdinalPosition<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default Integer getOrdinalPosition() {
-        return getColumnParam("OrdinalPosition");
+        return readParam("OrdinalPosition");
     }
 
     default E setOrdinalPosition(Integer val) {
-        return setColumnParam("OrdinalPosition", val);
+        return storeParam("OrdinalPosition", val);
     }
 
     default Column<E, Integer, OrdinalPosition> colOrdinalPosition() {

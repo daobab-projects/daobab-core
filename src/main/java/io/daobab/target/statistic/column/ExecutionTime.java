@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface ExecutionTime<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default Long getExecutionTime() {
-        return getColumnParam("ExecutionTime");
+        return readParam("ExecutionTime");
     }
 
     default E setExecutionTime(Long val) {
-        return setColumnParam("ExecutionTime", val);
+        return storeParam("ExecutionTime", val);
     }
 
     default Column<E, Long, ExecutionTime> colExecutionTime() {

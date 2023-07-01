@@ -18,11 +18,11 @@ public interface ReturnDate<E extends Entity> extends RelatedTo<E>, MapHandler<E
      * db type: TIMESTAMP
      */
     default Timestamp getReturnDate() {
-        return getColumnParam("ReturnDate");
+        return readParam("ReturnDate");
     }
 
     default E setReturnDate(Timestamp val) {
-        return setColumnParam("ReturnDate", val);
+        return storeParam("ReturnDate", val);
     }
 
     default Column<E, Timestamp, ReturnDate> colReturnDate() {

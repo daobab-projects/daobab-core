@@ -32,19 +32,19 @@ public abstract class Table<E extends Table> implements Entity, MapHandler<E>, J
 
     @SuppressWarnings("unchecked")
     @Override
-    public <X> X getColumnParam(String key) {
+    public <X> X readParam(String key) {
         return (X) dtoParameterMap.get(key);
     }
 
     @Override
-    public <X> E setColumnParam(String key, X param) {
+    public <X> E storeParam(String key, X param) {
         Map<String, Object> newParameters = new HashMap<>(dtoParameterMap);
         newParameters.put(key, param);
-        return (E) EntityCreator.createEntity(getEntityClass(), newParameters);
+        return (E) EntityCreator.createEntity(entityClass(), newParameters);
     }
 
     @Override
-    public Class<? extends Entity> getEntityClass() {
+    public Class<? extends Entity> entityClass() {
         return this.getClass();
     }
 
@@ -79,29 +79,30 @@ public abstract class Table<E extends Table> implements Entity, MapHandler<E>, J
     public E put(String key, Object value) {
         Map<String, Object> params = new HashMap<>(dtoParameterMap);
         params.put(key, value);
-        return (E) EntityCreator.createEntity(getEntityClass(), params);
+        return (E) EntityCreator.createEntity(entityClass(), params);
     }
 
     public E putAll(Map<String, Object> values) {
         Map<String, Object> params = new HashMap<>(dtoParameterMap);
         params.putAll(values);
-        return (E) EntityCreator.createEntity(getEntityClass(), params);
+        return (E) EntityCreator.createEntity(entityClass(), params);
     }
 
     public E merge(Table<?> anotherTable) {
         Map<String, Object> params = new HashMap<>(dtoParameterMap);
-        params.putAll(anotherTable.getDtoParameterMap());
-        return (E) EntityCreator.createEntity(getEntityClass(), params);
+        params.putAll(anotherTable.accessParameterMap());
+        return (E) EntityCreator.createEntity(entityClass(), params);
     }
 
     public EntityBuilder<E> builder() {
-        EntityBuilder<E> builder = (EntityBuilder<E>) new EntityBuilder<>(getEntityClass());
+        EntityBuilder<E> builder = (EntityBuilder<E>) new EntityBuilder<>(entityClass());
         builder.addAll(this);
         return builder;
     }
 
 
-    public Map<String, Object> getDtoParameterMap() {
+    @Override
+    public Map<String, Object> accessParameterMap() {
         return dtoParameterMap;
     }
 

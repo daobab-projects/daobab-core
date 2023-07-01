@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface Key<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getKey() {
-        return getColumnParam("Key");
+        return readParam("Key");
     }
 
     default E setKey(String val) {
-        return setColumnParam("Key", val);
+        return storeParam("Key", val);
     }
 
     default Column<E, String, Key> colKey() {

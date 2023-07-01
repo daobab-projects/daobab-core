@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface SqlQuery<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getSqlQuery() {
-        return getColumnParam("SqlQuery");
+        return readParam("SqlQuery");
     }
 
     default E setSqlQuery(String val) {
-        return setColumnParam("SqlQuery", val);
+        return storeParam("SqlQuery", val);
     }
 
     default Column<E, String, SqlQuery> colSqlQuery() {

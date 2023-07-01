@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface CamelName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getCamelName() {
-        return getColumnParam("CamelName");
+        return readParam("CamelName");
     }
 
     default E setCamelName(String val) {
-        return setColumnParam("CamelName", val);
+        return storeParam("CamelName", val);
     }
 
     default Column<E, String, CamelName> colCamelName() {
@@ -51,7 +51,7 @@ public interface CamelName<E extends Entity> extends RelatedTo<E>, MapHandler<E>
             @Override
             public CamelName setValue(CamelName entity, String param) {
                 if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CamelName");
-                return (CamelName) entity.setColumnParam("CamelName", param);
+                return (CamelName) entity.storeParam("CamelName", param);
             }
 
             @Override

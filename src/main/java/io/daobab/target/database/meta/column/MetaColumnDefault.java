@@ -12,11 +12,11 @@ import java.util.Objects;
 public interface MetaColumnDefault<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     default String getColumnDefault() {
-        return getColumnParam("ColumnDefault");
+        return readParam("ColumnDefault");
     }
 
     default E setColumnDefault(String val) {
-        return setColumnParam("ColumnDefault", val);
+        return storeParam("ColumnDefault", val);
     }
 
     default Column<E, String, MetaColumnDefault> colColumnDefault() {

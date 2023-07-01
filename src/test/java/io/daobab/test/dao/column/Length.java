@@ -17,11 +17,11 @@ public interface Length<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: SMALLINT
      */
     default Integer getLength() {
-        return getColumnParam("Length");
+        return readParam("Length");
     }
 
     default E setLength(Integer val) {
-        return setColumnParam("Length", val);
+        return storeParam("Length", val);
     }
 
     default Column<E, Integer, Length> colLength() {

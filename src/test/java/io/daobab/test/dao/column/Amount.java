@@ -18,11 +18,11 @@ public interface Amount<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: DECIMAL
      */
     default BigDecimal getAmount() {
-        return getColumnParam("Amount");
+        return readParam("Amount");
     }
 
     default E setAmount(BigDecimal val) {
-        return setColumnParam("Amount", val);
+        return storeParam("Amount", val);
     }
 
     default Column<E, BigDecimal, Amount> colAmount() {

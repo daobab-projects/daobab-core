@@ -17,11 +17,11 @@ public interface Address<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: VARCHAR
      */
     default String getAddress() {
-        return getColumnParam("Address");
+        return readParam("Address");
     }
 
     default E setAddress(String val) {
-        return setColumnParam("Address", val);
+        return storeParam("Address", val);
     }
 
     default Column<E, String, Address> colAddress() {

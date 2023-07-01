@@ -36,7 +36,7 @@ public class EntityDuplication<E extends Entity> {
     }
 
     public static String getEntityNameByInstance(Entity entity, ILoggerBean loggerBean) {
-        return getEntityName(entity.getEntityClass(), loggerBean);
+        return getEntityName(entity.entityClass(), loggerBean);
     }
 
     public static String getEntityName(Class<? extends Entity> clazz, ILoggerBean loggerBean) {
@@ -69,10 +69,10 @@ public class EntityDuplication<E extends Entity> {
 
         E rv;
         try {
-            rv = (E) entity.getEntityClass().getDeclaredConstructor().newInstance();
+            rv = (E) entity.entityClass().getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
-            throw new DaobabEntityCreationException(entity.getEntityClass(), e);
+            throw new DaobabEntityCreationException(entity.entityClass(), e);
         }
 
 

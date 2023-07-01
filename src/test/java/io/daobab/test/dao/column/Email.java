@@ -17,11 +17,11 @@ public interface Email<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
      * db type: VARCHAR
      */
     default String getEmail() {
-        return getColumnParam("Email");
+        return readParam("Email");
     }
 
     default E setEmail(String val) {
-        return setColumnParam("Email", val);
+        return storeParam("Email", val);
     }
 
     default Column<E, String, Email> colEmail() {
