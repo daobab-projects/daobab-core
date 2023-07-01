@@ -18,11 +18,6 @@ public final class EntityAny extends Table<EntityAny> {
     }
 
     @Override
-    public Class<? extends Entity> getEntityClass() {
-        return this.getClass();
-    }
-
-    @Override
     public <T extends Target & QueryHandler> void beforeInsert(T target) {
 
     }

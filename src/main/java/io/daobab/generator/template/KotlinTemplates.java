@@ -1,6 +1,6 @@
 package io.daobab.generator.template;
 
-import io.daobab.clone.EntityDuplicator;
+import io.daobab.creation.EntityCreator;
 import io.daobab.model.*;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.query.base.QueryWhisperer;
@@ -55,7 +55,7 @@ class KotlinTemplates {
             "}";
     public static final String TABLE_CLASS_TEMP = "package " + GenKeys.TABLE_PACKAGE + "\n" +
             "\n" +
-            "import " + EntityDuplicator.class.getName() + "\n" +
+            "import " + EntityCreator.class.getName() + "\n" +
             "import " + Column.class.getName() + "\n" +
             "import " + TableColumn.class.getName() + "\n" +
             GenKeys.PK_IMPORT + "\n" +

@@ -1,8 +1,9 @@
 package io.daobab.model;
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.converter.JsonProvider;
 import io.daobab.converter.json.JsonConverterManager;
+import io.daobab.creation.EntityBuilder;
+import io.daobab.creation.EntityCreator;
 import io.daobab.target.QueryHandler;
 import io.daobab.target.Target;
 
@@ -14,14 +15,14 @@ import java.util.Map;
  */
 public abstract class Table<E extends Table> implements Entity, MapHandler<E>, JsonProvider {
 
-    private final Map<String, Object> parameters;
+    private final Map<String, Object> dtoParameterMap;
 
     protected Table() {
         this(new HashMap<>());
     }
 
-    protected Table(Map<String, Object> parameters) {
-        this.parameters = parameters;
+    protected Table(Map<String, Object> dtoParameterMap) {
+        this.dtoParameterMap = dtoParameterMap;
     }
 
     @Override
@@ -32,14 +33,14 @@ public abstract class Table<E extends Table> implements Entity, MapHandler<E>, J
     @SuppressWarnings("unchecked")
     @Override
     public <X> X getColumnParam(String key) {
-        return (X) parameters.get(key);
+        return (X) dtoParameterMap.get(key);
     }
 
-    //    @Override
+    @Override
     public <X> E setColumnParam(String key, X param) {
-        Map<String, Object> newParameters = new HashMap<>(parameters);
+        Map<String, Object> newParameters = new HashMap<>(dtoParameterMap);
         newParameters.put(key, param);
-        return (E) EntityDuplicator.createEntity(getEntityClass(), newParameters);
+        return (E) EntityCreator.createEntity(getEntityClass(), newParameters);
     }
 
     @Override
@@ -76,26 +77,32 @@ public abstract class Table<E extends Table> implements Entity, MapHandler<E>, J
     }
 
     public E put(String key, Object value) {
-        Map<String, Object> params = new HashMap<>(parameters);
+        Map<String, Object> params = new HashMap<>(dtoParameterMap);
         params.put(key, value);
-        return (E) EntityDuplicator.createEntity(getEntityClass(), params);
+        return (E) EntityCreator.createEntity(getEntityClass(), params);
     }
 
     public E putAll(Map<String, Object> values) {
-        Map<String, Object> params = new HashMap<>(parameters);
+        Map<String, Object> params = new HashMap<>(dtoParameterMap);
         params.putAll(values);
-        return (E) EntityDuplicator.createEntity(getEntityClass(), params);
+        return (E) EntityCreator.createEntity(getEntityClass(), params);
     }
 
     public E merge(Table<?> anotherTable) {
-        Map<String, Object> params = new HashMap<>(parameters);
-        params.putAll(anotherTable.getParameters());
-        return (E) EntityDuplicator.createEntity(getEntityClass(), params);
+        Map<String, Object> params = new HashMap<>(dtoParameterMap);
+        params.putAll(anotherTable.getDtoParameterMap());
+        return (E) EntityCreator.createEntity(getEntityClass(), params);
+    }
+
+    public EntityBuilder<E> builder() {
+        EntityBuilder<E> builder = (EntityBuilder<E>) new EntityBuilder<>(getEntityClass());
+        builder.addAll(this);
+        return builder;
     }
 
 
-    public Map<String, Object> getParameters() {
-        return parameters;
+    public Map<String, Object> getDtoParameterMap() {
+        return dtoParameterMap;
     }
 
 }

@@ -2,10 +2,14 @@ package io.daobab.model;
 
 import io.daobab.converter.JsonProvider;
 import io.daobab.converter.json.JsonConverterManager;
-import io.daobab.error.*;
+import io.daobab.creation.EntityBuilder;
+import io.daobab.creation.EntityCreator;
+import io.daobab.error.AttemptToWriteIntoNullEntityException;
+import io.daobab.error.DaobabException;
+import io.daobab.error.MandatoryColumn;
+import io.daobab.error.NullParameter;
 import io.daobab.statement.function.type.ColumnFunction;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -163,18 +167,14 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     @SuppressWarnings({"unchecked","rawtypes"})
     public <E extends Entity> E getEntity(Class<E> entityClass) {
         if (entityClass == null) throw new NullParameter("entityClass");
-        E rv;
-        try {
-            rv = entityClass.getDeclaredConstructor().newInstance();
 
-            for (TableColumn column : rv.columns()) {
-                rv = (E) column.getColumn().setValue((RelatedTo) rv, getValue(column.getColumn()));
-            }
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new DaobabEntityCreationException(entityClass, e);
+        EntityBuilder<E> builder = EntityCreator.builder(entityClass);
+
+        for (TableColumn column : builder.getEntityColumns()) {
+            builder.addValue(column.getColumn(), (RelatedTo) getValue(column.getColumn()));
         }
 
-        return rv;
+        return builder.build();
     }
 
     @SuppressWarnings("unchecked")
@@ -187,11 +187,13 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         Map<String, Object> entityMap;
         if (tableColumn == null) return;
 
-        if (!this.containsKey(tableColumn.getColumn().getEntityClass().getName())) {
+        String entityName = tableColumn.getColumn().getEntityClass().getName();
+
+        if (!this.containsKey(entityName)) {
             entityMap = new HashMap<>();
-            put(tableColumn.getColumn().getEntityClass().getName(), entityMap);
+            put(entityName, entityMap);
         } else {
-            entityMap = get(tableColumn.getColumn().getEntityClass().getName());
+            entityMap = get(entityName);
         }
 
         entityMap.put(tableColumn.getColumn().getFieldName(), val);
@@ -216,24 +218,34 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends Entity> E toEntity(Class<E> targetTypeClass, List<TableColumn> columns) {
-        E entity;
+    public <E extends Entity> E toEntity(Class<E> entityClass, List<TableColumn> columns) {
 
-        try {
-            entity = targetTypeClass.getDeclaredConstructor().newInstance();
+        EntityBuilder<E> builder = EntityCreator.builder(entityClass);
 
-            for (TableColumn col : columns) {
-                if (!col.getColumn().getEntityClass().equals(targetTypeClass)) {
-                    throw new DaobabException("Invalid class");
-                }
-                entity = (E) col.getColumn().setValue((RelatedTo) entity, getValue(col.getColumn()));
-//                entity.setColumnParam(col.getColumn().getFieldName(), getValue(col.getColumn()));
-            }
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new DaobabException("Cannot create an Entity from a Plate",e);
+        for (TableColumn column : columns) {
+            builder.add(column.getColumn(), getValue(column.getColumn()));
         }
 
-        return entity;
+        return builder.build();
+
+
+//        E entity;
+//
+//        try {
+//            entity = targetTypeClass.getDeclaredConstructor().newInstance();
+//
+//            for (TableColumn col : columns) {
+//                if (!col.getColumn().getEntityClass().equals(targetTypeClass)) {
+//                    throw new DaobabException("Invalid class");
+//                }
+//                entity = (E) col.getColumn().setValue((RelatedTo) entity, getValue(col.getColumn()));
+////                entity.setColumnParam(col.getColumn().getFieldName(), getValue(col.getColumn()));
+//            }
+//        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+//            throw new DaobabException("Cannot create an Entity from a Plate",e);
+//        }
+//
+//        return entity;
     }
 
     public <M extends FlatPlate> M toFlatPlate(M flatPlate) {

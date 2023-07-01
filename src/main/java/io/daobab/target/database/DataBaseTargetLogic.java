@@ -1,7 +1,7 @@
 package io.daobab.target.database;
 
-import io.daobab.clone.EntityBuilder;
-import io.daobab.clone.EntityDuplicator;
+import io.daobab.creation.EntityBuilder;
+import io.daobab.creation.EntityCreator;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
@@ -399,7 +399,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                     }
                 }
 
-                EntityBuilder<E> builder = EntityDuplicator.builder(clazz);
+                EntityBuilder<E> builder = EntityCreator.builder(clazz);
 
                 while (rs.next()) {
 
@@ -471,7 +471,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 while (rs.next()) {
 
 
-                    EntityBuilder<E> builder = EntityDuplicator.builder(clazz);
+                    EntityBuilder<E> builder = EntityCreator.builder(clazz);
 
                     for (int i = 0; i < columns.size(); i++) {
                         Column col = columnsArray[i];

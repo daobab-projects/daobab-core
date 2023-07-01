@@ -1,7 +1,7 @@
 package io.daobab.target.database.connection;
 
-import io.daobab.clone.EntityBuilder;
-import io.daobab.clone.EntityDuplicator;
+import io.daobab.creation.EntityBuilder;
+import io.daobab.creation.EntityCreator;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.NoSequenceException;
@@ -61,7 +61,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
             typeConvertersArr[i] = target.getConverterManager().getConverter(columnsArr[i]).orElse(null);
         }
 
-        EntityBuilder<E> builder = EntityDuplicator.builder(entityClass);
+        EntityBuilder<E> builder = EntityCreator.builder(entityClass);
 
         for (int i = 0; i < columns.size(); i++) {
             builder.add(columnsArr[i], readCell(typeConvertersArr[i], rs, i + 1, columnsArr[i]));

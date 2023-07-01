@@ -136,7 +136,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         if (target == null) throw new MandatoryTargetException();
         if (entity == null) throw new NullEntityException();
         setTarget(target);
-        setEntityName(getEntityName());
+        setEntityName(target.getEntityName(entity.getEntityClass()));
         setEntityClass(entity.getEntityClass());
         IdentifierStorage storage = new IdentifierStorage();
         storage.registerIdentifiers(getEntityName());

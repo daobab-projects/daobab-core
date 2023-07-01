@@ -1,6 +1,6 @@
 package io.daobab.target.database.remote;
 
-import io.daobab.clone.EntityDuplicator;
+import io.daobab.creation.EntityCreator;
 import io.daobab.error.ReadRemoteException;
 import io.daobab.error.RemoteDaobabException;
 import io.daobab.error.RemoteTargetCanNotHandleOpenedTransactionException;
@@ -66,7 +66,7 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
         List<E> rv = new ArrayList<>();
 
         for (Map<String, Object> map : listmap) {
-            rv.add(EntityDuplicator.createEntity(query.getEntityClass(), map));
+            rv.add(EntityCreator.createEntity(query.getEntityClass(), map));
         }
 
         return new EntityList<>(rv, query.getEntityClass());
@@ -81,7 +81,7 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
             throw new RemoteDaobabException(response);
         }
 
-        return EntityDuplicator.createEntity(query.getEntityClass(), (Map<String, Object>) response.getContent());
+        return EntityCreator.createEntity(query.getEntityClass(), (Map<String, Object>) response.getContent());
 
     }
 

@@ -1,7 +1,7 @@
 package io.daobab.converter.duplicator.duplication;
 
-import io.daobab.clone.EntityDuplicator;
 import io.daobab.converter.duplicator.DuplicatorManager;
+import io.daobab.creation.EntityCreator;
 import io.daobab.error.DaobabEntityCreationException;
 import io.daobab.error.DaobabException;
 import io.daobab.internallogger.ILoggerBean;
@@ -52,7 +52,7 @@ public class EntityDuplication<E extends Entity> {
         if (annotation.useMethod() && !entityName.isEmpty()) {
             throw new DaobabException("%s annotation in class %s contains table name, but if parameter useMethod=true is in use, table name shouldn't be provided ", TableName.class.getSimpleName(), clazz.getSimpleName());
         } else if (annotation.useMethod()) {
-            Entity entity = EntityDuplicator.createEntity(clazz);
+            Entity entity = EntityCreator.createEntity(clazz);
             TableNameMethod tableNameMethod = (TableNameMethod) entity;
             return tableNameMethod.getEntityName();
         }
