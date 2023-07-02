@@ -6,6 +6,7 @@ import io.daobab.target.statistic.column.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @TableName(value = "STATISTIC")
@@ -27,6 +28,15 @@ public class StatisticRecord extends Table<StatisticRecord> implements
 
     public StatisticRecord(String identifier) {
         setId(identifier);
+    }
+
+
+    public StatisticRecord() {
+        super();
+    }
+
+    public StatisticRecord(Map<String, Object> parameters) {
+        super(parameters);
     }
 
     @Override

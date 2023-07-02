@@ -41,7 +41,7 @@ public class DatabaseDateConverterMicrosoftSql implements DatabaseDateConverter 
         if (value == null) {
             return null;
         }
-        return String.format(" convert(DATETIME,'%s:%s:%s')", value.getYear(), value.getMonth(), value.getDayOfMonth());
+        return String.format(" convert(DATETIME,'%s:%s:%s')", value.getYear(), value.getMonthValue(), value.getDayOfMonth());
 
     }
 
@@ -50,7 +50,7 @@ public class DatabaseDateConverterMicrosoftSql implements DatabaseDateConverter 
         if (value == null) {
             return null;
         }
-        return String.format(" convert(DATETIME,'%s-%s-%s %s:%s:%s')", value.getYear(), value.getMonth(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
+        return String.format(" convert(DATETIME,'%s-%s-%s %s:%s:%s')", value.getYear(), value.getMonthValue(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
     }
 
 
@@ -59,6 +59,6 @@ public class DatabaseDateConverterMicrosoftSql implements DatabaseDateConverter 
         if (value == null) {
             return null;
         }
-        return String.format(" convert(DATETIME,'%s-%s-%s %s:%s:%s')", value.getYear(), value.getMonth(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
+        return String.format(" convert(DATETIME,'%s-%s-%s %s:%s:%s')", value.getYear(), value.getMonthValue(), value.getDayOfMonth(), value.getHour(), value.getMinute(), value.getSecond());
     }
 }
