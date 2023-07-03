@@ -34,8 +34,9 @@ public class BitFieldLocalDateTime extends BitFieldTemporal<LocalDateTime> imple
         if (byteBuffer.get(position) == 0) {
             return null;
         }
-        Instant instant = Instant.ofEpochSecond((byteBuffer.getLong(position + BitSize.NULL)));
-        return LocalDateTime.from(instant.plusNanos(byteBuffer.getInt(position + BitSize.NULL + BitSize.LONG)));
+        Instant instant = Instant.ofEpochSecond((byteBuffer.getLong(position + BitSize.NULL)))
+                .plusNanos(byteBuffer.getInt(position + BitSize.NULL + BitSize.LONG));
+        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
     @Override

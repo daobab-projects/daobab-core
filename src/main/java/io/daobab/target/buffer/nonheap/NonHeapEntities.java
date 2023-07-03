@@ -50,12 +50,14 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
 
         for (TableColumn tableColumn : columns) {
             Column column = tableColumn.getColumn();
-            Optional<BitField<Object>> bitField = bitFieldRegistry.getBitFieldFor(tableColumn);
-            if (!bitField.isPresent()) {
+            Optional<BitField<Object>> bitFieldOptional = bitFieldRegistry.getBitFieldFor(tableColumn);
+            if (!bitFieldOptional.isPresent()) {
                 throw new DaobabException(this, "Class %s is not registered in %s", column.getFieldClass(), bitFieldRegistry.getClass().getName());
             }
-            bitFields[columnNo] = bitField.get();
-            int fieldSize = bitFields[columnNo].calculateSpace(tableColumn);
+            BitField<Object> bitField = bitFieldOptional.get();
+            bitFields[columnNo] = bitField;
+            int fieldSize = bitField.calculateSpace(tableColumn);
+
             if (!bitFieldRegistry.mayBeBitBuffered(column)) {
                 throw new DaobabException("Column %s cannot be bitbuffered", column.getColumnName());
             }
@@ -249,7 +251,8 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
                 cnt++;
             }
             return rv;
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new DaobabEntityCreationException(entityClass, e);
         }
     }
