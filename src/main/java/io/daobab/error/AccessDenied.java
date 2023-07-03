@@ -20,6 +20,6 @@ public class AccessDenied extends DaobabException {
 
     @SuppressWarnings("rawtypes")
     public AccessDenied(Column column, OperationType operation) {
-        super("Column " + EntityDuplication.getEntityName(column.getEntityClass(), null) + "." + column.getColumnName() + " is disallowed for operation: " + operation);
+        super("Column " + EntityDuplication.getEntityName(column.entityClass(), null) + "." + column.getColumnName() + " is disallowed for operation: " + operation);
     }
 }

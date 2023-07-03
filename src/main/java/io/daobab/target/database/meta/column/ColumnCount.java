@@ -44,13 +44,13 @@ public interface ColumnCount<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public Integer getValue(ColumnCount entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ColumnCount");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ColumnCount");
                 return entity.getColumnCount();
             }
 
             @Override
             public ColumnCount setValue(ColumnCount entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ColumnCount");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "ColumnCount");
                 return (ColumnCount) entity.setColumnCount(param);
             }
 
@@ -61,7 +61,7 @@ public interface ColumnCount<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

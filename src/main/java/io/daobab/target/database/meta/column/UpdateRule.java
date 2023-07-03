@@ -45,13 +45,13 @@ public interface UpdateRule<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public MetaRule getValue(UpdateRule entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "UpdateRule");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "UpdateRule");
                 return entity.getUpdateRule();
             }
 
             @Override
             public UpdateRule setValue(UpdateRule entity, MetaRule param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "UpdateRule");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "UpdateRule");
                 return (UpdateRule) entity.setUpdateRule(param);
             }
 

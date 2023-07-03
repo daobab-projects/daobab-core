@@ -49,13 +49,13 @@ public interface RentalDuration<E extends Entity> extends RelatedTo<E>, MapHandl
 
             @Override
             public Integer getValue(RentalDuration entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "RentalDuration");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "RentalDuration");
                 return entity.getRentalDuration();
             }
 
             @Override
             public RentalDuration setValue(RentalDuration entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RentalDuration");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "RentalDuration");
                 return (RentalDuration) entity.setRentalDuration(param);
             }
 
@@ -66,7 +66,7 @@ public interface RentalDuration<E extends Entity> extends RelatedTo<E>, MapHandl
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

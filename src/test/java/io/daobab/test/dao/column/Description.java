@@ -49,13 +49,13 @@ public interface Description<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public String getValue(Description entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Description");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Description");
                 return entity.getDescription();
             }
 
             @Override
             public Description setValue(Description entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Description");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Description");
                 return (Description) entity.setDescription(param);
             }
 
@@ -66,7 +66,7 @@ public interface Description<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

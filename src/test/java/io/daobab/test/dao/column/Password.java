@@ -49,13 +49,13 @@ public interface Password<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public String getValue(Password entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Password");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Password");
                 return entity.getPassword();
             }
 
             @Override
             public Password setValue(Password entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Password");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Password");
                 return (Password) entity.setPassword(param);
             }
 
@@ -66,7 +66,7 @@ public interface Password<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

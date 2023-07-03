@@ -47,14 +47,14 @@ public interface MetaColumnName<E extends Entity> extends RelatedTo<E>, MapHandl
             @SuppressWarnings("rawtypes")
             @Override
             public String getValue(MetaColumnName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ColumnName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ColumnName");
                 return entity.getColumnName();
             }
 
             @SuppressWarnings("rawtypes")
             @Override
             public MetaColumnName setValue(MetaColumnName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ColumnName");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "ColumnName");
                 return (MetaColumnName) entity.setColumnName(param);
             }
 
@@ -65,7 +65,7 @@ public interface MetaColumnName<E extends Entity> extends RelatedTo<E>, MapHandl
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @SuppressWarnings("rawtypes")

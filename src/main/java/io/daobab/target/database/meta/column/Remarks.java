@@ -44,13 +44,13 @@ public interface Remarks<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String getValue(Remarks entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Remarks");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Remarks");
                 return entity.getRemarks();
             }
 
             @Override
             public Remarks setValue(Remarks entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Remarks");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Remarks");
                 return (Remarks) entity.setRemarks(param);
             }
 
@@ -61,7 +61,7 @@ public interface Remarks<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

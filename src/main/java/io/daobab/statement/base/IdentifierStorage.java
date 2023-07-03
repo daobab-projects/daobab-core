@@ -50,7 +50,7 @@ public final class IdentifierStorage {
         if (field instanceof ColumnHaving) {
             sb.append(field.getColumnName());
         } else {
-            sb.append(getIdentifierFor(target.getEntityName(field.getEntityClass())))
+            sb.append(getIdentifierFor(target.getEntityName(field.entityClass())))
                     .append(".")
                     .append(field.getColumnName());
         }

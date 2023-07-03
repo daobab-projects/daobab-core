@@ -49,13 +49,13 @@ public interface Phone<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String getValue(Phone entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Phone");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Phone");
                 return entity.getPhone();
             }
 
             @Override
             public Phone setValue(Phone entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Phone");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Phone");
                 return (Phone) entity.setPhone(param);
             }
 
@@ -66,7 +66,7 @@ public interface Phone<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

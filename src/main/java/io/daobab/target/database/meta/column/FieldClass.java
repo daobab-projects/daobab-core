@@ -44,13 +44,13 @@ public interface FieldClass<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public Class<?> getValue(FieldClass entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "FieldClass");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "FieldClass");
                 return entity.getFieldClass();
             }
 
             @Override
             public FieldClass setValue(FieldClass entity, Class param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FieldClass");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "FieldClass");
                 return (FieldClass) entity.setFieldClass(param);
             }
 
@@ -61,7 +61,7 @@ public interface FieldClass<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

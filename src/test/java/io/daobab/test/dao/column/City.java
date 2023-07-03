@@ -49,13 +49,13 @@ public interface City<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String getValue(City entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "City");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "City");
                 return entity.getCity();
             }
 
             @Override
             public City setValue(City entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "City");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "City");
                 return (City) entity.setCity(param);
             }
 
@@ -66,7 +66,7 @@ public interface City<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

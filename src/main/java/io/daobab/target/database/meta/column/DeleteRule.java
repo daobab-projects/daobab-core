@@ -45,13 +45,13 @@ public interface DeleteRule<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public MetaRule getValue(DeleteRule entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "DeleteRule");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "DeleteRule");
                 return entity.getDeleteRule();
             }
 
             @Override
             public DeleteRule setValue(DeleteRule entity, MetaRule param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "DeleteRule");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "DeleteRule");
                 return (DeleteRule) entity.setDeleteRule(param);
             }
 

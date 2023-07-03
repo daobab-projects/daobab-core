@@ -44,13 +44,13 @@ public interface FkColumnName<E extends Entity> extends RelatedTo<E>, MapHandler
 
             @Override
             public String getValue(FkColumnName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "FkColumnName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "FkColumnName");
                 return entity.getFkColumnName();
             }
 
             @Override
             public FkColumnName setValue(FkColumnName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FkColumnName");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "FkColumnName");
                 return (FkColumnName) entity.setFkColumnName(param);
             }
 
@@ -61,7 +61,7 @@ public interface FkColumnName<E extends Entity> extends RelatedTo<E>, MapHandler
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

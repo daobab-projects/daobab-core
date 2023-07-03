@@ -50,13 +50,13 @@ public interface Amount<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public BigDecimal getValue(Amount entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Amount");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Amount");
                 return entity.getAmount();
             }
 
             @Override
             public Amount setValue(Amount entity, BigDecimal param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Amount");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Amount");
                 return (Amount) entity.setAmount(param);
             }
 
@@ -67,7 +67,7 @@ public interface Amount<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

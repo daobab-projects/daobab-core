@@ -452,7 +452,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
             DatabaseTypeConverter typeConverter = target.getConverterManager().getConverter(field).orElse(null);
 
-            sb.append(storage.getIdentifierFor(target.getEntityName(field.getEntityClass())))
+            sb.append(storage.getIdentifierFor(target.getEntityName(field.entityClass())))
                     .append(DOT)
                     .append(field.getColumnName())
                     .append(" = ");
@@ -554,7 +554,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                         .append(order.getOrderKindForPointer(i));
             } else {
                 Column<?, ?, ?> field = (Column<?, ?, ?>) orderedField;
-                sb.append(storage.getIdentifierFor(dataBaseTarget.getEntityName(field.getEntityClass())));
+                sb.append(storage.getIdentifierFor(dataBaseTarget.getEntityName(field.entityClass())));
                 sb.append(DOT);
                 sb.append(field.getColumnName());
                 sb.append(SPACE);
@@ -767,7 +767,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             }
 
             sb.append(CLOSED_BRACKET);
-            storage.getIdentifierFor(dataBaseTarget.getEntityName(columnFunction.getEntityClass()));
+            storage.getIdentifierFor(dataBaseTarget.getEntityName(columnFunction.entityClass()));
         } else {
             sb.append(toColumnFunctionQueryExpression(dataBaseTarget, columnFunction.column, columnFunction.identifier, storage, columnFunction.getMode(), columnFunction.getFunctionMap()));
         }

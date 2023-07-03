@@ -50,13 +50,13 @@ public interface PaymentDate<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public Timestamp getValue(PaymentDate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "PaymentDate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "PaymentDate");
                 return entity.getPaymentDate();
             }
 
             @Override
             public PaymentDate setValue(PaymentDate entity, Timestamp param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PaymentDate");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "PaymentDate");
                 return (PaymentDate) entity.setPaymentDate(param);
             }
 
@@ -67,7 +67,7 @@ public interface PaymentDate<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

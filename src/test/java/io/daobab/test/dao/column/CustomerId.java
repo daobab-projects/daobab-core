@@ -49,13 +49,13 @@ public interface CustomerId<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public Integer getValue(CustomerId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "CustomerId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "CustomerId");
                 return entity.getCustomerId();
             }
 
             @Override
             public CustomerId setValue(CustomerId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CustomerId");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "CustomerId");
                 return (CustomerId) entity.setCustomerId(param);
             }
 
@@ -66,7 +66,7 @@ public interface CustomerId<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

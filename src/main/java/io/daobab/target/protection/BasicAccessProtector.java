@@ -178,7 +178,7 @@ public class BasicAccessProtector implements AccessProtector {
     public boolean isColumnAllowedFor(Column column, OperationType operation) {
         if (!isEnabled()) return true;
         Set<Access> rights = columnRights.get(column);
-        boolean entityIsAllowed = isEntityAllowedFor(target.getEntityName(column.getEntityClass()), operation);
+        boolean entityIsAllowed = isEntityAllowedFor(target.getEntityName(column.entityClass()), operation);
         if (!entityIsAllowed) {
             return false;
         }

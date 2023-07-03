@@ -45,14 +45,14 @@ public interface PkTableCatalogName<E extends Entity> extends RelatedTo<E>, MapH
             @Override
             public String getValue(PkTableCatalogName entity) {
                 if (entity == null)
-                    throw new AttemptToReadFromNullEntityException(getEntityClass(), "PkTableCatalogName");
+                    throw new AttemptToReadFromNullEntityException(entityClass(), "PkTableCatalogName");
                 return entity.getPkCatalogName();
             }
 
             @Override
             public PkTableCatalogName setValue(PkTableCatalogName entity, String param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PkTableCatalogName");
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "PkTableCatalogName");
                 return (PkTableCatalogName) entity.setPkCatalogName(param);
             }
 
@@ -63,7 +63,7 @@ public interface PkTableCatalogName<E extends Entity> extends RelatedTo<E>, MapH
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

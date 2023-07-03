@@ -50,13 +50,13 @@ public interface RentalId<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public BigDecimal getValue(RentalId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "RentalId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "RentalId");
                 return entity.getRentalId();
             }
 
             @Override
             public RentalId setValue(RentalId entity, BigDecimal param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RentalId");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "RentalId");
                 return (RentalId) entity.setRentalId(param);
             }
 
@@ -67,7 +67,7 @@ public interface RentalId<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

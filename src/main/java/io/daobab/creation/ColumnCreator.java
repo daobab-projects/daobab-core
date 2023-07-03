@@ -41,13 +41,13 @@ public class ColumnCreator {
 
             @Override
             public F getValue(R entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), fieldName);
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), fieldName);
                 return entity.readParam(fieldName);
             }
 
             @Override
             public R setValue(R entity, F param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), fieldName);
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), fieldName);
                 return (R) entity.storeParam(fieldName, param);
             }
 
@@ -58,7 +58,7 @@ public class ColumnCreator {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -44,14 +44,14 @@ public interface TableColumnName<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String getValue(TableColumnName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "TableColumnName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "TableColumnName");
                 return entity.getTableColumnName();
             }
 
             @Override
             public TableColumnName setValue(TableColumnName entity, String param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "TableColumnName");
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "TableColumnName");
                 return (TableColumnName) entity.setTableColumnName(param);
             }
 
@@ -62,7 +62,7 @@ public interface TableColumnName<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

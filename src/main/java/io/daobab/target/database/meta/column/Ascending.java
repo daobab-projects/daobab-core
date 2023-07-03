@@ -44,13 +44,13 @@ public interface Ascending<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
             @Override
             public String getValue(Ascending entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Ascending");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Ascending");
                 return entity.getAscending();
             }
 
             @Override
             public Ascending setValue(Ascending entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Ascending");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Ascending");
                 return (Ascending) entity.setAscending(param);
             }
 
@@ -61,7 +61,7 @@ public interface Ascending<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -50,13 +50,13 @@ public interface RentalDate<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public Timestamp getValue(RentalDate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "RentalDate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "RentalDate");
                 return entity.getRentalDate();
             }
 
             @Override
             public RentalDate setValue(RentalDate entity, Timestamp param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "RentalDate");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "RentalDate");
                 return (RentalDate) entity.setRentalDate(param);
             }
 
@@ -67,7 +67,7 @@ public interface RentalDate<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

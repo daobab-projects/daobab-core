@@ -49,13 +49,13 @@ public interface Rating<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String getValue(Rating entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Rating");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Rating");
                 return entity.getRating();
             }
 
             @Override
             public Rating setValue(Rating entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Rating");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Rating");
                 return (Rating) entity.setRating(param);
             }
 
@@ -66,7 +66,7 @@ public interface Rating<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

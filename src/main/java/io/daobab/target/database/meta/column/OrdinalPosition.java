@@ -44,14 +44,14 @@ public interface OrdinalPosition<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public Integer getValue(OrdinalPosition entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "OrdinalPosition");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "OrdinalPosition");
                 return entity.getOrdinalPosition();
             }
 
             @Override
             public OrdinalPosition setValue(OrdinalPosition entity, Integer param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "OrdinalPosition");
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "OrdinalPosition");
                 return (OrdinalPosition) entity.setOrdinalPosition(param);
             }
 
@@ -62,7 +62,7 @@ public interface OrdinalPosition<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

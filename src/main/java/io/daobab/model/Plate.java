@@ -76,7 +76,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     @SuppressWarnings("unchecked")
     public <F> F getValue(Field<?, F, ?> df) {
         if (df == null) return null;
-        Map<String, Object> entityMap = get(df.getEntityClass().getName());
+        Map<String, Object> entityMap = get(df.entityClass().getName());
         if (entityMap == null) return null;
         return (F) entityMap.get(df.getFieldName());
     }
@@ -84,7 +84,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     @SuppressWarnings("unchecked")
     public <F> F getFunctionValue(ColumnFunction<?, F, ?, ?> df) {
         if (df == null) return null;
-        Map<String, Object> entityMap = get(df.getEntityClass().getName());
+        Map<String, Object> entityMap = get(df.entityClass().getName());
         if (entityMap == null) return null;
         if (df.identifier != null) {
             return (F) entityMap.get(df.identifier);
@@ -96,7 +96,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     @SuppressWarnings("unchecked")
     public <F> F getValueOrElse(Field<?, F, ?> df, F defaultValue) {
         if (df == null) return defaultValue;
-        Map<String, Object> entityMap = get(df.getEntityClass().getName());
+        Map<String, Object> entityMap = get(df.entityClass().getName());
         if (entityMap == null) return defaultValue;
         F rv = (F) entityMap.get(df.getFieldName());
         if (rv == null) {
@@ -107,7 +107,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
 
     public <F> F getValueOrElse(Field<?, F, ?> df, Class<F> clazz, F defaultValue) {
         if (df == null) return defaultValue;
-        Map<String, Object> entityMap = get(df.getEntityClass().getName());
+        Map<String, Object> entityMap = get(df.entityClass().getName());
         if (entityMap == null) return defaultValue;
         F rv = clazz.cast(entityMap.get(df.getFieldName()));
         if (rv == null) {
@@ -187,7 +187,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         Map<String, Object> entityMap;
         if (tableColumn == null) return;
 
-        String entityName = tableColumn.getColumn().getEntityClass().getName();
+        String entityName = tableColumn.getColumn().entityClass().getName();
 
         if (!this.containsKey(entityName)) {
             entityMap = new HashMap<>();
@@ -203,11 +203,11 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     public <F> void setValue(Column column, F val) {
         Map<String, Object> entityMap;
 
-        if (!this.containsKey(column.getEntityClass().getName())) {
+        if (!this.containsKey(column.entityClass().getName())) {
             entityMap = new HashMap<>();
-            put(column.getEntityClass().getName(), entityMap);
+            put(column.entityClass().getName(), entityMap);
         } else {
-            entityMap = get(column.getEntityClass().getName());
+            entityMap = get(column.entityClass().getName());
         }
 
         entityMap.put(column.getFieldName(), val);

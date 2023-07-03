@@ -50,13 +50,13 @@ public interface CreateDate<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public Timestamp getValue(CreateDate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "CreateDate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "CreateDate");
                 return entity.getCreateDate();
             }
 
             @Override
             public CreateDate setValue(CreateDate entity, Timestamp param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CreateDate");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "CreateDate");
                 return (CreateDate) entity.setCreateDate(param);
             }
 
@@ -67,7 +67,7 @@ public interface CreateDate<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

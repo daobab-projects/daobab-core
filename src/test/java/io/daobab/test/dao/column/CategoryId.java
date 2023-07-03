@@ -49,13 +49,13 @@ public interface CategoryId<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public Integer getValue(CategoryId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "CategoryId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "CategoryId");
                 return entity.getCategoryId();
             }
 
             @Override
             public CategoryId setValue(CategoryId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CategoryId");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "CategoryId");
                 return (CategoryId) entity.setCategoryId(param);
             }
 
@@ -66,7 +66,7 @@ public interface CategoryId<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

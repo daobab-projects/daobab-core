@@ -44,13 +44,13 @@ public interface Nullable<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public Boolean getValue(Nullable entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Nullable");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Nullable");
                 return entity.getNullable();
             }
 
             @Override
             public Nullable setValue(Nullable entity, Boolean param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Nullable");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Nullable");
                 return (Nullable) entity.setNullable(param);
             }
 
@@ -61,7 +61,7 @@ public interface Nullable<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

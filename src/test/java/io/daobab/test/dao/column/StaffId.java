@@ -49,13 +49,13 @@ public interface StaffId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public Integer getValue(StaffId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "StaffId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "StaffId");
                 return entity.getStaffId();
             }
 
             @Override
             public StaffId setValue(StaffId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "StaffId");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "StaffId");
                 return (StaffId) entity.setStaffId(param);
             }
 
@@ -66,7 +66,7 @@ public interface StaffId<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

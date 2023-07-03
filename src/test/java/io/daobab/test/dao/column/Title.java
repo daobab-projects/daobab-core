@@ -49,13 +49,13 @@ public interface Title<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String getValue(Title entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Title");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Title");
                 return entity.getTitle();
             }
 
             @Override
             public Title setValue(Title entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Title");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Title");
                 return (Title) entity.setTitle(param);
             }
 
@@ -66,7 +66,7 @@ public interface Title<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

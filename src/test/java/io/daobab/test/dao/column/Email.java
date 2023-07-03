@@ -49,13 +49,13 @@ public interface Email<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String getValue(Email entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Email");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Email");
                 return entity.getEmail();
             }
 
             @Override
             public Email setValue(Email entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Email");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Email");
                 return (Email) entity.setEmail(param);
             }
 
@@ -66,7 +66,7 @@ public interface Email<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

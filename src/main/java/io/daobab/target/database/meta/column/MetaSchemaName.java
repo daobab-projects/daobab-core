@@ -44,13 +44,13 @@ public interface MetaSchemaName<E extends Entity> extends RelatedTo<E>, MapHandl
 
             @Override
             public String getValue(MetaSchemaName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "SchemaName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "SchemaName");
                 return entity.getSchemaName();
             }
 
             @Override
             public MetaSchemaName setValue(MetaSchemaName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "SchemaName");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "SchemaName");
                 return (MetaSchemaName) entity.setSchemaName(param);
             }
 
@@ -61,7 +61,7 @@ public interface MetaSchemaName<E extends Entity> extends RelatedTo<E>, MapHandl
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

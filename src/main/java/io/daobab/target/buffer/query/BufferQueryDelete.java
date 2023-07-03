@@ -34,7 +34,7 @@ public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E
 
     public BufferQueryDelete(BufferQueryTarget target, Column<E, ?, ?> column) {
         if (column == null) throw new MandatoryTargetException();
-        init(target, target.getEntityName(column.getEntityClass()));
+        init(target, target.getEntityName(column.entityClass()));
         setFields(Collections.singletonList(getInfoColumn(column)));
     }
 

@@ -44,13 +44,13 @@ public interface CamelName<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
             @Override
             public String getValue(CamelName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "CamelName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "CamelName");
                 return entity.getCamelName();
             }
 
             @Override
             public CamelName setValue(CamelName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CamelName");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "CamelName");
                 return (CamelName) entity.storeParam("CamelName", param);
             }
 
@@ -61,7 +61,7 @@ public interface CamelName<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

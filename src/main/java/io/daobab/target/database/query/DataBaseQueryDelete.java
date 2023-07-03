@@ -33,7 +33,7 @@ public final class DataBaseQueryDelete<E extends Entity> extends DataBaseQueryBa
 
     public DataBaseQueryDelete(QueryTarget target, Column<E, ?, ?> column) {
         if (column == null) throw new MandatoryTargetException();
-        init(target, target.getEntityName(column.getEntityClass()));
+        init(target, target.getEntityName(column.entityClass()));
         setFields(Collections.singletonList(getInfoColumn(column)));
     }
 

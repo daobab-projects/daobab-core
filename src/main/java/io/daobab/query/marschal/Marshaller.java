@@ -31,7 +31,7 @@ public interface Marshaller {
     static MarshalledColumn marshallColumn(TableColumn column) {
         MarshalledColumn rv = new MarshalledColumn();
         rv.setColumnClass(column.getColumn().getFieldName());
-        rv.setEntityClass(column.getColumn().getEntityClass().getSimpleName());
+        rv.setEntityClass(column.getColumn().entityClass().getSimpleName());
         return rv;
     }
 
@@ -43,7 +43,7 @@ public interface Marshaller {
         Map<String, Object> rv = new HashMap<>();
 
         rv.put(DictRemoteKey.FIELD, column.getFieldName());
-        rv.put(DictRemoteKey.ENTITY_NAME, EntityDuplication.getEntityName(column.getEntityClass(), null));
+        rv.put(DictRemoteKey.ENTITY_NAME, EntityDuplication.getEntityName(column.entityClass(), null));
 
 
         return rv;

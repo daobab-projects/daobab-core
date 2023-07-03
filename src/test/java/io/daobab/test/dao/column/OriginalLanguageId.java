@@ -50,14 +50,14 @@ public interface OriginalLanguageId<E extends Entity> extends RelatedTo<E>, MapH
             @Override
             public Integer getValue(OriginalLanguageId entity) {
                 if (entity == null)
-                    throw new AttemptToReadFromNullEntityException(getEntityClass(), "OriginalLanguageId");
+                    throw new AttemptToReadFromNullEntityException(entityClass(), "OriginalLanguageId");
                 return entity.getOriginalLanguageId();
             }
 
             @Override
             public OriginalLanguageId setValue(OriginalLanguageId entity, Integer param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "OriginalLanguageId");
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "OriginalLanguageId");
                 return (OriginalLanguageId) entity.setOriginalLanguageId(param);
             }
 
@@ -68,7 +68,7 @@ public interface OriginalLanguageId<E extends Entity> extends RelatedTo<E>, MapH
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

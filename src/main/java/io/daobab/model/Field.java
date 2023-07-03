@@ -15,7 +15,7 @@ public interface Field<E extends Entity, F, R extends RelatedTo> {
         return null;
     }
 
-    default Class<E> getEntityClass() {
+    default Class<E> entityClass() {
         return (Class<E>) getInstance().getClass();
     }
 
@@ -75,7 +75,7 @@ public interface Field<E extends Entity, F, R extends RelatedTo> {
 
     default boolean equalsField(Field<?,?,?> another) {
         return
-                        getEntityClass().equals(another.getEntityClass())
+                entityClass().equals(another.entityClass())
                         && getFieldName().equals(another.getFieldName());
     }
 

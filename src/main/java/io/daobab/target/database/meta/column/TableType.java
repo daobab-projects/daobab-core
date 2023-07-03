@@ -44,14 +44,14 @@ public interface TableType<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
             @Override
             public String getValue(TableType entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "TableType");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "TableType");
                 return entity.getTableType();
             }
 
             @Override
             public TableType setValue(TableType entity, String param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "TableType");
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "TableType");
                 return (TableType) entity.setTableType(param);
             }
 
@@ -62,7 +62,7 @@ public interface TableType<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

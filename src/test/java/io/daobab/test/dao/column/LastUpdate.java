@@ -50,13 +50,13 @@ public interface LastUpdate<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public Timestamp getValue(LastUpdate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "LastUpdate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "LastUpdate");
                 return entity.getLastUpdate();
             }
 
             @Override
             public LastUpdate setValue(LastUpdate entity, Timestamp param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "LastUpdate");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "LastUpdate");
                 return (LastUpdate) entity.setLastUpdate(param);
             }
 
@@ -67,7 +67,7 @@ public interface LastUpdate<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

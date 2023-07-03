@@ -44,13 +44,13 @@ public interface Unique<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public Boolean getValue(Unique entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Unique");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Unique");
                 return entity.getUnique();
             }
 
             @Override
             public Unique setValue(Unique entity, Boolean param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Unique");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Unique");
                 return (Unique) entity.setUnique(param);
             }
 
@@ -61,7 +61,7 @@ public interface Unique<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

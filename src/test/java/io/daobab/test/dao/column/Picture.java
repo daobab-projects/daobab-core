@@ -49,13 +49,13 @@ public interface Picture<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public byte[] getValue(Picture entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Picture");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Picture");
                 return entity.getPicture();
             }
 
             @Override
             public Picture setValue(Picture entity, byte[] param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Picture");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Picture");
                 return (Picture) entity.setPicture(param);
             }
 
@@ -66,7 +66,7 @@ public interface Picture<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -44,14 +44,14 @@ public interface FilterCondition<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String getValue(FilterCondition entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "FilterCondition");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "FilterCondition");
                 return entity.getFilterCondition();
             }
 
             @Override
             public FilterCondition setValue(FilterCondition entity, String param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FilterCondition");
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "FilterCondition");
                 return (FilterCondition) entity.setFilterCondition(param);
             }
 
@@ -62,7 +62,7 @@ public interface FilterCondition<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -44,13 +44,13 @@ public interface PkColumnName<E extends Entity> extends RelatedTo<E>, MapHandler
 
             @Override
             public String getValue(PkColumnName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "PkColumnName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "PkColumnName");
                 return entity.getPkColumnName();
             }
 
             @Override
             public PkColumnName setValue(PkColumnName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PkColumnName");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "PkColumnName");
                 return (PkColumnName) entity.setPkColumnName(param);
             }
 
@@ -61,7 +61,7 @@ public interface PkColumnName<E extends Entity> extends RelatedTo<E>, MapHandler
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

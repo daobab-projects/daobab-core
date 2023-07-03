@@ -48,13 +48,13 @@ public interface Dummy<E extends Entity> extends RelatedTo<E>, MapHandler<E>, En
 
             @Override
             public String getValue(Dummy entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Dummy");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Dummy");
                 return entity.getDummy();
             }
 
             @Override
             public Dummy setValue(Dummy entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Dummy");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Dummy");
                 return (Dummy) entity.setDummy(param);
             }
 
@@ -65,7 +65,7 @@ public interface Dummy<E extends Entity> extends RelatedTo<E>, MapHandler<E>, En
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

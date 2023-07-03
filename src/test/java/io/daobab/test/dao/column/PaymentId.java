@@ -49,13 +49,13 @@ public interface PaymentId<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
             @Override
             public Integer getValue(PaymentId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "PaymentId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "PaymentId");
                 return entity.getPaymentId();
             }
 
             @Override
             public PaymentId setValue(PaymentId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PaymentId");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "PaymentId");
                 return (PaymentId) entity.setPaymentId(param);
             }
 
@@ -66,7 +66,7 @@ public interface PaymentId<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

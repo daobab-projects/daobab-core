@@ -73,7 +73,7 @@ public class DatabaseConverterManager {
 
     @SuppressWarnings({"java:S1452", "java:S3776"})
     public Optional<DatabaseTypeConverter<?, ?>> getConverter(Column<?, ?, ?> column) {
-        return cache.computeIfAbsent(target.getEntityName(column.getEntityClass()) + column.getFieldName(), tableColumn -> {
+        return cache.computeIfAbsent(target.getEntityName(column.entityClass()) + column.getFieldName(), tableColumn -> {
 
             DatabaseTypeConverter<?, ?> rv = columnConverters.get(tableColumn);
             if (rv == null) {
@@ -106,8 +106,8 @@ public class DatabaseConverterManager {
 
 
     public <F> DatabaseConverterManager setColumnConverter(Column<?, F, ?> column, DatabaseTypeConverter<F, ?> typeConverter) {
-        columnConverters.put(target.getEntityName(column.getEntityClass()) + column.getFieldName(), typeConverter);
-        cache.put(target.getEntityName(column.getEntityClass()) + column.getFieldName(), Optional.ofNullable(typeConverter));
+        columnConverters.put(target.getEntityName(column.entityClass()) + column.getFieldName(), typeConverter);
+        cache.put(target.getEntityName(column.entityClass()) + column.getFieldName(), Optional.ofNullable(typeConverter));
         return this;
     }
 

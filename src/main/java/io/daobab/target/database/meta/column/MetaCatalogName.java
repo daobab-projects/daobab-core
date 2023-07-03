@@ -44,13 +44,13 @@ public interface MetaCatalogName<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String getValue(MetaCatalogName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "CatalogName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "CatalogName");
                 return entity.getCatalogName();
             }
 
             @Override
             public MetaCatalogName setValue(MetaCatalogName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CatalogName");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "CatalogName");
                 return (MetaCatalogName) entity.setCatalogName(param);
             }
 
@@ -61,7 +61,7 @@ public interface MetaCatalogName<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

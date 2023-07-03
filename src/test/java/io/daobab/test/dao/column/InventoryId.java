@@ -50,13 +50,13 @@ public interface InventoryId<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public BigDecimal getValue(InventoryId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "InventoryId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "InventoryId");
                 return entity.getInventoryId();
             }
 
             @Override
             public InventoryId setValue(InventoryId entity, BigDecimal param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "InventoryId");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "InventoryId");
                 return (InventoryId) entity.setInventoryId(param);
             }
 
@@ -67,7 +67,7 @@ public interface InventoryId<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

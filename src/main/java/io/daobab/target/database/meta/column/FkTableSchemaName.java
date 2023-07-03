@@ -44,13 +44,13 @@ public interface FkTableSchemaName<E extends Entity> extends RelatedTo<E>, MapHa
 
             @Override
             public String getValue(FkTableSchemaName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "FkSchemaName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "FkSchemaName");
                 return entity.getFkSchemaName();
             }
 
             @Override
             public FkTableSchemaName setValue(FkTableSchemaName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "FkSchemaName");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "FkSchemaName");
                 return (FkTableSchemaName) entity.setFkSchemaName(param);
             }
 
@@ -61,7 +61,7 @@ public interface FkTableSchemaName<E extends Entity> extends RelatedTo<E>, MapHa
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

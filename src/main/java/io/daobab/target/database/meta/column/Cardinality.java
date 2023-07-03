@@ -44,14 +44,14 @@ public interface Cardinality<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public Integer getValue(Cardinality entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Cardinality");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Cardinality");
                 return entity.getCardinality();
             }
 
             @Override
             public Cardinality setValue(Cardinality entity, Integer param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Cardinality");
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "Cardinality");
                 return (Cardinality) entity.setCardinality(param);
             }
 
@@ -62,7 +62,7 @@ public interface Cardinality<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

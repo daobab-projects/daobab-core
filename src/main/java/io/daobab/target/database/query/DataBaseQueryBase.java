@@ -176,7 +176,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         if (getFields() == null) return rv;
 
         for (TableColumn df : getFields()) {
-            String ndao = target.getEntityName(df.getColumn().getEntityClass());
+            String ndao = target.getEntityName(df.getColumn().entityClass());
             if (ndao != null) {
                 rv.add(ndao);
             }

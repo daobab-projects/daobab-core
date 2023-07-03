@@ -6,9 +6,11 @@ package io.daobab.model;
 public class ColumnHaving<E extends Entity, R extends RelatedTo> implements Column<E, String, R> {
 
     private final String name;
+    private E instance;
 
     public ColumnHaving(String name) {
         this.name = name;
+        this.instance = (E) new Dual();
     }
 
     @Override
@@ -38,6 +40,6 @@ public class ColumnHaving<E extends Entity, R extends RelatedTo> implements Colu
 
     @Override
     public E getInstance() {
-        return null;
+        return instance;
     }
 }

@@ -12,7 +12,7 @@ public class MarshalledColumn {
     }
 
     public MarshalledColumn(Column<?, ?, ?> col) {
-        setEntityClass(col.getEntityClass().getSimpleName());
+        setEntityClass(col.entityClass().getSimpleName());
         setColumnClass(col.getFieldClass().getSimpleName());
     }
 

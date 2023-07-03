@@ -225,7 +225,7 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
 
     @SuppressWarnings("rawtypes")
     public Optional<MetaColumn> getMetaColumn(Column column) {
-        return Optional.ofNullable(quickAccessMetaColumn.get(getEntityName(column.getEntityClass()) + "." + column.getColumnName()));
+        return Optional.ofNullable(quickAccessMetaColumn.get(getEntityName(column.entityClass()) + "." + column.getColumnName()));
     }
 
     public Optional<MetaTable> getMetaTable(Entity entity) {

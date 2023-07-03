@@ -44,13 +44,13 @@ public interface MetaColumnSize<E extends Entity> extends RelatedTo<E>, MapHandl
 
             @Override
             public Integer getValue(MetaColumnSize entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ColumnSize");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ColumnSize");
                 return entity.getColumnSize();
             }
 
             @Override
             public MetaColumnSize setValue(MetaColumnSize entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ColumnSize");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "ColumnSize");
                 return (MetaColumnSize) entity.setColumnSize(param);
             }
 
@@ -61,7 +61,7 @@ public interface MetaColumnSize<E extends Entity> extends RelatedTo<E>, MapHandl
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

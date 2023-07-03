@@ -392,7 +392,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
             return new TableColumn(column);
         }
 
-        if (target.getEntityName(column.getEntityClass()).equals("DUAL")) {
+        if (target.getEntityName(column.entityClass()).equals("DUAL")) {
             return new TableColumn(column);
         }
 

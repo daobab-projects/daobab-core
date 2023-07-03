@@ -73,14 +73,14 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
                 functionMap.put(i, function);
                 Column<?, ?, ?> functionFinalColumn = function.getFinalColumn();
                 getFields().add(getInfoColumn(functionFinalColumn));
-                String functionEntity = target.getEntityName(functionFinalColumn.getEntityClass());
+                String functionEntity = target.getEntityName(functionFinalColumn.entityClass());
                 if (functionEntity.equals("DUAL")) {
                     functionEntity = getEntityName();
                 }
                 entities.add(functionEntity);
             } else {
                 getFields().add(getInfoColumn(columns[i]));
-                entities.add(target.getEntityName(columns[i].getEntityClass()));
+                entities.add(target.getEntityName(columns[i].entityClass()));
             }
 
         }
@@ -98,7 +98,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         Set<String> entities = new HashSet<>();
         for (int i = 1; i < columndaos.size(); i++) {
             getFields().add(getInfoColumn(columndaos.get(i)));
-            entities.add(target.getEntityName(columndaos.get(i).getEntityClass()));
+            entities.add(target.getEntityName(columndaos.get(i).entityClass()));
         }
 
         setSingleEntity(entities.size() == 1);

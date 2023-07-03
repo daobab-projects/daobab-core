@@ -50,14 +50,14 @@ public interface ReplacementCost<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public BigDecimal getValue(ReplacementCost entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ReplacementCost");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ReplacementCost");
                 return entity.getReplacementCost();
             }
 
             @Override
             public ReplacementCost setValue(ReplacementCost entity, BigDecimal param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ReplacementCost");
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "ReplacementCost");
                 return (ReplacementCost) entity.setReplacementCost(param);
             }
 
@@ -68,7 +68,7 @@ public interface ReplacementCost<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

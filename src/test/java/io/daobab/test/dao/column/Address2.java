@@ -49,13 +49,13 @@ public interface Address2<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public String getValue(Address2 entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Address2");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Address2");
                 return entity.getAddress2();
             }
 
             @Override
             public Address2 setValue(Address2 entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Address2");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Address2");
                 return (Address2) entity.setAddress2(param);
             }
 
@@ -66,7 +66,7 @@ public interface Address2<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

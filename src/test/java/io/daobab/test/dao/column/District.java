@@ -49,13 +49,13 @@ public interface District<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public String getValue(District entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "District");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "District");
                 return entity.getDistrict();
             }
 
             @Override
             public District setValue(District entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "District");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "District");
                 return (District) entity.setDistrict(param);
             }
 
@@ -66,7 +66,7 @@ public interface District<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -49,13 +49,13 @@ public interface CountryId<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
             @Override
             public Integer getValue(CountryId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "CountryId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "CountryId");
                 return entity.getCountryId();
             }
 
             @Override
             public CountryId setValue(CountryId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "CountryId");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "CountryId");
                 return (CountryId) entity.setCountryId(param);
             }
 
@@ -66,7 +66,7 @@ public interface CountryId<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

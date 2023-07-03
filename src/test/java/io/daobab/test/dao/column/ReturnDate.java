@@ -50,13 +50,13 @@ public interface ReturnDate<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public Timestamp getValue(ReturnDate entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ReturnDate");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ReturnDate");
                 return entity.getReturnDate();
             }
 
             @Override
             public ReturnDate setValue(ReturnDate entity, Timestamp param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ReturnDate");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "ReturnDate");
                 return (ReturnDate) entity.setReturnDate(param);
             }
 
@@ -67,7 +67,7 @@ public interface ReturnDate<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

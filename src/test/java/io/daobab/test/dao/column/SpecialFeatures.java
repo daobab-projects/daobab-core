@@ -49,14 +49,14 @@ public interface SpecialFeatures<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String getValue(SpecialFeatures entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "SpecialFeatures");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "SpecialFeatures");
                 return entity.getSpecialFeatures();
             }
 
             @Override
             public SpecialFeatures setValue(SpecialFeatures entity, String param) {
                 if (entity == null)
-                    throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "SpecialFeatures");
+                    throw new AttemptToWriteIntoNullEntityException(entityClass(), "SpecialFeatures");
                 return (SpecialFeatures) entity.setSpecialFeatures(param);
             }
 
@@ -67,7 +67,7 @@ public interface SpecialFeatures<E extends Entity> extends RelatedTo<E>, MapHand
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -49,13 +49,13 @@ public interface LanguageId<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public Integer getValue(LanguageId entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "LanguageId");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "LanguageId");
                 return entity.getLanguageId();
             }
 
             @Override
             public LanguageId setValue(LanguageId entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "LanguageId");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "LanguageId");
                 return (LanguageId) entity.setLanguageId(param);
             }
 
@@ -66,7 +66,7 @@ public interface LanguageId<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

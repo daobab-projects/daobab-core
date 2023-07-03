@@ -50,13 +50,13 @@ public interface ReleaseYear<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public Date getValue(ReleaseYear entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ReleaseYear");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ReleaseYear");
                 return entity.getReleaseYear();
             }
 
             @Override
             public ReleaseYear setValue(ReleaseYear entity, Date param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ReleaseYear");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "ReleaseYear");
                 return (ReleaseYear) entity.setReleaseYear(param);
             }
 
@@ -67,7 +67,7 @@ public interface ReleaseYear<E extends Entity> extends RelatedTo<E>, MapHandler<
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

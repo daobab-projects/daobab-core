@@ -112,7 +112,7 @@ public class SetFields {
     public Object getValueForColumn(Column<?, ?, ?> col) {
         for (int i = 0; i < counter; i++) {
             Column<?, ?, ?> column = (Column<?, ?, ?>) hash.get(FIELD + i);
-            if (col.getEntityClass().equals(column.getEntityClass()) && col.getFieldName().equals(column.getFieldName())) {
+            if (col.entityClass().equals(column.entityClass()) && col.getFieldName().equals(column.getFieldName())) {
                 return hash.get(VALUE + i);
             }
         }

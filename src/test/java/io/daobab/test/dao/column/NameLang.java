@@ -50,19 +50,19 @@ public interface NameLang<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public Lang getValue(NameLang entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Name");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Name");
                 return entity.getName();
             }
 
 
             @Override
             public NameLang setValue(NameLang entity, Lang param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Name");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Name");
                 return (NameLang) entity.setName(param);
             }
 
             public void setValue(NameLang entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Name");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Name");
                 entity.setName(Lang.valueOf(param));
             }
 
@@ -73,7 +73,7 @@ public interface NameLang<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

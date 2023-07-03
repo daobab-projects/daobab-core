@@ -65,7 +65,7 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
         if (setFields == null || setFields.getCounter() == 0) {
             throw new AtLeastOneColumnToUpdateIsRequired();
         }
-        init(target, target.getEntityName(setFields.getFieldForPointer(1).getEntityClass()));
+        init(target, target.getEntityName(setFields.getFieldForPointer(1).entityClass()));
 
         set(setFields);
         setEntity((E) setFields.getFieldForPointer(1).getInstance());

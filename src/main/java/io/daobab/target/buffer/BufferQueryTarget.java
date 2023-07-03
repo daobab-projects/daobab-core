@@ -122,13 +122,13 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
     default <E extends Entity & PrimaryKey<E, F, ?>, F> E findFieldsByPk(F id, Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) throw new MandatoryColumn();
         BufferQueryPlate query = new BufferQueryPlate(this, columns).whereEqual(columns[0].getInstance().colID(), id);
-        return query.findOneAs(columns[0].getEntityClass());
+        return query.findOneAs(columns[0].entityClass());
     }
 
     default <E extends Entity & PrimaryCompositeKey<E, K>, K extends Composite> E findFieldsByPk(K key, Column<E, ?, ?>... columns) {
         if (columns == null || columns.length == 0) throw new MandatoryColumn();
         BufferQueryPlate query = new BufferQueryPlate(this, columns).whereEqual(columns[0].getInstance().colCompositeId(), key);
-        return query.findOneAs(columns[0].getEntityClass());
+        return query.findOneAs(columns[0].entityClass());
     }
 
     default BufferQueryPlate select(Column<?, ?, ?>... columns) {

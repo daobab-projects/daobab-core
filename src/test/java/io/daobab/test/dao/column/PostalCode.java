@@ -49,13 +49,13 @@ public interface PostalCode<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public String getValue(PostalCode entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "PostalCode");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "PostalCode");
                 return entity.getPostalCode();
             }
 
             @Override
             public PostalCode setValue(PostalCode entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PostalCode");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "PostalCode");
                 return (PostalCode) entity.setPostalCode(param);
             }
 
@@ -66,7 +66,7 @@ public interface PostalCode<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

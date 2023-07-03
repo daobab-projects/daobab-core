@@ -44,13 +44,13 @@ public interface MetaIndexName<E extends Entity> extends RelatedTo<E>, MapHandle
 
             @Override
             public String getValue(MetaIndexName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "IndexName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "IndexName");
                 return entity.getIndexName();
             }
 
             @Override
             public MetaIndexName setValue(MetaIndexName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "IndexName");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "IndexName");
                 return (MetaIndexName) entity.setIndexName(param);
             }
 
@@ -61,7 +61,7 @@ public interface MetaIndexName<E extends Entity> extends RelatedTo<E>, MapHandle
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

@@ -45,13 +45,13 @@ public interface Datatype<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public JdbcType getValue(Datatype entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "Datatype");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Datatype");
                 return entity.getDatatype();
             }
 
             @Override
             public Datatype setValue(Datatype entity, JdbcType param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "Datatype");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Datatype");
                 return (Datatype) entity.setDatatype(param);
             }
 
@@ -62,7 +62,7 @@ public interface Datatype<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

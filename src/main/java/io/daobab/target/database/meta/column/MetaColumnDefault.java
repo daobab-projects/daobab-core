@@ -44,13 +44,13 @@ public interface MetaColumnDefault<E extends Entity> extends RelatedTo<E>, MapHa
 
             @Override
             public String getValue(MetaColumnDefault entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "ColumnDefault");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "ColumnDefault");
                 return entity.getColumnDefault();
             }
 
             @Override
             public MetaColumnDefault setValue(MetaColumnDefault entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "ColumnDefault");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "ColumnDefault");
                 return (MetaColumnDefault) entity.setColumnDefault(param);
             }
 
@@ -61,7 +61,7 @@ public interface MetaColumnDefault<E extends Entity> extends RelatedTo<E>, MapHa
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

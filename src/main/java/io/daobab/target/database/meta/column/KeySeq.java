@@ -44,13 +44,13 @@ public interface KeySeq<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String getValue(KeySeq entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "KeySeq");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "KeySeq");
                 return entity.getKeySeq();
             }
 
             @Override
             public KeySeq setValue(KeySeq entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "KeySeq");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "KeySeq");
                 return (KeySeq) entity.setKeySeq(param);
             }
 
@@ -61,7 +61,7 @@ public interface KeySeq<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

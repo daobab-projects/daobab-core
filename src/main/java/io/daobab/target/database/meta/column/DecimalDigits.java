@@ -44,13 +44,13 @@ public interface DecimalDigits<E extends Entity> extends RelatedTo<E>, MapHandle
 
             @Override
             public Integer getValue(DecimalDigits entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "DecimalDigits");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "DecimalDigits");
                 return entity.getDecimalDigits();
             }
 
             @Override
             public DecimalDigits setValue(DecimalDigits entity, Integer param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "DecimalDigits");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "DecimalDigits");
                 return (DecimalDigits) entity.setDecimalDigits(param);
             }
 
@@ -61,7 +61,7 @@ public interface DecimalDigits<E extends Entity> extends RelatedTo<E>, MapHandle
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override

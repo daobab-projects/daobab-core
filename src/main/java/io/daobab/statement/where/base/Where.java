@@ -402,7 +402,7 @@ public abstract class Where<W extends Where> extends WhereBase {
             if (val instanceof Where) {
                 rv.addAll(((Where) val).getAllDaoInWhereClause(target));
             }
-            if (key != null) rv.add(target.getEntityName(key.getEntityClass()));
+            if (key != null) rv.add(target.getEntityName(key.entityClass()));
         }
 
         return rv;
@@ -450,7 +450,7 @@ public abstract class Where<W extends Where> extends WhereBase {
             }
 
             @Override
-            public Class<E1> getEntityClass() {
+            public Class<E1> entityClass() {
                 return null;
             }
         };

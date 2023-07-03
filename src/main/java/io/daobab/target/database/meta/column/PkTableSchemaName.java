@@ -44,13 +44,13 @@ public interface PkTableSchemaName<E extends Entity> extends RelatedTo<E>, MapHa
 
             @Override
             public String getValue(PkTableSchemaName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(getEntityClass(), "PkSchemaName");
+                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "PkSchemaName");
                 return entity.getPkSchemaName();
             }
 
             @Override
             public PkTableSchemaName setValue(PkTableSchemaName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(), "PkSchemaName");
+                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "PkSchemaName");
                 return (PkTableSchemaName) entity.setPkSchemaName(param);
             }
 
@@ -61,7 +61,7 @@ public interface PkTableSchemaName<E extends Entity> extends RelatedTo<E>, MapHa
 
             @Override
             public String toString() {
-                return getEntityClass().getName() + "." + getFieldName();
+                return entityClass().getName() + "." + getFieldName();
             }
 
             @Override
