@@ -8,6 +8,8 @@ import io.daobab.target.buffer.nonheap.access.index.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -70,6 +72,15 @@ public class BitFieldRegistry {
         registerArrayNotNull(BigDecimal.class, BitArrayBigDecimalNotNull::new);
         registerIndex(BigDecimal.class, BitIndexBigDecimal::new);
 
+        register(LocalDate.class, BitFieldLocalDate::new, BitFieldLocalDateNotNull::new);
+        registerArray(LocalDate.class, BitArrayLocalDate::new);
+        registerArrayNotNull(LocalDate.class, BitArrayLocalDateNotNull::new);
+        registerIndex(LocalDate.class, BitIndexLocalDate::new);
+
+        register(LocalDateTime.class, BitFieldLocalDateTime::new, BitFieldLocalDateTimeNotNull::new);
+        registerArray(LocalDateTime.class, BitArrayLocalDateTime::new);
+        registerArrayNotNull(LocalDateTime.class, BitArrayLocalDateTimeNotNull::new);
+        registerIndex(LocalDateTime.class, BitIndexLocalDateTime::new);
 
         register(java.sql.Date.class, BitFieldSqlDate::new, BitFieldSqlDateNotNull::new);
 //        register(Character.class,new BitFieldCharacterNotNull::new);
