@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@SuppressWarnings({"java:S6548", "rawtypes"})
 public class JsonConverterManager {
 
     private final Map<String, Optional<JsonConverter<?>>> cache = new HashMap<>();

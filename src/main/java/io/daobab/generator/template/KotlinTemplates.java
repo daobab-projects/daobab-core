@@ -1,5 +1,6 @@
 package io.daobab.generator.template;
 
+import io.daobab.creation.ColumnCache;
 import io.daobab.creation.EntityCreator;
 import io.daobab.model.*;
 import io.daobab.parser.ParserGeneral;
@@ -91,19 +92,17 @@ class KotlinTemplates {
             "}";
     public static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE + "\n" +
             "\n" +
-            "import " + Column.class.getName() + "\n" +
-            "import " + EntityRelationMap.class.getName() + "\n" +
-            "import " + Entity.class.getName() + "\n" +
+            "import " + ColumnCache.class.getName() + ";\n" +
+            "import io.daobab.model.*;" +
             "\n" +
             GenKeys.CLASS_FULL_NAME + "\n" +
             "\n" +
-            "interface " + GenKeys.INTERFACE_NAME + "<E : " + Entity.class.getSimpleName() + ", F> : " + EntityRelationMap.class.getSimpleName() + "<E> {\n" +
+            "interface " + GenKeys.INTERFACE_NAME + "<E : " + Entity.class.getSimpleName() + ", F> : " + RelatedTo.class.getSimpleName() + "<E>," + MapHandler.class.getSimpleName() + " {\n" +
             "\n" +
-            "    fun get" + GenKeys.INTERFACE_NAME + "(): F = getColumnParam(\"" + GenKeys.FIELD_NAME + "\")" +
+            "    fun get" + GenKeys.INTERFACE_NAME + "(): F = readParam(\"" + GenKeys.FIELD_NAME + "\")" +
             "\n" +
             "    @Suppress(\"UNCHECKED_CAST\")" + "\n" +
-            "    fun set" + GenKeys.INTERFACE_NAME + "(value: F): E {\n\t\tsetColumnParam(\"" + GenKeys.FIELD_NAME + "\", value)" +
-            "\n\t\treturn this as E\n\t}" +
+            "    fun set" + GenKeys.INTERFACE_NAME + "(value: F): E {\n\t\treturn storeParam(\"" + GenKeys.FIELD_NAME + "\", value)}" +
             "\n" +
 
             GenKeys.TABLES_AND_TYPE + "\n" +
@@ -136,7 +135,7 @@ class KotlinTemplates {
             "import " + Entity.class.getName() + "\n" +
             "import " + TableColumn.class.getName() + "\n" +
             "\n" +
-            "interface " + GenKeys.COMPOSITE_NAME + "<E : EntityMap" +
+            "interface " + GenKeys.COMPOSITE_NAME + "<E : Entity" +
             GenKeys.COMPOSITE_KEY_COLUMN_TYPE_INTERFACES +
             ">\n" +
             "\t: " + GenKeys.COMPOSITE_KEY_COLUMN_INTERFACES + "{\n" +

@@ -1,8 +1,7 @@
 package io.daobab.generator.template;
 
+import io.daobab.creation.ColumnCache;
 import io.daobab.creation.EntityCreator;
-import io.daobab.error.AttemptToReadFromNullEntityException;
-import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.model.*;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.query.base.QueryWhisperer;
@@ -12,7 +11,6 @@ import io.daobab.target.database.connection.SqlProducer;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -21,81 +19,22 @@ class JavaTemplates {
 
     static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE + ";\n" +
             "\n" +
-            "import " + AttemptToReadFromNullEntityException.class.getName() + ";\n" +
-            "import " + AttemptToWriteIntoNullEntityException.class.getName() + ";\n" +
-            "import " + Column.class.getName() + ";\n" +
-            "import " + EntityRelationMap.class.getName() + ";\n" +
-            "import " + Entity.class.getName() + ";\n" +
-            "import " + Objects.class.getName() + ";\n" +
+            "import " + ColumnCache.class.getName() + ";\n" +
+            "import io.daobab.model.*;" +
             "\n" +
             GenKeys.CLASS_FULL_NAME + "\n" +
             "\n" +
-            "public interface " + GenKeys.INTERFACE_NAME + "<E extends EntityMap, F> extends RelatedTo<E>, MapHandler<E> {\n" +
+            "public interface " + GenKeys.INTERFACE_NAME + "<E extends Entity, F> extends RelatedTo<E>, MapHandler<E> {\n" +
             "\n" +
+            "    default F get" + GenKeys.INTERFACE_NAME + "(){return readParam(\"" + GenKeys.FIELD_NAME + "\");}\n" +
             "\n" +
-            "    default F get" + GenKeys.INTERFACE_NAME + "(){return getColumnParam(\"" + GenKeys.FIELD_NAME + "\");}\n\n" +
-            "    @SuppressWarnings(\"unchecked\")" +
-            "\n" +
-            "    default E set" + GenKeys.INTERFACE_NAME + "(F val){setColumnParam(\"" + GenKeys.FIELD_NAME + "\",val); return (E)this;}\n" +
-            "\n" +
-            "    @SuppressWarnings({\"rawtypes\",\"unchecked\"})" +
+            "    default E set" + GenKeys.INTERFACE_NAME + "(F val){return storeParam(\"" + GenKeys.FIELD_NAME + "\",val);}\n" +
             "\n" +
             GenKeys.TABLES_AND_TYPE + "\n" +
+            "    @SuppressWarnings({\"rawtypes\",\"unchecked\"})" +
+            "\n" +
             "    default Column<E, F," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){\n" +
-            "        return new Column<E, F," + GenKeys.INTERFACE_NAME + ">() {\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public String getColumnName() {\n" +
-            "                return \"" + GenKeys.COLUMN_NAME + "\";\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public String getFieldName() {\n" +
-            "                return \"" + GenKeys.FIELD_NAME + "\";\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public E getInstance() {\n" +
-            "                return getEntity();\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public Class getFieldClass() {\n" +
-            "                return " + GenKeys.CLASS_SIMPLE_NAME + ".class;\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public F getValue(" + GenKeys.INTERFACE_NAME + " entity) {\n" +
-            "                if (entity==null) throw new AttemptToReadFromNullEntityException(getEntityClass(),\"" + GenKeys.FIELD_NAME + "\");\n" +
-            "                return (F)entity.get" + GenKeys.INTERFACE_NAME + "();\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public void setValue(" + GenKeys.INTERFACE_NAME + " entity, F param){\n" +
-            "                if (entity==null) throw new AttemptToWriteIntoNullEntityException(getEntityClass(),\"" + GenKeys.FIELD_NAME + "\");\n" +
-            "                entity.set" + GenKeys.INTERFACE_NAME + "(param);\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public int hashCode() {\n" +
-            "                return toString().hashCode();\n" +
-            "            }\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public String toString(){\n" +
-            "                return getEntityName()+\".\"+getFieldName();\n" +
-            "            }" +
-            "\n" +
-            "\n" +
-            "            @Override\n" +
-            "            public boolean equals(Object other) {\n" +
-            "                if (this == other)return true;\n" +
-            "                if (other == null)return false;\n" +
-            "                if (getClass() != other.getClass())return false;\n" +
-            "                Column otherColumn = (Column) other;\n" +
-            "                return Objects.equals(hashCode(), otherColumn.hashCode());\n" +
-            "            }\n" +
-            "        };\n" +
+            "        return " + ColumnCache.class.getSimpleName() + ".INSTANCE.getColumn(\"" + GenKeys.FIELD_NAME + "\", \"" + GenKeys.COLUMN_NAME + " \", (" + Table.class.getSimpleName() + "<?>) this, " + GenKeys.CLASS_SIMPLE_NAME + " );" +
             "    }\n" +
             "\n" +
             "}";
@@ -197,7 +136,7 @@ class JavaTemplates {
             "import " + Entity.class.getName() + ";\n" +
             "import " + TableColumn.class.getName() + ";\n" +
             "\n" +
-            "public interface " + GenKeys.COMPOSITE_NAME + "<E extends EntityMap" +
+            "public interface " + GenKeys.COMPOSITE_NAME + "<E extends Entity" +
             GenKeys.COMPOSITE_KEY_COLUMN_TYPE_INTERFACES +
             ">\n" +
             "\textends " + GenKeys.COMPOSITE_KEY_COLUMN_INTERFACES + "{\n" +

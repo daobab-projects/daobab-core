@@ -129,7 +129,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         QuerySpecialParameters rv = new QuerySpecialParameters();
         StringBuilder sb = new StringBuilder();
 
-        sb.append("insert into ")
+        sb.append(base.getMode() == DataBaseQueryInsert.MODE_INSERT ? "insert into " : "replace into ")
                 .append(base.getEntityName());
 
         boolean select = base.getSelectQuery() != null;
@@ -150,13 +150,12 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                     value = base.getPkNo();
                 } else {
                     value = base.getSetFields().getValueForPointer(i);
-//                    if (!select && val == null) continue;
                 }
 
                 if (select) {
                     sb.append(columnName);
                     if (i < base.getSetFields().getCounter() - 1) {
-                        sb.append(COMMA);
+                        sb.append(COMMA).append(SPACE);
                     }
                 } else if (column != null) {
                     if (columnName != null) {
@@ -193,6 +192,43 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         if (select) {
             sb.append(toSqlQuery((DataBaseQueryBase<?, ?>) base.getSelectQuery()));
         }
+
+
+        if (base.getOnDuplicateKeyUpdate() != null) {
+
+
+            sb.append(LINE_SEPARATOR).append("on duplicate key update ");
+            for (int i = 1; i < base.getOnDuplicateKeyUpdate().getCounter(); i++) {
+                Column<?, ?, ?> column = base.getOnDuplicateKeyUpdate().getFieldForPointer(i);
+                String columnName = column.getColumnName();
+
+                DatabaseTypeConverter typeConverter = base.getTarget().getConverterManager().getConverter(column).orElse(null);
+                Object value = base.getOnDuplicateKeyUpdate().getValueForPointer(i);
+
+                if (column != null) {
+                    if (columnName != null) {
+                        sb.append(columnName);
+                        sb.append(" = ");
+
+                        if (value == null) {
+                            sb.append(NULL);
+                        } else {
+                            sb.append(typeConverter.convertWritingTarget(value));
+                            if (typeConverter.needParameterConversion()) {
+                                rv.getSpecialParameters().put(rv.getCounter(), value);
+                                rv.setCounter(rv.getCounter() + 1);
+                            }
+                        }
+                    }
+
+                    if (i < base.getOnDuplicateKeyUpdate().getCounter() - 1) {
+                        sb.append(COMMA);
+                    }
+                }
+            }
+
+        }
+
 
         rv.setQuery(sb);
         return rv;
@@ -242,7 +278,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             from.add(base.getEntityName());
             base.setJoins(JoinTracker.calculateJoins(base.getTarget(), getTables(), from, (base.getWhereWrapper() == null ? new HashSet<>() : base.getWhereWrapper().getAllDaoInWhereClause(target)), base.getJoins()));
         }
-
 
 
         sb.append(LINE_SEPARATOR);
@@ -304,7 +339,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             sb.append(LINE_SEPARATOR);
             sb.append(" where ");
 
-            //Whole where clasuse should be separated from rownum pseudocolomn in case of OR/AND operator conflicts
+            //Whole where clause should be separated from rownum pseudocolomn in case of OR/AND operator conflicts
             if (limitAndWhereProvided) sb.append(OPEN_BRACKET);
 
             if (base.getWhereWrapper() != null) {
@@ -974,9 +1009,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             String convertedValueToPut;
             if (daoParam.isCollection()) {
                 Collection<Object> collection = (Collection<Object>) valueToPut;
-                convertedValueToPut = "("+collection.stream()
+                convertedValueToPut = "(" + collection.stream()
                         .map(v -> parameterInjectionPoint.getTypeConverter().convertWritingTarget(v))
-                        .collect(Collectors.joining(","))+")";
+                        .collect(Collectors.joining(",")) + ")";
             } else {
                 convertedValueToPut = parameterInjectionPoint.getTypeConverter().convertWritingTarget(valueToPut);
             }
