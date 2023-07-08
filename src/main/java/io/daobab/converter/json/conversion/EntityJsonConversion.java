@@ -73,14 +73,12 @@ public class EntityJsonConversion<E extends Entity> {
         Map<String, Object> map = new HashMap<>();
         for (FieldJsonConversion<?> fieldJsonConversion : fieldJsonConversions.values()) {
             String fieldName = fieldJsonConversion.fieldName;
-            System.out.println(" fieldmap: " + fieldName + " val " + mapString.get(fieldName));
             map.put(fieldName, fieldJsonConversion.fromJson(mapString.get(fieldName)));
         }
         return EntityCreator.createEntity(entityClass, map);
     }
 
     public E fromJson(Class<E> entityClass, String sb) {
-        System.out.println(">>>>>>" + sb);
         Map<String, String> hashMap = new HashMap<>();
         if (!sb.startsWith("{") || !sb.endsWith("}")) {
             throw new DaobabException("Cannot convert an json array");

@@ -355,6 +355,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         Object remoteEntityName = rv.get(DictRemoteKey.ENTITY_NAME);
         Object remoteEntityClass = rv.get(DictRemoteKey.ENTITY_CLASS);
         Object cache = rv.get(DictRemoteKey.CACHE);
+        Object order = rv.get(DictRemoteKey.ORDER);
 
         Entity ent = Marshaller.fromRemote(target, (String) remoteEntityName);
 

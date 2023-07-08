@@ -63,10 +63,7 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
         if (Integer.parseInt(response.getStatus()) < 0) {
             throw new RemoteDaobabException(response);
         }
-
-        List<Map<String, Object>> listmap = (List<Map<String, Object>>) response.getContent();
-
-        return EntityCreator.createEntities(listmap, query.getEntityClass());
+        return EntityCreator.createEntityListFromJson(query.getEntityClass(), (String) response.getContent());
 
     }
 
@@ -75,16 +72,13 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> E readEntity(DataBaseQueryEntity<E> query) {
         ResponseWrapper response = callEndpoint(query, true);
         if (Integer.parseInt(response.getStatus()) < 0) {
             throw new RemoteDaobabException(response);
         }
-
-        return EntityCreator.createEntity(query.getEntityClass(), (Map<String, Object>) response.getContent());
-
+        return EntityCreator.createEntityFromJson(query.getEntityClass(), (String) response.getContent());
     }
 
     @Override
