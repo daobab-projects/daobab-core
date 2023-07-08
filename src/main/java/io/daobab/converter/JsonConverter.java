@@ -73,7 +73,7 @@ public abstract class JsonConverter<F> {
             }
         }
         sb.append(milliseconds);
-        sb.append("Z");
+//        sb.append("Z");
     }
 
     protected void appendTimeZone(StringBuilder sb, ZoneOffset offset) {

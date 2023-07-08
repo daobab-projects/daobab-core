@@ -4,18 +4,20 @@ import io.daobab.creation.EntityCreator;
 import io.daobab.error.ReadRemoteException;
 import io.daobab.error.RemoteDaobabException;
 import io.daobab.error.RemoteTargetCanNotHandleOpenedTransactionException;
-import io.daobab.model.Entity;
-import io.daobab.model.Plate;
-import io.daobab.model.ProcedureParameters;
-import io.daobab.model.ResponseWrapper;
+import io.daobab.model.*;
 import io.daobab.query.base.Query;
+import io.daobab.statement.base.IdentifierStorage;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.single.Entities;
-import io.daobab.target.buffer.single.EntityList;
 import io.daobab.target.buffer.single.PlateBuffer;
+import io.daobab.target.buffer.single.Plates;
 import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
+import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import io.daobab.target.database.query.*;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryEntity;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryField;
+import io.daobab.target.database.query.frozen.FrozenDataBaseQueryPlate;
 import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.transaction.Propagation;
 import org.slf4j.Logger;
@@ -63,14 +65,14 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
         }
 
         List<Map<String, Object>> listmap = (List<Map<String, Object>>) response.getContent();
-        List<E> rv = new ArrayList<>();
 
-        for (Map<String, Object> map : listmap) {
-            rv.add(EntityCreator.createEntity(query.getEntityClass(), map));
-        }
+        return EntityCreator.createEntities(listmap, query.getEntityClass());
 
-        return new EntityList<>(rv, query.getEntityClass());
+    }
 
+    @Override
+    public <E extends Entity> Entities<E> readEntityList(FrozenDataBaseQueryEntity<E> query, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConvertersArr) {
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -85,6 +87,11 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
 
     }
 
+    @Override
+    public <E extends Entity> E readEntity(FrozenDataBaseQueryEntity<E> query, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConvertersArr) {
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity, F> F readField(DataBaseQueryField<E, F> query) {
@@ -95,6 +102,11 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
         return (F) response.getContent();
     }
 
+    @Override
+    public <E extends Entity, F> F readField(FrozenDataBaseQueryField<E, F> query, List<Object> parameters, Column<?, ?, ?> column, DatabaseTypeConverter<?, ?> typeConverter) {
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity, F> List<F> readFieldList(DataBaseQueryField<E, F> query) {
@@ -103,6 +115,11 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
             throw new RemoteDaobabException(response);
         }
         return (List<F>) response.getContent();
+    }
+
+    @Override
+    public <E extends Entity, F> List<F> readFieldList(FrozenDataBaseQueryField<E, F> query, List<Object> parameters, Column<?, ?, ?> column, DatabaseTypeConverter<?, ?> typeConverter) {
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -127,6 +144,11 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
         }
     }
 
+    @Override
+    public Plates readPlateList(FrozenDataBaseQueryPlate query, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConverters) {
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public Plate readPlate(DataBaseQueryPlate query) {
@@ -141,6 +163,11 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
         } catch (Exception e) {
             throw new ReadRemoteException(e);
         }
+    }
+
+    @Override
+    public Plate readPlate(FrozenDataBaseQueryPlate query, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConverters) {
+        return null;
     }
 
     @Override
@@ -212,7 +239,12 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
     }
 
     @Override
+    public <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> query, IdentifierStorage identifierStorage) {
+        throw new RemoteTargetCanNotHandleOpenedTransactionException();
+    }
+
+    @Override
     public DatabaseDateConverter getDatabaseDateConverter() {
-        return null;
+        throw new RemoteTargetCanNotHandleOpenedTransactionException();
     }
 }

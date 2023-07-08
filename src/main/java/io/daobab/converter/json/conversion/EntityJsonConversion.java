@@ -1,19 +1,30 @@
 package io.daobab.converter.json.conversion;
 
 import io.daobab.converter.json.JsonConverterManager;
+import io.daobab.creation.EntityCreator;
+import io.daobab.error.DaobabException;
 import io.daobab.model.Entity;
 import io.daobab.model.Field;
 import io.daobab.model.RelatedTo;
 import io.daobab.model.TableColumn;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class EntityJsonConversion<E extends Entity> {
 
+    private static final int NOTHING = 0;
+    private static final int KEY_OPENED = 1;
+    private static final int KEY_CLOSED = 2;
+    private static final int KEY_VAL_SEPARATOR = 3;
+    private static final int VAL_OPENED = 4;
+    private static final int VAL_CLOSED = 5;
+    private static final int COLON = 6;
+
     @SuppressWarnings("rawtypes")
-    private final List<FieldJsonConversion> fieldJsonConversions;
+    private final Map<String, FieldJsonConversion> fieldJsonConversions;
 
     @SuppressWarnings("rawtypes")
     private final List<Field> fields;
@@ -26,7 +37,7 @@ public class EntityJsonConversion<E extends Entity> {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public EntityJsonConversion(E entity, JsonConverterManager jsonConverterManager) {
         fields = entity.columns().stream().map(TableColumn::getColumn).collect(Collectors.toList());
-        fieldJsonConversions = entity.columns().stream().map(TableColumn::getColumn).map(c -> new FieldJsonConversion(c, jsonConverterManager)).collect(Collectors.toList());
+        fieldJsonConversions = entity.columns().stream().map(TableColumn::getColumn).collect(Collectors.toMap(Field::getFieldName, c -> new FieldJsonConversion(c, jsonConverterManager)));
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -59,13 +70,87 @@ public class EntityJsonConversion<E extends Entity> {
         return sb;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public E deserialize(E entity, Map<String, String> map) {
-        for (FieldJsonConversion fieldJsonConversion : fieldJsonConversions) {
-            String fieldName = fieldJsonConversion.fieldName;
-
-            entity = (E) fieldJsonConversion.targetField.setValue((RelatedTo) entity, fieldJsonConversion.fromJson(map.get(fieldName)));
+    public E fromJsonMap(Class<E> entityClass, Map<String, String> mapString) {
+        Map<String, Object> map = new HashMap<>();
+        for (Map.Entry<String, FieldJsonConversion> fieldJsonConversion : fieldJsonConversions.entrySet()) {
+            String fieldName = fieldJsonConversion.getKey();
+            map.put(fieldName, fieldJsonConversion.getValue().fromJson(mapString.get(fieldName)));
         }
-        return entity;
+        return EntityCreator.createEntity(entityClass, map);
     }
+
+    @SuppressWarnings({"java:S3776", "java:S135"})
+    public E fromJson(Class<E> entityClass, String sb) {
+        Map<String, String> hashMap = new HashMap<>();
+        if (!sb.startsWith("{") || !sb.endsWith("}")) {
+            throw new DaobabException("Cannot convert an json array");
+        }
+        sb = sb.substring(sb.indexOf("{") + 1, sb.lastIndexOf("}"));
+
+        int len = sb.length();
+        int i;
+
+        int state = NOTHING;
+
+        StringBuilder key = new StringBuilder();
+        StringBuilder value = new StringBuilder();
+
+
+        for (i = 0; i < len; i++) {
+            char znak = sb.charAt(i);
+            if (state == NOTHING && (znak == '\"')) {
+                state = KEY_OPENED;
+                continue;
+            }
+
+            if (state == KEY_OPENED && (znak == '\"')) {
+                state = KEY_CLOSED;
+                continue;
+            }
+
+            if (state == KEY_CLOSED && (znak == ':')) {
+                state = KEY_VAL_SEPARATOR;
+                continue;
+            }
+
+            if (state == KEY_OPENED) {
+                key.append(znak);
+            }
+
+            if (state == KEY_VAL_SEPARATOR || state == VAL_OPENED || state == VAL_CLOSED) {
+                if (state == KEY_VAL_SEPARATOR && znak == '\"') {
+                    state = VAL_OPENED;
+                } else if (state == VAL_OPENED && znak == '\"') {
+                    state = VAL_CLOSED;
+                }
+
+                if (state == KEY_VAL_SEPARATOR || state == VAL_CLOSED && (znak == ',')) {
+                    state = NOTHING;
+
+                    putKeys(key, value, hashMap);
+                    key = new StringBuilder();
+                    value = new StringBuilder();
+                    continue;
+                }
+
+                value.append(znak);
+            }
+        }
+        //the last pair
+        if (!key.toString().isEmpty()) {
+            putKeys(key, value, hashMap);
+        }
+
+        return fromJsonMap(entityClass, hashMap);
+    }
+
+    private void putKeys(StringBuilder key, StringBuilder value, Map<String, String> hashMap) {
+        String keyString = key.toString();
+        if (keyString.isEmpty()) {
+            throw new DaobabException("Problem during json conversion. Cannot find a key");
+        }
+        String valueString = value.toString();
+        hashMap.put(keyString, valueString.equals("null") ? null : valueString);
+    }
+
 }

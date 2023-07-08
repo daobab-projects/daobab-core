@@ -129,7 +129,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         QuerySpecialParameters rv = new QuerySpecialParameters();
         StringBuilder sb = new StringBuilder();
 
-        sb.append(base.getMode() == DataBaseQueryInsert.MODE_INSERT ? "insert into " : "replace into ")
+        sb.append(base.isReplaceInto() ? "replace into " : "insert into ")
                 .append(base.getEntityName());
 
         boolean select = base.getSelectQuery() != null;

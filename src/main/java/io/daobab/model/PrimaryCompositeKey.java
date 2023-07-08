@@ -82,7 +82,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
 
             }
         }
-        target.update(SetFields.setColumns((E) this, columnsToUpdate)).where(getCompositeKeyWhere(this)).execute();
+        target.update(SetFields.setValuesArray((E) this, columnsToUpdate)).where(getCompositeKeyWhere(this)).execute();
         return (E) this;
     }
 
@@ -107,7 +107,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
 
             }
         }
-        target.update(SetFields.setColumns((E) this, columnsToUpdate)).where(getCompositeKeyWhere(this)).execute(propagation);
+        target.update(SetFields.setValuesArray((E) this, columnsToUpdate)).where(getCompositeKeyWhere(this)).execute(propagation);
         return (E) this;
     }
 
@@ -127,7 +127,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setColumns((E) this, columns().toArray(new Column[0])))
+        target.update(SetFields.setValuesArray((E) this, columns().toArray(new Column[0])))
                 .where(getCompositeKeyWhere(this))
                 .execute(transaction);
         return (E) this;
@@ -154,7 +154,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
                 columnsToUpdate = newArray;
             }
         }
-        target.update(SetFields.setColumns((E) this, columnsToUpdate))
+        target.update(SetFields.setValuesArray((E) this, columnsToUpdate))
                 .where(getCompositeKeyWhere(this))
                 .execute(transaction);
         return (E) this;
@@ -169,11 +169,11 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default String getSqlUpdate(DataBaseTarget target) {
-        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) target.getColumnsForTable(this))).where(getCompositeKeyWhere(this)) + ";";
+        return target.update(SetFields.setValuesArray((E) this, (Column<E, ?, ?>) target.getColumnsForTable(this))).where(getCompositeKeyWhere(this)) + ";";
     }
 
     default String getSqlUpdate(DataBaseTarget target, Column<E, ?, ?>... columnsToUpdate) {
-        return target.update(SetFields.setColumns((E) this, columnsToUpdate)).where(getCompositeKeyWhere(this)).getSQLQuery(target) + ";";
+        return target.update(SetFields.setValuesArray((E) this, columnsToUpdate)).where(getCompositeKeyWhere(this)).getSQLQuery(target) + ";";
     }
 
 }

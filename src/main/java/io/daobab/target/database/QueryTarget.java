@@ -70,6 +70,40 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return insertAll(sub);
     }
 
+
+    default <E extends Entity> DataBaseQueryInsert<E> replace(E entity) {
+        return new DataBaseQueryInsert<>(this, entity)
+                .setMode(DataBaseQueryInsert.MODE_REPLACE);
+
+    }
+
+    default <E extends Entity> DataBaseQueryInsert<E> replace(Column<E, ?, ?>... columns) {
+        return new DataBaseQueryInsert<>(this, columns)
+                .setMode(DataBaseQueryInsert.MODE_REPLACE);
+    }
+
+    default <E extends Entity> boolean replaceAll(Collection<E> entities) {
+        OpenedTransactionDataBaseTarget transactionTarget = this.beginTransaction();
+        for (E entity : entities) {
+            DataBaseQueryInsert<E> queryInsert = new DataBaseQueryInsert<>(transactionTarget, entity);
+            queryInsert.setMode(DataBaseQueryInsert.MODE_REPLACE);
+            queryInsert.execute(false);
+        }
+        transactionTarget.commit();
+        return true;
+    }
+
+    default <E extends Entity> boolean replaceAll(Collection<E> entities, int commitEvery) {
+        Collection<E> sub = new ArrayList<>();
+        entities.forEach(entity -> {
+            sub.add(entity);
+            if (sub.size() > commitEvery) {
+                replaceAll(sub);
+            }
+        });
+        return replaceAll(sub);
+    }
+
     default <E extends PrimaryKey<E, F, ?>, F> DataBaseQueryUpdate<E> update(E entity) {
         return new DataBaseQueryUpdate<>(this, entity);
     }
@@ -86,10 +120,10 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
 
     @SuppressWarnings("unchecked")
     default <E extends Entity> DataBaseQueryUpdate<E> update(SetField... sets) {
-        SetFields sfs = null;
+        SetFields sfs = new SetFields();
 
         for (SetField s : sets) {
-            sfs = SetFields.setColumn(s.getField(), s.getValue());
+            sfs.setValue(s.getField(), s.getValue());
         }
         return new DataBaseQueryUpdate<>(this, sfs);
     }

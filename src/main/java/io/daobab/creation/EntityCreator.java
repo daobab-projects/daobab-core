@@ -1,14 +1,19 @@
 package io.daobab.creation;
 
 import io.daobab.converter.duplicator.DuplicatorManager;
+import io.daobab.converter.json.JsonConverterManager;
+import io.daobab.converter.json.conversion.EntityJsonConversion;
 import io.daobab.error.DaobabEntityCreationException;
+import io.daobab.error.DaobabException;
 import io.daobab.model.Entity;
+import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.buffer.single.EntityList;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -26,6 +31,34 @@ public final class EntityCreator {
         return createEntity(entityClass, new HashMap<>());
     }
 
+    public static <E extends Entity> E createEntityFromJson(Class<E> entityClass, String json) {
+        EntityJsonConversion<E> entityJsonConverter = JsonConverterManager.INSTANCE.getEntityJsonConverter(createEntity(entityClass));
+        return entityJsonConverter.fromJson(entityClass, json);
+    }
+
+    public static <E extends Entity> Entities<E> createEntityListFromJson(Class<E> entityClass, String json) {
+        String js = json.trim();
+        if (!js.startsWith("[") || !js.endsWith("]")) {
+            throw new DaobabException("Cannot convert an json arrat");
+        }
+        js = js.substring(js.indexOf("["), js.lastIndexOf("]"));
+        Matcher matcher = Pattern.compile("\\{[^}]*\\}").matcher(js);
+
+        List<String> arrays = new ArrayList<>();
+        while (matcher.find()) {
+            arrays.add(matcher.group());
+        }
+
+        EntityJsonConversion<E> entityJsonConverter = JsonConverterManager.INSTANCE.getEntityJsonConverter(createEntity(entityClass));
+
+        List<E> rv = arrays.stream().map(j -> entityJsonConverter.fromJson(entityClass, j)).collect(Collectors.toList());
+
+        return new EntityList<>(rv, entityClass);
+    }
+
+    public static <E extends Entity> Entities<E> createEntities(List<Map<String, Object>> list, Class<E> entityClass) {
+        return new EntityList<>(list.stream().map(map -> createEntity(entityClass, map)).collect(Collectors.toList()), entityClass);
+    }
 
     public static <E extends Entity> E createEntity(Class<E> entityClass, Map<String, Object> map) {
         try {

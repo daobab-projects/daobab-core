@@ -43,8 +43,7 @@ public class SetFields {
         return setFields;
     }
 
-    public static <F, R extends RelatedTo> SetFields setColumn(Column<?, F, R> field, F value) {
-        SetFields setFields = new SetFields();
+    public static <F, R extends RelatedTo> SetFields setColumn(SetFields setFields, Column<?, F, R> field, F value) {
         setFields.setValue(field, value);
         return setFields;
     }

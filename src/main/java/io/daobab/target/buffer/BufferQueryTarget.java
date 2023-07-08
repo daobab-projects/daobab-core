@@ -64,10 +64,10 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
 
     @SuppressWarnings("unchecked")
     default <E extends Entity> BufferQueryUpdate<E> update(SetField... sets) {
-        SetFields sfs = null;
+        SetFields sfs = new SetFields();
 
         for (SetField s : sets) {
-            sfs = SetFields.setColumn(s.getField(), s.getValue());
+            sfs.setValue(s.getField(), s.getValue());
         }
         return new BufferQueryUpdate<>(this, sfs);
     }

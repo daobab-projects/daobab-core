@@ -162,7 +162,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
             }
         }
-        target.update(SetFields.setColumns((E) this, columnsToUpdate)).whereEqual(colID(), getId()).execute();
+        target.update(SetFields.setValuesArray((E) this, columnsToUpdate)).whereEqual(colID(), getId()).execute();
         return (E) this;
     }
 
@@ -189,7 +189,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
             }
         }
-        target.update(SetFields.setColumns((E) this, columnsToUpdate)).whereEqual(colID(), getId()).execute(propagation);
+        target.update(SetFields.setValuesArray((E) this, columnsToUpdate)).whereEqual(colID(), getId()).execute(propagation);
         return (E) this;
     }
 
@@ -211,7 +211,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
             OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
             occ.handleOCC(target, this);
         }
-        target.update(SetFields.setColumns((E) this, target.getColumnsForTable(this).stream()
+        target.update(SetFields.setValuesArray((E) this, target.getColumnsForTable(this).stream()
                         .map(TableColumn::getColumn)
                         .toArray(Column[]::new)))
                 .whereEqual(colID(), getId())
@@ -242,7 +242,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
             }
         }
-        target.update(SetFields.setColumns((E) this, columnsToUpdate))
+        target.update(SetFields.setValuesArray((E) this, columnsToUpdate))
                 .whereEqual(colID(), getId())
                 .execute(transaction);
         return (E) this;
@@ -260,12 +260,12 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
     @SuppressWarnings("unchecked")
     default String getSqlUpdate(DataBaseTarget target) {
-        return target.update(SetFields.setColumns((E) this, (Column<E, ?, ?>) target.getColumnsForTable(this))).whereEqual(colID(), getId()) + ";";
+        return target.update(SetFields.setValuesArray((E) this, (Column<E, ?, ?>) target.getColumnsForTable(this))).whereEqual(colID(), getId()) + ";";
     }
 
     @SuppressWarnings("unchecked")
     default String getSqlUpdate(DataBaseTarget target, Column<E, ?, ?>... columnsToUpdate) {
-        return target.update(SetFields.setColumns((E) this, columnsToUpdate)).whereEqual(colID(), getId()).getSQLQuery(target) + ";";
+        return target.update(SetFields.setValuesArray((E) this, columnsToUpdate)).whereEqual(colID(), getId()).getSQLQuery(target) + ";";
     }
 
 
