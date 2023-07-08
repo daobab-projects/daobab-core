@@ -21,7 +21,6 @@ public class EntityJsonConversion<E extends Entity> {
     private static final int KEY_VAL_SEPARATOR = 3;
     private static final int VAL_OPENED = 4;
     private static final int VAL_CLOSED = 5;
-    private static final int COLON = 6;
 
     @SuppressWarnings("rawtypes")
     private final Map<String, FieldJsonConversion> fieldJsonConversions;
@@ -45,9 +44,9 @@ public class EntityJsonConversion<E extends Entity> {
         if (entity == null) return sb;
         int maxSizeMinus1 = fields.size() - 1;
         sb.append("{");
-        for (int i = 0; i < fields.size(); i++) {
+        for (int i = 0; i < fieldJsonConversions.size(); i++) {
             Field field = fields.get(i);
-            FieldJsonConversion fieldJsonConversion = fieldJsonConversions.get(i);
+            FieldJsonConversion fieldJsonConversion = fieldJsonConversions.get(field.getFieldName());
             fieldJsonConversion.toJson(sb, field.getValue((RelatedTo) entity));
             if (i != maxSizeMinus1) {
                 sb.append(",");
@@ -72,15 +71,16 @@ public class EntityJsonConversion<E extends Entity> {
 
     public E fromJsonMap(Class<E> entityClass, Map<String, String> mapString) {
         Map<String, Object> map = new HashMap<>();
-        for (Map.Entry<String, FieldJsonConversion> fieldJsonConversion : fieldJsonConversions.entrySet()) {
-            String fieldName = fieldJsonConversion.getKey();
-            map.put(fieldName, fieldJsonConversion.getValue().fromJson(mapString.get(fieldName)));
+        for (FieldJsonConversion<?> fieldJsonConversion : fieldJsonConversions.values()) {
+            String fieldName = fieldJsonConversion.fieldName;
+            System.out.println(" fieldmap: " + fieldName + " val " + mapString.get(fieldName));
+            map.put(fieldName, fieldJsonConversion.fromJson(mapString.get(fieldName)));
         }
         return EntityCreator.createEntity(entityClass, map);
     }
 
-    @SuppressWarnings({"java:S3776", "java:S135"})
     public E fromJson(Class<E> entityClass, String sb) {
+        System.out.println(">>>>>>" + sb);
         Map<String, String> hashMap = new HashMap<>();
         if (!sb.startsWith("{") || !sb.endsWith("}")) {
             throw new DaobabException("Cannot convert an json array");
@@ -120,11 +120,13 @@ public class EntityJsonConversion<E extends Entity> {
             if (state == KEY_VAL_SEPARATOR || state == VAL_OPENED || state == VAL_CLOSED) {
                 if (state == KEY_VAL_SEPARATOR && znak == '\"') {
                     state = VAL_OPENED;
+                    continue;
                 } else if (state == VAL_OPENED && znak == '\"') {
                     state = VAL_CLOSED;
+                    continue;
                 }
 
-                if (state == KEY_VAL_SEPARATOR || state == VAL_CLOSED && (znak == ',')) {
+                if ((state == KEY_VAL_SEPARATOR || state == VAL_CLOSED) && (znak == ',')) {
                     state = NOTHING;
 
                     putKeys(key, value, hashMap);

@@ -1,10 +1,12 @@
 package io.daobab.creation;
 
+import io.daobab.error.DaobabException;
 import io.daobab.model.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class EntityBuilder<E extends Entity> {
 
@@ -34,6 +36,18 @@ public class EntityBuilder<E extends Entity> {
     public EntityBuilder<E> addAll(Table<?> entity) {
         params.putAll(entity.accessParameterMap());
         return this;
+    }
+
+    public void validateNullable() {
+        String notNullNotProvided = EntityCreator.createEntity(clazz).columns().stream()
+                .filter(TableColumn::isNullable)
+                .map(TableColumn::getColumn)
+                .map(Field::getFieldName)
+                .filter(name -> params.get(name) == null)
+                .collect(Collectors.joining(","));
+        if (!notNullNotProvided.isEmpty()) {
+            throw new DaobabException("Entity %s has not-null fields having null value: %s", clazz.getName(), notNullNotProvided);
+        }
     }
 
     public E build() {

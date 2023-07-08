@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 public class JsonLocalDateTimeConverter extends JsonConverter<LocalDateTime> {
 
-    static final String dateTimeFormat = "\"yyyy-MM-dd'T'HH:mm:ss.SSS\"";
+    static final String dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     @Override
     public void toJson(StringBuilder sb, LocalDateTime obj) {

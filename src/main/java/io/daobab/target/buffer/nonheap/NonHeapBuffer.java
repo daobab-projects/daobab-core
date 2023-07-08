@@ -187,7 +187,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     @SuppressWarnings("unchecked")
     public Integer getColumnIntoEntityPosition(Column<?, ?, ?> column) {
         for (int i = 0; i < columns.size(); i++) {
-            if (columns.get(i).getColumn().equalsColumn(column)) {
+            if (columns.get(i).getColumn().equalsField(column)) {
                 return i;
             }
         }

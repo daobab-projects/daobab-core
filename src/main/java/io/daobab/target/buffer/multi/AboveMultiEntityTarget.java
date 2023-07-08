@@ -144,7 +144,6 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         this.propagateModifications = propagateModifications;
     }
 
-
     public <Y, T extends TransactionalTarget> Y handleTransactionalTarget(T target, Propagation propagation, BiFunction<QueryHandler, Boolean, Y> jobToDo) {
         TransactionIndicator indicator = propagation.mayBeProceeded(target);
         switch (indicator) {

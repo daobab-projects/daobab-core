@@ -26,7 +26,7 @@ public class FieldJsonConversion<F> {
     }
 
     public StringBuilder toJson(StringBuilder sb, F value) {
-        sb.append(fieldName).append(":");
+        sb.append("\"").append(fieldName).append("\"").append(":");
         if (value == null) {
             sb.append("null");
         } else {
