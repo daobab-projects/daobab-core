@@ -7,7 +7,6 @@ import io.daobab.target.database.meta.column.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @TableName(value = "META_TABLE")
 public class MetaTable extends Table<MetaTable> implements
@@ -49,14 +48,5 @@ public class MetaTable extends Table<MetaTable> implements
         return colTableName();
     }
 
-    @SuppressWarnings("rawtypes")
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        PrimaryKey other = (PrimaryKey) obj;
-        return Objects.equals(getId(), other.getId());
-    }
 
 }

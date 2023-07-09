@@ -1,13 +1,7 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.error.AttemptToReadFromNullEntityException;
-import io.daobab.error.AttemptToWriteIntoNullEntityException;
-import io.daobab.model.Column;
-import io.daobab.model.Entity;
-import io.daobab.model.MapHandler;
-import io.daobab.model.RelatedTo;
-
-import java.util.Objects;
+import io.daobab.creation.ColumnCache;
+import io.daobab.model.*;
 
 public interface MetaTableName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
@@ -19,60 +13,10 @@ public interface MetaTableName<E extends Entity> extends RelatedTo<E>, MapHandle
         return storeParam("TableName", val);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, MetaTableName> colTableName() {
-        return new Column<E, String, MetaTableName>() {
-
-            @Override
-            public String getColumnName() {
-                return "TABLE_NAME";
-            }
-
-            @Override
-            public String getFieldName() {
-                return "TableName";
-            }
-
-            @Override
-            public E getInstance() {
-                return getEntity();
-            }
-
-            @Override
-            public Class<String> getFieldClass() {
-                return String.class;
-            }
-
-            @Override
-            public String getValue(MetaTableName entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "TableName");
-                return entity.getTableName();
-            }
-
-            @Override
-            public MetaTableName setValue(MetaTableName entity, String param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "TableName");
-                return (MetaTableName) entity.setTableName(param);
-            }
-
-            @Override
-            public int hashCode() {
-                return toString().hashCode();
-            }
-
-            @Override
-            public String toString() {
-                return entityClass().getName() + "." + getFieldName();
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (this == obj) return true;
-                if (obj == null) return false;
-                if (getClass() != obj.getClass()) return false;
-                Column other = (Column) obj;
-                return Objects.equals(hashCode(), other.hashCode());
-            }
-        };
+        return ColumnCache.INSTANCE.getColumn("TableName", "TABLE_NAME", (Table<?>) this, String.class);
     }
+
 
 }

@@ -1,13 +1,7 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.error.AttemptToReadFromNullEntityException;
-import io.daobab.error.AttemptToWriteIntoNullEntityException;
-import io.daobab.model.Column;
-import io.daobab.model.Entity;
-import io.daobab.model.MapHandler;
-import io.daobab.model.RelatedTo;
-
-import java.util.Objects;
+import io.daobab.creation.ColumnCache;
+import io.daobab.model.*;
 
 public interface Unique<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
@@ -19,60 +13,10 @@ public interface Unique<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
         return storeParam("Unique", val);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, Boolean, Unique> colUnique() {
-        return new Column<E, Boolean, Unique>() {
-
-            @Override
-            public String getColumnName() {
-                return "Unique";
-            }
-
-            @Override
-            public String getFieldName() {
-                return "Unique";
-            }
-
-            @Override
-            public E getInstance() {
-                return getEntity();
-            }
-
-            @Override
-            public Class<Boolean> getFieldClass() {
-                return Boolean.class;
-            }
-
-            @Override
-            public Boolean getValue(Unique entity) {
-                if (entity == null) throw new AttemptToReadFromNullEntityException(entityClass(), "Unique");
-                return entity.getUnique();
-            }
-
-            @Override
-            public Unique setValue(Unique entity, Boolean param) {
-                if (entity == null) throw new AttemptToWriteIntoNullEntityException(entityClass(), "Unique");
-                return (Unique) entity.setUnique(param);
-            }
-
-            @Override
-            public int hashCode() {
-                return toString().hashCode();
-            }
-
-            @Override
-            public String toString() {
-                return entityClass().getName() + "." + getFieldName();
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (this == obj) return true;
-                if (obj == null) return false;
-                if (getClass() != obj.getClass()) return false;
-                Column other = (Column) obj;
-                return Objects.equals(hashCode(), other.hashCode());
-            }
-        };
+        return ColumnCache.INSTANCE.getColumn("Unique", "Unique", (Table<?>) this, Boolean.class);
     }
+
 
 }
