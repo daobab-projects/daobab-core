@@ -18,6 +18,7 @@ public class JsonDateConverter extends JsonConverter<Date> {
 
     @Override
     public Date fromJson(String json) {
-        return null;
+        LocalDateTime ldt = jsonLocalDateTimeConverter.fromJson(json);
+        return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

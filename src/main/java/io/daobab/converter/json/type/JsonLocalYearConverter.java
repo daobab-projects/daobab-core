@@ -15,6 +15,6 @@ public class JsonLocalYearConverter extends JsonConverter<Year> {
 
     @Override
     public Year fromJson(String json) {
-        return null;
+        return Year.of(Integer.parseInt(json));
     }
 }

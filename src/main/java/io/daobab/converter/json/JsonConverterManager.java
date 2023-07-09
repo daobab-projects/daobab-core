@@ -11,6 +11,7 @@ import io.daobab.model.Plate;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
@@ -35,7 +36,7 @@ public class JsonConverterManager {
         registerTypeConverter(BigInteger.class, new JsonBigIntegerConverter());
         registerTypeConverter(Boolean.class, new JsonBooleanConverter());
         registerTypeConverter(boolean.class, new JsonBooleanConverter());
-//        registerTypeConverter(byte[].class, new StandardTypeConverterBytes());
+        registerTypeConverter(byte[].class, new JsonByteArrayConverter());
         registerTypeConverter(Double.class, new JsonDoubleConverter());
         registerTypeConverter(double.class, new JsonDoubleConverter());
         registerTypeConverter(Float.class, new JsonFloatConverter());
@@ -60,7 +61,7 @@ public class JsonConverterManager {
         registerTypeConverter(DayOfWeek.class, new JsonLocalDayOfWeekConverter());
         registerTypeConverter(ZonedDateTime.class, new JsonZonedDateTimeConverter());
         registerTypeConverter(LocalTime.class, new JsonLocalTimeConverter());
-//        registerTypeConverter(URL.class, new StandardTypeConverterURL());
+        registerTypeConverter(URL.class, new JsonUrlConverter());
 
 //        for (Entity entity : target.getTables()) {
 //            if (entity instanceof PrimaryKey) {
@@ -71,13 +72,16 @@ public class JsonConverterManager {
     }
 
 
-    @SuppressWarnings({"java:S1452", "java:S3776"})
+    @SuppressWarnings({"java:S1452", "java:S3776", "unchecked"})
     public Optional<JsonConverter<?>> getConverter(Field<?, ?, ?> field) {
-        JsonConverter<?> jc = fieldConverters.computeIfAbsent(field, f -> {
-            if (f.getFieldClass().isEnum()) {
-                return new JsonEnumConverter();
+        JsonConverter<?> jc = fieldConverters.computeIfAbsent(field, fld -> {
+            Class fieldClass = fld.getFieldClass();
+            if (fieldClass.isEnum()) {
+                return new JsonEnumConverter(fieldClass);
+            } else if (fieldClass.isAssignableFrom(Entity.class)) {
+                return new JsonDaobabEntityConverter(fieldClass);
             } else {
-                return typeConverters.get(f.getFieldClass());
+                return typeConverters.get(fld.getFieldClass());
             }
         });
         return Optional.ofNullable(jc);

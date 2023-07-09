@@ -15,12 +15,6 @@ public class JsonFloatConverter extends JsonConverter<Float> {
 
 
     public static String numberToString(Float n) {
-//        if (n == null) {
-//            throw new JSONException("Null pointer");
-//        }
-        //testValidity(n);
-
-        // Shave off trailing zeros and decimal point, if possible.
 
         String s = n.toString();
         if (s.indexOf('.') > 0 && s.indexOf('e') < 0 && s.indexOf('E') < 0) {

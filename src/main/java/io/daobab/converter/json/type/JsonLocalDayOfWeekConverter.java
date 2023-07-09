@@ -15,6 +15,6 @@ public class JsonLocalDayOfWeekConverter extends JsonConverter<DayOfWeek> {
 
     @Override
     public DayOfWeek fromJson(String json) {
-        return null;
+        return DayOfWeek.of(Integer.parseInt(json));
     }
 }

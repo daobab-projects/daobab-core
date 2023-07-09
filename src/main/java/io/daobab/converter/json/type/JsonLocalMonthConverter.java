@@ -15,6 +15,6 @@ public class JsonLocalMonthConverter extends JsonConverter<Month> {
 
     @Override
     public Month fromJson(String json) {
-        return null;
+        return Month.of(Integer.parseInt(json));
     }
 }

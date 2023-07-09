@@ -15,13 +15,6 @@ public class JsonDoubleConverter extends JsonConverter<Double> {
 
 
     public static String numberToString(Double n) {
-//        if (n == null) {
-//            throw new JSONException("Null pointer");
-//        }
-        //testValidity(n);
-
-        // Shave off trailing zeros and decimal point, if possible.
-
         String s = n.toString();
         if (s.indexOf('.') > 0 && s.indexOf('e') < 0 && s.indexOf('E') < 0) {
             while (s.endsWith("0")) {
