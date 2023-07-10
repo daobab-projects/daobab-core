@@ -39,7 +39,7 @@ public final class EntityCreator {
     public static <E extends Entity> Entities<E> createEntityListFromJson(Class<E> entityClass, String json) {
         String js = json.trim();
         if (!js.startsWith("[") || !js.endsWith("]")) {
-            throw new DaobabException("Cannot convert an json arrat");
+            throw new DaobabException("Cannot convert an json array");
         }
         js = js.substring(js.indexOf("["), js.lastIndexOf("]"));
         Matcher matcher = Pattern.compile("\\{[^}]*\\}").matcher(js);

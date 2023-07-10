@@ -5,6 +5,7 @@ import io.daobab.converter.json.conversion.EntityJsonConversion;
 import io.daobab.converter.json.conversion.FieldJsonConversion;
 import io.daobab.converter.json.conversion.PlateJsonConversion;
 import io.daobab.converter.json.type.*;
+import io.daobab.error.DaobabException;
 import io.daobab.model.Entity;
 import io.daobab.model.Field;
 import io.daobab.model.Plate;
@@ -15,9 +16,7 @@ import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @SuppressWarnings({"java:S6548", "rawtypes"})
 public class JsonConverterManager {
@@ -76,12 +75,54 @@ public class JsonConverterManager {
     public Optional<JsonConverter<?>> getConverter(Field<?, ?, ?> field) {
         JsonConverter<?> jc = fieldConverters.computeIfAbsent(field, fld -> {
             Class fieldClass = fld.getFieldClass();
+
+            if (fieldClass.isAssignableFrom(Optional.class)) {
+                Class innerFieldClass = field.getInnerTypeClass();
+                if (innerFieldClass == null) {
+                    throw new DaobabException("InnerFieldClass has to be provided for field " + field.toString());
+                }
+                Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
+                return innerFieldConverter.map(c -> new JsonOptionalConverter(c)).orElseThrow(() -> new DaobabException("Cannot find a converter"));
+            }
+
+            if (fieldClass.isAssignableFrom(List.class)) {
+                Class innerFieldClass = field.getInnerTypeClass();
+                if (innerFieldClass == null) {
+                    throw new DaobabException("InnerFieldClass has to be provided for field " + field.toString());
+                }
+                Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
+                return innerFieldConverter.map(c -> new JsonListConverter(c)).orElseThrow(() -> new DaobabException("Cannot find a converter"));
+            }
+
+            if (fieldClass.isAssignableFrom(Set.class)) {
+                Class innerFieldClass = field.getInnerTypeClass();
+                if (innerFieldClass == null) {
+                    throw new DaobabException("InnerFieldClass has to be provided for field " + field.toString());
+                }
+                Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
+                return innerFieldConverter.map(c -> new JsonSetConverter(c)).orElseThrow(() -> new DaobabException("Cannot find a converter"));
+            }
+
             if (fieldClass.isEnum()) {
                 return new JsonEnumConverter(fieldClass);
             } else if (fieldClass.isAssignableFrom(Entity.class)) {
                 return new JsonDaobabEntityConverter(fieldClass);
             } else {
                 return typeConverters.get(fld.getFieldClass());
+            }
+        });
+        return Optional.ofNullable(jc);
+    }
+
+    public Optional<JsonConverter<?>> getTypeConverter(Class<?> clazz) {
+        JsonConverter<?> jc = typeConverters.computeIfAbsent(clazz, field -> {
+
+            if (clazz.isEnum()) {
+                return new JsonEnumConverter(clazz);
+            } else if (clazz.isAssignableFrom(Entity.class)) {
+                return new JsonDaobabEntityConverter(clazz);
+            } else {
+                return typeConverters.get(clazz);
             }
         });
         return Optional.ofNullable(jc);
