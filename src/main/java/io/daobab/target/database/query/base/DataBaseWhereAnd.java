@@ -12,6 +12,7 @@ import io.daobab.target.database.query.frozen.DaoParam;
 
 import static io.daobab.statement.condition.Operator.*;
 
+@SuppressWarnings("rawtypes")
 public class DataBaseWhereAnd extends WhereAnd {
 
 

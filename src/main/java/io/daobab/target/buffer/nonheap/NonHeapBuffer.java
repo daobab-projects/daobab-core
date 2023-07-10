@@ -1,5 +1,6 @@
 package io.daobab.target.buffer.nonheap;
 
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.DaobabException;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
@@ -152,7 +153,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     }
 
     public Plate getPlate(int i, Collection<TableColumn> chosenColumns) {
-        Plate rv = new Plate(chosenColumns);
+        Plate rv = PlateCreator.fromTableColumnList(chosenColumns);
 
         int entityLocation = locations.get(i);
         int page = entityLocation >> pageMaxCapacityBytes;

@@ -22,6 +22,7 @@ public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBas
 
     private final FieldJsonConversion<F> fieldJsonConversion;
 
+    @SuppressWarnings("unchecked")
     public FrozenDataBaseQueryField(DataBaseQueryField<E, F> originalQuery) {
         super(originalQuery);
         target.getAccessProtector().removeViolatedInfoColumns3(originalQuery.getFields(), OperationType.READ);

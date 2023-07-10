@@ -9,6 +9,7 @@ import java.util.List;
 
 public class FieldJsonConversion<F> {
 
+
     final Field<?, ?, ?> targetField;
 
     final String fieldName;
@@ -69,4 +70,7 @@ public class FieldJsonConversion<F> {
         return jsonConverter.fromJson(trimmedJsonValue);
     }
 
+    public Field<?, ?, ?> getTargetField() {
+        return targetField;
+    }
 }

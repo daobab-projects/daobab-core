@@ -2,6 +2,7 @@ package io.daobab.target.database.connection;
 
 import io.daobab.creation.EntityBuilder;
 import io.daobab.creation.EntityCreator;
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.NoSequenceException;
@@ -31,7 +32,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @Override
     public Plate readPlate(ResultSet rs, List<TableColumn> fields, DatabaseTypeConverter<?, ?>[] typeConverters) throws SQLException {
-        Plate plate = new Plate(fields);
+        Plate plate = PlateCreator.fromTableColumnList(fields);
         for (int i = 0; i < fields.size(); i++) {
             TableColumn tableColumn = fields.get(i);
             plate.setValue(tableColumn, readCell(typeConverters[i], rs, i + 1, tableColumn.getColumn()));

@@ -7,6 +7,7 @@ import io.daobab.model.dummy.DummyColumnTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -24,7 +25,7 @@ public class ProcedureParameters {
             Column<?, ?, ?> col = entity.columns().get(i).getColumn();
             specifyValue(i + 1, col);
         }
-        plate = new Plate(entity.columns());
+        plate = new Plate(entity.columns().stream().map(TableColumn::getColumn).collect(Collectors.toList()));
     }
 
     public ProcedureParameters(TableColumn... columns) {
@@ -36,7 +37,7 @@ public class ProcedureParameters {
         for (int i = 0; i < columns.length; i++) {
             specifyValue(i + 1, columns[i].getColumn());
         }
-        plate = new Plate(tableColumns);
+        plate = new Plate(tableColumns.stream().map(TableColumn::getColumn).collect(Collectors.toList()));
     }
 
     public <E extends Entity> ProcedureParameters(Column<?, ?, ?>... columns) {

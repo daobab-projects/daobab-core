@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -127,7 +128,7 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
         List<Plate> rv = new ArrayList<>();
         try {
             for (Map<String, Map<String, Object>> map : listMap) {
-                Plate entity = new Plate(query.getFields());
+                Plate entity = new Plate(query.getFields().stream().map(TableColumn::getColumn).collect(Collectors.toList()));
                 entity.putAll(map);
                 rv.add(entity);
             }
@@ -151,7 +152,7 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
             throw new RemoteDaobabException(response);
         }
         try {
-            Plate rv = new Plate(query.getFields());
+            Plate rv = new Plate(query.getFields().stream().map(TableColumn::getColumn).collect(Collectors.toList()));
             rv.putAll((Map<String, Map<String, Object>>) response.getContent());
             return rv;
         } catch (Exception e) {

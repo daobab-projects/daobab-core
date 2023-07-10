@@ -1,5 +1,6 @@
 package io.daobab.target.buffer.multi;
 
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.TargetDoesNotSupport;
 import io.daobab.model.Column;
 import io.daobab.model.Entity;
@@ -245,7 +246,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
         List<Plate> results = new ArrayList<>(elements.size());
 
         for (Plate element : elements) {
-            Plate plate = new Plate(query.getFields());
+            Plate plate = PlateCreator.fromTableColumnList(query.getFields());
             for (TableColumn tableColumn : query.getFields()) {
                 plate.setValue(tableColumn, element.getValue(tableColumn.getColumn()));
             }

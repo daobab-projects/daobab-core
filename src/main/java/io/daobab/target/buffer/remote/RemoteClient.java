@@ -1,6 +1,7 @@
 package io.daobab.target.buffer.remote;
 
 import io.daobab.creation.EntityCreator;
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.ReadRemoteException;
 import io.daobab.error.RemoteDaobabException;
 import io.daobab.error.RemoteTargetCanNotHandleOpenedTransactionException;
@@ -111,7 +112,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
         List<Plate> rv = new ArrayList<>();
         try {
             for (Map<String, Map<String, Object>> map : listMap) {
-                Plate entity = new Plate(query.getFields());
+                Plate entity = PlateCreator.fromTableColumnList(query.getFields());
                 entity.putAll(map);
                 rv.add(entity);
             }
@@ -130,7 +131,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
             throw new RemoteDaobabException(response);
         }
         try {
-            Plate rv = new Plate(query.getFields());
+            Plate rv = PlateCreator.fromTableColumnList(query.getFields());
             rv.putAll((Map<String, Map<String, Object>>) response.getContent());
             return rv;
         } catch (Exception e) {

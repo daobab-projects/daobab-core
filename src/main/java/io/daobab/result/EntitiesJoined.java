@@ -1,5 +1,6 @@
 package io.daobab.result;
 
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.DaobabException;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
@@ -31,7 +32,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
             rootPlate = rows.get(0);
             join(query);
         }else{
-            rootPlate = new Plate(query.getFields());
+            rootPlate = PlateCreator.fromTableColumnList(query.getFields());
         }
     }
 

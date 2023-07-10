@@ -11,57 +11,60 @@ import io.daobab.error.NullParameter;
 import io.daobab.statement.function.type.ColumnFunction;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class Plate extends HashMap<String, Map<String, Object>> implements JsonProvider, ColumnsProvider {
 
-    private transient List<TableColumn> fields;
+    public transient List<Field> fields;
 
     public Plate() {
     }
 
-    public Plate(List<TableColumn> fields, Object[] rowResults) {
-        if (fields == null || fields.isEmpty()) {
-            throw new MandatoryColumn();
-        }
-        this.fields = fields;
-        for (int i = 0; i < fields.size(); i++) {
-            TableColumn c = fields.get(i);
-            setValue(c, rowResults[i]);
+//    public Plate(List<TableColumn> fields, Object[] rowResults) {
+//        if (fields == null || fields.isEmpty()) {
+//            throw new MandatoryColumn();
+//        }
+//        this.fields = fields.stream().map(TableColumn::getColumn).collect(Collectors.toList());
+//        for (int i = 0; i < fields.size(); i++) {
+//            TableColumn c = fields.get(i);
+//            setValue(c, rowResults[i]);
+//        }
+//    }
+
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Plate(Entity entity) {
+        this.fields = entity.columns().stream().map(TableColumn::getColumn).collect(Collectors.toList());
+        for (Field tableColumn : fields) {
+            setValue(tableColumn, tableColumn.getValue((RelatedTo) entity));
         }
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
-    public Plate(Entity entity) {
-        this.fields = entity.columns();
-        for (TableColumn tableColumn : fields) {
-            setValue(tableColumn, tableColumn.getColumn().getValue((RelatedTo) entity));
-        }
-    }
 
     @SuppressWarnings("unchecked")
     public Plate(Plate plate) {
-        this.fields = plate.columns();
-        for (TableColumn tableColumn : fields) {
-            setValue(tableColumn, plate.getValue(tableColumn.getColumn()));
+        this.fields = plate.fields();
+        for (Field tableColumn : fields) {
+            setValue(tableColumn, plate.getValue(tableColumn));
         }
     }
 
     @SuppressWarnings("unchecked")
     public Plate(Plate plate, boolean quickCopy) {
-        this.fields = plate.columns();
+        this.fields = plate.fields();
         if (quickCopy) {
             putAll(plate);
         } else {
-            for (TableColumn tableColumn : fields) {
-                setValue(tableColumn, plate.getValue(tableColumn.getColumn()));
+            for (Field tableColumn : fields) {
+                setValue(tableColumn, plate.getValue(tableColumn));
             }
         }
     }
 
-    public Plate(Collection<TableColumn> fields) {
+    public Plate(Collection<Field> fields) {
         if (fields == null || fields.isEmpty()) {
             throw new MandatoryColumn();
         }
@@ -69,8 +72,15 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         fields.forEach(c -> setValue(c, null));
     }
 
-    public List<TableColumn> columns() {
+    public List<Field> fields() {
         return fields;
+    }
+
+    @Override
+    public List<TableColumn> columns() {
+        return fields.stream()
+                .filter(f -> f instanceof TableColumn)
+                .map(TableColumn.class::cast).collect(Collectors.toList());
     }
 
     @SuppressWarnings("unchecked")
@@ -200,7 +210,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     }
 
     @SuppressWarnings("rawtypes")
-    public <F> void setValue(Column column, F val) {
+    public <F> void setValue(Field column, F val) {
         Map<String, Object> entityMap;
 
         if (!this.containsKey(column.entityClass().getName())) {

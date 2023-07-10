@@ -1,10 +1,10 @@
 package io.daobab.converter.json.conversion;
 
 import io.daobab.converter.json.JsonConverterManager;
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.DaobabException;
 import io.daobab.model.Field;
 import io.daobab.model.Plate;
-import io.daobab.model.TableColumn;
 import io.daobab.target.buffer.single.Plates;
 
 import java.util.HashMap;
@@ -12,15 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PlateJsonConversion {
-
-
-    private static final int NOTHING = 0;
-    private static final int KEY_OPENED = 1;
-    private static final int KEY_CLOSED = 2;
-    private static final int KEY_VAL_SEPARATOR = 3;
-    private static final int VAL_OPENED = 4;
-    private static final int VAL_CLOSED = 5;
+public class PlateJsonConversion extends FromJsonContext {
 
 
     @SuppressWarnings("rawtypes")
@@ -29,22 +21,22 @@ public class PlateJsonConversion {
     @SuppressWarnings("rawtypes")
     private final List<Field> fields;
 
-    public PlateJsonConversion(List<TableColumn> fields1) {
+    public PlateJsonConversion(List<Field> fields1) {
         this(fields1, JsonConverterManager.INSTANCE);
     }
 
     public PlateJsonConversion(Plate plate) {
-        this(plate.columns(), JsonConverterManager.INSTANCE);
+        this(plate.fields(), JsonConverterManager.INSTANCE);
     }
 
     public PlateJsonConversion(Plate plate, JsonConverterManager jsonConverterManager) {
-        this(plate.columns(), jsonConverterManager);
+        this(plate.fields(), jsonConverterManager);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public PlateJsonConversion(List<TableColumn> fields1, JsonConverterManager jsonConverterManager) {
-        fields = fields1.stream().map(TableColumn::getColumn).collect(Collectors.toList());
-        fieldJsonConversions = fields1.stream().map(TableColumn::getColumn).collect(Collectors.toMap(Field::getFieldName, c -> new FieldJsonConversion(c, jsonConverterManager)));
+    public PlateJsonConversion(List<Field> fields, JsonConverterManager jsonConverterManager) {
+        this.fields = fields;
+        fieldJsonConversions = fields.stream().collect(Collectors.toMap(Field::getFieldName, c -> new FieldJsonConversion(c, jsonConverterManager)));
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -54,7 +46,7 @@ public class PlateJsonConversion {
         sb.append("{");
         for (int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
-            FieldJsonConversion fieldJsonConversion = fieldJsonConversions.get(i);
+            FieldJsonConversion fieldJsonConversion = fieldJsonConversions.get(field.getFieldName());
             fieldJsonConversion.toJson(sb, entity.getValue(field));
             if (i != maxSizeMinus1) {
                 sb.append(",");
@@ -84,7 +76,8 @@ public class PlateJsonConversion {
             throw new DaobabException("Json converters doesn't match with fields number");
         }
         for (int i = 0; i < fields.size(); i++) {
-            jsonConverters.put(fields.get(i).getFieldName(), fieldJsonConversions.get(i));
+            String fieldName = fields.get(i).getFieldName();
+            jsonConverters.put(fieldName, fieldJsonConversions.get(fieldName));
         }
         return jsonConverters;
     }
@@ -92,12 +85,13 @@ public class PlateJsonConversion {
 
     @SuppressWarnings("rawtypes")
     public Plate fromJsonMap(Map<String, String> mapString) {
-        Map<String, Object> map = new HashMap<>();
+        Map<Field, Object> map = new HashMap<>();
         for (Map.Entry<String, FieldJsonConversion> fieldJsonConversion : fieldJsonConversions.entrySet()) {
             String fieldName = fieldJsonConversion.getKey();
-            map.put(fieldName, fieldJsonConversion.getValue().fromJson(mapString.get(fieldName)));
+            Field field = fieldJsonConversion.getValue().getTargetField();
+            map.put(field, fieldJsonConversion.getValue().fromJson(mapString.get(fieldName)));
         }
-        return null;//EntityCreator.createEntity(map);
+        return PlateCreator.fromFieldMap(map);
     }
 
 
@@ -116,6 +110,7 @@ public class PlateJsonConversion {
 
         StringBuilder key = new StringBuilder();
         StringBuilder value = new StringBuilder();
+
 
         for (i = 0; i < len; i++) {
             char znak = sb.charAt(i);
@@ -141,11 +136,13 @@ public class PlateJsonConversion {
             if (state == KEY_VAL_SEPARATOR || state == VAL_OPENED || state == VAL_CLOSED) {
                 if (state == KEY_VAL_SEPARATOR && znak == '\"') {
                     state = VAL_OPENED;
+                    continue;
                 } else if (state == VAL_OPENED && znak == '\"') {
                     state = VAL_CLOSED;
+                    continue;
                 }
 
-                if (state == KEY_VAL_SEPARATOR || state == VAL_CLOSED && (znak == ',')) {
+                if ((state == KEY_VAL_SEPARATOR || state == VAL_CLOSED) && (znak == ',')) {
                     state = NOTHING;
 
                     putKeys(key, value, hashMap);
@@ -165,13 +162,5 @@ public class PlateJsonConversion {
         return fromJsonMap(hashMap);
     }
 
-    private void putKeys(StringBuilder key, StringBuilder value, Map<String, String> hashMap) {
-        String keyString = key.toString();
-        if (keyString.isEmpty()) {
-            throw new DaobabException("Problem during json conversion. Cannot find a key");
-        }
-        String valueString = value.toString();
-        hashMap.put(keyString, valueString.equals("null") ? null : valueString);
-    }
 
 }

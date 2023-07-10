@@ -1,6 +1,7 @@
 package io.daobab.target.buffer.single;
 
 import io.daobab.converter.json.JsonConverterManager;
+import io.daobab.creation.PlateCreator;
 import io.daobab.error.BufferedOperationAllowedOnlyForSingleEntityColumns;
 import io.daobab.model.*;
 import io.daobab.query.base.Query;
@@ -114,7 +115,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         Plates elements = matched.orderAndLimit(query);
 
         for (Plate element : elements) {
-            Plate plate = new Plate(query.getFields());
+            Plate plate = PlateCreator.fromTableColumnList(query.getFields());
             for (TableColumn tableColumn : query.getFields()) {
                 plate.setValue(tableColumn, tableColumn.getColumn().getValueOf((R) element));
             }
@@ -310,7 +311,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
             return this;
         }
 
-        Plate template = new Plate(tableColumns);
+        Plate template = PlateCreator.fromTableColumnList(tableColumns);
         for (Plate plate : this) {
             plate.maskPlate(template);
         }

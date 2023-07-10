@@ -13,14 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class EntityJsonConversion<E extends Entity> {
+public class EntityJsonConversion<E extends Entity> extends FromJsonContext {
 
-    private static final int NOTHING = 0;
-    private static final int KEY_OPENED = 1;
-    private static final int KEY_CLOSED = 2;
-    private static final int KEY_VAL_SEPARATOR = 3;
-    private static final int VAL_OPENED = 4;
-    private static final int VAL_CLOSED = 5;
 
     @SuppressWarnings("rawtypes")
     private final Map<String, FieldJsonConversion> fieldJsonConversions;
@@ -144,13 +138,5 @@ public class EntityJsonConversion<E extends Entity> {
         return fromJsonMap(entityClass, hashMap);
     }
 
-    private void putKeys(StringBuilder key, StringBuilder value, Map<String, String> hashMap) {
-        String keyString = key.toString();
-        if (keyString.isEmpty()) {
-            throw new DaobabException("Problem during json conversion. Cannot find a key");
-        }
-        String valueString = value.toString();
-        hashMap.put(keyString, valueString.equals("null") ? null : valueString);
-    }
 
 }
