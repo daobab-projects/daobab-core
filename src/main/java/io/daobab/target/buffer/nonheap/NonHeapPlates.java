@@ -162,7 +162,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
 
     @Override
     public Plate getPlate(int i, Collection<TableColumn> chosenColumns) {
-        Plate rv = PlateCreator.fromTableColumnList(chosenColumns);
+        Plate rv = PlateCreator.ofTableColumnList(chosenColumns);
 
         int entityLocation = locations.get(i);
         int page = entityLocation >> pageMaxCapacityBytes;
@@ -188,7 +188,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Plate get(int i) {
-        Plate rv = PlateCreator.fromTableColumnList(columns);
+        Plate rv = PlateCreator.ofTableColumnList(columns);
 
         int entityLocation = locations.get(i);
         int page = entityLocation >> pageMaxCapacityBytes;

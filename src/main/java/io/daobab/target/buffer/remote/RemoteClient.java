@@ -112,7 +112,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
         List<Plate> rv = new ArrayList<>();
         try {
             for (Map<String, Map<String, Object>> map : listMap) {
-                Plate entity = PlateCreator.fromTableColumnList(query.getFields());
+                Plate entity = PlateCreator.ofTableColumnList(query.getFields());
                 entity.putAll(map);
                 rv.add(entity);
             }
@@ -131,7 +131,7 @@ public abstract class RemoteClient extends BaseTarget implements BufferQueryTarg
             throw new RemoteDaobabException(response);
         }
         try {
-            Plate rv = PlateCreator.fromTableColumnList(query.getFields());
+            Plate rv = PlateCreator.ofTableColumnList(query.getFields());
             rv.putAll((Map<String, Map<String, Object>>) response.getContent());
             return rv;
         } catch (Exception e) {

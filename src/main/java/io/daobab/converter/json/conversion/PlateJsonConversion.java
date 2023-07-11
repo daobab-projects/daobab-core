@@ -91,7 +91,7 @@ public class PlateJsonConversion extends FromJsonContext {
             Field field = fieldJsonConversion.getValue().getTargetField();
             map.put(field, fieldJsonConversion.getValue().fromJson(mapString.get(fieldName)));
         }
-        return PlateCreator.fromFieldMap(map);
+        return PlateCreator.ofFieldMap(map);
     }
 
 

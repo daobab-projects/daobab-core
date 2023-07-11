@@ -21,7 +21,7 @@ public class TestPlateJsonConversion implements SakilaTables {
         map.put(tabFilm.colDescription(), "lee? {,sdsd");
         map.put(tabFilm.colRentalRate(), new BigDecimal("234.234"));
         map.put(tabFilm.colLastUpdate(), Timestamp.valueOf(LocalDateTime.now()));
-        Plate plate = PlateCreator.fromColumnMap(map);
+        Plate plate = PlateCreator.ofColumnMap(map);
         PlateJsonConversion fieldJsonConversion = new PlateJsonConversion(plate);
 
         StringBuilder sb = new StringBuilder();

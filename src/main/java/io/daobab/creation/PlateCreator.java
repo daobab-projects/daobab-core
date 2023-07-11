@@ -14,14 +14,14 @@ import java.util.stream.Collectors;
 public class PlateCreator {
 
 
-    public static Plate fromTableColumnList(Collection<TableColumn> list) {
+    public static Plate ofTableColumnList(Collection<TableColumn> list) {
         Plate plate = new Plate();
         plate.fields = list.stream().map(TableColumn::getColumn).map(Field.class::cast).collect(Collectors.toList());
         return plate;
     }
 
-    public static Plate fromTableColumnListAndRelatedArray(List<TableColumn> list, Object[] rowResults) {
-        Plate plate = fromTableColumnList(list);
+    public static Plate ofTableColumnListAndRelatedArray(List<TableColumn> list, Object[] rowResults) {
+        Plate plate = ofTableColumnList(list);
         for (int i = 0; i < list.size(); i++) {
             TableColumn c = list.get(i);
             plate.setValue(c, rowResults[i]);
@@ -29,29 +29,28 @@ public class PlateCreator {
         return plate;
     }
 
-    public static Plate fromColumnList(Collection<Column> list) {
+    public static Plate ofColumnList(Collection<Column> list) {
         Plate plate = new Plate();
         plate.fields = list.stream().map(Field.class::cast).collect(Collectors.toList());
         return plate;
     }
 
-    public static Plate fromFieldList(Collection<Field> list) {
+    public static Plate ofFieldList(Collection<Field> list) {
         Plate plate = new Plate();
         plate.fields = new ArrayList<>(list);
         return plate;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Plate fromFieldMap(Map<Field, Object> map) {
-        Plate plate = fromFieldList(map.keySet());
+    public static Plate ofFieldMap(Map<Field, Object> map) {
+        Plate plate = ofFieldList(map.keySet());
         for (Map.Entry<Field, Object> entry : map.entrySet()) {
             plate.setValue(entry.getKey(), entry.getValue());
         }
         return plate;
     }
 
-    public static Plate fromColumnMap(Map<Column, Object> map) {
-        Plate plate = fromColumnList(map.keySet());
+    public static Plate ofColumnMap(Map<Column, Object> map) {
+        Plate plate = ofColumnList(map.keySet());
         for (Map.Entry<Column, Object> entry : map.entrySet()) {
             plate.setValue(entry.getKey(), entry.getValue());
         }

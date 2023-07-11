@@ -115,7 +115,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         Plates elements = matched.orderAndLimit(query);
 
         for (Plate element : elements) {
-            Plate plate = PlateCreator.fromTableColumnList(query.getFields());
+            Plate plate = PlateCreator.ofTableColumnList(query.getFields());
             for (TableColumn tableColumn : query.getFields()) {
                 plate.setValue(tableColumn, tableColumn.getColumn().getValueOf((R) element));
             }
@@ -311,7 +311,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
             return this;
         }
 
-        Plate template = PlateCreator.fromTableColumnList(tableColumns);
+        Plate template = PlateCreator.ofTableColumnList(tableColumns);
         for (Plate plate : this) {
             plate.maskPlate(template);
         }

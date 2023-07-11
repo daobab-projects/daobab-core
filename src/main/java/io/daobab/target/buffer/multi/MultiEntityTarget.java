@@ -246,7 +246,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
         List<Plate> results = new ArrayList<>(elements.size());
 
         for (Plate element : elements) {
-            Plate plate = PlateCreator.fromTableColumnList(query.getFields());
+            Plate plate = PlateCreator.ofTableColumnList(query.getFields());
             for (TableColumn tableColumn : query.getFields()) {
                 plate.setValue(tableColumn, element.getValue(tableColumn.getColumn()));
             }

@@ -197,7 +197,7 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
 
     @Override
     public Plate getPlate(int i, Collection<TableColumn> chosenColumns) {
-        Plate rv = PlateCreator.fromTableColumnList(chosenColumns);
+        Plate rv = PlateCreator.ofTableColumnList(chosenColumns);
 
         int entityLocation = locations.get(i);
         int page = entityLocation >> pageMaxCapacityBytes;

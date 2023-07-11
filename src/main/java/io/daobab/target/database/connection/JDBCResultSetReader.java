@@ -32,7 +32,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
     @Override
     public Plate readPlate(ResultSet rs, List<TableColumn> fields, DatabaseTypeConverter<?, ?>[] typeConverters) throws SQLException {
-        Plate plate = PlateCreator.fromTableColumnList(fields);
+        Plate plate = PlateCreator.ofTableColumnList(fields);
         for (int i = 0; i < fields.size(); i++) {
             TableColumn tableColumn = fields.get(i);
             plate.setValue(tableColumn, readCell(typeConverters[i], rs, i + 1, tableColumn.getColumn()));

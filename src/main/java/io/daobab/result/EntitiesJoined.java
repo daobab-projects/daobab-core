@@ -32,7 +32,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
             rootPlate = rows.get(0);
             join(query);
         }else{
-            rootPlate = PlateCreator.fromTableColumnList(query.getFields());
+            rootPlate = PlateCreator.ofTableColumnList(query.getFields());
         }
     }
 
