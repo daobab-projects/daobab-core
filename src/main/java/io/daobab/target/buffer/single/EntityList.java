@@ -15,6 +15,7 @@ import io.daobab.statement.condition.base.OrderComparator;
 import io.daobab.statement.function.type.ColumnFunction;
 import io.daobab.target.buffer.function.BufferFunctionManager;
 import io.daobab.target.buffer.query.*;
+import io.daobab.target.buffer.single.function.AggregateFunctionEngineEntities;
 import io.daobab.target.buffer.transaction.OpenedTransactionBufferTarget;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.BasicAccessProtector;
@@ -51,7 +52,6 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
     private transient AccessProtector accessProtector = new BasicAccessProtector(this);
     private final transient Lock readLock = readWriteLock.readLock();
     private final transient Lock writeLock = readWriteLock.writeLock();
-
 
     private transient StatisticCollector statistic;
 
@@ -162,7 +162,13 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         }
 
         Column<E, F, R> firstColumn = query.getFields().get(0).getColumn();
-        F rv = firstColumn.getValueOf((R) el);
+        F rv;
+        if (firstColumn instanceof ColumnFunction) {
+            ColumnFunction columnFunction = (ColumnFunction) firstColumn;
+            rv = (F) AggregateFunctionEngineEntities.INSTANCE.executeFunction(this, columnFunction);
+        } else {
+            rv = firstColumn.getValueOf((R) el);
+        }
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
         return rv;
     }
@@ -357,12 +363,12 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     @Override
     public String toJson() {
-        if (isEmpty()){
+        if (isEmpty()) {
             return "[]";
         }
 
         return JsonConverterManager.INSTANCE.getEntityJsonConverter(get(0))
-                .toJson(new StringBuilder(),this).toString();
+                .toJson(new StringBuilder(), this).toString();
 
     }
 

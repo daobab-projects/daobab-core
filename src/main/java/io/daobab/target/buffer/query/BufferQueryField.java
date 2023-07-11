@@ -38,7 +38,7 @@ public final class BufferQueryField<E extends Entity, F> extends BufferQueryBase
         if (column instanceof ColumnFunction) {
             ColumnFunction<?, ?, ?, ?> function = (ColumnFunction<?, ?, ?, ?>) column;
 
-            fields.add(getInfoColumn(function.getFinalColumn()));
+            fields.add(getInfoColumn(function));
             functionMap.put(0, function);
         } else {
             fields.add(getInfoColumn(column));

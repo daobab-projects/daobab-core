@@ -210,7 +210,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
                 throw new DaobabException("Getting the sequence '{}' value failed. Database does not return anything. Is the name of the sequence correct?", sequenceName);
             }
         } catch (SQLException e) {
-            throw new DaobabSQLException("Error during generation of ID for object type = " + sequenceName, e);
+            throw new DaobabSQLException("Error during ID generation of ID by sentence name " + sequenceName, e);
         } finally {
             closeStatement(stmt, this);
         }
