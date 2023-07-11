@@ -3,14 +3,14 @@ package io.daobab.target.database.meta.table;
 
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
-import io.daobab.model.TableName;
+import io.daobab.model.TableInformation;
 import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@TableName(value = "META_COLUMN")
+@TableInformation(name = "META_COLUMN")
 public class MetaColumn extends Table<MetaColumn> implements
         MetaColumnName<MetaColumn>,
         MetaColumnSize<MetaColumn>,

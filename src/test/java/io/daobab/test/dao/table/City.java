@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName(value = "CITY")
+@TableInformation(name = "CITY")
 public class City extends Table<City> implements
         CityId<City>,
         io.daobab.test.dao.column.City<City>,

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@TableName(value = "META_TABLE")
+@TableInformation(name = "META_TABLE")
 public class MetaTable extends Table<MetaTable> implements
         Remarks<MetaTable>,
         MetaTableName<MetaTable>,

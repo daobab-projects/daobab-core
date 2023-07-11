@@ -1,10 +1,10 @@
 package io.daobab.target.database.meta.table;
 
-import io.daobab.model.TableName;
+import io.daobab.model.TableInformation;
 
 import java.util.Map;
 
-@TableName(value = "META_VIEW")
+@TableInformation(name = "META_VIEW")
 public class MetaView extends MetaTable {
 
     public MetaView() {

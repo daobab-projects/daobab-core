@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName(value = "COUNTRY")
+@TableInformation(name = "COUNTRY")
 public class Country extends Table<Country> implements
         CountryId<Country>,
         io.daobab.test.dao.column.Country<Country>,

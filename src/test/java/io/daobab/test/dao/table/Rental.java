@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName(value = "RENTAL")
+@TableInformation(name = "RENTAL")
 public class Rental extends Table<Rental> implements
         RentalId<Rental>,
         RentalDate<Rental>,

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-@TableName(value = "DUAL")
+@TableInformation(name = "DUAL")
 public class Dual extends Table<Dual> implements Dummy<Dual> {
 
     @Override

@@ -3,14 +3,14 @@ package io.daobab.target.database.meta.table;
 
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
-import io.daobab.model.TableName;
+import io.daobab.model.TableInformation;
 import io.daobab.target.database.meta.column.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@TableName(value = "PRIMARY_KEY")
+@TableInformation(name = "PRIMARY_KEY")
 public class MetaPrimaryKey extends Table<MetaPrimaryKey> implements
         MetaCatalogName<MetaPrimaryKey>,
         MetaSchemaName<MetaPrimaryKey>,

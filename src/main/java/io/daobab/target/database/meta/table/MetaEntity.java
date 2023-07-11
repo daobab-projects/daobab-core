@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@TableName(useMethod = true)
+@TableInformation(useMethod = true)
 @SuppressWarnings("rawtypes")
 public class MetaEntity extends Table<MetaEntity> implements TableNameMethod {
 

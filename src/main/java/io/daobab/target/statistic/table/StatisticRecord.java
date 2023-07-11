@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName(value = "STATISTIC")
+@TableInformation(name = "STATISTIC")
 public class StatisticRecord extends Table<StatisticRecord> implements
         Key<StatisticRecord>,
         Remarks<StatisticRecord>,

@@ -40,28 +40,28 @@ public class EntityDuplication<E extends Entity> {
     }
 
     public static String getEntityName(Class<? extends Entity> clazz, ILoggerBean loggerBean) {
-        TableName annotation = clazz.getAnnotation(TableName.class);
+        TableInformation annotation = clazz.getAnnotation(TableInformation.class);
         if (annotation == null) {
             if (loggerBean != null) {
-                loggerBean.getLog().warn(format("Entity %s is has no %s annotation. Class name used instead.", clazz.getName(), TableName.class.getSimpleName()));
+                loggerBean.getLog().warn(format("Entity %s is has no %s annotation. Class name used instead.", clazz.getName(), TableInformation.class.getSimpleName()));
             }
             return clazz.getName();
         }
 
-        String entityName = annotation.value().trim();
+        String entityName = annotation.name().trim();
         if (annotation.useMethod() && !entityName.isEmpty()) {
-            throw new DaobabDeveloperException("%s annotation in class %s contains table name, but if parameter useMethod=true is in use, table name shouldn't be provided ", TableName.class.getSimpleName(), clazz.getSimpleName());
+            throw new DaobabDeveloperException("%s annotation in class %s contains table name, but if parameter useMethod=true is in use, table name shouldn't be provided ", TableInformation.class.getSimpleName(), clazz.getSimpleName());
         } else if (annotation.useMethod()) {
             Entity entity = EntityCreator.createEntity(clazz);
             if (!(entity instanceof TableNameMethod)) {
-                throw new DaobabDeveloperException("Entity %s has %s annotation specified with useMethod parameter. In that case entity has to implement %s", entity.entityClass().getName(), TableName.class.getName(), TableNameMethod.class.getName());
+                throw new DaobabDeveloperException("Entity %s has %s annotation specified with useMethod parameter. In that case entity has to implement %s", entity.entityClass().getName(), TableInformation.class.getName(), TableNameMethod.class.getName());
             }
             TableNameMethod tableNameMethod = (TableNameMethod) entity;
             return tableNameMethod.tableName();
         }
 
         if (entityName.isEmpty()) {
-            throw new DaobabDeveloperException("%s annotation doesn't contain any table name for entity %s", TableName.class.getSimpleName(), clazz.getSimpleName());
+            throw new DaobabDeveloperException("%s annotation doesn't contain any table name for entity %s", TableInformation.class.getSimpleName(), clazz.getSimpleName());
         }
         return entityName;
     }

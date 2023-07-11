@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("rawtypes")
-@TableName(value = "META_CATALOG")
+@TableInformation(name = "META_CATALOG")
 public class MetaCatalog extends Table<MetaCatalog> implements
         MetaCatalogName<MetaCatalog>,
 

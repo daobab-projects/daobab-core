@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@TableName(value = "INVENTORY")
+@TableInformation(name = "INVENTORY")
 public class Inventory extends Table<Inventory> implements
         InventoryId<Inventory>,
         FilmId<Inventory>,

@@ -7,13 +7,13 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface TableName {
+public @interface TableInformation {
 
-    String value() default "";
+    String name() default "";
 
     boolean useMethod() default false;
 
-    IdGeneratorType type() default IdGeneratorType.NONE;
+    IdGeneratorType idGenerator() default IdGeneratorType.NONE;
 
     String sequenceName() default "";
 }
