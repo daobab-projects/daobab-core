@@ -139,7 +139,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         setEntityName(target.getEntityName(entity.entityClass()));
         setEntityClass(entity.entityClass());
         IdentifierStorage storage = new IdentifierStorage();
-        storage.registerIdentifiers(getEntityName());
         setIdentifierStorage(storage);
     }
 

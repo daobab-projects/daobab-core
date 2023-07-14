@@ -598,9 +598,9 @@ public interface FunctionWhispererH2 {
     }
 
     @SuppressWarnings("unchecked")
-    default <E extends Table, F, R extends RelatedTo> ColumnFunction<E, F, R, F> sumRows(ColumnOrQuery<E, F, R> column, ColumnOrQuery<E, ?, ?>... columns) {
-        if (column == null) throw new MandatoryFunctionParameter(DictFunctionH2.SUM2);
-        return new ManyArgumentsFunction<>(DictFunctionH2.SUM2, "+", column, columns);
+    default <E extends Table, F, R extends RelatedTo> ColumnFunction<E, F, R, F> sumRows(ColumnOrQuery... columns) {
+        if (columns == null) throw new MandatoryFunctionParameter(DictFunctionH2.SUM2);
+        return new ManyArgumentsFunction<>(DictFunctionH2.SUM2, " + ", columns);
     }
 
     default <E extends Table, F, R extends RelatedTo> ColumnFunction<E, F, R, F> sub(ColumnOrQuery column) {

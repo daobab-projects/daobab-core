@@ -679,7 +679,16 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                     sb.append("(").append(typeConverter.convertWritingTarget(value)).append(")");
                 }
             } else {
-                DatabaseTypeConverter typeConverter = target.getConverterManager().getConverter(keyFromWrapper).orElse(null);
+                Column<Entity, Object, RelatedTo> keyFromWrapper2;
+
+                if (keyFromWrapper instanceof ColumnHaving && ((ColumnHaving) keyFromWrapper).isIdentifiedAs()) {
+                    ColumnHaving columnHaving = (ColumnHaving) keyFromWrapper;
+                    Column<Entity, Object, RelatedTo> relevantColumnTakenFromStorage = storage.getColumnByIdentifier(columnHaving.getColumnName());
+                    keyFromWrapper2 = relevantColumnTakenFromStorage == null ? keyFromWrapper : relevantColumnTakenFromStorage;
+                } else {
+                    keyFromWrapper2 = keyFromWrapper;
+                }
+                DatabaseTypeConverter typeConverter = target.getConverterManager().getConverter(keyFromWrapper2).orElse(null);
                 sb.append(SPACE);
                 appendKey(target, sb, storage, keyFromWrapper, relation);
                 sb.append(typeConverter.convertWritingTarget(value));
@@ -764,6 +773,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
             if (!internalFunction && columnFunction.identifier != null && !columnFunction.identifier.trim().isEmpty()) {
                 sb.append(" as ").append(columnFunction.identifier).append(SPACE);
+                storage.addColumnIdentifiedAsKey(columnFunction.identifier, columnFunction.getFinalColumn());
             }
             return sb;
         }
@@ -809,6 +819,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
         if (!internalFunction && columnFunction.identifier != null && !columnFunction.identifier.trim().isEmpty()) {
             sb.append(" as ").append(columnFunction.identifier).append(SPACE);
+            storage.addColumnIdentifiedAsKey(columnFunction.identifier, columnFunction.getFinalColumn());
         }
         return sb;
     }
@@ -950,6 +961,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             sb.append(columnFunctionToExpression(dataBaseTarget, formerColumn, storage, true));
         } else {
             sb.append(storage.getIdentifierForColumn(dataBaseTarget, column)).append(" as ").append(type.toString());
+//            storage.addColumnIdentifiedAsKey(columnFunction.identifier,columnFunction.getFinalColumn());
         }
         sb.append(CLOSED_BRACKET);
         return sb;
@@ -965,21 +977,44 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         List<Object> objects = (List<Object>) sdb.getKeyValue(ColumnFunction.KEY_VALUES);
 
         int objSize = objects.size();
-        for (int i = 0; i < objSize; i++) {
-            Object obj = objects.get(i);
-            if (obj instanceof ColumnFunction) {
-                sb.append(columnFunctionToExpression(dataBaseTarget, (ColumnFunction) obj, storage, true));
-            } else if (obj instanceof Column) {
-                sb.append(storage.getIdentifierForColumn(dataBaseTarget, (Column) obj));
-            } else {
-                sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+
+        String mediator = sdb.getMediator();
+        if (mediator == null) {
+            for (int i = 0; i < objSize; i++) {
+                Object obj = objects.get(i);
+
+                if (obj instanceof ColumnFunction) {
+                    sb.append(columnFunctionToExpression(dataBaseTarget, (ColumnFunction) obj, storage, true));
+                } else if (obj instanceof Column) {
+                    sb.append(storage.getIdentifierForColumn(dataBaseTarget, (Column) obj));
+                } else {
+                    sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                }
+                if (i < objSize - 1) {
+                    sb.append(separator);
+                }
             }
-            if (i < objSize - 1) {
-                sb.append(separator);
+        } else {
+            for (int i = 0; i < objSize; i++) {
+                Object obj = objects.get(i);
+
+                if (obj instanceof ColumnFunction) {
+                    sb.append(columnFunctionToExpression(dataBaseTarget, (ColumnFunction) obj, storage, true));
+                } else if (obj instanceof Column) {
+                    sb.append(storage.getIdentifierForColumn(dataBaseTarget, (Column) obj));
+                } else {
+                    sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                }
+                if (i < objSize - 1) {
+                    sb.append(mediator);
+                }
             }
         }
 
+
         sb.append(CLOSED_BRACKET).append(SPACE);
+
+        System.out.println(sb.toString());
         return sb;
     }
 

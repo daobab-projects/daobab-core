@@ -26,6 +26,8 @@ public final class IdentifierStorage {
     private final List<String> queryEntities = new ArrayList<>();
     private final List<ParameterInjectionPoint> queryParameters = new ArrayList<>();
 
+    private final Map<String, Column> identifiedColumnByAsKey = new HashMap<>();
+
     public void registerIdentifiers(String... entities) {
         if (entities == null) throw new NullEntityException();
 
@@ -94,6 +96,14 @@ public final class IdentifierStorage {
 
     public List<ParameterInjectionPoint> getQueryParameters() {
         return queryParameters;
+    }
+
+    public void addColumnIdentifiedAsKey(String identifier, Column column) {
+        identifiedColumnByAsKey.put(identifier, column);
+    }
+
+    public Column getColumnByIdentifier(String identifier) {
+        return identifiedColumnByAsKey.get(identifier);
     }
 
 }

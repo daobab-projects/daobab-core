@@ -203,32 +203,32 @@ public interface QueryHaving<Q extends Query> {
     }
 
     default Q havingEqual(String column, Object val) {
-        havingEqual(new ColumnHaving(column), val);
+        havingEqual(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 
     default Q havingGreater(String column, Object val) {
-        havingGreater(new ColumnHaving(column), val);
+        havingGreater(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 
     default Q havingGreaterOrEqual(String column, Object val) {
-        havingGreaterOrEqual(new ColumnHaving(column), val);
+        havingGreaterOrEqual(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 
     default Q havingLess(String column, Object val) {
-        havingLess(new ColumnHaving(column), val);
+        havingLess(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 
     default Q havingLessOrEqual(String column, Object val) {
-        havingLessOrEqual(new ColumnHaving(column), val);
+        havingLessOrEqual(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 
     default Q havingNotEqual(String column, Object val) {
-        havingNotEqual(new ColumnHaving(column), val);
+        havingNotEqual(new ColumnHaving(column, true), val);
         return (Q) this;
     }
 

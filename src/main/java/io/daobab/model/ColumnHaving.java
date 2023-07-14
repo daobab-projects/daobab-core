@@ -8,8 +8,18 @@ public class ColumnHaving<E extends Entity, R extends RelatedTo> implements Colu
     private final String name;
     private E instance;
 
+
+    //If a column is identified by 'as' keyword
+    private boolean identifiedAs = false;
+
     public ColumnHaving(String name) {
         this.name = name;
+        this.instance = (E) new Dual();
+    }
+
+    public ColumnHaving(String name, boolean identifiedAs) {
+        this.name = name;
+        this.identifiedAs = identifiedAs;
         this.instance = (E) new Dual();
     }
 
@@ -41,5 +51,10 @@ public class ColumnHaving<E extends Entity, R extends RelatedTo> implements Colu
     @Override
     public E getInstance() {
         return instance;
+    }
+
+
+    public boolean isIdentifiedAs() {
+        return identifiedAs;
     }
 }
