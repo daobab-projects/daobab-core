@@ -12,10 +12,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +53,7 @@ public class DatabaseConverterManager {
         registerTypeConverter(LocalDate.class, new StandardTypeConverterLocalDate(target));
         registerTypeConverter(LocalDateTime.class, new StandardTypeConverterLocalDateTime(target));
         registerTypeConverter(ZonedDateTime.class, new StandardTypeConverterZonedDateTime(target));
+        registerTypeConverter(Instant.class, new StandardTypeConverterInstant(target));
         registerTypeConverter(LocalTime.class, new StandardTypeConverterLocalTime(target));
         registerTypeConverter(URL.class, new StandardTypeConverterURL());
 

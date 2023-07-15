@@ -59,6 +59,7 @@ public class JsonConverterManager {
         registerTypeConverter(Month.class, new JsonLocalMonthConverter());
         registerTypeConverter(DayOfWeek.class, new JsonLocalDayOfWeekConverter());
         registerTypeConverter(ZonedDateTime.class, new JsonZonedDateTimeConverter());
+        registerTypeConverter(Instant.class, new JsonInstantConverter());
         registerTypeConverter(LocalTime.class, new JsonLocalTimeConverter());
         registerTypeConverter(URL.class, new JsonUrlConverter());
 
@@ -82,7 +83,7 @@ public class JsonConverterManager {
                     throw new DaobabException("InnerFieldClass has to be provided for field " + field.toString());
                 }
                 Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
-                return innerFieldConverter.map(c -> new JsonOptionalConverter(c)).orElseThrow(() -> new DaobabException("Cannot find a converter"));
+                return innerFieldConverter.map(JsonOptionalConverter::new).orElseThrow(() -> new DaobabException("Cannot find a converter"));
             }
 
             if (fieldClass.isAssignableFrom(List.class)) {
@@ -91,7 +92,7 @@ public class JsonConverterManager {
                     throw new DaobabException("InnerFieldClass has to be provided for field " + field.toString());
                 }
                 Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
-                return innerFieldConverter.map(c -> new JsonListConverter(c)).orElseThrow(() -> new DaobabException("Cannot find a converter"));
+                return innerFieldConverter.map(JsonListConverter::new).orElseThrow(() -> new DaobabException("Cannot find a converter"));
             }
 
             if (fieldClass.isAssignableFrom(Set.class)) {
@@ -100,7 +101,7 @@ public class JsonConverterManager {
                     throw new DaobabException("InnerFieldClass has to be provided for field " + field.toString());
                 }
                 Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
-                return innerFieldConverter.map(c -> new JsonSetConverter(c)).orElseThrow(() -> new DaobabException("Cannot find a converter"));
+                return innerFieldConverter.map(JsonSetConverter::new).orElseThrow(() -> new DaobabException("Cannot find a converter"));
             }
 
             if (fieldClass.isEnum()) {

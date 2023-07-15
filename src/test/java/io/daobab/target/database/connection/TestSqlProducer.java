@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestSqlProducer implements SakilaTables, FunctionWhispererH2 {
+class TestSqlProducer implements SakilaTables, FunctionWhispererH2 {
 
     private MockDataBase db = new MockDataBase();
 
