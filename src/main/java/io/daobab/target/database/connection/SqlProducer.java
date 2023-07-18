@@ -196,22 +196,27 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
         if (base.getOnDuplicateKeyUpdate() != null) {
 
-
             sb.append(LINE_SEPARATOR).append("on duplicate key update ");
             for (int i = 1; i < base.getOnDuplicateKeyUpdate().getCounter(); i++) {
-                Column<?, ?, ?> column = base.getOnDuplicateKeyUpdate().getFieldForPointer(i);
-                String columnName = column.getColumnName();
+                Object field = base.getOnDuplicateKeyUpdate().getFieldForPointer(i);
 
-                DatabaseTypeConverter typeConverter = base.getTarget().getConverterManager().getConverter(column).orElse(null);
                 Object value = base.getOnDuplicateKeyUpdate().getValueForPointer(i);
 
-                if (column != null) {
+                if (field instanceof Column) {
+
+                    Column<?, ?, ?> column = (Column) field;
+                    String columnName = column.getColumnName();
+                    DatabaseTypeConverter typeConverter = base.getTarget().getConverterManager().getConverter(column).orElse(null);
+
                     if (columnName != null) {
                         sb.append(columnName);
                         sb.append(" = ");
 
                         if (value == null) {
                             sb.append(NULL);
+                        } else if (value instanceof ColumnFunction) {
+                            ColumnFunction db = (ColumnFunction) value;
+                            sb.append(columnFunctionToExpression(base.getTarget(), db, new IdentifierStorage(), false));
                         } else {
                             sb.append(typeConverter.convertWritingTarget(value));
                             if (typeConverter.needParameterConversion()) {
@@ -226,9 +231,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                     }
                 }
             }
-
         }
-
 
         rv.setQuery(sb);
         return rv;
