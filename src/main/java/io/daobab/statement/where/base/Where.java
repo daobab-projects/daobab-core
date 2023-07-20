@@ -220,12 +220,12 @@ public abstract class Where<W extends Where> extends WhereBase {
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends RelatedTo> W inFields(Field<E, F, R> column, Collection<F> val) {
+    public final <E extends Entity, F, R extends RelatedTo> W inFields(Field<E, F, R> column, Collection<? super F> val) {
         tempColField(column, IN, val);
         return (W) this;
     }
 
-    public final <E extends Entity, F, R extends RelatedTo> W notInFields(Field<E, F, R> column, Collection<F> val) {
+    public final <E extends Entity, F, R extends RelatedTo> W notInFields(Field<E, F, R> column, Collection<? super F> val) {
         tempColField(column, NOT_IN, val);
         return (W) this;
     }
@@ -502,7 +502,7 @@ public abstract class Where<W extends Where> extends WhereBase {
         temp(whereAnd);
     }
 
-    private <F, R extends RelatedTo> void tempColField(Field<?, F, R> column, Operator operator, Collection<F> val) {
+    private <F, R extends RelatedTo> void tempColField(Field<?, F, R> column, Operator operator, Collection<? super F> val) {
         if (column == null) throw new MandatoryColumn();
         if (val == null) throw new ValueCanNotBeNullException();
         putKeyMandatoryRelationValue(column, operator, val);

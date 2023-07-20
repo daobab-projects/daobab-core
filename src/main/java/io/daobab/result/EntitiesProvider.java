@@ -34,7 +34,7 @@ public interface EntitiesProvider<E extends Entity> {
         return findFirst().orElse(null);
     }
 
-    default <M> FieldsProvider<M> map(Function<? super E, M> mapper) {
+    default <M> FieldsProvider<M> map(Function<? super E, ? extends M> mapper) {
         if (mapper == null) throw new NullFunction();
         Entities<E> res = findMany();
 

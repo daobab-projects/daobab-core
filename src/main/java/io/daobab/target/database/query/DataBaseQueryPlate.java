@@ -87,7 +87,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         return map2(Plate::toFlat);
     }
 
-    private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
+    private <M> FieldsProvider<M> map2(Function<Plate, ? extends M> mapper) {
         if (mapper == null) return new FieldsBuffer<>();
         return new FieldsBuffer<>(findMany().stream().map(mapper).collect(Collectors.toList()));
     }

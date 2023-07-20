@@ -92,7 +92,7 @@ public class BitFieldRegistry {
         bitBufferIndexBaseMap.put(clazz, bitIndex);
     }
 
-    public <F, B extends BitField<F>> void register(final Class<F> clazz, final Function<TableColumn, B> bitField, final Function<TableColumn, B> bitFieldNotNull) {
+    public <F, B extends BitField<F>> void register(final Class<F> clazz, final Function<TableColumn, ? extends B> bitField, final Function<TableColumn, B> bitFieldNotNull) {
         classSet.add(clazz);
         bitFieldMap.put(clazz, bitField);
         bitFieldNotNullMap.put(clazz, bitFieldNotNull);
@@ -114,7 +114,7 @@ public class BitFieldRegistry {
         return getBitFieldFor(tableColumn.getColumn().getFieldClass(), tableColumn);
     }
 
-    private <X> Optional<X> getOrNull(TableColumn tableColumn, Function<TableColumn, X> function) {
+    private <X> Optional<X> getOrNull(TableColumn tableColumn, Function<TableColumn, ? extends X> function) {
         if (function == null) {
             return Optional.empty();
         }

@@ -109,7 +109,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
         return map2(Plate::toFlat);
     }
 
-    private <M> FieldsProvider<M> map2(Function<Plate, M> mapper) {
+    private <M> FieldsProvider<M> map2(Function<Plate, ? extends M> mapper) {
         List<Plate> res = findMany();
         List<M> rv = new ArrayList<>();
         if (mapper == null) {
