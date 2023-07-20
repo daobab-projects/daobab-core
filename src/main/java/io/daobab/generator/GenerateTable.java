@@ -145,7 +145,6 @@ public class GenerateTable {
             for (int i = 0; i < getPrimaryKeys().size(); i++) {
                 GenerateColumn primKeyColumn = getPrimaryKeys().get(i);
                 atLeastOneColumnAdded = true;
-                sb.append(" ");
                 sb.append(primKeyColumn.getColumnInterfaceType(replacer, language, tableCamelName));
                 if (i < getPrimaryKeys().size() - 1) sb.append(",");
             }

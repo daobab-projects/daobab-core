@@ -1,7 +1,6 @@
 package io.daobab.generator.template;
 
 import io.daobab.creation.ColumnCache;
-import io.daobab.creation.EntityCreator;
 import io.daobab.model.*;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.query.base.QueryWhisperer;
@@ -54,11 +53,8 @@ class KotlinTemplates {
             "\n}";
     public static final String TABLE_CLASS_TEMP = "package " + GenKeys.TABLE_PACKAGE +
             "\n" +
-            "\n" + "import " + EntityCreator.class.getName() + ";" +
-            "\n" + GenKeys.PK_IMPORT +
             "\n" + GenKeys.COLUMN_IMPORTS +
             "\n" + "import io.daobab.model.*;" +
-            "\n" +
             "\n" + GenKeys.TYPE_IMPORTS +
             "\nimport java.util.*" +
             "\n" +
@@ -66,6 +62,14 @@ class KotlinTemplates {
             "\n" + GenKeys.COLUMN_INTERFACES +
             "\n" + GenKeys.PK_INTERFACE +
             "\n\t{" +
+            "\n" +
+            "\n\tpublic " + GenKeys.TABLE_CAMEL_NAME + "() {" +
+            "\n\t\tsuper()" +
+            "\n\t}" +
+            "\n" +
+            "\n\t" + GenKeys.TABLE_CAMEL_NAME + "(Map<String, Object> parameters) {" +
+            "\n\t\tsuper(parameters)" +
+            "\n\t}" +
             "\n" +
             "\n\toverride fun columns() = " +
             "\n\t\tlistOf(" +
@@ -87,8 +91,8 @@ class KotlinTemplates {
             "\n\t\tfun set" + GenKeys.INTERFACE_NAME + "(value: F): E {" +
             "\n\t\treturn storeParam(\"" + GenKeys.FIELD_NAME + "\", value)" +
             "\n\t}" +
-            "\n" + GenKeys.TABLES_AND_TYPE +
             "\n" +
+            "\n" + GenKeys.TABLES_AND_TYPE +
             "\n\tfun col" + GenKeys.INTERFACE_NAME + "() =" +
             "\n\t\treturn " + ColumnCache.class.getSimpleName() + ".INSTANCE.getColumn(\"" + GenKeys.FIELD_NAME + "\", \"" + GenKeys.COLUMN_NAME + "\", (" + Table.class.getSimpleName() + "<?>) this, " + GenKeys.CLASS_SIMPLE_NAME + "::class.java);" +
             "\n\t}" +
