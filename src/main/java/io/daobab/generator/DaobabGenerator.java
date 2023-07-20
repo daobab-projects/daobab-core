@@ -215,14 +215,13 @@ public class DaobabGenerator {
         List<GenerateColumn> allColumns = new ArrayList<>();
         List<GenerateTable> allTables = getTablesFromDB(meta, catalog, schema, allColumns);
 
-
         if (allTables.isEmpty()) {
             System.out.println("Warning: " + "catalog:" + catalog + ", schema:" + schema + " - There is no possibility to read any information from this place.");
             return allTables;
         }
 
         //Najpierw przygotowujemy kolumny
-        allTables.forEach(table -> table.getColumnList().forEach(c -> prepareColumn(table.getTableName(), catalog, schema, c)));
+        allTables.forEach(table -> table.getColumnList().forEach(column -> prepareColumn(table.getTableName(), catalog, schema, column)));
 
         ColumnAnalysator.compileNames(allColumns);
 
@@ -275,9 +274,8 @@ public class DaobabGenerator {
         return allTables;
     }
 
-
-    private GenerateColumn prepareColumn(String tableName, String catalog, String schema, GenerateColumn column) {
-        if (column == null) return null;
+    private void prepareColumn(String tableName, String catalog, String schema, GenerateColumn column) {
+        if (column == null) return;
         String interfaceName = GenerateFormatter.toCamelCase(column.getColumnName());
 
         column.setFieldName(decapitalize(interfaceName));
@@ -291,7 +289,6 @@ public class DaobabGenerator {
         javaPackageName.append(".column");
         column.setPackage(javaPackageName.toString());
 
-        return column;
     }
 
     @SuppressWarnings("java:S112")
@@ -418,27 +415,27 @@ public class DaobabGenerator {
             }
 
 
-            for (GenerateTable genTable : tables) {
+            for (GenerateTable table : tables) {
 
                 List<String> primaryKeys = new ArrayList<>();
-                ResultSet pks = meta.getPrimaryKeys(catalog, schema, genTable.getTableName());
+                ResultSet pks = meta.getPrimaryKeys(catalog, schema, table.getTableName());
                 while (pks.next()) {
                     primaryKeys.add(pks.getString("COLUMN_NAME"));
                 }
 
-                String tableName = genTable.getTableName();
-                System.out.println("Proceeding " + (genTable.isView() ? "view: " : "table: ") + tableName + "...");
+                String tableName = table.getTableName();
+                System.out.println("Proceeding " + (table.isView() ? "view: " : "table: ") + tableName + "...");
 
-                ResultSet columns = meta.getColumns(catalog, schema, genTable.getTableName(), "%");
+                ResultSet columns = meta.getColumns(catalog, schema, table.getTableName(), "%");
                 while (columns.next()) {
-                    GenerateColumn col = getUniqueColumn(allColumns, tableName,
+                    GenerateColumn column = getUniqueColumn(allColumns, tableName,
                             columns.getString("COLUMN_NAME"),
                             columns.getInt("DATA_TYPE"),
                             columns.getString("COLUMN_SIZE"),
                             columns.getString("DECIMAL_DIGITS")
                     );
 
-                    GeneratedColumnInTable genColumnInTable = col.getColumnInTableOrCreate(tableName);
+                    GeneratedColumnInTable genColumnInTable = column.getColumnInTableOrCreate(tableName);
                     String columnSize = columns.getString("COLUMN_SIZE");
                     if (columnSize != null) genColumnInTable.setColumnSize(Integer.parseInt(columnSize))
                             .setDecimalDigits(columns.getString("DECIMAL_DIGITS"))
@@ -448,14 +445,14 @@ public class DaobabGenerator {
                             .setPosition(columns.getInt("ORDINAL_POSITION"))
                             .setIsAutoIncrement(columns.getString("IS_AUTOINCREMENT"));
 
-                    if (primaryKeys.contains(col.getColumnName())) {
-                        genTable.addPrimaryKey(col);
+                    if (primaryKeys.contains(column.getColumnName())) {
+                        table.addPrimaryKey(column);
                         genColumnInTable.setPk(true);
                     }
-                    genTable.getColumnList().add(col);
+                    table.getColumnList().add(column);
                     //Printing results
 
-                    System.out.println("... column:" + col.getColumnName() + ", " + JdbcType.valueOf(col.getDataType()).toString() + getSizeInfo(Integer.parseInt(columnSize == null ? "0" : columnSize)) + ("Nullable:" + genColumnInTable.getNullable() + " ") + (genColumnInTable.isPk() ? ",PrimaryKey" : "") + ", class:" + col.getFieldClass().getSimpleName());
+                    System.out.println("... column:" + column.getColumnName() + ", " + JdbcType.valueOf(column.getDataType()).toString() + getSizeInfo(Integer.parseInt(columnSize == null ? "0" : columnSize)) + ("Nullable:" + genColumnInTable.getNullable() + " ") + (genColumnInTable.isPk() ? ",PrimaryKey" : "") + ", class:" + column.getFieldClass().getSimpleName());
                 }
             }
             return tables;
@@ -557,17 +554,9 @@ public class DaobabGenerator {
         System.out.println("---------------------------------------------------------");
     }
 
-//    public void generateSingleColumn(String schema, String databaseColumnName, JdbcType jdbcType) {
-//        generateSingleColumn(null, schema, databaseColumnName, null, jdbcType, null);
-//    }
-
     public void generateSingleColumn(String schema, String databaseColumnName, JdbcType jdbcType, Class<?> javaType) {
         generateSingleColumn(null, schema, databaseColumnName, null, jdbcType, javaType);
     }
-
-//    public void generateSingleColumn(String catalog, String schema, String databaseColumnName, JdbcType jdbcType) {
-//        generateSingleColumn(catalog, schema, databaseColumnName, null, jdbcType, null);
-//    }
 
     public void generateSingleColumn(String catalog, String schema, String databaseColumnName, String javaClassName, JdbcType jdbcType, final Class<?> javaType) {
         GenerateColumn column = new GenerateColumn();
