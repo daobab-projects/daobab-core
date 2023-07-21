@@ -49,7 +49,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return new DataBaseQueryInsert<>(this, entity);
     }
 
-    default <E extends Entity> boolean insertAll(Collection<E> entities) {
+    default <E extends Entity> boolean insertAll(Collection<? extends E> entities) {
         OpenedTransactionDataBaseTarget transactionTarget = this.beginTransaction();
         for (E entity : entities) {
             DataBaseQueryInsert queryInsert = new DataBaseQueryInsert<>(transactionTarget, entity);
@@ -59,7 +59,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return true;
     }
 
-    default <E extends Entity> boolean insertAll(Collection<E> entities, int commitEvery) {
+    default <E extends Entity> boolean insertAll(Collection<? extends E> entities, int commitEvery) {
         Collection<E> sub = new ArrayList<>();
         entities.forEach(entity -> {
             sub.add(entity);
@@ -93,7 +93,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
         return true;
     }
 
-    default <E extends Entity> boolean replaceAll(Collection<E> entities, int commitEvery) {
+    default <E extends Entity> boolean replaceAll(Collection<? extends E> entities, int commitEvery) {
         Collection<E> sub = new ArrayList<>();
         entities.forEach(entity -> {
             sub.add(entity);

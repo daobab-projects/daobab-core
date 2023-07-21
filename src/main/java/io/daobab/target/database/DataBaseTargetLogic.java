@@ -584,7 +584,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         });
     }
 
-    default <T, I> T doSthOnConnection(I functionInput, BiFunction<I, Connection, T> function) {
+    default <T, I> T doSthOnConnection(I functionInput, BiFunction<? super I, Connection, ? extends T> function) {
         Connection conn = null;
         try {
             conn = getConnection();
