@@ -1,5 +1,6 @@
 package io.daobab.test.dao.table;
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.test.dao.column.CategoryId;
 import io.daobab.test.dao.column.LastUpdate;
@@ -21,12 +22,12 @@ public class Category extends Table<Category> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colCategoryId()),
-                new TableColumn(colName()),
-                new TableColumn(colLastUpdate())
-
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colCategoryId()),
+                        new TableColumn(colName()),
+                        new TableColumn(colLastUpdate())
+                ));
     }
 
 

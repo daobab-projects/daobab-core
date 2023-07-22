@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface PkColumnName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -15,7 +15,7 @@ public interface PkColumnName<E extends Entity> extends RelatedTo<E>, MapHandler
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, PkColumnName> colPkColumnName() {
-        return ColumnCache.INSTANCE.getColumn("PkColumnName", "PKCOLUMN_NAME", (Table<?>) this, String.class);
+        return DaobabCache.getColumn("PkColumnName", "PKCOLUMN_NAME", (Table<?>) this, String.class);
     }
 
 

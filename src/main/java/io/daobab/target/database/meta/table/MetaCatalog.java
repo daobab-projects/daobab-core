@@ -1,10 +1,11 @@
 package io.daobab.target.database.meta.table;
 
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.target.database.meta.column.MetaCatalogName;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +27,10 @@ public class MetaCatalog extends Table<MetaCatalog> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colCatalogName()).size(256)
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Collections.singletonList(
+                        new TableColumn(colCatalogName()).size(256)
+                ));
     }
 
 

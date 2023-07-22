@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface CamelName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -15,7 +15,7 @@ public interface CamelName<E extends Entity> extends RelatedTo<E>, MapHandler<E>
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, CamelName> colCamelName() {
-        return ColumnCache.INSTANCE.getColumn("CamelName", "CAMEL_NAME", (Table<?>) this, String.class);
+        return DaobabCache.getColumn("CamelName", "CAMEL_NAME", (Table<?>) this, String.class);
 
     }
 

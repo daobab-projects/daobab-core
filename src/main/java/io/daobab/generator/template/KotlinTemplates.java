@@ -1,6 +1,6 @@
 package io.daobab.generator.template;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.query.base.QueryWhisperer;
@@ -54,6 +54,7 @@ class KotlinTemplates {
     public static final String TABLE_CLASS_TEMP = "package " + GenKeys.TABLE_PACKAGE +
             "\n" +
             "\n" + GenKeys.COLUMN_IMPORTS +
+            "\nimport " + DaobabCache.class.getName() + ";" +
             "\n" + "import io.daobab.model.*;" +
             "\n" + GenKeys.TYPE_IMPORTS +
             "\nimport java.util.*" +
@@ -72,14 +73,15 @@ class KotlinTemplates {
             "\n\t}" +
             "\n" +
             "\n\toverride fun columns() = " +
-            "\n\t\tlistOf(" +
+            "\n\t\treturn " + DaobabCache.class.getSimpleName() + ".getTableColumns(this," +
+            "\n\t\t\t() -> listOf(" +
             "\n" + GenKeys.COLUMN_METHODS +
-            "\n\t\t)" +
+            "\n\t\t))" +
             "\n\t" + GenKeys.PK_ID_METHOD +
             "\n}";
     public static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE +
             "\n" +
-            "\nimport " + ColumnCache.class.getName() +
+            "\nimport " + DaobabCache.class.getName() +
             "\nimport io.daobab.model.*;" +
             "\n" + GenKeys.CLASS_FULL_NAME +
             "\ninterface " + GenKeys.INTERFACE_NAME + "<E : " + Entity.class.getSimpleName() + ", F> : " + RelatedTo.class.getSimpleName() + "<E>," + MapHandler.class.getSimpleName() + " {" +
@@ -94,7 +96,7 @@ class KotlinTemplates {
             "\n" +
             "\n" + GenKeys.TABLES_AND_TYPE +
             "\n\tfun col" + GenKeys.INTERFACE_NAME + "() =" +
-            "\n\t\treturn " + ColumnCache.class.getSimpleName() + ".INSTANCE.getColumn(\"" + GenKeys.FIELD_NAME + "\", \"" + GenKeys.COLUMN_NAME + "\", (" + Table.class.getSimpleName() + "<?>) this, " + GenKeys.CLASS_SIMPLE_NAME + "::class.java);" +
+            "\n\t\treturn " + DaobabCache.class.getSimpleName() + ".getColumn(\"" + GenKeys.FIELD_NAME + "\", \"" + GenKeys.COLUMN_NAME + "\", (" + Table.class.getSimpleName() + "<?>) this, " + GenKeys.CLASS_SIMPLE_NAME + "::class.java);" +
             "\n\t}" +
             "\n}";
 

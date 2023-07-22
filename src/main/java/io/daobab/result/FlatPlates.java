@@ -1,6 +1,6 @@
 package io.daobab.result;
 
-import io.daobab.converter.JsonProvider;
+import io.daobab.converter.json.JsonProvider;
 import io.daobab.model.FlatPlate;
 
 import java.io.Serializable;

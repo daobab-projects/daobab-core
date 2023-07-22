@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface FkTableSchemaName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -15,7 +15,7 @@ public interface FkTableSchemaName<E extends Entity> extends RelatedTo<E>, MapHa
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, FkTableSchemaName> colFkSchemaName() {
-        return ColumnCache.INSTANCE.getColumn("FkSchemaName", "FKTABLE_SCHEM", (Table<?>) this, String.class);
+        return DaobabCache.getColumn("FkSchemaName", "FKTABLE_SCHEM", (Table<?>) this, String.class);
     }
 
 }

@@ -1,6 +1,6 @@
 package io.daobab.target.statistic.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface Key<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -16,7 +16,7 @@ public interface Key<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, Key> colKey() {
-        return ColumnCache.INSTANCE.getColumn("Key", "Key", (Table<?>) this, String.class);
+        return DaobabCache.getColumn("Key", "Key", (Table<?>) this, String.class);
     }
 
 }

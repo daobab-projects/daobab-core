@@ -1,6 +1,7 @@
 package io.daobab.target.database.meta.table;
 
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.target.database.meta.column.*;
 
@@ -31,15 +32,16 @@ public class MetaTable extends Table<MetaTable> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colRemarks()).size(256),
-                new TableColumn(colTableName()).size(256),
-                new TableColumn(colColumnCount()),
-                new TableColumn(colSchemaName()).size(256),
-                new TableColumn(colCamelName()).size(256),
-                new TableColumn(colCatalogName()).size(256),
-                new TableColumn(colTableType()).size(256)
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colRemarks()).size(256),
+                        new TableColumn(colTableName()).size(256),
+                        new TableColumn(colColumnCount()),
+                        new TableColumn(colSchemaName()).size(256),
+                        new TableColumn(colCamelName()).size(256),
+                        new TableColumn(colCatalogName()).size(256),
+                        new TableColumn(colTableType()).size(256)
+                ));
     }
 
     @SuppressWarnings("rawtypes")

@@ -1,5 +1,6 @@
 package io.daobab.test.dao.table;
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.test.dao.column.CityId;
 import io.daobab.test.dao.column.CountryId;
@@ -22,13 +23,13 @@ public class City extends Table<City> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colCityId()),
-                new TableColumn(colCity()),
-                new TableColumn(colCountryId()),
-                new TableColumn(colLastUpdate())
-
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colCityId()),
+                        new TableColumn(colCity()),
+                        new TableColumn(colCountryId()),
+                        new TableColumn(colLastUpdate())
+                ));
     }
 
 

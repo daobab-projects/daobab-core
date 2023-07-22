@@ -1,5 +1,6 @@
 package io.daobab.test.dao.table;
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.test.dao.column.LanguageId;
 import io.daobab.test.dao.column.LastUpdate;
@@ -20,12 +21,12 @@ public class Language extends Table<Language> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colLanguageId()),
-                new TableColumn(colName()),
-                new TableColumn(colLastUpdate())
-
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colLanguageId()),
+                        new TableColumn(colName()),
+                        new TableColumn(colLastUpdate())
+                ));
     }
 
 

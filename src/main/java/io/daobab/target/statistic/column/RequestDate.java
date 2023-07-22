@@ -1,6 +1,6 @@
 package io.daobab.target.statistic.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 import java.sql.Timestamp;
@@ -19,7 +19,7 @@ public interface RequestDate<E extends Entity> extends RelatedTo<E>, MapHandler<
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, Timestamp, RequestDate> colRequestDate() {
-        return ColumnCache.INSTANCE.getColumn("RequestDate", "REQUEST_DATE", (Table<?>) this, Timestamp.class);
+        return DaobabCache.getColumn("RequestDate", "REQUEST_DATE", (Table<?>) this, Timestamp.class);
     }
 
 }

@@ -1,6 +1,6 @@
 package io.daobab.converter.json.conversion;
 
-import io.daobab.converter.JsonConverter;
+import io.daobab.converter.json.JsonConverter;
 import io.daobab.converter.json.JsonConverterManager;
 import io.daobab.error.DaobabException;
 import io.daobab.model.Field;

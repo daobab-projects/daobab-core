@@ -1,6 +1,6 @@
 package io.daobab.converter.json.type;
 
-import io.daobab.converter.JsonConverter;
+import io.daobab.converter.json.JsonConverter;
 
 public class JsonEnumConverter<E extends Enum<E>> extends JsonConverter<E> {
 

@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface Unique<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -15,7 +15,7 @@ public interface Unique<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, Boolean, Unique> colUnique() {
-        return ColumnCache.INSTANCE.getColumn("Unique", "Unique", (Table<?>) this, Boolean.class);
+        return DaobabCache.getColumn("Unique", "Unique", (Table<?>) this, Boolean.class);
     }
 
 

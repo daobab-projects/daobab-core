@@ -1,7 +1,7 @@
 package io.daobab.model;
 
-import io.daobab.converter.JsonProvider;
 import io.daobab.converter.json.JsonConverterManager;
+import io.daobab.converter.json.JsonProvider;
 import io.daobab.creation.EntityBuilder;
 import io.daobab.creation.EntityCreator;
 import io.daobab.target.QueryHandler;

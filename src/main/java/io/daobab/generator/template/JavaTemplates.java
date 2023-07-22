@@ -1,6 +1,6 @@
 package io.daobab.generator.template;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.query.base.QueryWhisperer;
@@ -16,27 +16,27 @@ import java.util.List;
  */
 class JavaTemplates {
 
-    static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE + ";" +
-            "\n" +
-            "\nimport " + ColumnCache.class.getName() + ";" +
-            "\nimport io.daobab.model.*;" +
-            "\n\n" + GenKeys.CLASS_FULL_NAME +
-            "\npublic interface " + GenKeys.INTERFACE_NAME + "<E extends Entity, F> extends RelatedTo<E>, MapHandler<E> {" +
-            "\n" +
-            "\n\tdefault F get" + GenKeys.INTERFACE_NAME + "(){" +
-            "\n\t\treturn readParam(\"" + GenKeys.FIELD_NAME + "\");" +
-            "\n\t}" +
-            "\n" +
-            "\n\tdefault E set" + GenKeys.INTERFACE_NAME + "(F val){" +
-            "\n\t\treturn storeParam(\"" + GenKeys.FIELD_NAME + "\",val);" +
-            "\n\t}" +
-            "\n" +
-            "\n" + GenKeys.TABLES_AND_TYPE +
-            "\n\t@SuppressWarnings({\"rawtypes\",\"unchecked\"})" +
-            "\n\tdefault Column<E, F," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){" +
-            "\n\t\treturn " + ColumnCache.class.getSimpleName() + ".INSTANCE.getColumn(\"" + GenKeys.FIELD_NAME + "\", \"" + GenKeys.COLUMN_NAME + "\", (" + Table.class.getSimpleName() + "<?>) this, " + GenKeys.CLASS_SIMPLE_NAME + ".class);" +
-            "\n\t}" +
-            "\n}";
+    public static final String PK_COL_METHOD_TEMP =
+            "\n\t@Override" +
+                    "\n\tpublic Column< " + GenKeys.TABLE_NAME + ", " + GenKeys.PK_TYPE_IMPORT + ", " + GenKeys.INTERFACE_NAME + "> colID() {" +
+                    "\n\t\treturn col" + GenKeys.INTERFACE_NAME + "();" +
+                    "\n\t}" +
+                    "\n" +
+                    "\n\t@Override" +
+                    "\n\tpublic int hashCode() {" +
+                    "\n\t\treturn Objects.hashCode(getId());" +
+                    "\n\t}" +
+                    "\n" +
+                    "\n\t@Override" +
+                    "\n\tpublic boolean equals(Object obj) {" +
+                    "\n\t\tif (this == obj) return true;" +
+                    "\n\t\tif (obj == null) return false;" +
+                    "\n\t\tif (getClass() != obj.getClass()) return false;" +
+                    "\n\t\tPrimaryKey<?, ?, ?> other = (PrimaryKey<?, ?, ?>) obj;" +
+                    "\n\t\treturn Objects.equals(getId(), other.getId());" +
+                    "\n\t}" +
+                    "\n" +
+                    "\n";
 
     static final String DATABASE_TABLES_INTERFACE_TEMP = "package " + GenKeys.TARGET_PACKAGE +
             "\n" +
@@ -72,10 +72,54 @@ class JavaTemplates {
             "\n\t\t);" +
             "\n\t}" +
             "\n}";
-
+    public static final String COMPOSITE_PK_KEY_METHOD_TEMP =
+            "\n\t@Override" +
+                    "\n\tpublic " + CompositeColumns.class.getSimpleName() + "<" + GenKeys.COMPOSITE_KEY_METHOD + "<" + GenKeys.TABLE_NAME + ">>" + " colCompositeId() {" +
+                    "\n\t\treturn " + " composite" + GenKeys.COMPOSITE_KEY_METHOD + "();" +
+                    "\n\t}";
+    static final String COMPOSITE_KEY_TEMP = "package " + GenKeys.TABLE_PACKAGE + ";" +
+            "\n" +
+            "\n" + GenKeys.COLUMN_IMPORTS +
+            "\nimport " + CompositeColumns.class.getName() + ";" +
+            "\nimport " + Composite.class.getName() + ";" +
+            "\nimport " + Entity.class.getName() + ";" +
+            "\nimport " + TableColumn.class.getName() + ";" +
+            "\n" +
+            "\npublic interface " + GenKeys.COMPOSITE_NAME + "<E extends Entity" + GenKeys.COMPOSITE_KEY_COLUMN_TYPE_INTERFACES + ">" +
+            "\n\textends " + GenKeys.COMPOSITE_KEY_COLUMN_INTERFACES + "{" +
+            "\n" +
+            "\n\t" + GenKeys.COMPOSITE_KEY_METHOD +
+            "\n}";
+    public static final String COMPOSITE_METHOD_TEMP =
+            "\n\tdefault " + CompositeColumns.class.getSimpleName() + "<" + GenKeys.COMPOSITE_NAME + "<E>>  composite" + GenKeys.COMPOSITE_NAME + "() {" +
+                    "\n\treturn new " + CompositeColumns.class.getSimpleName() + "<>(" +
+                    "\n" + GenKeys.COMPOSITE_KEY_METHOD + ");" +
+                    "\n\t}";
+    static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE + ";" +
+            "\n" +
+            "\nimport " + DaobabCache.class.getName() + ";" +
+            "\nimport io.daobab.model.*;" +
+            "\n\n" + GenKeys.CLASS_FULL_NAME +
+            "\npublic interface " + GenKeys.INTERFACE_NAME + "<E extends Entity, F> extends RelatedTo<E>, MapHandler<E> {" +
+            "\n" +
+            "\n\tdefault F get" + GenKeys.INTERFACE_NAME + "(){" +
+            "\n\t\treturn readParam(\"" + GenKeys.FIELD_NAME + "\");" +
+            "\n\t}" +
+            "\n" +
+            "\n\tdefault E set" + GenKeys.INTERFACE_NAME + "(F val){" +
+            "\n\t\treturn storeParam(\"" + GenKeys.FIELD_NAME + "\",val);" +
+            "\n\t}" +
+            "\n" +
+            "\n" + GenKeys.TABLES_AND_TYPE +
+            "\n\t@SuppressWarnings({\"rawtypes\",\"unchecked\"})" +
+            "\n\tdefault Column<E, F," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){" +
+            "\n\t\treturn " + DaobabCache.class.getSimpleName() + ".getColumn(\"" + GenKeys.FIELD_NAME + "\", \"" + GenKeys.COLUMN_NAME + "\", (" + Table.class.getSimpleName() + "<?>) this, " + GenKeys.CLASS_SIMPLE_NAME + ".class);" +
+            "\n\t}" +
+            "\n}";
     static final String TABLE_CLASS_TEMP = "package " + GenKeys.TABLE_PACKAGE + ";" +
             "\n" +
             "\n" + GenKeys.COLUMN_IMPORTS +
+            "\n" + "import " + DaobabCache.class.getName() + ";" +
             "\n" + "import io.daobab.model.*;" +
             "\n" + GenKeys.TYPE_IMPORTS +
             "\nimport java.util.*;" +
@@ -97,57 +141,14 @@ class JavaTemplates {
             "\n" +
             "\n\t@Override" +
             "\n\tpublic List<TableColumn> columns() {" +
-            "\n\t\treturn Arrays.asList(" +
+            "\n\t\treturn " + DaobabCache.class.getSimpleName() + ".getTableColumns(this," +
+            "\n\t\t\t() -> Arrays.asList(" +
             "\n" + GenKeys.COLUMN_METHODS +
-            "\n\t\t);" +
+            "\n\t\t));" +
             "\n\t}" +
             "\n" +
             "\n\t" + GenKeys.PK_ID_METHOD +
             "\n}";
-    static final String COMPOSITE_KEY_TEMP = "package " + GenKeys.TABLE_PACKAGE + ";" +
-            "\n" +
-            "\n" + GenKeys.COLUMN_IMPORTS +
-            "\nimport " + CompositeColumns.class.getName() + ";" +
-            "\nimport " + Composite.class.getName() + ";" +
-            "\nimport " + Entity.class.getName() + ";" +
-            "\nimport " + TableColumn.class.getName() + ";" +
-            "\n" +
-            "\npublic interface " + GenKeys.COMPOSITE_NAME + "<E extends Entity" + GenKeys.COMPOSITE_KEY_COLUMN_TYPE_INTERFACES + ">" +
-            "\n\textends " + GenKeys.COMPOSITE_KEY_COLUMN_INTERFACES + "{" +
-            "\n" +
-            "\n\t" + GenKeys.COMPOSITE_KEY_METHOD +
-            "\n}";
-    public static String PK_COL_METHOD_TEMP =
-            "\n\t@Override" +
-                    "\n\tpublic Column< " + GenKeys.TABLE_NAME + ", " + GenKeys.PK_TYPE_IMPORT + ", " + GenKeys.INTERFACE_NAME + "> colID() {" +
-                    "\n\t\treturn col" + GenKeys.INTERFACE_NAME + "();" +
-                    "\n\t}" +
-                    "\n" +
-                    "\n\t@Override" +
-                    "\n\tpublic int hashCode() {" +
-                    "\n\t\treturn Objects.hashCode(getId());" +
-                    "\n\t}" +
-                    "\n" +
-                    "\n\t@Override" +
-                    "\n\tpublic boolean equals(Object obj) {" +
-                    "\n\t\tif (this == obj) return true;" +
-                    "\n\t\tif (obj == null) return false;" +
-                    "\n\t\tif (getClass() != obj.getClass()) return false;" +
-                    "\n\t\tPrimaryKey<?, ?, ?> other = (PrimaryKey<?, ?, ?>) obj;" +
-                    "\n\t\treturn Objects.equals(getId(), other.getId());" +
-                    "\n\t}" +
-                    "\n" +
-                    "\n";
-    public static String COMPOSITE_PK_KEY_METHOD_TEMP =
-            "\n\t@Override" +
-                    "\n\tpublic " + CompositeColumns.class.getSimpleName() + "<" + GenKeys.COMPOSITE_KEY_METHOD + "<" + GenKeys.TABLE_NAME + ">>" + " colCompositeId() {" +
-                    "\n\t\treturn " + " composite" + GenKeys.COMPOSITE_KEY_METHOD + "();" +
-                    "\n\t}";
-    public static String COMPOSITE_METHOD_TEMP =
-            "\n\tdefault " + CompositeColumns.class.getSimpleName() + "<" + GenKeys.COMPOSITE_NAME + "<E>>  composite" + GenKeys.COMPOSITE_NAME + "() {" +
-                    "\n\treturn new " + CompositeColumns.class.getSimpleName() + "<>(" +
-                    "\n" + GenKeys.COMPOSITE_KEY_METHOD + ");" +
-                    "\n\t}";
 
     private JavaTemplates() {
     }

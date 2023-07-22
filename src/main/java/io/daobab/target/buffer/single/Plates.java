@@ -1,6 +1,6 @@
 package io.daobab.target.buffer.single;
 
-import io.daobab.converter.JsonProvider;
+import io.daobab.converter.json.JsonProvider;
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
 import io.daobab.model.TableColumn;

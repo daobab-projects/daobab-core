@@ -1,6 +1,7 @@
 package io.daobab.target.statistic.table;
 
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.target.statistic.column.*;
 
@@ -41,19 +42,20 @@ public class StatisticRecord extends Table<StatisticRecord> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colKey()).size(256),
-                new TableColumn(colRemarks()).size(256),
-                new TableColumn(colRequestDate()),
-                new TableColumn(colRequestDate()),
-                new TableColumn(colExecutionTime()),
-                new TableColumn(colRequestType()),
-                new TableColumn(colStatus()),
-                new TableColumn(colProcedureName()).size(256),
-                new TableColumn(colRelatedEntity()).size(256),
-                new TableColumn(colErrorDesc()).size(1024),
-                new TableColumn(colSqlQuery()).size(1024)
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colKey()).size(256),
+                        new TableColumn(colRemarks()).size(256),
+                        new TableColumn(colRequestDate()),
+                        new TableColumn(colRequestDate()),
+                        new TableColumn(colExecutionTime()),
+                        new TableColumn(colRequestType()),
+                        new TableColumn(colStatus()),
+                        new TableColumn(colProcedureName()).size(256),
+                        new TableColumn(colRelatedEntity()).size(256),
+                        new TableColumn(colErrorDesc()).size(1024),
+                        new TableColumn(colSqlQuery()).size(1024)
+                ));
     }
 
     @Override

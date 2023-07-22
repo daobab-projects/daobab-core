@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.target.database.connection.JdbcType;
 
@@ -16,7 +16,7 @@ public interface Datatype<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, JdbcType, Datatype> colDatatype() {
-        return ColumnCache.INSTANCE.getColumn("Datatype", "DATATYPE", (Table<?>) this, JdbcType.class);
+        return DaobabCache.getColumn("Datatype", "DATATYPE", (Table<?>) this, JdbcType.class);
     }
 
 }

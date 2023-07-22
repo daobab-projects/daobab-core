@@ -1,6 +1,6 @@
 package io.daobab.converter.json.type;
 
-import io.daobab.converter.JsonConverter;
+import io.daobab.converter.json.JsonConverter;
 import io.daobab.error.DaobabException;
 
 import java.util.ArrayList;

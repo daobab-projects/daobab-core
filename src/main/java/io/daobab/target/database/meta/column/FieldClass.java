@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface FieldClass<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -15,7 +15,7 @@ public interface FieldClass<E extends Entity> extends RelatedTo<E>, MapHandler<E
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, Class, FieldClass> colFieldClass() {
-        return ColumnCache.INSTANCE.getColumn("FieldClass", "DATATYPE", (Table<?>) this, Class.class.getClass());
+        return DaobabCache.getColumn("FieldClass", "DATATYPE", (Table<?>) this, Class.class.getClass());
     }
 
 

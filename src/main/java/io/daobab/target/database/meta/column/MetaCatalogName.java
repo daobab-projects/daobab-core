@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface MetaCatalogName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -15,7 +15,7 @@ public interface MetaCatalogName<E extends Entity> extends RelatedTo<E>, MapHand
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, MetaCatalogName> colCatalogName() {
-        return ColumnCache.INSTANCE.getColumn("CatalogName", "CAT_NAME", (Table<?>) this, String.class);
+        return DaobabCache.getColumn("CatalogName", "CAT_NAME", (Table<?>) this, String.class);
     }
 
 

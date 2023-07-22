@@ -1,6 +1,6 @@
 package io.daobab.target.statistic.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface SqlQuery<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -16,7 +16,7 @@ public interface SqlQuery<E extends Entity> extends RelatedTo<E>, MapHandler<E> 
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, SqlQuery> colSqlQuery() {
-        return ColumnCache.INSTANCE.getColumn("SqlQuery", "SqlQuery", (Table<?>) this, String.class);
+        return DaobabCache.getColumn("SqlQuery", "SqlQuery", (Table<?>) this, String.class);
     }
 
 

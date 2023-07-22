@@ -1,5 +1,6 @@
 package io.daobab.test.dao.table;
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.test.dao.column.*;
 
@@ -22,16 +23,16 @@ public class Payment extends Table<Payment> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colPaymentId()),
-                new TableColumn(colCustomerId()),
-                new TableColumn(colStaffId()),
-                new TableColumn(colRentalId()),
-                new TableColumn(colAmount()),
-                new TableColumn(colPaymentDate()),
-                new TableColumn(colLastUpdate())
-
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colPaymentId()),
+                        new TableColumn(colCustomerId()),
+                        new TableColumn(colStaffId()),
+                        new TableColumn(colRentalId()),
+                        new TableColumn(colAmount()),
+                        new TableColumn(colPaymentDate()),
+                        new TableColumn(colLastUpdate())
+                ));
     }
 
 

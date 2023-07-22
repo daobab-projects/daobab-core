@@ -1,5 +1,6 @@
 package io.daobab.test.dao.table;
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.test.dao.column.*;
 
@@ -28,22 +29,22 @@ public class Film extends Table<Film> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colFilmId()).primaryKey(),
-                new TableColumn(colTitle()).size(255).notNull(),
-                new TableColumn(colDescription()).size(255),
-                new TableColumn(colReleaseYear()),
-                new TableColumn(colLanguageId()),
-                new TableColumn(colOriginalLanguageId()),
-                new TableColumn(colRentalDuration()),
-                new TableColumn(colRentalRate()).size(10),
-                new TableColumn(colLength()),
-                new TableColumn(colReplacementCost()).size(10),
-                new TableColumn(colRating()).size(5),
-                new TableColumn(colSpecialFeatures()).size(54),
-                new TableColumn(colLastUpdate())
-
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colFilmId()).primaryKey(),
+                        new TableColumn(colTitle()).size(255).notNull(),
+                        new TableColumn(colDescription()).size(255),
+                        new TableColumn(colReleaseYear()),
+                        new TableColumn(colLanguageId()),
+                        new TableColumn(colOriginalLanguageId()),
+                        new TableColumn(colRentalDuration()),
+                        new TableColumn(colRentalRate()).size(10),
+                        new TableColumn(colLength()),
+                        new TableColumn(colReplacementCost()).size(10),
+                        new TableColumn(colRating()).size(5),
+                        new TableColumn(colSpecialFeatures()).size(54),
+                        new TableColumn(colLastUpdate())
+                ));
     }
 
 

@@ -1,6 +1,6 @@
 package io.daobab.test.dao.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface Active<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -20,7 +20,7 @@ public interface Active<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     @SuppressWarnings("unchecked")
     default Column<E, Boolean, Active<E>> colActive() {
-        return ColumnCache.INSTANCE.getColumn("Active", "ACTIVE", (Table<?>) this, Boolean.class);
+        return DaobabCache.getColumn("Active", "ACTIVE", (Table<?>) this, Boolean.class);
     }
 
 }

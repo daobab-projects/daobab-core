@@ -1,5 +1,6 @@
 package io.daobab.test.dao.table;
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.test.dao.column.AddressId;
 import io.daobab.test.dao.column.LastUpdate;
@@ -31,13 +32,13 @@ public class Store extends Table<Store> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colStoreId()),
-                new TableColumn(colManagerStaffId()),
-                new TableColumn(colAddressId()),
-                new TableColumn(colLastUpdate())
-
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colStoreId()),
+                        new TableColumn(colManagerStaffId()),
+                        new TableColumn(colAddressId()),
+                        new TableColumn(colLastUpdate())
+                ));
     }
 
     @Override

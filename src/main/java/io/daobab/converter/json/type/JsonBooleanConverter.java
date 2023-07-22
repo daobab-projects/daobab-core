@@ -1,6 +1,6 @@
 package io.daobab.converter.json.type;
 
-import io.daobab.converter.JsonConverter;
+import io.daobab.converter.json.JsonConverter;
 
 public class JsonBooleanConverter extends JsonConverter<Boolean> {
     @Override

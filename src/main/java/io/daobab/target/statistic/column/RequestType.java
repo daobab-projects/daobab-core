@@ -1,6 +1,6 @@
 package io.daobab.target.statistic.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.query.base.QueryType;
 
@@ -17,7 +17,7 @@ public interface RequestType<E extends Entity> extends RelatedTo<E>, MapHandler<
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, QueryType, RequestType> colRequestType() {
-        return ColumnCache.INSTANCE.getColumn("RequestType", "REQUEST_TYPE", (Table<?>) this, QueryType.class);
+        return DaobabCache.getColumn("RequestType", "REQUEST_TYPE", (Table<?>) this, QueryType.class);
     }
 
 

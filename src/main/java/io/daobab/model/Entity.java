@@ -1,6 +1,6 @@
 package io.daobab.model;
 
-import io.daobab.converter.JsonProvider;
+import io.daobab.converter.json.JsonProvider;
 import io.daobab.target.QueryHandler;
 import io.daobab.target.Target;
 

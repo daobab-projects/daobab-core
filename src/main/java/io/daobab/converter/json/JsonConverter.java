@@ -1,4 +1,4 @@
-package io.daobab.converter;
+package io.daobab.converter.json;
 
 import io.daobab.model.Entity;
 import io.daobab.model.Field;
@@ -10,15 +10,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public abstract class JsonConverter<F> {
+public abstract class JsonConverter<F> implements JsonType<F> {
 
-    protected static final String PAUSE="-";
-    protected static final String COLON=":";
-    protected static final String QUOTE="\"";
-
-    public abstract void toJson(StringBuilder sb, F obj);
-
-    public abstract F fromJson(String json);
+    protected static final String PAUSE = "-";
+    protected static final String COLON = ":";
+    protected static final String QUOTE = "\"";
 
     @SuppressWarnings("rawtypes")
     public <E extends Entity> void toJson(StringBuilder sb, Field<E, F, RelatedEntity> field, RelatedEntity entity) {

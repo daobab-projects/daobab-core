@@ -1,6 +1,6 @@
 package io.daobab.target.statistic.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface ExecutionTime<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -16,7 +16,7 @@ public interface ExecutionTime<E extends Entity> extends RelatedTo<E>, MapHandle
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, Long, ExecutionTime> colExecutionTime() {
-        return ColumnCache.INSTANCE.getColumn("ExecutionTime", "EXECUTION_TIME", (Table<?>) this, Long.class);
+        return DaobabCache.getColumn("ExecutionTime", "EXECUTION_TIME", (Table<?>) this, Long.class);
     }
 
 

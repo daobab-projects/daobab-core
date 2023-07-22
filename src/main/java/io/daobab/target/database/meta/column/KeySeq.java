@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface KeySeq<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -15,7 +15,7 @@ public interface KeySeq<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, KeySeq> colKeySeq() {
-        return ColumnCache.INSTANCE.getColumn("KeySeq", "KEY_SEQ", (Table<?>) this, String.class);
+        return DaobabCache.getColumn("KeySeq", "KEY_SEQ", (Table<?>) this, String.class);
     }
 
 

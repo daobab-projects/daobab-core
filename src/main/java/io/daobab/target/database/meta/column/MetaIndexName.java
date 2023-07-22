@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface MetaIndexName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -15,7 +15,7 @@ public interface MetaIndexName<E extends Entity> extends RelatedTo<E>, MapHandle
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, MetaIndexName> colIndexName() {
-        return ColumnCache.INSTANCE.getColumn("IndexName", "INDEX_NAME", (Table<?>) this, String.class);
+        return DaobabCache.getColumn("IndexName", "INDEX_NAME", (Table<?>) this, String.class);
     }
 
 }

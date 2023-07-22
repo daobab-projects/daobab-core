@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface Remarks<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -15,7 +15,7 @@ public interface Remarks<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, Remarks> colRemarks() {
-        return ColumnCache.INSTANCE.getColumn("Remarks", "REMARKS", (Table<?>) this, String.class);
+        return DaobabCache.getColumn("Remarks", "REMARKS", (Table<?>) this, String.class);
     }
 
 

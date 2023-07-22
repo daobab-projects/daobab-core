@@ -1,6 +1,7 @@
 package io.daobab.target.database.meta.table;
 
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.target.database.meta.column.MetaCatalogName;
 import io.daobab.target.database.meta.column.MetaSchemaName;
@@ -30,11 +31,12 @@ public class MetaSchema extends Table<MetaSchema> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colRemarks()).size(30),
-                new TableColumn(colCatalogName()).size(256),
-                new TableColumn(colSchemaName()).size(256)
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colRemarks()).size(30),
+                        new TableColumn(colCatalogName()).size(256),
+                        new TableColumn(colSchemaName()).size(256)
+                ));
     }
 
 

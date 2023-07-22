@@ -1,6 +1,5 @@
 package io.daobab.converter.json;
 
-import io.daobab.converter.JsonConverter;
 import io.daobab.converter.json.conversion.EntityJsonConversion;
 import io.daobab.converter.json.conversion.FieldJsonConversion;
 import io.daobab.converter.json.conversion.PlateJsonConversion;

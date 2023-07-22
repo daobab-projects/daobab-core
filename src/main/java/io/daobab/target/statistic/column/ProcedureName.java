@@ -1,6 +1,6 @@
 package io.daobab.target.statistic.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface ProcedureName<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -16,7 +16,7 @@ public interface ProcedureName<E extends Entity> extends RelatedTo<E>, MapHandle
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, String, ProcedureName> colProcedureName() {
-        return ColumnCache.INSTANCE.getColumn("ProcedureName", "PROCEDURE_NAME", (Table<?>) this, String.class);
+        return DaobabCache.getColumn("ProcedureName", "PROCEDURE_NAME", (Table<?>) this, String.class);
     }
 
 

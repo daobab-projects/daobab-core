@@ -1,6 +1,6 @@
 package io.daobab.target.database.meta.column;
 
-import io.daobab.creation.ColumnCache;
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 
 public interface OrdinalPosition<E extends Entity> extends RelatedTo<E>, MapHandler<E> {
@@ -15,7 +15,7 @@ public interface OrdinalPosition<E extends Entity> extends RelatedTo<E>, MapHand
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     default Column<E, Integer, OrdinalPosition> colOrdinalPosition() {
-        return ColumnCache.INSTANCE.getColumn("OrdinalPosition", "ORDINAL_POSITION", (Table<?>) this, Integer.class);
+        return DaobabCache.getColumn("OrdinalPosition", "ORDINAL_POSITION", (Table<?>) this, Integer.class);
     }
 
 }

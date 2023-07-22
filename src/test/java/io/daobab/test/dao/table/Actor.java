@@ -1,5 +1,6 @@
 package io.daobab.test.dao.table;
 
+import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
 import io.daobab.test.dao.column.ActorId;
 import io.daobab.test.dao.column.FirstName;
@@ -23,13 +24,13 @@ public class Actor extends Table<Actor> implements
 
     @Override
     public List<TableColumn> columns() {
-        return Arrays.asList(
-                new TableColumn(colActorId()),
-                new TableColumn(colFirstName()),
-                new TableColumn(colLastName()),
-                new TableColumn(colLastUpdate())
-
-        );
+        return DaobabCache.getTableColumns(this,
+                () -> Arrays.asList(
+                        new TableColumn(colActorId()),
+                        new TableColumn(colFirstName()),
+                        new TableColumn(colLastName()),
+                        new TableColumn(colLastUpdate())
+                ));
     }
 
 
