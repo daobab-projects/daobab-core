@@ -361,8 +361,6 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
     public Plates clone() {
         return new PlateBuffer(new ArrayList<>(this));
     }
-
-
     @Override
     public StatisticCollector getStatisticCollector() {
         if (statistic == null) {
@@ -370,7 +368,6 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         }
         return statistic;
     }
-
     @Override
     public boolean isStatisticCollectingEnabled() {
         return statisticEnabled;
