@@ -1017,7 +1017,6 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
         sb.append(CLOSED_BRACKET).append(SPACE);
 
-        System.out.println(sb.toString());
         return sb;
     }
 

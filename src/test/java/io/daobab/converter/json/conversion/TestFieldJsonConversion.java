@@ -21,6 +21,6 @@ public class TestFieldJsonConversion implements SakilaTables {
         sb.append("{");
         fieldJsonConversion.toJson(sb, Arrays.asList(3,4,null,55));
         sb.append("}");
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 }

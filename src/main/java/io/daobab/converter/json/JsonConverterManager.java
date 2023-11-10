@@ -79,7 +79,7 @@ public class JsonConverterManager {
             if (fieldClass.isAssignableFrom(Optional.class)) {
                 Class innerFieldClass = field.getInnerTypeClass();
                 if (innerFieldClass == null) {
-                    throw new DaobabException("InnerFieldClass has to be provided for field " + field.toString());
+                    throw new DaobabException("InnerFieldClass has to be provided for a field " + field);
                 }
                 Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
                 return innerFieldConverter.map(JsonOptionalConverter::new).orElseThrow(() -> new DaobabException("Cannot find a converter"));
@@ -88,7 +88,7 @@ public class JsonConverterManager {
             if (fieldClass.isAssignableFrom(List.class)) {
                 Class innerFieldClass = field.getInnerTypeClass();
                 if (innerFieldClass == null) {
-                    throw new DaobabException("InnerFieldClass has to be provided for field " + field.toString());
+                    throw new DaobabException("InnerFieldClass has to be provided for field " + field);
                 }
                 Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
                 return innerFieldConverter.map(JsonListConverter::new).orElseThrow(() -> new DaobabException("Cannot find a converter"));
@@ -97,7 +97,7 @@ public class JsonConverterManager {
             if (fieldClass.isAssignableFrom(Set.class)) {
                 Class innerFieldClass = field.getInnerTypeClass();
                 if (innerFieldClass == null) {
-                    throw new DaobabException("InnerFieldClass has to be provided for field " + field.toString());
+                    throw new DaobabException("InnerFieldClass has to be provided for field " + field);
                 }
                 Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
                 return innerFieldConverter.map(JsonSetConverter::new).orElseThrow(() -> new DaobabException("Cannot find a converter"));

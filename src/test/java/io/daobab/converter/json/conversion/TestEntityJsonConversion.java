@@ -28,6 +28,6 @@ public class TestEntityJsonConversion implements SakilaTables {
         sb.append("{");
         fieldJsonConversion.toJson(sb, Arrays.asList(actor,actor2));
         sb.append("}");
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 }
