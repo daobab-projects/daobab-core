@@ -2,7 +2,6 @@ package io.daobab.target.buffer.nonheap;
 
 import io.daobab.model.Entity;
 import io.daobab.model.Plate;
-import io.daobab.model.PrimaryKey;
 import io.daobab.query.base.Query;
 import io.daobab.result.predicate.AlwaysTrue;
 import io.daobab.result.predicate.GeneralWhereAndPlate;
@@ -15,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 
@@ -24,18 +24,13 @@ import java.util.function.Predicate;
 public abstract class PlateBufferIndexed {
 
     protected final List<Plate> plateList;
-    protected Logger log = LoggerFactory.getLogger(this.getClass());
-    private boolean primaryKey = false;
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     protected PlateBufferIndexed() {
         this(new ArrayList<>());
     }
 
     protected PlateBufferIndexed(List<Plate> entities) {
-        if (!entities.isEmpty()) {
-            Plate entity = entities.get(0);
-            setPrimaryKey(entity instanceof PrimaryKey);
-        }
         plateList = entities;
     }
 
@@ -95,12 +90,22 @@ public abstract class PlateBufferIndexed {
         return finalFilter(plateList, query);
     }
 
-    public boolean isPrimaryKey() {
-        return primaryKey;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlateBufferIndexed that = (PlateBufferIndexed) o;
+        if (!Objects.equals(plateList.size(), that.plateList.size())) return false;
+        if (!plateList.isEmpty()) {
+            Plate plate = plateList.get(0);
+            Plate thatPlate = that.plateList.get(0);
+            return plate.equals(thatPlate);
+        }
+        return Objects.equals(plateList, that.plateList);
     }
 
-    public void setPrimaryKey(boolean primaryKey) {
-        this.primaryKey = primaryKey;
+    @Override
+    public int hashCode() {
+        return Objects.hash(plateList, plateList.size(), plateList.isEmpty() ? 0 : plateList.get(0).hashCode());
     }
-
 }

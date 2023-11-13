@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import java.time.temporal.TemporalAmount;
 import java.util.List;
 
-public abstract class FrozenDataBaseQueryBase<E extends Entity, Q extends DataBaseQueryBase<E, ?>, B extends FrozenDataBaseQueryBase<E,Q,?>> implements FrozenQueryProvider {
+public abstract class FrozenDataBaseQueryBase<E extends Entity, Q extends DataBaseQueryBase<E, ?>, B extends FrozenDataBaseQueryBase<E, Q, ?>> implements FrozenQueryProvider {
 
     private final String frozenQuery;
 
@@ -25,7 +25,7 @@ public abstract class FrozenDataBaseQueryBase<E extends Entity, Q extends DataBa
     private String entityName;
     private String sentQuery;
 
-    protected CacheManager cacheManager =new CacheManager();
+    protected CacheManager cacheManager = new CacheManager();
 
     @Override
     public String getIdentifier() {
@@ -54,7 +54,7 @@ public abstract class FrozenDataBaseQueryBase<E extends Entity, Q extends DataBa
     protected FrozenDataBaseQueryBase(Q originalQuery) {
         this.target = originalQuery.getTarget();
         IdentifierStorage identifierStorage = new IdentifierStorage();
-        this.frozenQuery=originalQuery.getTarget().toSqlQuery(originalQuery, identifierStorage);
+        this.frozenQuery = originalQuery.getTarget().toSqlQuery(originalQuery, identifierStorage);
         this.queryParametersInjectionPoints = identifierStorage.getQueryParameters();
         this.originalQuery = originalQuery;
     }
@@ -103,11 +103,11 @@ public abstract class FrozenDataBaseQueryBase<E extends Entity, Q extends DataBa
 
     @SuppressWarnings("unchecked")
     public B cacheResultsForPeriod(TemporalAmount period) {
-        if (areParametersNeeded()){
+        if (areParametersNeeded()) {
             throw new DaobabException("Cache cannot be used for parameters needed query");
         }
         this.cachedPeriod = period;
-        this.cacheUsed=true;
+        this.cacheUsed = true;
         return (B) this;
     }
 }

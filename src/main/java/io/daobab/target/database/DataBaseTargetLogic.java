@@ -670,7 +670,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         Connection conn = null;
         Statement stmt = null;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozenQuery);
-        List<Plate> rv = new ArrayList<>();
+        List<Plate> plateList = new ArrayList<>();
         ResultSetReader rsReader = getResultSetReader();
 
         try {
@@ -682,11 +682,11 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             getLog().debug(format("readPlateList executed statement: %s", sqlQuery));
 
             while (rs.next()) {
-                rv.add(rsReader.readPlate(rs, fields, typeConverters));
+                plateList.add(rsReader.readPlate(rs, fields, typeConverters));
             }
 
-            if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQuery, rv.size());
-            return new PlateBuffer(rv);
+            if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQuery, plateList.size());
+            return new PlateBuffer(plateList);
         } catch (SQLException e) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().error(frozenQuery, e);
             throw new DaobabSQLException(e);
