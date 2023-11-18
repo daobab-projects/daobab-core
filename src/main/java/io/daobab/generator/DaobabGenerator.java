@@ -37,7 +37,6 @@ public class DaobabGenerator {
     private String filePath;
     private String javaPackage;
     private boolean override = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_OVERRIDE, "true");
-    //    private boolean generateTypeScript = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TS, "false");
     private boolean generateTables = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TABLES, "true");
     private boolean generateViews = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_VIEWS, "true");
     private boolean generateColumns = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_COLUMNS, "true");
@@ -108,19 +107,19 @@ public class DaobabGenerator {
     }
 
     public void reverseEngineering(DataSource ds) {
-        Connection c = null;
+        Connection connection = null;
         try {
-            c = ds.getConnection();
+            connection = ds.getConnection();
             long startTime = System.currentTimeMillis();
 
             validateAndJoinPathAndPackage();
 
-            createTables(c.getMetaData());
+            createTables(connection.getMetaData());
             summary(startTime);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            ConnectionGateway.closeConnectionIfOpened(c);
+            ConnectionGateway.closeConnectionIfOpened(connection);
         }
     }
 
@@ -133,34 +132,34 @@ public class DaobabGenerator {
     }
 
     public void checkConnection(String url, String user, String pass, Class<? extends Driver> driver) {
-        Connection c = null;
+        Connection connection = null;
         Driver driverInstance;
         try {
             if (driver != null) {
                 driverInstance = driver.getDeclaredConstructor().newInstance();
                 DriverManager.registerDriver(driverInstance);
             }
-            c = DriverManager.getConnection(url, user, pass);
+            connection = DriverManager.getConnection(url, user, pass);
 
 
             DaobabDataBaseMetaData rv = new DaobabDataBaseMetaData();
 
-            rv.setDatabaseMajorVersion(String.valueOf(c.getMetaData().getDatabaseMajorVersion()));
-            rv.setDatabaseProductName(c.getMetaData().getDatabaseProductName());
-            rv.setDriverName(c.getMetaData().getDriverName());
-            rv.setDriverVersion(c.getMetaData().getDriverVersion());
+            rv.setDatabaseMajorVersion(String.valueOf(connection.getMetaData().getDatabaseMajorVersion()));
+            rv.setDatabaseProductName(connection.getMetaData().getDatabaseProductName());
+            rv.setDriverName(connection.getMetaData().getDriverName());
+            rv.setDriverVersion(connection.getMetaData().getDriverVersion());
 
             System.out.println("Connection OK. Database: " + rv.getDatabaseProductName() + " version: " + rv.getDatabaseMajorVersion() + "." + rv.getDatabaseMinorVersion() + " driver: " + rv.getDriverName());
 
             System.out.println("User '" + user + "' is allowed to read database content as follows: ");
 
-            ResultSet rsCat = c.getMetaData().getCatalogs();
+            ResultSet rsCat = connection.getMetaData().getCatalogs();
 
             boolean wasCatalog = false;
             while (rsCat.next()) {
                 wasCatalog = true;
                 String cat = rsCat.getString("TABLE_CAT");
-                ResultSet rsSch = c.getMetaData().getSchemas(cat, null);
+                ResultSet rsSch = connection.getMetaData().getSchemas(cat, null);
 
                 boolean wasSchema = false;
                 while (rsSch.next()) {
@@ -175,7 +174,7 @@ public class DaobabGenerator {
             }
 
             if (!wasCatalog) {
-                ResultSet rsSch = c.getMetaData().getSchemas();
+                ResultSet rsSch = connection.getMetaData().getSchemas();
 
                 boolean wasSchema = false;
                 while (rsSch.next()) {
@@ -192,7 +191,7 @@ public class DaobabGenerator {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            ConnectionGateway.closeConnectionIfOpened(c);
+            ConnectionGateway.closeConnectionIfOpened(connection);
         }
     }
 
@@ -238,14 +237,6 @@ public class DaobabGenerator {
                     .filter(t -> t.containsPrimaryKeyAllCollumns(table.getPrimaryKeys()))
                     .forEach(t -> t.getInheritedSubCompositeKeys().add(table));
 
-//            for (GenerateTable tblinner : allTables) {
-//                if (tblinner.getTableName().equals(table.getTableName())) {
-//                    continue;
-//                }
-//                if (tblinner.containsPrimaryKeyAllCollumns(table.getPrimaryKeys())) {
-//                    tblinner.getInheritedSubCompositeKeys().add(table);
-//                }
-//            }
         }
 
         if (generateTables) {
