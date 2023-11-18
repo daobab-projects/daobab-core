@@ -99,7 +99,9 @@ class JavaTemplates {
             "\n" +
             "\nimport " + DaobabCache.class.getName() + ";" +
             "\nimport io.daobab.model.*;" +
-            "\n\n" + GenKeys.CLASS_FULL_NAME +
+            "\n" +
+            "\n@SuppressWarnings(\"unused\")" +
+            "\n" + GenKeys.CLASS_FULL_NAME +
             "\npublic interface " + GenKeys.INTERFACE_NAME + "<E extends Entity, F> extends RelatedTo<E>, MapHandler<E> {" +
             "\n" +
             "\n\tdefault F get" + GenKeys.INTERFACE_NAME + "(){" +
@@ -124,7 +126,7 @@ class JavaTemplates {
             "\n" + GenKeys.TYPE_IMPORTS +
             "\nimport java.util.*;" +
             "\n" +
-            "\n@SuppressWarnings(\"rawtypes\")" +
+            "\n@SuppressWarnings({\"rawtypes\", \"unused\"})" +
             "\n@TableInformation(name = \"" + GenKeys.TABLE_NAME + "\")" +
             "\npublic class " + GenKeys.TABLE_CAMEL_NAME + " extends Table<" + GenKeys.TABLE_CAMEL_NAME + "> implements" +
             "\n" + GenKeys.COLUMN_INTERFACES +
