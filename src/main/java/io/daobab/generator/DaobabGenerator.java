@@ -37,7 +37,7 @@ public class DaobabGenerator {
     private String filePath;
     private String javaPackage;
     private boolean override = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_OVERRIDE, "true");
-    private boolean generateTypeScript = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TS, "false");
+    //    private boolean generateTypeScript = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TS, "false");
     private boolean generateTables = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TABLES, "true");
     private boolean generateViews = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_VIEWS, "true");
     private boolean generateColumns = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_COLUMNS, "true");
@@ -259,11 +259,9 @@ public class DaobabGenerator {
             allColumns.forEach(column -> writer.generateJavaColumn(catalog, schema, column, getPath(), isOverride()));
         }
 
-        //generujemy target
-        writer.generateJavaTarget(catalog, schema, allTables, getPackage(), getPath(), isOverride());
-
-        //opcjonalnie generujemy typescript
-        if (isGenerateTypeScript()) {
+        if (language.equals(TemplateLanguage.JAVA) || language.equals(TemplateLanguage.KOTLIN)) {
+            writer.generateJavaTarget(catalog, schema, allTables, getPackage(), getPath(), isOverride());
+        } else if (language.equals(TemplateLanguage.TYPE_SCRIPT)) {
             writer.createTypeScriptTables(catalog, schema, allTables, getPath(), isOverride());
         }
 
@@ -475,15 +473,6 @@ public class DaobabGenerator {
         return onlyAllowedTables.contains(tableName);
     }
 
-    public boolean isGenerateTypeScript() {
-        return generateTypeScript;
-    }
-
-    public DaobabGenerator generateTypeScripts(boolean generateTypeScript) {
-        this.generateTypeScript = generateTypeScript;
-        return this;
-    }
-
     private String[] getSchemas() {
         return schemas;
     }
@@ -539,12 +528,12 @@ public class DaobabGenerator {
         System.out.println("Ordered schemas: " + (schemas == null ? "all available" : join(",", schemas)));
         System.out.println("Ordered tables: " + (onlyAllowedTables.isEmpty() ? "all available" : join(",", onlyAllowedTables)));
         System.out.println("---------------------------------------------------------");
-        System.out.println("Java root package: " + getPackage());
+        System.out.println("root package: " + getPackage());
+        System.out.println("Target language: " + generateLanguage);
         System.out.println("Files saved into a location: " + getPath());
         System.out.println("Override files: " + toYesNo(isOverride()));
         System.out.println("Generating tables: " + toYesNo(isGenerateTables()));
         System.out.println("Generating views: " + toYesNo(isGenerateViews()));
-        System.out.println("Generating TypeScript classes: " + toYesNo(isGenerateTypeScript()));
         System.out.println("---------------------------------------------------------");
         System.out.println("Generated targets: " + generatedTargetsCount);
         System.out.println("Generated tables: " + generatedTablesCount);
