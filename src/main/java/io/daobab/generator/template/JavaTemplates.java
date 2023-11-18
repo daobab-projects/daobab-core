@@ -99,9 +99,9 @@ class JavaTemplates {
             "\n" +
             "\nimport " + DaobabCache.class.getName() + ";" +
             "\nimport io.daobab.model.*;" +
+            "\n" + GenKeys.CLASS_FULL_NAME +
             "\n" +
             "\n@SuppressWarnings(\"unused\")" +
-            "\n" + GenKeys.CLASS_FULL_NAME +
             "\npublic interface " + GenKeys.INTERFACE_NAME + "<E extends Entity, F> extends RelatedTo<E>, MapHandler<E> {" +
             "\n" +
             "\n\tdefault F get" + GenKeys.INTERFACE_NAME + "(){" +
