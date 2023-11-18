@@ -126,6 +126,24 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
     }
 
     @SuppressWarnings("unchecked")
+    default E replace(QueryTarget target) {
+        target.replace((E) this).execute();
+        return (E) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    default E replace(QueryTarget target, boolean transaction) {
+        target.replace((E) this).execute(transaction);
+        return (E) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    default E replace(QueryTarget target, Propagation propagation) {
+        target.replace((E) this).execute(propagation);
+        return (E) this;
+    }
+
+    @SuppressWarnings("unchecked")
     default boolean delete(QueryTarget target) {
         return new DataBaseQueryDelete<>(target, (E) this).whereEqual(colID(), getId()).execute() == 1;
     }
