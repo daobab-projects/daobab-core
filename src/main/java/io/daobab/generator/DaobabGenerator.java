@@ -40,12 +40,11 @@ public class DaobabGenerator {
     private boolean generateTables = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TABLES, "true");
     private boolean generateViews = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_VIEWS, "true");
     private boolean generateColumns = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_COLUMNS, "true");
-    private final TemplateLanguage generateLanguage = PropertyReader.readEnum(DaobabProperty.GENERATOR_LANGUAGE, TemplateLanguage.class, "JAVA");
+    private TemplateLanguage language = PropertyReader.readEnum(DaobabProperty.GENERATOR_LANGUAGE, TemplateLanguage.class, "JAVA");
     private boolean schemaIntoTableName = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_USE_SCHEMA_INTO_TABLE_NAME, "false");
     private String[] schemas;
     private String[] catalogues;
     private final JDBCTypeConverter typeConverter = new JDBCTypeConverter();
-    private TemplateLanguage language = generateLanguage;
 
     public DaobabGenerator() {
 
@@ -520,7 +519,7 @@ public class DaobabGenerator {
         System.out.println("Ordered tables: " + (onlyAllowedTables.isEmpty() ? "all available" : join(",", onlyAllowedTables)));
         System.out.println("---------------------------------------------------------");
         System.out.println("root package: " + getPackage());
-        System.out.println("Target language: " + generateLanguage);
+        System.out.println("Target language: " + language);
         System.out.println("Files saved into a location: " + getPath());
         System.out.println("Override files: " + toYesNo(isOverride()));
         System.out.println("Generating tables: " + toYesNo(isGenerateTables()));
