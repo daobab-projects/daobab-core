@@ -2,8 +2,8 @@ package io.daobab.target.database.query;
 
 import io.daobab.error.AttemptToSetWhereClauseSecondTimeException;
 import io.daobab.error.DaobabEntityCreationException;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.error.MandatoryTargetException;
-import io.daobab.error.NullEntityException;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.Column;
@@ -134,7 +134,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
     protected void init(QueryTarget target, Entity entity) {
         if (target == null) throw new MandatoryTargetException();
-        if (entity == null) throw new NullEntityException();
+        if (entity == null) throw new MandatoryEntity();
         setTarget(target);
         setEntityName(target.getEntityName(entity.entityClass()));
         setEntityClass(entity.entityClass());
@@ -442,7 +442,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     }
 
     public <E1 extends Entity> Q from(E1 entity) {
-        if (entity == null) throw new NullEntityException();
+        if (entity == null) throw new MandatoryEntity();
         setEntityName(target.getEntityName(entityClass));
         setEntityClass(entity.entityClass());
         setIdentifierStorage(new IdentifierStorage());

@@ -3,12 +3,12 @@ package io.daobab.error;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class NullEntityException extends DaobabException {
+public class TransactionOpenedException extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-    public NullEntityException() {
-        super("Null Entity");
+    public TransactionOpenedException() {
+        super("Transaction already opened");
     }
 
 }

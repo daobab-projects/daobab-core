@@ -7,7 +7,7 @@ import io.daobab.creation.EntityCreator;
 import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import io.daobab.error.DaobabException;
 import io.daobab.error.MandatoryColumn;
-import io.daobab.error.NullParameter;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.statement.function.type.ColumnFunction;
 
 import java.util.*;
@@ -161,7 +161,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public <E extends Entity> E getEntity(Class<E> entityClass) {
-        if (entityClass == null) throw new NullParameter("entityClass");
+        if (entityClass == null) throw new MandatoryEntity();
 
         EntityBuilder<E> builder = EntityCreator.builder(entityClass);
 
@@ -173,7 +173,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
 
     @SuppressWarnings("unchecked")
     public <E extends Entity> E getEntity(E entity) {
-        if (entity == null) throw new NullParameter("entity");
+        if (entity == null) throw new MandatoryEntity();
         return (E) getEntity(entity.getClass());
     }
 

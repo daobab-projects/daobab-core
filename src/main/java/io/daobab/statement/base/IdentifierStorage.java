@@ -2,7 +2,7 @@ package io.daobab.statement.base;
 
 import io.daobab.converter.TypeConverter;
 import io.daobab.error.DaobabException;
-import io.daobab.error.NullEntityException;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.model.Column;
 import io.daobab.model.ColumnHaving;
 import io.daobab.target.database.QueryTarget;
@@ -29,7 +29,7 @@ public final class IdentifierStorage {
     private final Map<String, Column> identifiedColumnByAsKey = new HashMap<>();
 
     public void registerIdentifiers(String... entities) {
-        if (entities == null) throw new NullEntityException();
+        if (entities == null) throw new MandatoryEntity();
 
         for (String entityName : entities) {
             getIdentifierFor(entityName);

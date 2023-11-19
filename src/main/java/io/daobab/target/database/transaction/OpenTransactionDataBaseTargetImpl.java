@@ -2,7 +2,7 @@ package io.daobab.target.database.transaction;
 
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.TransactionClosedException;
-import io.daobab.error.TransactionOpenedAlready;
+import io.daobab.error.TransactionOpenedException;
 import io.daobab.model.Entity;
 import io.daobab.model.ProcedureParameters;
 import io.daobab.query.base.QuerySpecialParameters;
@@ -136,7 +136,7 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
 
     @Override
     public OpenTransactionDataBaseTargetImpl beginTransaction() {
-        throw new TransactionOpenedAlready();
+        throw new TransactionOpenedException();
     }
 
     @Override

@@ -1,7 +1,7 @@
 package io.daobab.target.buffer.query;
 
 import io.daobab.error.MandatoryColumn;
-import io.daobab.error.NullOrEmptyParameter;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.model.*;
 import io.daobab.query.base.QueryJoin;
 import io.daobab.query.base.QueryType;
@@ -32,7 +32,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
 
     public BufferQueryPlate(BufferQueryTarget target, Entity... entities) {
         if (entities == null || entities.length == 0) {
-            throw new NullOrEmptyParameter("entities");
+            throw new MandatoryEntity();
         }
         List<TableColumn> columns = new ArrayList<>();
         for (Entity e : entities) {

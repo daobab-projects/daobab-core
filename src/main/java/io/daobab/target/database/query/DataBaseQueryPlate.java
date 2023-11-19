@@ -1,7 +1,7 @@
 package io.daobab.target.database.query;
 
 import io.daobab.error.MandatoryColumn;
-import io.daobab.error.NullOrEmptyParameter;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.model.*;
 import io.daobab.query.base.QueryExpressionProvider;
 import io.daobab.query.base.QueryType;
@@ -31,7 +31,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
 
     public DataBaseQueryPlate(QueryTarget target, Entity... entities) {
         if (entities == null || entities.length == 0) {
-            throw new NullOrEmptyParameter("entities");
+            throw new MandatoryEntity();
         }
         List<TableColumn> columns = new ArrayList<>();
         for (Entity e : entities) {

@@ -5,11 +5,11 @@ import io.daobab.target.Target;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public class NoEntitiesIntoTargetException extends DaobabException {
+public class TargetHasNoEntitiesException extends DaobabException {
 
     private static final long serialVersionUID = 1L;
 
-    public NoEntitiesIntoTargetException(Target target) {
+    public TargetHasNoEntitiesException(Target target) {
         super("No entities into target: " + target.getClass().getSimpleName());
     }
 

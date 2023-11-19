@@ -2,8 +2,8 @@ package io.daobab.target.buffer.query;
 
 import io.daobab.error.AttemptToSetWhereClauseSecondTimeException;
 import io.daobab.error.DaobabEntityCreationException;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.error.MandatoryTargetException;
-import io.daobab.error.NullEntityException;
 import io.daobab.generator.DictRemoteKey;
 import io.daobab.internallogger.ILoggerBean;
 import io.daobab.model.Column;
@@ -125,7 +125,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
 
     protected void init(BufferQueryTarget target, Entity entity) {
         if (target == null) throw new MandatoryTargetException();
-        if (entity == null) throw new NullEntityException();
+        if (entity == null) throw new MandatoryEntity();
         setTarget(target);
         setEntityName(target.getEntityName(entity.entityClass()));
         setEntityClass(entity.entityClass());
@@ -413,7 +413,7 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     }
 
     public <E extends Entity> Q from(E entity) {
-        if (entity == null) throw new NullEntityException();
+        if (entity == null) throw new MandatoryEntity();
         setEntityName(target.getEntityName(entity.entityClass()));
         setEntityClass(entity.entityClass());
         IdentifierStorage storage = new IdentifierStorage();

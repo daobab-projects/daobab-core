@@ -1,8 +1,8 @@
 package io.daobab.model;
 
 import io.daobab.error.DaobabException;
+import io.daobab.error.MandatoryEntity;
 import io.daobab.error.MandatoryTargetException;
-import io.daobab.error.NullEntityException;
 import io.daobab.parser.ParserGeneral;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.target.database.QueryTarget;
@@ -20,7 +20,7 @@ public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKe
     @Override
     default E handleOCC(QueryTarget target, E entityToUpdate) {
         if (target == null) throw new MandatoryTargetException();
-        if (entityToUpdate == null) throw new NullEntityException();
+        if (entityToUpdate == null) throw new MandatoryEntity();
         Object dbval = entityToUpdate.findRelatedOne(target, entityToUpdate.colID(), new WhereAnd().greater(getOCCColumn(), (R) entityToUpdate));
 
         if (dbval != null) throw new DaobabException("Optimistic Concurrency Error");
