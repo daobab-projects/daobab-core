@@ -102,19 +102,19 @@ class JavaTemplates {
             "\n" + GenKeys.CLASS_FULL_NAME +
             "\n" +
             "\n@SuppressWarnings(\"unused\")" +
-            "\npublic interface " + GenKeys.INTERFACE_NAME + "<E extends Entity, F> extends RelatedTo<E>, MapHandler<E> {" +
+            "\npublic interface " + GenKeys.INTERFACE_NAME + "<E extends Entity> extends RelatedTo<E>, MapHandler<E> {" +
             "\n" +
-            "\n\tdefault F get" + GenKeys.INTERFACE_NAME + "(){" +
+            "\n\tdefault " + GenKeys.CLASS_SIMPLE_NAME + " get" + GenKeys.INTERFACE_NAME + "(){" +
             "\n\t\treturn readParam(\"" + GenKeys.FIELD_NAME + "\");" +
             "\n\t}" +
             "\n" +
-            "\n\tdefault E set" + GenKeys.INTERFACE_NAME + "(F val){" +
+            "\n\tdefault E set" + GenKeys.INTERFACE_NAME + "(" + GenKeys.CLASS_SIMPLE_NAME + " val){" +
             "\n\t\treturn storeParam(\"" + GenKeys.FIELD_NAME + "\",val);" +
             "\n\t}" +
             "\n" +
             "\n" + GenKeys.TABLES_AND_TYPE +
             "\n\t@SuppressWarnings({\"rawtypes\",\"unchecked\"})" +
-            "\n\tdefault Column<E, F," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){" +
+            "\n\tdefault Column<E, " + GenKeys.CLASS_SIMPLE_NAME + "," + GenKeys.INTERFACE_NAME + "> col" + GenKeys.INTERFACE_NAME + "(){" +
             "\n\t\treturn " + DaobabCache.class.getSimpleName() + ".getColumn(\"" + GenKeys.FIELD_NAME + "\", \"" + GenKeys.COLUMN_NAME + "\", (" + Table.class.getSimpleName() + "<?>) this, " + GenKeys.CLASS_SIMPLE_NAME + ".class);" +
             "\n\t}" +
             "\n}";
