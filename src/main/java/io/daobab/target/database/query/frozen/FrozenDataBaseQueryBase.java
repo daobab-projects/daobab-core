@@ -38,7 +38,7 @@ public abstract class FrozenDataBaseQueryBase<E extends Entity, Q extends DataBa
     }
 
 
-    public Q getOriginalQuery() {
+    public Q unfreeze() {
         return originalQuery;
     }
 

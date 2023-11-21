@@ -12,7 +12,8 @@ public interface FrozenQueryProvider extends StatisticQuery, ILoggerBean {
 
     List<ParameterInjectionPoint> getQueryParametersInjectionPoints();
 
-    DataBaseQueryBase getOriginalQuery();
+    @SuppressWarnings("rawtypes")
+    DataBaseQueryBase unfreeze();
 
 
 }

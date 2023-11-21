@@ -1055,7 +1055,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             sqlQuery = sqlQuery.replace("~~~" + daoParam.getKey() + "~~~", convertedValueToPut);
         }
 
-        DataBaseQueryBase<?, ?> query = frozenQueryProvider.getOriginalQuery();
+        DataBaseQueryBase<?, ?> query = frozenQueryProvider.unfreeze();
         QueryTarget target = query.getTarget();
         if (target.getShowSql() || query.isLogQueryEnabled()) {
             target.getLog().info(sqlQuery);

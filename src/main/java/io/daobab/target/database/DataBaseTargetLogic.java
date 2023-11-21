@@ -450,7 +450,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
     default <E extends Entity> Entities<E> readEntityList(FrozenDataBaseQueryEntity<E> frozenQuery, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConvertersArr) {
         return doSthOnConnection(frozenQuery, (frozen, conn) -> {
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozen);
-            Class<E> clazz = frozen.getOriginalQuery().getEntityClass();
+            Class<E> clazz = frozen.getEntityClass();
 
             Statement stmt = null;
             List<E> rv = new ArrayList<>();
@@ -461,7 +461,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlQuery);
 
-                List<TableColumn> columns = frozen.getOriginalQuery().getFields();
+                List<TableColumn> columns = frozen.unfreeze().getFields();
                 Column[] columnsArray = new Column[columns.size()];
 
                 for (int i = 0; i < columns.size(); i++) {
@@ -532,7 +532,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
                 if (rs.next()) {
 
-                    E entity = rsReader.readEntity(this, rs, clazz, frozen.getOriginalQuery().getFields());
+                    E entity = rsReader.readEntity(this, rs, clazz, frozen.unfreeze().getFields());
                     entity.afterSelect(this);
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozen, 1);
                     return entity;

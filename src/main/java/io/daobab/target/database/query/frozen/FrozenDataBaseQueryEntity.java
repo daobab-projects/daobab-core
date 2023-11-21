@@ -37,7 +37,7 @@ public class FrozenDataBaseQueryEntity<E extends Entity> extends FrozenDataBaseQ
         target.getAccessProtector().validateEntityAllowedFor(originalQuery.getEntityName(), OperationType.READ);
         target.getAccessProtector().removeViolatedInfoColumns3(originalQuery.getFields(), OperationType.READ);
 
-        List<TableColumn> columns = getOriginalQuery().getFields();
+        List<TableColumn> columns = unfreeze().getFields();
         Column[] columnsArray = new Column[columns.size()];
 
         for (int i = 0; i < columns.size(); i++) {
@@ -55,7 +55,7 @@ public class FrozenDataBaseQueryEntity<E extends Entity> extends FrozenDataBaseQ
                 if (typeConverter instanceof TypeConverterPKBased) {
                     typeConverters[i] = new TypeConverterPrimaryKeyToOneCache((TypeConverterPKBased) typeConverter);
                 } else if (typeConverter instanceof TypeConverterPKBasedList) {
-                    typeConverters[i] = new TypeConverterPrimaryKeyToManyCache(getOriginalQuery().getTarget(), (TypeConverterPKBasedList) typeConverter, entityInstance, (Entity) columnsArray[i].getInnerTypeClass().getDeclaredConstructor().newInstance());
+                    typeConverters[i] = new TypeConverterPrimaryKeyToManyCache(unfreeze().getTarget(), (TypeConverterPKBasedList) typeConverter, entityInstance, (Entity) columnsArray[i].getInnerTypeClass().getDeclaredConstructor().newInstance());
                 } else {
                     typeConverters[i] = typeConverter;
                 }
