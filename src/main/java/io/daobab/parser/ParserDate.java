@@ -5,8 +5,11 @@ import io.daobab.error.ParserException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 
 /**
@@ -57,6 +60,28 @@ public class ParserDate {
     public static Long toLong(Date from) {
         if (from == null) return null;
         return from.getTime();
+    }
+
+    public static String toString(Date from, String pattern) {
+        if (from == null) return null;
+        return ParserDate.parse(from, new SimpleDateFormatThreadSafe(pattern));
+    }
+
+    public static String toString(Date from, String pattern, Locale locale) {
+        if (from == null) return null;
+        return ParserDate.parse(from, new SimpleDateFormatThreadSafe(pattern, locale));
+    }
+
+    public static String toString(LocalDateTime from, String pattern, Locale locale) {
+        if (from == null) return null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, locale);
+        return from.format(formatter);
+    }
+
+    public static String toString(LocalDateTime from, String pattern) {
+        if (from == null) return null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return from.format(formatter);
     }
 
 
