@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.daobab</groupId>
     <artifactId>daobab-core</artifactId>
-    <version>1.6</version>
+    <version>1.8</version>
     <name>Daobab</name>
     <url>http://www.daobab.io</url>
     <description>Daobab Java ORM</description>
@@ -71,13 +71,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.13.1</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 

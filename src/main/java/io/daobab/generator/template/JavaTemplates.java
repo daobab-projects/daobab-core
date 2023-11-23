@@ -2,7 +2,6 @@ package io.daobab.generator.template;
 
 import io.daobab.creation.DaobabCache;
 import io.daobab.model.*;
-import io.daobab.parser.ParserGeneral;
 import io.daobab.query.base.QueryWhisperer;
 import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.database.connection.SqlProducer;
@@ -40,10 +39,9 @@ class JavaTemplates {
 
     static final String DATABASE_TABLES_INTERFACE_TEMP = "package " + GenKeys.TARGET_PACKAGE +
             "\n" +
-            "\nimport " + ParserGeneral.class.getName() + ";" +
             "\nimport " + QueryWhisperer.class.getName() + ";" +
             "\n" + GenKeys.TAB_IMPORTS + "\n" +
-            "\npublic interface " + GenKeys.TABLES_INTERFACE_NAME + " extends ParserGeneral, QueryWhisperer {" +
+            "\npublic interface " + GenKeys.TABLES_INTERFACE_NAME + " extends QueryWhisperer {" +
             "\n" +
             "\n" + GenKeys.TABLES_INITIATED +
             "\n" +
@@ -137,7 +135,7 @@ class JavaTemplates {
             "\n\t\tsuper();" +
             "\n\t}" +
             "\n" +
-            "\n\t" + GenKeys.TABLE_CAMEL_NAME + "(Map<String, Object> parameters) {" +
+            "\n\tpublic " + GenKeys.TABLE_CAMEL_NAME + "(Map<String, Object> parameters) {" +
             "\n\t\tsuper(parameters);" +
             "\n\t}" +
             "\n" +

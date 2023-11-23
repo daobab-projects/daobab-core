@@ -5,10 +5,7 @@ import io.daobab.error.ParserException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -175,26 +172,4 @@ public interface ParserGeneral {
         return new java.sql.Time(val.getTime());
     }
 
-    default String toSting(Date from, String pattern) {
-        if (from == null) return null;
-        return ParserDate.parse(from, new SimpleDateFormatThreadSafe(pattern));
-    }
-
-    default String toSting(Date from, String pattern, Locale locale) {
-        if (from == null) return null;
-        return ParserDate.parse(from, new SimpleDateFormatThreadSafe(pattern, locale));
-    }
-
-    default String toSting(LocalDateTime from, String pattern, Locale locale) {
-        if (from == null) return null;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, locale);
-        return from.format(formatter);
-    }
-
-
-    default String toSting(LocalDateTime from, String pattern) {
-        if (from == null) return null;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-        return from.format(formatter);
-    }
 }

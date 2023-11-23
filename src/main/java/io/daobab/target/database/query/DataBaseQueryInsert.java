@@ -32,7 +32,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
     private boolean pkResolved = false;
     private E entity;
     private Query<?, ?, ?> selectQuery;
-    private int mode = MODE_REPLACE;
+    private int mode = MODE_INSERT;
 
 
     private SetFields onDuplicateKeyUpdate;
