@@ -251,9 +251,15 @@ public class GenerateTable {
 
         Replacer replacer = new Replacer();
 
+        String pkType = pk.getFieldClass().getSimpleName();
+
+        if (KOTLIN.equals(language)) {
+            pkType = pkType.equals("Integer") ? "Int" : pkType;
+        }
+
         return replacer
                 .add(GenKeys.TABLE_NAME, GenerateFormatter.toCamelCase(getTableName()))
-                .add(GenKeys.PK_TYPE_IMPORT, pk.getFieldClass().getSimpleName())
+                .add(GenKeys.PK_TYPE_IMPORT, pkType)
                 .add(GenKeys.TYPE_IMPORTS, getPkTypeSimpleName(language, pk))
                 .add(GenKeys.INTERFACE_NAME, pk.getFinalFieldNameShortOrLong(tableName))
                 .replaceAll(TemplateProvider.getTemplate(language, PK_COL_METHOD));
