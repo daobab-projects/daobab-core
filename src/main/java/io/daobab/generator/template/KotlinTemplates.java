@@ -52,50 +52,46 @@ class KotlinTemplates {
     public static final String TABLE_CLASS_TEMP = "package " + GenKeys.TABLE_PACKAGE +
             "\n" +
             "\n" + GenKeys.COLUMN_IMPORTS +
-            "\nimport " + DaobabCache.class.getName() + ";" +
-            "\n" + "import io.daobab.model.*;" +
+            "\nimport " + DaobabCache.class.getName() +
+            "\n" + "import io.daobab.model.*" +
             "\n" + GenKeys.TYPE_IMPORTS +
             "\nimport java.util.*" +
             "\n" +
-            "\nclass " + GenKeys.TABLE_CAMEL_NAME + " : Table<" + GenKeys.TABLE_CAMEL_NAME + ">(), " +
+            "\nclass " + GenKeys.TABLE_CAMEL_NAME + " : Table<" + GenKeys.TABLE_CAMEL_NAME + ">, " +
             "\n" + GenKeys.COLUMN_INTERFACES +
-            "\n" + GenKeys.PK_INTERFACE +
+            "\n\t" + GenKeys.PK_INTERFACE +
             "\n\t{" +
             "\n" +
-            "\n\tpublic " + GenKeys.TABLE_CAMEL_NAME + "() {" +
-            "\n\t\tsuper()" +
-            "\n\t}" +
+            "\n\tconstructor (): super()" +
             "\n" +
-            "\n\tpublic " + GenKeys.TABLE_CAMEL_NAME + "(Map<String, Object> parameters) {" +
-            "\n\t\tsuper(parameters)" +
-            "\n\t}" +
+            "\n\tconstructor (parameters: Map<String?, Any?>?): super(parameters)" +
             "\n" +
-            "\n\toverride fun columns() = " +
-            "\n\t\treturn " + DaobabCache.class.getSimpleName() + ".getTableColumns(this," +
-            "\n\t\t\t() -> listOf(" +
+            "\n\toverride fun columns(): List<TableColumn> = " +
+            "\n\t\t" + DaobabCache.class.getSimpleName() + ".getTableColumns(this) {" +
+            "\n\t\t\tArrays.asList(" +
             "\n" + GenKeys.COLUMN_METHODS +
-            "\n\t\t))" +
+            "\n\t)" +
+            "\n}" +
             "\n\t" + GenKeys.PK_ID_METHOD +
             "\n}";
+
     public static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE +
             "\n" +
             "\nimport " + DaobabCache.class.getName() +
             "\nimport io.daobab.model.*;" +
             "\n" + GenKeys.CLASS_FULL_NAME +
-            "\ninterface " + GenKeys.INTERFACE_NAME + "<E : " + Entity.class.getSimpleName() + ", F> : " + RelatedTo.class.getSimpleName() + "<E>," + MapHandler.class.getSimpleName() + " {" +
+            "\ninterface " + GenKeys.INTERFACE_NAME + "<E : " + Entity.class.getSimpleName() + ", F> : " + RelatedTo.class.getSimpleName() + "<E>, " + MapHandler.class.getSimpleName() + "<E> {" +
             "\n" +
             "\n\tfun get" + GenKeys.INTERFACE_NAME + "(): F = readParam(\"" + GenKeys.FIELD_NAME + "\")" +
             "\n" +
-            "\n\t@Suppress(\"UNCHECKED_CAST\")" +
-            "\n" +
-            "\n\t\tfun set" + GenKeys.INTERFACE_NAME + "(value: F): E {" +
+            "\n\tfun set" + GenKeys.INTERFACE_NAME + "(value: F): E {" +
             "\n\t\treturn storeParam(\"" + GenKeys.FIELD_NAME + "\", value)" +
             "\n\t}" +
             "\n" +
             "\n" + GenKeys.TABLES_AND_TYPE +
-            "\n\tfun col" + GenKeys.INTERFACE_NAME + "() =" +
-            "\n\t\treturn " + DaobabCache.class.getSimpleName() + ".getColumn(\"" + GenKeys.FIELD_NAME + "\", \"" + GenKeys.COLUMN_NAME + "\", (" + Table.class.getSimpleName() + "<?>) this, " + GenKeys.CLASS_SIMPLE_NAME + "::class.java);" +
-            "\n\t}" +
+            "\n\tfun col" + GenKeys.INTERFACE_NAME + "(): Column<E, F, out RelatedTo<E>> =" +
+            "\n\t\t" + DaobabCache.class.getSimpleName() + ".getColumn(\"" + GenKeys.FIELD_NAME + "\", \"" + GenKeys.COLUMN_NAME + "\", this as " + Table.class.getSimpleName() + "<*>, " + GenKeys.CLASS_SIMPLE_NAME + "::class.java) as  Column<E, F, out RelatedTo<E>> " +
+            "\n\t" +
             "\n}";
 
     public static final String COMPOSITE_KEY_TEMP = "package " + GenKeys.TABLE_PACKAGE +
@@ -113,7 +109,7 @@ class KotlinTemplates {
             "\n" +
             "\n}";
     public static final String PK_COL_METHOD_TEMP =
-            "\noverride fun colID() = col" + GenKeys.INTERFACE_NAME + "() " +
+            "\noverride fun colID() = col" + GenKeys.INTERFACE_NAME + "() as Column< " + GenKeys.TABLE_NAME + ", " + GenKeys.PK_TYPE_IMPORT + ", " + GenKeys.INTERFACE_NAME + "<*, " + GenKeys.PK_TYPE_IMPORT + ">>" +
                     "\n" +
                     "\n\toverride fun hashCode() = Objects.hashCode(id)" +
                     "\n" +
