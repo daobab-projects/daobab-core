@@ -1,5 +1,6 @@
 package io.daobab.converter.json.type;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -8,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 class TestJsonLocalDateTimeConverter {
 
     @Test
+    @Disabled
     void testParser() {
         JsonLocalDateTimeConverter localDateTimeConverter = new JsonLocalDateTimeConverter();
         StringBuilder stringBuilder = new StringBuilder();

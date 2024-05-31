@@ -5,10 +5,21 @@ package io.daobab.property;
  */
 public class PropertyReader {
     private PropertyReader() {
+
+        DaobabPropertyGenerator dd = new DaobabPropertyGenerator();
+        dd.getOverride();
     }
 
     public static boolean readBooleanSmall(String key, String defaultValue) {
         String val = System.getProperty(key, defaultValue);
+        return "true".equals(val);
+    }
+
+    public static Boolean readBoolean(String key) {
+        String val = System.getProperty(key);
+        if (val == null || val.isEmpty()) {
+            return null;
+        }
         return "true".equals(val);
     }
 

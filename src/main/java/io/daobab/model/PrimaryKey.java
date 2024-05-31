@@ -109,38 +109,32 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
     @SuppressWarnings("unchecked")
     default E insert(QueryTarget target) {
-        target.insert((E) this).execute();
-        return (E) this;
+        return target.insert((E) this).execute();
     }
 
     @SuppressWarnings("unchecked")
     default E insert(QueryTarget target, boolean transaction) {
-        target.insert((E) this).execute(transaction);
-        return (E) this;
+        return target.insert((E) this).execute(transaction);
     }
 
     @SuppressWarnings("unchecked")
     default E insert(QueryTarget target, Propagation propagation) {
-        target.insert((E) this).execute(propagation);
-        return (E) this;
+        return target.insert((E) this).execute(propagation);
     }
 
     @SuppressWarnings("unchecked")
     default E replace(QueryTarget target) {
-        target.replace((E) this).execute();
-        return (E) this;
+        return target.replace((E) this).execute();
     }
 
     @SuppressWarnings("unchecked")
     default E replace(QueryTarget target, boolean transaction) {
-        target.replace((E) this).execute(transaction);
-        return (E) this;
+        return target.replace((E) this).execute(transaction);
     }
 
     @SuppressWarnings("unchecked")
     default E replace(QueryTarget target, Propagation propagation) {
-        target.replace((E) this).execute(propagation);
-        return (E) this;
+        return target.replace((E) this).execute(propagation);
     }
 
     @SuppressWarnings("unchecked")

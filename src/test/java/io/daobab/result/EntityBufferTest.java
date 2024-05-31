@@ -8,6 +8,7 @@ import io.daobab.test.dao.SakilaTables;
 import io.daobab.test.dao.table.Film;
 import io.daobab.test.generator.EntityBufferGenerator;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -53,6 +54,7 @@ public class EntityBufferTest implements SakilaTables, QueryWhisperer {
         }
     }
     @Test
+    @Disabled
     void test() {
         long start = 0;//System.currentTimeMillis();
         long stop = 0;

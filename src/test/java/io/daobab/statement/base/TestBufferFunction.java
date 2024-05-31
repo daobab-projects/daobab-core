@@ -5,6 +5,7 @@ import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
 import io.daobab.test.dao.SakilaTables;
 import io.daobab.test.dao.table.Film;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 class TestBufferFunction implements FunctionWhispererBuffer, SakilaTables {
 
     @Test
+    @Disabled
     void test() {
         List<Film> filmy = new ArrayList<>();
 

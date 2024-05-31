@@ -4,6 +4,8 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.model.PrimaryKey;
 import io.daobab.target.database.DataBaseTarget;
+import io.daobab.target.database.converter.enums.IntBasedEnum;
+import io.daobab.target.database.converter.enums.LongBasedEnum;
 import io.daobab.target.database.converter.standard.*;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 
@@ -69,7 +71,7 @@ public class DatabaseConverterManager {
         return target;
     }
 
-    @SuppressWarnings({"java:S1452", "java:S3776"})
+    @SuppressWarnings({"java:S1452", "java:S3776", "unchecked", "rawtypes"})
     public Optional<DatabaseTypeConverter<?, ?>> getConverter(Column<?, ?, ?> column) {
         return cache.computeIfAbsent(target.getEntityName(column.entityClass()) + column.getFieldName(), tableColumn -> {
 
@@ -95,7 +97,14 @@ public class DatabaseConverterManager {
                 }
             }
             if (rv == null && column.getFieldClass().isEnum()) {
-                rv = new StandardTypeConverterEnum(column.getFieldClass());
+                Class enumClass = column.getFieldClass();
+                if (IntBasedEnum.class.isAssignableFrom(enumClass)) {
+                    rv = new StandardTypeConverterEnumIntBased<>(enumClass);
+                } else if (LongBasedEnum.class.isAssignableFrom(enumClass)) {
+                    rv = new StandardTypeConverterEnumLongBased<>(enumClass);
+                } else {
+                    rv = new StandardTypeConverterEnum(enumClass);
+                }
             }
 
             return Optional.ofNullable(rv);
