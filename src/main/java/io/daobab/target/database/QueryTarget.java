@@ -33,7 +33,7 @@ import java.util.List;
  * Gathers interfaces Target and QueryDataBaseHandler
  */
 @SuppressWarnings({"unused", "rawtypes"})
-public interface QueryTarget extends Target, QueryDataBaseHandler {
+public interface QueryTarget extends Target, QueryDataBaseHandler, FrozenQueryBufferProvider {
 
     OpenTransactionDataBaseTargetImpl beginTransaction();
 
@@ -217,15 +217,29 @@ public interface QueryTarget extends Target, QueryDataBaseHandler {
     }
 
     //  NATIVE
+    @SuppressWarnings("unchecked")
     default <E extends Entity, F> NativeDataBaseQueryField<E, F> nativeSelect(String nativeQuery, Column<E, F, ?> col) {
-        return new NativeDataBaseQueryField<>(nativeQuery, this, col);
+        return (NativeDataBaseQueryField<E, F>) getFrozenQueryBuffer().getBuffer().computeIfAbsent(nativeQuery, query -> new NativeDataBaseQueryField<>(query, this, col));
     }
 
+    @SuppressWarnings("unchecked")
     default <E extends Entity> NativeDataBaseQueryEntity<E> nativeSelect(String nativeQuery, E entity) {
-        return new NativeDataBaseQueryEntity<>(nativeQuery,this, entity);
+        return (NativeDataBaseQueryEntity<E>) getFrozenQueryBuffer().getBuffer().computeIfAbsent(nativeQuery, query -> new NativeDataBaseQueryEntity<>(query, this, entity));
     }
 
     default NativeDataBaseQueryPlate nativeSelect(String nativeQuery, Column<?, ?, ?>... col) {
+        return (NativeDataBaseQueryPlate) getFrozenQueryBuffer().getBuffer().computeIfAbsent(nativeQuery, query -> new NativeDataBaseQueryPlate(query, this, col));
+    }
+
+    default <E extends Entity, F> NativeDataBaseQueryField<E, F> nativeSelectNoCache(String nativeQuery, Column<E, F, ?> col) {
+        return new NativeDataBaseQueryField<>(nativeQuery, this, col);
+    }
+
+    default <E extends Entity> NativeDataBaseQueryEntity<E> nativeSelectNoCache(String nativeQuery, E entity) {
+        return new NativeDataBaseQueryEntity<>(nativeQuery,this, entity);
+    }
+
+    default NativeDataBaseQueryPlate nativeSelectNoCache(String nativeQuery, Column<?, ?, ?>... col) {
         return new NativeDataBaseQueryPlate(nativeQuery, this, col);
     }
 

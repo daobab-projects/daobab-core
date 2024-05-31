@@ -34,7 +34,7 @@ import java.util.function.BiFunction;
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
-public abstract class DataBaseTarget extends BaseTarget implements DataBaseTargetLogic, MetaDataTables {
+public abstract class DataBaseTarget extends BaseTarget implements DataBaseTargetLogic, MetaDataTables, FrozenQueryBufferProvider {
 
     String dataBaseProductName;
     String dataBaseMajorVersion;
@@ -48,11 +48,12 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
     private final DatabaseConverterManager converterManager;
     private final ResultSetReader resultSetReader;
     private DatabaseDateConverter databaseDateConverter;
+    private final FrozenQueryBuffer frozenQueryBuffer;
 
     protected DataBaseTarget() {
         converterManager = new DatabaseConverterManager(this);
         resultSetReader = new JDBCResultSetReader();
-
+        frozenQueryBuffer = new FrozenQueryBuffer();
     }
 
 
@@ -118,7 +119,7 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
                 setDatabaseDateConverter(new DatabaseDateConverterOracle());
             } else if (meta.getDatabaseProductName().startsWith(DictDatabaseType.MicrosoftSQL)) {
                 setDatabaseDateConverter(new DatabaseDateConverterMicrosoftSql());
-            } else if (DictDatabaseType.ORACLE.equals(meta.getDatabaseProductName())) {
+            } else if (DictDatabaseType.MYSQL.equals(meta.getDatabaseProductName())) {
                 setDatabaseDateConverter(new DatabaseDateConverterMySql());
             } else if (DictDatabaseType.PostgreSQL.equals(meta.getDatabaseProductName())) {
                 setDatabaseDateConverter(new DatabaseDateConverterPostgreSql());
@@ -254,5 +255,11 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
 
     public void setDatabaseDateConverter(DatabaseDateConverter databaseDateConverter) {
         this.databaseDateConverter = databaseDateConverter;
+    }
+
+
+    @Override
+    public FrozenQueryBuffer getFrozenQueryBuffer() {
+        return frozenQueryBuffer;
     }
 }
