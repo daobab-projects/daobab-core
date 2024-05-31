@@ -154,8 +154,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
     @SuppressWarnings({"unchecked", "rawtypes", "Duplicates"})
     default E update(QueryTarget target, Column<E, ?, ?>... columnsToUpdate) {
-        if (this instanceof OptimisticConcurrencyForPrimaryKey) {
-            OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
+        if (this instanceof OptimisticConcurrencyForPrimaryKey occ) {
             occ.handleOCC(target, this);
 
             boolean occColumnUpdated = false;
@@ -180,8 +179,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
     @SuppressWarnings({"unchecked", "rawtypes", "Duplicates"})
     default E update(QueryTarget target, Propagation propagation, Column<E, ?, ?>... columnsToUpdate) {
-        if (this instanceof OptimisticConcurrencyForPrimaryKey) {
-            OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
+        if (this instanceof OptimisticConcurrencyForPrimaryKey occ) {
             occ.handleOCC(target, this);
 
 
@@ -194,10 +192,10 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
             }
 
             if (!occColumnUpdated) {
-                Column<E, ?, ?>[] newarray = new Column[columnsToUpdate.length + 1];
-                System.arraycopy(columnsToUpdate, 0, newarray, 0, columnsToUpdate.length);
-                newarray[columnsToUpdate.length + 1] = occ.getOCCColumn();
-                columnsToUpdate = newarray;
+                Column<E, ?, ?>[] newArray = new Column[columnsToUpdate.length + 1];
+                System.arraycopy(columnsToUpdate, 0, newArray, 0, columnsToUpdate.length);
+                newArray[columnsToUpdate.length + 1] = occ.getOCCColumn();
+                columnsToUpdate = newArray;
 
             }
         }
@@ -207,8 +205,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
     @SuppressWarnings({"unchecked", "rawtypes", "Duplicates"})
     default E update(QueryTarget target) {
-        if (this instanceof OptimisticConcurrencyForPrimaryKey) {
-            OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
+        if (this instanceof OptimisticConcurrencyForPrimaryKey occ) {
             occ.handleOCC(target, this);
         }
         target.update(SetFields.setInfoColumns((RelatedTo) this, target.getColumnsForTable(this).toArray(new TableColumn[0])))
@@ -219,8 +216,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
     @SuppressWarnings({"unchecked", "rawtypes", "Duplicates"})
     default E update(OpenedTransactionDataBaseTarget target, boolean transaction) {
-        if (this instanceof OptimisticConcurrencyForPrimaryKey) {
-            OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
+        if (this instanceof OptimisticConcurrencyForPrimaryKey occ) {
             occ.handleOCC(target, this);
         }
         target.update(SetFields.setValuesArray((E) this, target.getColumnsForTable(this).stream()
@@ -234,8 +230,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
     @SuppressWarnings({"unchecked", "rawtypes", "Duplicates"})
     default E update(QueryTarget target, boolean transaction, Column<E, ?, ?>... columnsToUpdate) {
-        if (this instanceof OptimisticConcurrencyForPrimaryKey) {
-            OptimisticConcurrencyForPrimaryKey occ = (OptimisticConcurrencyForPrimaryKey) this;
+        if (this instanceof OptimisticConcurrencyForPrimaryKey occ) {
             occ.handleOCC(target, this);
 
             boolean occColumnUpdated = false;

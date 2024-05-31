@@ -12,11 +12,13 @@ public class ColumnHaving<E extends Entity, R extends RelatedTo> implements Colu
     //If a column is identified by 'as' keyword
     private boolean identifiedAs = false;
 
+    @SuppressWarnings("unchecked")
     public ColumnHaving(String name) {
         this.name = name;
         this.instance = (E) new Dual();
     }
 
+    @SuppressWarnings("unchecked")
     public ColumnHaving(String name, boolean identifiedAs) {
         this.name = name;
         this.identifiedAs = identifiedAs;
