@@ -6,7 +6,7 @@ package io.daobab.generator;
 public interface GenerateFormatter {
 
     static String decapitalize(String string) {
-        if (string == null || string.length() == 0) {
+        if (string == null || string.isEmpty()) {
             return string;
         }
         char[] c = string.toCharArray();

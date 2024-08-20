@@ -7,8 +7,6 @@ import io.daobab.target.Target;
  */
 public class TargetNotTransactional extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public TargetNotTransactional(Target target) {
         super("Not transactional target: " + target.getClass().getName());
     }

@@ -7,8 +7,6 @@ import java.sql.SQLException;
  */
 public class DaobabSQLException extends DaobabException {
 
-    private static final long serialVersionUID = -1127875855361548L;
-
     private SQLException nextException;
 
     public DaobabSQLException(SQLException sqlexception) {

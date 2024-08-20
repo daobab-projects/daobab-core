@@ -61,10 +61,8 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default E update(QueryTarget target, Column<E, ?, ?>... columnsToUpdate) {
-        if (this instanceof OptimisticConcurrencyForPrimaryCompositeKey) {
-            OptimisticConcurrencyForPrimaryCompositeKey occ = (OptimisticConcurrencyForPrimaryCompositeKey) this;
+        if (this instanceof OptimisticConcurrencyForPrimaryCompositeKey occ) {
             occ.handleOCC(target, this);
-
 
             boolean occColumnUpdated = false;
             for (Column<E, ?, ?> c : columnsToUpdate) {
@@ -87,8 +85,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default E update(QueryTarget target, Propagation propagation, Column<E, ?, ?>... columnsToUpdate) {
-        if (this instanceof OptimisticConcurrencyForPrimaryCompositeKey) {
-            OptimisticConcurrencyForPrimaryCompositeKey occ = (OptimisticConcurrencyForPrimaryCompositeKey) this;
+        if (this instanceof OptimisticConcurrencyForPrimaryCompositeKey occ) {
             occ.handleOCC(target, this);
 
             boolean occColumnUpdated = false;
@@ -112,8 +109,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default E update(QueryTarget target) {
-        if (this instanceof OptimisticConcurrencyForPrimaryCompositeKey) {
-            OptimisticConcurrencyForPrimaryCompositeKey occ = (OptimisticConcurrencyForPrimaryCompositeKey) this;
+        if (this instanceof OptimisticConcurrencyForPrimaryCompositeKey occ) {
             occ.handleOCC(target, this);
         }
         target.update(SetFields.setInfoColumns((RelatedTo) this, columns().toArray(new TableColumn[0])))
@@ -123,8 +119,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
     }
 
     default E update(OpenedTransactionDataBaseTarget target, boolean transaction) {
-        if (this instanceof OptimisticConcurrencyForPrimaryCompositeKey) {
-            OptimisticConcurrencyForPrimaryCompositeKey occ = (OptimisticConcurrencyForPrimaryCompositeKey) this;
+        if (this instanceof OptimisticConcurrencyForPrimaryCompositeKey occ) {
             occ.handleOCC(target, this);
         }
         target.update(SetFields.setValuesArray((E) this, columns().toArray(new Column[0])))
@@ -135,8 +130,7 @@ public interface PrimaryCompositeKey<E extends Entity, K extends Composite> exte
 
 
     default E update(QueryTarget target, boolean transaction, Column<E, ?, ?>... columnsToUpdate) {
-        if (this instanceof OptimisticConcurrencyForPrimaryCompositeKey) {
-            OptimisticConcurrencyForPrimaryCompositeKey occ = (OptimisticConcurrencyForPrimaryCompositeKey) this;
+        if (this instanceof OptimisticConcurrencyForPrimaryCompositeKey occ) {
             occ.handleOCC(target, this);
 
             boolean occColumnUpdated = false;

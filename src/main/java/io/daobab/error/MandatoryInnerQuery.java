@@ -5,8 +5,6 @@ package io.daobab.error;
  */
 public class MandatoryInnerQuery extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public MandatoryInnerQuery() {
         super("Inner Query is mandatory.");
     }

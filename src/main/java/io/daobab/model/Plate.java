@@ -64,8 +64,12 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     @Override
     public List<TableColumn> columns() {
         return fields.stream()
-                .filter(f -> f instanceof TableColumn)
+                .filter(TableColumn.class::isInstance)
                 .map(TableColumn.class::cast).collect(Collectors.toList());
+    }
+
+    public <F> Optional<F> getValueOptional(Field<?, F, ?> df) {
+        return Optional.ofNullable(getValue(df));
     }
 
     @SuppressWarnings("unchecked")
@@ -279,9 +283,9 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Plate)) return false;
-        if (!super.equals(o)) return false;
-        Plate plate = (Plate) o;
+        if (!(o instanceof Plate plate)) return false;
+        if (size() != plate.size()) return false;
+        if (!Objects.equals(keySet(), plate.keySet())) return false;
         return Objects.equals(entrySet(), plate.entrySet());
     }
 

@@ -5,8 +5,6 @@ package io.daobab.error;
  */
 public class NoSequenceException extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public NoSequenceException() {
         super("Entity has no sequence.");
     }

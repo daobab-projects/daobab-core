@@ -14,7 +14,7 @@ public class DaobabPropertyKey<T> {
     private final String defaultValue;
     private final Map<String, Object> cacheMap;
 
-    public DaobabPropertyKey(DaobabPropertyCacheMapProvider cacheMap, final String key, final Function<String, T> readFunction) {
+    public DaobabPropertyKey(final DaobabPropertyCacheMapProvider cacheMap, final String key, final Function<String, T> readFunction) {
         this.key = key;
         this.readFunction = readFunction;
         this.hasDefault = false;
@@ -23,8 +23,8 @@ public class DaobabPropertyKey<T> {
         this.cacheMap = cacheMap.getCacheMap();
     }
 
-    public DaobabPropertyKey(DaobabPropertyCacheMapProvider cacheMap, final String key, final String defaultValue, final BiFunction<String, String, T> readFunction) {
-        this.key = key;
+    public DaobabPropertyKey(final DaobabPropertyCacheMapProvider cacheMap, final String key, final String defaultValue, final BiFunction<String, String, T> readFunction) {
+        this.key = cacheMap.getRootPath() + key;
         this.readFunction = s -> null;
         this.readFunctionDefault = readFunction;
         this.defaultValue = defaultValue;

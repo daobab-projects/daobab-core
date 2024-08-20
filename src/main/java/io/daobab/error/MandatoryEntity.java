@@ -5,8 +5,6 @@ package io.daobab.error;
  */
 public class MandatoryEntity extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public MandatoryEntity() {
         super("Entity is mandatory");
     }

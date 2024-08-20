@@ -5,8 +5,6 @@ package io.daobab.error;
  */
 public class ValueCanNotBeNullException extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public ValueCanNotBeNullException() {
         super("Column related value can not be null here");
     }

@@ -5,8 +5,6 @@ package io.daobab.error;
  */
 public class MandatoryQuery extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public MandatoryQuery() {
         super("Query is mandatory.");
     }

@@ -5,8 +5,6 @@ package io.daobab.error;
  */
 public class MandatoryColumn extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public MandatoryColumn() {
         super("Column is mandatory");
     }

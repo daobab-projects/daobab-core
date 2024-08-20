@@ -7,8 +7,6 @@ import io.daobab.model.Entity;
  */
 public class AttemptToWriteIntoNullEntityException extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public AttemptToWriteIntoNullEntityException() {
         super("Attempt to write into null entity.");
     }

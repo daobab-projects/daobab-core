@@ -5,8 +5,6 @@ package io.daobab.error;
  */
 public class EnumCannotBeFound extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public EnumCannotBeFound() {
         super("Enum cannot be found");
     }

@@ -109,10 +109,10 @@ public class Order {
         Map<String, Object> rv = new HashMap<>();
         for (Map.Entry<String, Object> entry : orderMap.entrySet()) {
             Object val = entry.getValue();
-            if (val instanceof Entity) {
-                rv.put(entry.getKey(), Marshaller.marshalEntity((Entity) val));
-            } else if (val instanceof TableColumn) {
-                rv.put(entry.getKey(), Marshaller.marshallColumnToString((TableColumn) val));
+            if (val instanceof Entity valEntity) {
+                rv.put(entry.getKey(), Marshaller.marshalEntity(valEntity));
+            } else if (val instanceof TableColumn tableColumn) {
+                rv.put(entry.getKey(), Marshaller.marshallColumnToString(tableColumn));
             } else {
                 rv.put(entry.getKey(), val);
             }

@@ -7,8 +7,6 @@ import io.daobab.model.TableColumn;
  */
 public class ByteBufferIOException extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public ByteBufferIOException(TableColumn ic) {
         super(String.format("ByteBuffer problem at field %s", ic.getColumn().toString()));
     }

@@ -10,4 +10,6 @@ public abstract class DaobabPropertyCacheMapProvider {
     public Map<String, Object> getCacheMap() {
         return cacheMap;
     }
+
+    protected abstract String getRootPath();
 }

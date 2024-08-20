@@ -7,8 +7,6 @@ import io.daobab.model.ResponseWrapper;
  */
 public class RemoteDaobabException extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public RemoteDaobabException(ResponseWrapper remote) {
         super((String) remote.getContent());
     }

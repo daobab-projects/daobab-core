@@ -7,8 +7,6 @@ import io.daobab.target.Target;
  */
 public class TargetHasNoEntitiesException extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public TargetHasNoEntitiesException(Target target) {
         super("No entities into target: " + target.getClass().getSimpleName());
     }

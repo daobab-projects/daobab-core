@@ -6,8 +6,6 @@ package io.daobab.error;
  */
 public class ParserException extends RuntimeException {
 
-    private static final long serialVersionUID = -1127875855361548L;
-
     public ParserException(String msg) {
         super(msg);
     }

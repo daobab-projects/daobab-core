@@ -14,4 +14,8 @@ public class DaobabPropertyGenerator extends DaobabPropertyCacheMapProvider {
         return override.getValue();
     }
 
+    @Override
+    protected String getRootPath() {
+        return "daobab.generator.";
+    }
 }

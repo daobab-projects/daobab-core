@@ -30,5 +30,4 @@ public class FieldsBuffer<F> extends LinkedList<F> implements FieldsProvider<F> 
         return Optional.of(get(0));
     }
 
-
 }

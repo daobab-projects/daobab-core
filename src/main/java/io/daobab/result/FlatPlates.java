@@ -34,7 +34,6 @@ public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable,
         int cnt = 0;
 
         for (FlatPlate val : this) {
-
             cnt++;
             boolean lastOne = cnt == size;
 
@@ -45,7 +44,6 @@ public class FlatPlates extends FieldsBuffer<FlatPlate> implements Serializable,
         rv.append("]");
 
         return rv.toString();
-
     }
 
     @Override

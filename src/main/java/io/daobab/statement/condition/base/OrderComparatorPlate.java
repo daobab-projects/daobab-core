@@ -35,17 +35,15 @@ public class OrderComparatorPlate implements Comparator<Plate> {
             Object v1 = o1.getValue(((OrderField<?, ?, RelatedTo>) fo).getField());
             Object v2 = o2.getValue(((OrderField<?, ?, RelatedTo>) fo).getField());
 
-            int result = 0;
-            if (v1 instanceof Number) {
-                Number nv1 = (Number) v1;
+            final int result;
+            if (v1 instanceof Number nv1) {
                 Number nv2 = (Number) v2;
                 result = ParserNumber.toBigDecimal(nv1).compareTo(ParserNumber.toBigDecimal(nv2));
-            } else if (v1 instanceof Date) {
-                Long nv1 = ((Date) v1).getTime();
+            } else if (v1 instanceof Date v1date) {
+                Long nv1 = v1date.getTime();
                 Long nv2 = ((Date) v2).getTime();
                 result = ParserNumber.toBigDecimal(nv1).compareTo(ParserNumber.toBigDecimal(nv2));
-            } else if (v1 instanceof String) {
-                String nv1 = (String) v1;
+            } else if (v1 instanceof String nv1) {
                 String nv2 = (String) v2;
                 result = nv2.toUpperCase().compareTo(nv1.toUpperCase());
             } else {

@@ -38,10 +38,10 @@ public class FrozenDataBaseQueryEntity<E extends Entity> extends FrozenDataBaseQ
         target.getAccessProtector().removeViolatedInfoColumns3(originalQuery.getFields(), OperationType.READ);
 
         List<TableColumn> columns = unfreeze().getFields();
-        Column[] columnsArray = new Column[columns.size()];
+        Column[] columnArray = new Column[columns.size()];
 
         for (int i = 0; i < columns.size(); i++) {
-            columnsArray[i] = columns.get(i).getColumn();
+            columnArray[i] = columns.get(i).getColumn();
         }
         typeConverters = new DatabaseTypeConverter<?, ?>[columns.size()];
 
@@ -50,12 +50,12 @@ public class FrozenDataBaseQueryEntity<E extends Entity> extends FrozenDataBaseQ
             entityInstance = originalQuery.getEntityClass().getDeclaredConstructor().newInstance();
 
             for (int i = 0; i < columns.size(); i++) {
-                DatabaseTypeConverter<?, ?> typeConverter = target.getConverterManager().getConverter(columnsArray[i]).orElse(null);
+                DatabaseTypeConverter<?, ?> typeConverter = target.getConverterManager().getConverter(columnArray[i]).orElse(null);
 
                 if (typeConverter instanceof TypeConverterPKBased) {
                     typeConverters[i] = new TypeConverterPrimaryKeyToOneCache((TypeConverterPKBased) typeConverter);
                 } else if (typeConverter instanceof TypeConverterPKBasedList) {
-                    typeConverters[i] = new TypeConverterPrimaryKeyToManyCache(unfreeze().getTarget(), (TypeConverterPKBasedList) typeConverter, entityInstance, (Entity) columnsArray[i].getInnerTypeClass().getDeclaredConstructor().newInstance());
+                    typeConverters[i] = new TypeConverterPrimaryKeyToManyCache(unfreeze().getTarget(), (TypeConverterPKBasedList) typeConverter, entityInstance, (Entity) columnArray[i].getInnerTypeClass().getDeclaredConstructor().newInstance());
                 } else {
                     typeConverters[i] = typeConverter;
                 }

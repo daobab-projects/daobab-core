@@ -5,8 +5,6 @@ package io.daobab.error;
  */
 public class MandatoryTargetException extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public MandatoryTargetException() {
         super("Target is mandatory");
     }

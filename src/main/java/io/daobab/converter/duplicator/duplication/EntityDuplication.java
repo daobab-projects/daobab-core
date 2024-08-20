@@ -53,10 +53,9 @@ public class EntityDuplication<E extends Entity> {
             throw new DaobabDeveloperException("%s annotation in class %s contains table name, but if parameter useMethod=true is in use, table name shouldn't be provided ", TableInformation.class.getSimpleName(), clazz.getSimpleName());
         } else if (annotation.useMethod()) {
             Entity entity = EntityCreator.createEntity(clazz);
-            if (!(entity instanceof TableNameMethod)) {
+            if (!(entity instanceof TableNameMethod tableNameMethod)) {
                 throw new DaobabDeveloperException("Entity %s has %s annotation specified with useMethod parameter. In that case entity has to implement %s", entity.entityClass().getName(), TableInformation.class.getName(), TableNameMethod.class.getName());
             }
-            TableNameMethod tableNameMethod = (TableNameMethod) entity;
             return tableNameMethod.tableName();
         }
 

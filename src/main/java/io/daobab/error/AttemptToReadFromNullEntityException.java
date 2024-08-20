@@ -8,9 +8,6 @@ import io.daobab.model.Entity;
  */
 public class AttemptToReadFromNullEntityException extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
-
     public AttemptToReadFromNullEntityException() {
         super("Attempt to read from an entity which is null");
     }

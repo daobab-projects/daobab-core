@@ -7,8 +7,6 @@ import io.daobab.model.Field;
  */
 public class AttemptToSetNullValueInWrongWay extends DaobabException {
 
-    private static final long serialVersionUID = 1L;
-
     public AttemptToSetNullValueInWrongWay() {
         super("Attempt to set null into field.");
     }

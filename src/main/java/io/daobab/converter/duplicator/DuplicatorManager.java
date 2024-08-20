@@ -30,36 +30,17 @@ public class DuplicatorManager {
     public static final DuplicatorManager INSTANCE = new DuplicatorManager();
 
     private DuplicatorManager() {
-        registerDuplicator(BigDecimal.class, new ImmutableDuplicator<>());
-        registerDuplicator(BigInteger.class, new ImmutableDuplicator<>());
-        registerDuplicator(Boolean.class, new ImmutableDuplicator<>());
-        registerDuplicator(boolean.class, new ImmutableDuplicator<>());
-//        registerTypeDuplicator(byte[].class, new StandardTypeConverterBytes());
-        registerDuplicator(Double.class, new ImmutableDuplicator<>());
-        registerDuplicator(double.class, new ImmutableDuplicator<>());
-        registerDuplicator(Float.class, new ImmutableDuplicator<>());
-        registerDuplicator(float.class, new ImmutableDuplicator<>());
-        registerDuplicator(Integer.class, new ImmutableDuplicator<>());
-        registerDuplicator(int.class, new ImmutableDuplicator<>());
-        registerDuplicator(Byte.class, new ImmutableDuplicator<>());
-        registerDuplicator(byte.class, new ImmutableDuplicator<>());
-        registerDuplicator(Short.class, new ImmutableDuplicator<>());
-        registerDuplicator(short.class, new ImmutableDuplicator<>());
-        registerDuplicator(Long.class, new ImmutableDuplicator<>());
-        registerDuplicator(long.class, new ImmutableDuplicator<>());
+
         registerDuplicator(java.sql.Date.class, new SqlDateDuplicator());
-        registerDuplicator(String.class, new ImmutableDuplicator<>());
         registerDuplicator(Time.class, new SqlTimeDuplicator());
         registerDuplicator(Timestamp.class, new SqlTimestampDuplicator());
         registerDuplicator(java.util.Date.class, new DateDuplicator());
-        registerDuplicator(LocalDate.class, new ImmutableDuplicator<>());
-        registerDuplicator(LocalDateTime.class, new ImmutableDuplicator<>());
-        registerDuplicator(Year.class, new ImmutableDuplicator<>());
-        registerDuplicator(Month.class, new ImmutableDuplicator<>());
-        registerDuplicator(DayOfWeek.class, new ImmutableDuplicator<>());
-        registerDuplicator(UUID.class, new ImmutableDuplicator<>());
-        registerDuplicator(Locale.class, new ImmutableDuplicator<>());
 
+        registerDuplicatorForMany(new ImmutableDuplicator<>(), String.class, LocalDate.class, LocalDateTime.class, Year.class,
+                Month.class, DayOfWeek.class, UUID.class, Locale.class, BigDecimal.class, BigInteger.class, Boolean.class,
+                boolean.class, Double.class, double.class, Float.class,
+                float.class, Integer.class, int.class, Byte.class,
+                byte.class, Short.class, short.class, Long.class, long.class);
     }
 
 
@@ -87,6 +68,10 @@ public class DuplicatorManager {
 //    public PlateJsonConversion getPlateJsonConverter(Plate entity) {
 //        return plateJsonConversions.computeIfAbsent(entity, f -> new PlateJsonConversion(f, this));
 //    }
+
+    public void registerDuplicatorForMany(Duplicator typeConverter, Class... types) {
+        Arrays.stream(types).forEach(type -> registerDuplicator(type, typeConverter));
+    }
 
     public <F> DuplicatorManager registerDuplicator(Class<F> type, Duplicator<F> typeConverter) {
         typeDuplicators.put(type, typeConverter);
