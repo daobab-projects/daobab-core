@@ -131,7 +131,6 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
         setIdentifierStorage(storage);
     }
 
-
     protected void init(QueryTarget target, Entity entity) {
         if (target == null) throw new MandatoryTargetException();
         if (entity == null) throw new MandatoryEntity();

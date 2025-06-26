@@ -33,15 +33,15 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
 
 
     default String getSequenceName() {
-        TableInformation idgenerator = this.getClass().getAnnotation(TableInformation.class);
-        if (idgenerator == null) return null;
-        return idgenerator.sequenceName();
+        TableInformation idGenerator = this.getClass().getAnnotation(TableInformation.class);
+        if (idGenerator == null) return null;
+        return idGenerator.sequenceName();
     }
 
     default IdGeneratorType getIdGeneratorType() {
-        TableInformation idgenerator = this.getClass().getAnnotation(TableInformation.class);
-        if (idgenerator == null) return IdGeneratorType.NONE;
-        return idgenerator.idGenerator();
+        TableInformation idGenerator = this.getClass().getAnnotation(TableInformation.class);
+        if (idGenerator == null) return IdGeneratorType.NONE;
+        return idGenerator.idGenerator();
     }
 
     @SuppressWarnings("unchecked")

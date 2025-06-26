@@ -49,35 +49,35 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         setSingleEntity(entities.length == 1);
     }
 
-    public DataBaseQueryPlate(QueryTarget target, Column<? extends Entity, ?, ?>[] columndaos) {
+    public DataBaseQueryPlate(QueryTarget target, Column<? extends Entity, ?, ?>[] columnd) {
 
-        Column<?, ?, ?> fielddao = columndaos[0];
-        if (fielddao == null) throw new MandatoryColumn();
-        init(target, fielddao.getInstance());
+        Column<?, ?, ?> field = columnd[0];
+        if (field == null) throw new MandatoryColumn();
+        init(target, field.getInstance());
 
-        andColumn(fielddao);
+        andColumn(field);
 
         Set<String> entities = new HashSet<>();
-        for (int i = 1; i < columndaos.length; i++) {
-            getFields().add(getInfoColumn(columndaos[i]));
-            entities.add(target.getEntityName(columndaos[i].entityClass()));
+        for (int i = 1; i < columnd.length; i++) {
+            getFields().add(getInfoColumn(columnd[i]));
+            entities.add(target.getEntityName(columnd[i].entityClass()));
         }
 
         setSingleEntity(entities.size() == 1);
     }
 
     @SuppressWarnings("rawtypes")
-    public DataBaseQueryPlate(QueryTarget target, List<? extends Column> columndaos) {
+    public DataBaseQueryPlate(QueryTarget target, List<? extends Column> column) {
 
-        Column<?, ?, ?> fielddao = columndaos.get(0);
-        if (fielddao == null) throw new MandatoryColumn();
-        init(target, fielddao.getInstance());
-        andColumn(fielddao);
+        Column<?, ?, ?> field = column.get(0);
+        if (field == null) throw new MandatoryColumn();
+        init(target, field.getInstance());
+        andColumn(field);
 
         Set<String> entities = new HashSet<>();
-        for (int i = 1; i < columndaos.size(); i++) {
-            getFields().add(getInfoColumn(columndaos.get(i)));
-            entities.add(target.getEntityName(columndaos.get(i).entityClass()));
+        for (int i = 1; i < column.size(); i++) {
+            getFields().add(getInfoColumn(column.get(i)));
+            entities.add(target.getEntityName(column.get(i).entityClass()));
         }
 
         setSingleEntity(entities.size() == 1);

@@ -9,10 +9,7 @@ import io.daobab.query.base.QuerySpecialParameters;
 import io.daobab.statement.base.IdentifierStorage;
 import io.daobab.target.BaseTarget;
 import io.daobab.target.buffer.single.PlateBuffer;
-import io.daobab.target.database.DataBaseTargetLogic;
-import io.daobab.target.database.QueryDataBaseHandler;
-import io.daobab.target.database.QueryTarget;
-import io.daobab.target.database.TransactionalTarget;
+import io.daobab.target.database.*;
 import io.daobab.target.database.connection.ResultSetReader;
 import io.daobab.target.database.converter.DatabaseConverterManager;
 import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
@@ -176,7 +173,7 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
 
     @Override
     public <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> query) {
-        return query.toSqlQuery();
+        return db.toSqlQuery(query);
     }
 
     @Override
@@ -229,4 +226,13 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     }
 
 
+    @Override
+    public FrozenQueryBuffer getFrozenQueryBuffer() {
+        return db.getFrozenQueryBuffer();
+    }
+
+    @Override
+    public <E extends Entity> DataBaseIdGeneratorSupplier getPrimaryKeyGenerator(E entity) {
+        return db.getPrimaryKeyGenerator(entity);
+    }
 }

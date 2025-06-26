@@ -188,10 +188,14 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (pk != null && pk.getIdGeneratorType().equals(IdGeneratorType.SEQUENCE)) {
                 getResultSetReader().executeUpdate(insertQueryParameters, conn);
             } else {
-                query.setPkNo(getResultSetReader().executeInsert(insertQueryParameters, conn, this, query.isPkResolved() ? ((PrimaryKey) query.getEntity()).colID() : null));
+                Object pkAfterInsert = getResultSetReader().executeInsert(insertQueryParameters, conn, this, query.isPkResolved() ? ((PrimaryKey) query.getEntity()).colID() : null);
+                if (pkAfterInsert != null) {
+                    query.setPkNo(pkAfterInsert);
+                }
+
             }
 
-            if (query.isPkResolved() && pk != null) {
+            if (query.isPkResolved() && pk != null && query.getPkNo() != null) {
                 pk = (PrimaryKey) pk.setId(query.getPkNo());
             }
 
