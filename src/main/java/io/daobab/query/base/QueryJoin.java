@@ -203,6 +203,13 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
+    default <E extends Entity> Q joinIfTrue(boolean enabled, JoinType type, E joinedTable, Column<?, ?, ?>... joinByColumn) {
+        if (enabled) {
+            return join(type, joinedTable, joinByColumn);
+        }
+        return (Q) this;
+    }
+
     default <E extends Entity> Q join(JoinType type, E joinedTable, Column<?, ?, ?>... joinByColumn) {
         if (joinByColumn.length == 1) {
             getJoins().add(new JoinWrapper(type, joinedTable, joinByColumn[0]));
@@ -234,6 +241,13 @@ public interface QueryJoin<Q extends Query> {
         return (Q) this;
     }
 
+    default <E extends Entity> Q joinIfTrue(boolean enabled, JoinType type, E joinedTable, List<Column<?, ?, ?>> joinByColumns, Where where) {
+        if (enabled) {
+            return join(type, joinedTable, joinByColumns, where);
+        }
+        return (Q) this;
+    }
+
     default <E extends Entity> Q join(JoinType type, E joinedTable, List<Column<?, ?, ?>> joinByColumns, Where where) {
         if (joinByColumns.size() == 1) {
             getJoins().add(new JoinWrapper(type, joinedTable, joinByColumns.get(0)));
@@ -253,6 +267,13 @@ public interface QueryJoin<Q extends Query> {
 
     default <E extends Entity> Q join(JoinType type, E joinedTable, Column<?, ?, ?> onColumn, Where where) {
         getJoins().add(new JoinWrapper(type, joinedTable, onColumn, where));
+        return (Q) this;
+    }
+
+    default <E extends Entity> Q joinIfTrue(boolean enabled, JoinType type, E joinedTable, Column<?, ?, ?> onColumn, Where where) {
+        if (enabled) {
+            getJoins().add(new JoinWrapper(type, joinedTable, onColumn, where));
+        }
         return (Q) this;
     }
 
@@ -281,7 +302,7 @@ public interface QueryJoin<Q extends Query> {
             for (Column<?, ?, ?> c : joinByColumn) {
                 whr.equalColumn((Column<?, Object, ?>) c, (Column<?, Object, ?>) c.transformTo(joinedTable));
             }
-            if (where != null) whr.and(where);
+            if (where != null && !where.isEmpty()) whr.and(where);
 
             getJoins().add(new JoinWrapper(type, joinedTable, whr));
         }

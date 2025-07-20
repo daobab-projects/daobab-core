@@ -8,7 +8,11 @@ public abstract class TypeConverterLongBased<T> implements DatabaseTypeConverter
 
 
     public Long readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
-        return rs.getLong(columnIndex);
+        var rv = rs.getLong(columnIndex);
+        if (rs.wasNull()) {
+            return null;
+        }
+        return rv;
     }
 
 

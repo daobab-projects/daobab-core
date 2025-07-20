@@ -8,7 +8,11 @@ public abstract class TypeConverterShortBased<T> implements DatabaseTypeConverte
 
 
     public Short readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
-        return rs.getShort(columnIndex);
+        var rv = rs.getShort(columnIndex);
+        if (rs.wasNull()) {
+            return null;
+        }
+        return rv;
     }
 
 

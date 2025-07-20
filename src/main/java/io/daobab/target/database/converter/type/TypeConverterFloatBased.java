@@ -8,7 +8,11 @@ public abstract class TypeConverterFloatBased<T> implements DatabaseTypeConverte
 
 
     public Float readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
-        return rs.getFloat(columnIndex);
+        var rv = rs.getFloat(columnIndex);
+        if (rs.wasNull()) {
+            return null;
+        }
+        return rv;
     }
 
 

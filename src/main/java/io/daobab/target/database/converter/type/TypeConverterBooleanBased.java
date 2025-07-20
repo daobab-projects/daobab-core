@@ -8,7 +8,11 @@ public abstract class TypeConverterBooleanBased<T> implements DatabaseTypeConver
 
 
     public Boolean readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
-        return rs.getBoolean(columnIndex);
+        var rv = rs.getBoolean(columnIndex);
+        if (rs.wasNull()) {
+            return null;
+        }
+        return rv;
     }
 
 

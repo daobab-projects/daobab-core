@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  */
 public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLogic {
 
-    String LINE_SEPARATOR = System.getProperty("line.separator");
+    String LINE_SEPARATOR = System.lineSeparator();
     String LIMIT = " limit  ";
     String SPACE = " ";
     String APOSTROPHE = "'";

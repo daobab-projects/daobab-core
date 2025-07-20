@@ -8,7 +8,11 @@ public abstract class TypeConverterDoubleBased<T> implements DatabaseTypeConvert
 
 
     public Double readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
-        return rs.getDouble(columnIndex);
+        var rv = rs.getDouble(columnIndex);
+        if (rs.wasNull()) {
+            return null;
+        }
+        return rv;
     }
 
 

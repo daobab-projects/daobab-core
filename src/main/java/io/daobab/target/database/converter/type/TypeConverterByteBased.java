@@ -8,7 +8,11 @@ public abstract class TypeConverterByteBased<T> implements DatabaseTypeConverter
 
 
     public Byte readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
-        return rs.getByte(columnIndex);
+        var rv = rs.getByte(columnIndex);
+        if (rs.wasNull()) {
+            return null;
+        }
+        return rv;
     }
 
 

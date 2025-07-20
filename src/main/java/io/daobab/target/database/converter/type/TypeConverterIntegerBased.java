@@ -8,7 +8,11 @@ public abstract class TypeConverterIntegerBased<T> implements DatabaseTypeConver
 
 
     public Integer readFromResultSet(ResultSet rs, int columnIndex) throws SQLException {
-        return rs.getInt(columnIndex);
+        int rv = rs.getInt(columnIndex);
+        if (rs.wasNull()) {
+            return null;
+        }
+        return rv;
     }
 
 
