@@ -47,7 +47,7 @@ public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E
     }
 
     public int execute() {
-        return getTarget().delete(this, Propagation.SUPPORTS);
+        return getTarget().delete(this, Propagation.REQUIRED);
     }
 
     public E getEntity() {

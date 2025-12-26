@@ -185,7 +185,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
     }
 
     public E execute() {
-        return getTarget().insert(this, Propagation.SUPPORTS);
+        return getTarget().insert(this, Propagation.REQUIRED);
     }
 
     @SuppressWarnings("rawtypes")

@@ -80,7 +80,7 @@ public final class DataBaseQueryUpdate<E extends Entity> extends DataBaseQueryBa
     }
 
     public Integer execute() {
-        return getTarget().update(this, Propagation.SUPPORTS);
+        return getTarget().update(this, Propagation.REQUIRED);
     }
 
     public String getSQLQuery(QueryResolverTransmitter target) {

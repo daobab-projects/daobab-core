@@ -59,6 +59,21 @@ public final class IdentifierStorage {
         return sb;
     }
 
+    public StringBuilder getIdentifierForColumn(QueryTarget target, Column<?, ?, ?> field, boolean useAliases) {
+        if (useAliases) {
+            return getIdentifierForColumn(target, field);
+        }
+        StringBuilder sb = new StringBuilder();
+        if (field == null) return sb;
+        if (field instanceof ColumnHaving) {
+            sb.append(field.getColumnName());
+        } else {
+            sb.append(field.getColumnName());
+        }
+        return sb;
+    }
+
+
     public String getIdentifierFor(String entityName) {
         if (entityName == null) throw new DaobabException("Entity name must be provided");
 

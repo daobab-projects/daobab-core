@@ -79,7 +79,7 @@ public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E
     }
 
     public Integer execute() {
-        return getTarget().update(this, Propagation.SUPPORTS);
+        return getTarget().update(this, Propagation.REQUIRED);
     }
 
     public SetFields getSetFields() {

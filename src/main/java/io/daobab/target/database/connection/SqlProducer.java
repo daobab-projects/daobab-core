@@ -67,13 +67,13 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     default <E extends Entity> String toDeleteSqlQuery(DataBaseQueryDelete<E> base) {
 
         IdentifierStorage storage = base.getIdentifierStorage();
-        QueryTarget dataBaseTarget = base.getTarget();
         StringBuilder sb = new StringBuilder();
+        boolean useAliases = !DictDatabaseType.MYSQL.equals(this.getDataBaseProductName());
 
         if (base._calcJoins) {
             List<String> from = new ArrayList<>();
             from.add(base.getEntityName());
-            base.setJoins(JoinTracker.calculateJoins(base.getTarget(), base.getTarget().getTables(), from, (base.getWhereWrapper() == null ? new HashSet<>() : base.getWhereWrapper().getAllDaoInWhereClause(dataBaseTarget)), base.getJoins()));
+            base.setJoins(JoinTracker.calculateJoins(this, getTables(), from, (base.getWhereWrapper() == null ? new HashSet<>() : base.getWhereWrapper().getAllDaoInWhereClause(this)), base.getJoins()));
         }
 
         sb.append("delete ");
@@ -99,26 +99,26 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         sb.append(SPACE);
 
         for (JoinWrapper<?> joinWrapper : base.getJoins()) {
-            sb.append(joinToExpression(base.getTarget(), joinWrapper, storage));
+            sb.append(joinToExpression(joinWrapper, storage));
         }
 
         if (base.getWhereWrapper() != null) {
             sb.append(LINE_SEPARATOR)
                     .append(" where ")
-                    .append(whereToExpression(base.getTarget(), base.getWhereWrapper(), storage));
+                    .append(whereToExpression(base.getWhereWrapper(), storage, useAliases));
         }
 
         if (base.getOrderBy() != null) {
             sb.append(LINE_SEPARATOR)
                     .append(" order by ")
-                    .append(orderToExpression(dataBaseTarget, base.getOrderBy(), storage));
+                    .append(orderToExpression(base.getOrderBy(), storage));
         }
 
         String query = sb.toString();
-        if (dataBaseTarget.getShowSql() || base.isLogQueryEnabled()) {
-            dataBaseTarget.getLog().info(query);
+        if (this.getShowSql() || base.isLogQueryEnabled()) {
+            this.getLog().info(query);
         } else {
-            dataBaseTarget.getLog().debug(query);
+            this.getLog().debug(query);
         }
         return sb.toString();
     }
@@ -143,7 +143,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 Column<?, ?, ?> column = base.getSetFields().getFieldForPointer(i);
                 String columnName = column.getColumnName();
 
-                DatabaseTypeConverter typeConverter = base.getTarget().getConverterManager().getConverter(column).orElse(null);
+                DatabaseTypeConverter typeConverter = getConverterManager().getConverter(column).orElse(null);
                 Object value;
 
                 if (base.isPkResolved() && columnName != null && columnName.equals(base.getPkColumnName()) && base.getDictIdGenerator().equals(IdGeneratorType.SEQUENCE)) {
@@ -206,7 +206,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
                     Column<?, ?, ?> column = (Column) field;
                     String columnName = column.getColumnName();
-                    DatabaseTypeConverter typeConverter = base.getTarget().getConverterManager().getConverter(column).orElse(null);
+                    DatabaseTypeConverter typeConverter = getConverterManager().getConverter(column).orElse(null);
 
                     if (columnName != null) {
                         sb.append(columnName);
@@ -215,7 +215,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                         if (value == null) {
                             sb.append(NULL);
                         } else if (value instanceof ColumnFunction db) {
-                            sb.append(columnFunctionToExpression(base.getTarget(), db, new IdentifierStorage(), false));
+                            sb.append(columnFunctionToExpression(db, new IdentifierStorage(), false));
                         } else {
                             sb.append(typeConverter.convertWritingTarget(value));
                             if (typeConverter.needParameterConversion()) {
@@ -269,17 +269,15 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     default <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> base, IdentifierStorage storage) {
         StringBuilder sb = new StringBuilder();
 
-        QueryTarget target = base.getTarget();
-
         if (base.getWhereWrapper() != null) {
             storage.registerIdentifiers(base.getEntityName());
-            storage.registerIdentifiers(base.getWhereWrapper().getAllDaoInWhereClause(target));
+            storage.registerIdentifiers(base.getWhereWrapper().getAllDaoInWhereClause(this));
         }
 
         if (base.isJoin()) {
             List<String> from = new ArrayList<>();
             from.add(base.getEntityName());
-            base.setJoins(JoinTracker.calculateJoins(base.getTarget(), getTables(), from, (base.getWhereWrapper() == null ? new HashSet<>() : base.getWhereWrapper().getAllDaoInWhereClause(target)), base.getJoins()));
+            base.setJoins(JoinTracker.calculateJoins(this, getTables(), from, (base.getWhereWrapper() == null ? new HashSet<>() : base.getWhereWrapper().getAllDaoInWhereClause(this)), base.getJoins()));
         }
 
 
@@ -299,10 +297,10 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 boolean fakeColumn = column.getColumnName() == null;
 
                 if (column instanceof ColumnFunction db) {
-                    sb.append(columnFunctionToExpression(base.getTarget(), db, storage, false));
+                    sb.append(columnFunctionToExpression(db, storage, false));
                 } else {
                     if (!fakeColumn) {
-                        sb.append(storage.getIdentifierForColumn(base.getTarget(), column));
+                        sb.append(storage.getIdentifierForColumn(this, column));
                     }
                 }
 
@@ -312,7 +310,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
 
         for (JoinWrapper<?> joinWrapper : base.getJoins()) {
-            storage.getIdentifierForColumn(base.getTarget(), joinWrapper.getByColumn());
+            storage.getIdentifierForColumn(this, joinWrapper.getByColumn());
             storage.registerIdentifierForJoinClause(getEntityName(joinWrapper.getTable().entityClass()));
         }
 
@@ -332,7 +330,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
         for (JoinWrapper<?> joinWrapper : base.getJoins()) {
             sb.append(LINE_SEPARATOR)
-                    .append(joinToExpression(base.getTarget(), joinWrapper, storage));
+                    .append(joinToExpression(joinWrapper, storage));
         }
 
         boolean limitAndWhereProvided = base.getWhereWrapper() != null && (base.getLimit() != null && DictDatabaseType.ORACLE.equals(getDataBaseProductName()));
@@ -345,7 +343,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             if (limitAndWhereProvided) sb.append(OPEN_BRACKET);
 
             if (base.getWhereWrapper() != null) {
-                sb.append(whereToExpression(base.getTarget(), base.getWhereWrapper(), storage));
+                sb.append(whereToExpression(base.getWhereWrapper(), storage));
             }
 
             if (limitAndWhereProvided) sb.append(CLOSED_BRACKET);
@@ -371,7 +369,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 sb.append(base.getGroupByAlias()).append(SPACE);
             } else {
                 for (Iterator<Column<?, ?, ?>> it = base.getGroupBy().iterator(); it.hasNext(); ) {
-                    sb.append(storage.getIdentifierForColumn(base.getTarget(), it.next()));
+                    sb.append(storage.getIdentifierForColumn(this, it.next()));
                     if (it.hasNext()) sb.append(COMMA_SPACE);
                 }
             }
@@ -380,13 +378,13 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         if (base.getHavingWrapper() != null) {
             sb.append(LINE_SEPARATOR)
                     .append(" having ")
-                    .append(whereToExpression(base.getTarget(), base.getHavingWrapper(), storage));
+                    .append(whereToExpression(base.getHavingWrapper(), storage));
         }
 
         if (base.getOrderBy() != null) {
             sb.append(LINE_SEPARATOR)
                     .append(" order by ")
-                    .append(orderToExpression(base.getTarget(), base.getOrderBy(), storage));
+                    .append(orderToExpression(base.getOrderBy(), storage));
         }
 
         if (base.getLimit() != null && !DictDatabaseType.ORACLE.equals(getDataBaseProductName())) {
@@ -395,10 +393,10 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         }
 
         String query = sb.toString();
-        if (base.getTarget().getShowSql() || base.isLogQueryEnabled()) {
-            base.getTarget().getLog().info(query);
+        if (getShowSql() || base.isLogQueryEnabled()) {
+            getLog().info(query);
         } else {
-            base.getTarget().getLog().debug(query);
+            getLog().debug(query);
         }
         return sb.toString();
     }
@@ -458,27 +456,27 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 .append(" set ");
 
         if (base.getSetFields() != null) {
-            rv = toQuerySpecialParametersExpression(base.getTarget(), base.getSetFields(), storage);
+            rv = toQuerySpecialParametersExpression(base.getSetFields(), storage);
             sb.append(rv.getQuery());
         }
 
         if (base.getWhereWrapper() != null) {
             sb.append(" where ");
-            sb.append(whereToExpression(base.getTarget(), base.getWhereWrapper(), storage));
+            sb.append(whereToExpression(base.getWhereWrapper(), storage));
         }
 
         String query = sb.toString();
-        if (base.getTarget().getShowSql() || base.isLogQueryEnabled()) {
-            base.getTarget().getLog().info(query);
+        if (getShowSql() || base.isLogQueryEnabled()) {
+            getLog().info(query);
         } else {
-            base.getTarget().getLog().debug(query);
+            getLog().debug(query);
         }
 
         rv.setQuery(sb);
         return rv;
     }
 
-    default QuerySpecialParameters toQuerySpecialParametersExpression(QueryTarget target, SetFields setFields, IdentifierStorage storage) {
+    default QuerySpecialParameters toQuerySpecialParametersExpression(SetFields setFields, IdentifierStorage storage) {
         StringBuilder sb = new StringBuilder();
 
         QuerySpecialParameters rv = new QuerySpecialParameters();
@@ -487,9 +485,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             Column<?, ?, ?> field = setFields.getFieldForPointer(i);
             Object value = setFields.getValueForPointer(i);
 
-            DatabaseTypeConverter typeConverter = target.getConverterManager().getConverter(field).orElse(null);
+            DatabaseTypeConverter typeConverter = getConverterManager().getConverter(field).orElse(null);
 
-            sb.append(storage.getIdentifierFor(target.getEntityName(field.entityClass())))
+            sb.append(storage.getIdentifierFor(getEntityName(field.entityClass())))
                     .append(DOT)
                     .append(field.getColumnName())
                     .append(" = ");
@@ -568,7 +566,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         return sb;
     }
 
-    default StringBuilder joinToExpression(QueryTarget target, JoinWrapper<?> joinWrapper, IdentifierStorage storage) {
+    default StringBuilder joinToExpression(JoinWrapper<?> joinWrapper, IdentifierStorage storage) {
         return new StringBuilder()
                 .append(joinWrapper.getType().toString())
                 .append(SPACE)
@@ -576,10 +574,10 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 .append(SPACE)
                 .append(storage.getIdentifierFor(getEntityName(joinWrapper.getTable().entityClass())))
                 .append(" on ")
-                .append(whereToExpression(target, joinWrapper.getWhere(), storage));
+                .append(whereToExpression(joinWrapper.getWhere(), storage));
     }
 
-    default StringBuilder orderToExpression(QueryTarget dataBaseTarget, Order order, IdentifierStorage storage) {
+    default StringBuilder orderToExpression(Order order, IdentifierStorage storage) {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 1; i < order.getCounter(); i++) {
@@ -591,7 +589,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                         .append(order.getOrderKindForPointer(i));
             } else {
                 Column<?, ?, ?> field = (Column<?, ?, ?>) orderedField;
-                sb.append(storage.getIdentifierFor(dataBaseTarget.getEntityName(field.entityClass())));
+                sb.append(storage.getIdentifierFor(getEntityName(field.entityClass())));
                 sb.append(DOT);
                 sb.append(field.getColumnName());
                 sb.append(SPACE);
@@ -605,8 +603,13 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         return sb;
     }
 
+    @SuppressWarnings({"rawtypes", "java:S3776"})
+    default StringBuilder whereToExpression(Where where, IdentifierStorage storage) {
+        return whereToExpression(where, storage, true);
+    }
+
     @SuppressWarnings({"rawtypes", "unchecked", "java:S3776"})
-    default StringBuilder whereToExpression(QueryTarget target, Where where, IdentifierStorage storage) {
+    default StringBuilder whereToExpression(Where where, IdentifierStorage storage, boolean useAliases) {
         StringBuilder sb = new StringBuilder();
         String relationToNext = where.getRelationBetweenExpressions();
 
@@ -631,7 +634,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 }
 
                 if (isDBQuery) {
-                    appendKey(target, sb, storage, keyFromWrapper, relation);
+                    appendKey(sb, storage, keyFromWrapper, relation);
                     QueryExpressionProvider<?> queryExpressionProvider = (QueryExpressionProvider<?>) value;
                     sb.append(OPEN_BRACKET).append(toSqlQuery((DataBaseQueryBase<? extends Entity, ?>) queryExpressionProvider.getInnerQuery())).append(CLOSED_BRACKET);
                     continue;
@@ -645,34 +648,34 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             }
 
             if (value == null && (Operator.IS_NULL.equals(relation) || Operator.NOT_NULL.equals(relation))) {
-                appendKey(target, sb, storage, keyFromWrapper, relation);
+                appendKey(sb, storage, keyFromWrapper, relation);
             } else if (value instanceof DaoParam daoParam) {
-                appendKey(target, sb, storage, keyFromWrapper, relation);
-                DatabaseTypeConverter typeConverter = target.getConverterManager().getConverter(keyFromWrapper).orElse(null);
+                appendKey(sb, storage, keyFromWrapper, relation);
+                DatabaseTypeConverter typeConverter = getConverterManager().getConverter(keyFromWrapper).orElse(null);
                 toSql(daoParam, typeConverter, sb, storage);
 
             } else if (value instanceof ColumnFunction<?, ?, ?, ?>) {
-                appendKey(target, sb, storage, keyFromWrapper, relation);
-                sb.append(columnFunctionToExpression(target, (ColumnFunction<?, ?, ?, ?>) value, storage, false));
+                appendKey(sb, storage, keyFromWrapper, relation);
+                sb.append(columnFunctionToExpression((ColumnFunction<?, ?, ?, ?>) value, storage, false));
             } else if (value instanceof Column<?, ?, ?>) {
-                appendKey(target, sb, storage, keyFromWrapper, relation);
-                sb.append(storage.getIdentifierForColumn(target, (Column<?, ?, ?>) value));
+                appendKey(sb, storage, keyFromWrapper, relation);
+                sb.append(storage.getIdentifierForColumn(this, (Column<?, ?, ?>) value, useAliases));
             } else if (value instanceof Where wr) {
-                sb.append(SPACE_OPEN_BRACKET).append(whereToExpression(target, wr, storage)).append(CLOSED_BRACKET);
+                sb.append(SPACE_OPEN_BRACKET).append(whereToExpression(wr, storage, useAliases)).append(CLOSED_BRACKET);
             } else if (value instanceof InnerQueryFields wr) {
-                appendKey(target, sb, storage, keyFromWrapper, relation);
-                sb.append(toInnerQueryExpression(storage, this, wr));
+                appendKey(sb, storage, keyFromWrapper, relation);
+                sb.append(toInnerQueryExpression(storage, wr));
             } else if (value instanceof Collection || (relation != null && relation.isRelationCollectionBased())) {
 
-                DatabaseTypeConverter typeConverter = target.getConverterManager().getConverter(keyFromWrapper).orElse(null);
+                DatabaseTypeConverter typeConverter = getConverterManager().getConverter(keyFromWrapper).orElse(null);
 
                 if (value instanceof Collection) {
                     Collection<?> valueCollection = (Collection<?>) value;
-                    appendKey(target, sb, storage, keyFromWrapper, relation);
+                    appendKey(sb, storage, keyFromWrapper, relation);
                     sb.append(convertCollection(valueCollection, typeConverter));
                 } else {
                     //w kolekcji moze sie znajdowac tylko jeden element wowczas typ obiektu nie bedzie collection
-                    appendKey(target, sb, storage, keyFromWrapper, relation);
+                    appendKey(sb, storage, keyFromWrapper, relation);
                     sb.append("(").append(typeConverter.convertWritingTarget(value)).append(")");
                 }
             } else {
@@ -684,9 +687,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 } else {
                     keyFromWrapper2 = keyFromWrapper;
                 }
-                DatabaseTypeConverter typeConverter = target.getConverterManager().getConverter(keyFromWrapper2).orElse(null);
+                DatabaseTypeConverter typeConverter = getConverterManager().getConverter(keyFromWrapper2).orElse(null);
                 sb.append(SPACE);
-                appendKey(target, sb, storage, keyFromWrapper, relation);
+                appendKey(sb, storage, keyFromWrapper, relation);
                 sb.append(typeConverter.convertWritingTarget(value));
             }
 
@@ -709,12 +712,12 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
      * Puts a key into the query
      */
     @SuppressWarnings("rawtypes")
-    default void appendKey(QueryTarget dataBaseTarget, final StringBuilder sb, IdentifierStorage storage, Column<Entity, Object, RelatedTo> keyFromWrapper, Operator relation) {
+    default void appendKey(final StringBuilder sb, IdentifierStorage storage, Column<Entity, Object, RelatedTo> keyFromWrapper, Operator relation) {
         if (keyFromWrapper instanceof ColumnFunction) {
             ColumnFunction<?, ?, ?, ?> function = (ColumnFunction<?, ?, ?, ?>) keyFromWrapper;
-            sb.append(columnFunctionToExpression(dataBaseTarget, function, storage, true));
+            sb.append(columnFunctionToExpression(function, storage, true));
         } else {
-            sb.append(storage.getIdentifierForColumn(dataBaseTarget, keyFromWrapper));
+            sb.append(storage.getIdentifierForColumn(this, keyFromWrapper));
         }
         sb.append(relation);
     }
@@ -743,29 +746,29 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         return sb;
     }
 
-    default <E extends Entity, F> StringBuilder toInnerQueryExpression(IdentifierStorage storage, QueryTarget target, InnerQueryFields<E, F> innerQuery) {
-        if (innerQuery.getInnerQuery() != null && target.getClass().getName().equals(innerQuery.getInnerQuery().getTarget().getClass().getName())) {
+    default <E extends Entity, F> StringBuilder toInnerQueryExpression(IdentifierStorage storage, InnerQueryFields<E, F> innerQuery) {
+        if (innerQuery.getInnerQuery() != null && getClass().getName().equals(innerQuery.getInnerQuery().getTarget().getClass().getName())) {
             StringBuilder sb = new StringBuilder();
             sb.append(OPEN_BRACKET)
                     .append(toSqlQuery(innerQuery.getInnerQuery(), storage))
                     .append(CLOSED_BRACKET);
             return sb;
         } else {
-            return convertCollection(innerQuery.findMany(), target.getConverterManager().getConverter(innerQuery.getInnerQuery().getSelectedColumn().getColumn()).orElse(null));
+            return convertCollection(innerQuery.findMany(), getConverterManager().getConverter(innerQuery.getInnerQuery().getSelectedColumn().getColumn()).orElse(null));
         }
     }
 
     @SuppressWarnings({"rawtypes", "unchecked", "java:S1872", "java:S3740", "java:S3776"})
-    default StringBuilder columnFunctionToExpression(QueryTarget dataBaseTarget, ColumnFunction columnFunction, IdentifierStorage storage, boolean internalFunction) {
+    default StringBuilder columnFunctionToExpression(ColumnFunction columnFunction, IdentifierStorage storage, boolean internalFunction) {
 
         if (columnFunction.getClass().getName().equals(CastColumnRelation.class.getName())) {
             CastColumnRelation function = (CastColumnRelation) columnFunction;
-            return toCastColumnRelationQueryExpression(dataBaseTarget, function, storage, function.getMode(), function.type);
+            return toCastColumnRelationQueryExpression(this, function, storage, function.getMode(), function.type);
         }
 
         if (columnFunction.getClass().getName().equals(ManyArgumentsFunction.class.getName())) {
             ManyArgumentsFunction function = (ManyArgumentsFunction) columnFunction;
-            StringBuilder sb = toManyArgumentsFunctionQueryExpression(dataBaseTarget, function, storage, columnFunction.getMode());
+            StringBuilder sb = toManyArgumentsFunctionQueryExpression(this, function, storage, columnFunction.getMode());
 
             if (!internalFunction && columnFunction.identifier != null && !columnFunction.identifier.trim().isEmpty()) {
                 sb.append(" as ").append(columnFunction.identifier).append(SPACE);
@@ -782,9 +785,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             for (Column<?, ?, ?> col : columnFunction.columns) {
                 if (col instanceof ColumnFunction) {
                     ColumnFunction<?, ?, ?, ?> formerColumn = (ColumnFunction<?, ?, ?, ?>) col;
-                    sb.append(columnFunctionToExpression(dataBaseTarget, formerColumn, storage, true));
+                    sb.append(columnFunctionToExpression(formerColumn, storage, true));
                 } else {
-                    sb.append(storage.getIdentifierForColumn(dataBaseTarget, col));
+                    sb.append(storage.getIdentifierForColumn(this, col));
                 }
                 if (counter < columnFunction.columns.length) {
                     sb.append(SPACE).append(columnFunction.mediator).append(SPACE);
@@ -807,9 +810,9 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             }
 
             sb.append(CLOSED_BRACKET);
-            storage.getIdentifierFor(dataBaseTarget.getEntityName(columnFunction.entityClass()));
+            storage.getIdentifierFor(this.getEntityName(columnFunction.entityClass()));
         } else {
-            sb.append(toColumnFunctionQueryExpression(dataBaseTarget, columnFunction.column, columnFunction.identifier, storage, columnFunction.getMode(), columnFunction.getFunctionMap()));
+            sb.append(toColumnFunctionQueryExpression(columnFunction.column, columnFunction.identifier, storage, columnFunction.getMode(), columnFunction.getFunctionMap()));
         }
 
         if (!internalFunction && columnFunction.identifier != null && !columnFunction.identifier.trim().isEmpty()) {
@@ -820,7 +823,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     @SuppressWarnings({"rawtypes", "java:S3776"})
-    default <E extends Entity, F, R extends RelatedTo> StringBuilder toColumnFunctionQueryExpression(QueryTarget dataBaseTarget, Column<E, F, R> column, String stringIdentifier, IdentifierStorage storage, String mode, Map<String, Object> params) {
+    default <E extends Entity, F, R extends RelatedTo> StringBuilder toColumnFunctionQueryExpression(Column<E, F, R> column, String stringIdentifier, IdentifierStorage storage, String mode, Map<String, Object> params) {
         StringBuilder sb = new StringBuilder();
         sb.append(mode).append(OPEN_BRACKET);
 
@@ -828,45 +831,45 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
             Object obj = params.get(ColumnFunction.BEFORE_COL3);
             if (obj != null) {
-                sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage))
+                sb.append(objectToSomeInFunctions(obj, storage))
                         .append(COMMA);
             }
             obj = params.get(ColumnFunction.BEFORE_COL2);
             if (obj != null) {
-                sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage))
+                sb.append(objectToSomeInFunctions(obj, storage))
                         .append(COMMA);
             }
             obj = params.get(ColumnFunction.BEFORE_COL);
             if (obj != null) {
-                sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage))
+                sb.append(objectToSomeInFunctions(obj, storage))
                         .append(COMMA);
             }
 
             ColumnFunction<?, ?, ?, ?> formerColumn = (ColumnFunction<?, ?, ?, ?>) column;
-            sb.append(columnFunctionToExpression(dataBaseTarget, formerColumn, storage, true));
+            sb.append(columnFunctionToExpression(formerColumn, storage, true));
 
             obj = params.get(ColumnFunction.AFTER_COL);
             if (obj != null) {
                 sb.append(SPACE_COMMA)
-                        .append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                        .append(objectToSomeInFunctions(obj, storage));
             }
 
             obj = params.get(ColumnFunction.AFTER_COL2);
             if (obj != null) {
                 sb.append(SPACE_COMMA)
-                        .append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                        .append(objectToSomeInFunctions(obj, storage));
             }
 
             obj = params.get(ColumnFunction.AFTER_COL3);
             if (obj != null) {
                 sb.append(SPACE_COMMA)
-                        .append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                        .append(objectToSomeInFunctions(obj, storage));
             }
 
             obj = params.get(ColumnFunction.AFTER_COL4);
             if (obj != null) {
                 sb.append(SPACE_COMMA)
-                        .append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                        .append(objectToSomeInFunctions(obj, storage));
             }
         } else {
             if (column == null && stringIdentifier != null) {
@@ -875,44 +878,44 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
 
             Object obj = params.get(ColumnFunction.BEFORE_COL3);
             if (obj != null) {
-                sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage))
+                sb.append(objectToSomeInFunctions(obj, storage))
                         .append(COMMA);
             }
             obj = params.get(ColumnFunction.BEFORE_COL2);
             if (obj != null) {
-                sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage))
+                sb.append(objectToSomeInFunctions(obj, storage))
                         .append(COMMA);
             }
             obj = params.get(ColumnFunction.BEFORE_COL);
             if (obj != null) {
-                sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage))
+                sb.append(objectToSomeInFunctions(obj, storage))
                         .append(COMMA);
             }
 
-            sb.append(storage.getIdentifierForColumn(dataBaseTarget, column));
+            sb.append(storage.getIdentifierForColumn(this, column));
 
             obj = params.get(ColumnFunction.AFTER_COL);
             if (obj != null) {
                 sb.append(SPACE_COMMA)
-                        .append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                        .append(objectToSomeInFunctions(obj, storage));
             }
 
             obj = params.get(ColumnFunction.AFTER_COL2);
             if (obj != null) {
                 sb.append(SPACE_COMMA)
-                        .append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                        .append(objectToSomeInFunctions(obj, storage));
             }
 
             obj = params.get(ColumnFunction.AFTER_COL3);
             if (obj != null) {
                 sb.append(SPACE_COMMA)
-                        .append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                        .append(objectToSomeInFunctions(obj, storage));
             }
 
             obj = params.get(ColumnFunction.AFTER_COL4);
             if (obj != null) {
                 sb.append(SPACE_COMMA)
-                        .append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                        .append(objectToSomeInFunctions(obj, storage));
             }
         }
 
@@ -921,14 +924,14 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
     }
 
     @SuppressWarnings("rawtypes")
-    default StringBuilder objectToSomeInFunctions(QueryTarget dataBaseTarget, Object secondColumn, IdentifierStorage storage) {
+    default StringBuilder objectToSomeInFunctions(Object secondColumn, IdentifierStorage storage) {
         StringBuilder sb = new StringBuilder();
         if (secondColumn != null) {
             sb.append(SPACE);
             if (secondColumn instanceof ColumnFunction secondColumn2) {
-                sb.append(columnFunctionToExpression(dataBaseTarget, secondColumn2, storage, true));
+                sb.append(columnFunctionToExpression(secondColumn2, storage, true));
             } else if (secondColumn instanceof Column col) {
-                sb.append(storage.getIdentifierForColumn(dataBaseTarget, col));
+                sb.append(storage.getIdentifierForColumn(this, col));
             } else if (secondColumn instanceof String) {
                 sb.append(APOSTROPHE)
                         .append(StandardTypeConverterString.valueStringToSQL(secondColumn))
@@ -951,7 +954,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         sb.append(mode).append(OPEN_BRACKET);
         if (column instanceof ColumnFunction) {
             ColumnFunction<?, ?, ?, ?> formerColumn = (ColumnFunction<?, ?, ?, ?>) column;
-            sb.append(columnFunctionToExpression(dataBaseTarget, formerColumn, storage, true));
+            sb.append(columnFunctionToExpression(formerColumn, storage, true));
         } else {
             sb.append(storage.getIdentifierForColumn(dataBaseTarget, column)).append(" as ").append(type.toString());
 //            storage.addColumnIdentifiedAsKey(columnFunction.identifier,columnFunction.getFinalColumn());
@@ -977,11 +980,11 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 Object obj = objects.get(i);
 
                 if (obj instanceof ColumnFunction cf) {
-                    sb.append(columnFunctionToExpression(dataBaseTarget, cf, storage, true));
+                    sb.append(columnFunctionToExpression(cf, storage, true));
                 } else if (obj instanceof Column col) {
                     sb.append(storage.getIdentifierForColumn(dataBaseTarget, col));
                 } else {
-                    sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                    sb.append(objectToSomeInFunctions(obj, storage));
                 }
                 if (i < objSize - 1) {
                     sb.append(separator);
@@ -992,11 +995,11 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
                 Object obj = objects.get(i);
 
                 if (obj instanceof ColumnFunction cf) {
-                    sb.append(columnFunctionToExpression(dataBaseTarget, cf, storage, true));
+                    sb.append(columnFunctionToExpression(cf, storage, true));
                 } else if (obj instanceof Column col) {
                     sb.append(storage.getIdentifierForColumn(dataBaseTarget, col));
                 } else {
-                    sb.append(objectToSomeInFunctions(dataBaseTarget, obj, storage));
+                    sb.append(objectToSomeInFunctions(obj, storage));
                 }
                 if (i < objSize - 1) {
                     sb.append(mediator);

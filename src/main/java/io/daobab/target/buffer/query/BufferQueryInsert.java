@@ -120,7 +120,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
     }
 
     public E execute() {
-        return getTarget().insert(this, Propagation.SUPPORTS);
+        return getTarget().insert(this, Propagation.REQUIRED);
     }
 
     @SuppressWarnings("rawtypes")

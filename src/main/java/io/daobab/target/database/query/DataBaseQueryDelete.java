@@ -46,7 +46,7 @@ public final class DataBaseQueryDelete<E extends Entity> extends DataBaseQueryBa
     }
 
     public int execute() {
-        return getTarget().delete(this, Propagation.SUPPORTS);
+        return getTarget().delete(this, Propagation.REQUIRED);
     }
 
     public E getEntity() {
