@@ -65,11 +65,7 @@ public final class IdentifierStorage {
         }
         StringBuilder sb = new StringBuilder();
         if (field == null) return sb;
-        if (field instanceof ColumnHaving) {
-            sb.append(field.getColumnName());
-        } else {
-            sb.append(field.getColumnName());
-        }
+        sb.append(field.getColumnName());
         return sb;
     }
 
