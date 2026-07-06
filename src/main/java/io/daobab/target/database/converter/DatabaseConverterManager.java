@@ -89,8 +89,7 @@ public class DatabaseConverterManager {
             }
             if (rv == null && List.class.isAssignableFrom(column.getFieldClass())) {
                 DatabaseTypeConverter<?, ?> entityConvert = typeConverters.get(column.getInstance().getClass());
-                if (entityConvert instanceof StandardTypeConverterPrimaryKeyEntity) {
-                    StandardTypeConverterPrimaryKeyEntity<?, ?> standardTypeConverterPrimaryKeyEntity = (StandardTypeConverterPrimaryKeyEntity<?, ?>) entityConvert;
+                if (entityConvert instanceof StandardTypeConverterPrimaryKeyEntity<?, ?> standardTypeConverterPrimaryKeyEntity) {
                     rv = standardTypeConverterPrimaryKeyEntity.toMany();
                 }
             }

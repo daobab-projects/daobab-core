@@ -185,7 +185,7 @@ public interface QueryJoin<Q extends Query> {
         Set<String> src = new HashSet<>();
         src.add(getEntityName());
         List<String> tables = Arrays.stream(throughTables).map(e -> target.getEntityName(e.entityClass())).collect(Collectors.toCollection(LinkedList::new));
-        setJoins(JoinTracker.calculateThrougth(getTarget(), getTarget().getTables(), src, totables, getJoins(), tables));
+        setJoins(JoinTracker.calculateThrough(getTarget(), getTarget().getTables(), src, totables, getJoins(), tables));
         return (Q) this;
     }
 

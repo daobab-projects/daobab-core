@@ -27,26 +27,26 @@ public class JoinTracker {
         return calculateJoins(target, bunch, getEntities(target, sourcePoints, bunch), destinations, alreadyDefinedJoins);
     }
 
-    public static List<JoinWrapper> calculateThrougth(Target target, List<Entity> bunch, Collection<String> sourcePoints, Set<String> destinations, List<JoinWrapper> alreadyDefinedJoins, List<String> throughtPoints) {
+    public static List<JoinWrapper> calculateThrough(Target target, List<Entity> bunch, Collection<String> sourcePoints, Set<String> destinations, List<JoinWrapper> alreadyDefinedJoins, List<String> throughtPoints) {
 
-        Set<String> fromcol = new HashSet<>();
-        Set<String> tocol = new HashSet<>();
+        Set<String> fromCol = new HashSet<>();
+        Set<String> toCol = new HashSet<>();
 
 
         for (String s : sourcePoints) {
 
             for (int i = 0; i < throughtPoints.size(); i++) {
                 if (i > 0) {
-                    fromcol.clear();
-                    fromcol.add(throughtPoints.get(i - 1));
+                    fromCol.clear();
+                    fromCol.add(throughtPoints.get(i - 1));
                 }
-                tocol.clear();
-                tocol.add(throughtPoints.get(i));
+                toCol.clear();
+                toCol.add(throughtPoints.get(i));
 
-                alreadyDefinedJoins = calculateJoins(target, bunch, getEntities(target, fromcol, bunch), tocol, alreadyDefinedJoins);
+                alreadyDefinedJoins = calculateJoins(target, bunch, getEntities(target, fromCol, bunch), toCol, alreadyDefinedJoins);
 
             }
-            alreadyDefinedJoins = calculateJoins(target, bunch, getEntities(target, fromcol, bunch), tocol, alreadyDefinedJoins);
+            alreadyDefinedJoins = calculateJoins(target, bunch, getEntities(target, fromCol, bunch), toCol, alreadyDefinedJoins);
         }
 
         return alreadyDefinedJoins;

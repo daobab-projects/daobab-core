@@ -87,12 +87,6 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
         return target.select((T) entityRV.getEntity()).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findOne();
     }
 
-//    @SuppressWarnings({"unchecked", "Duplicates"})
-//    default <R1 extends EntityRelation<E1>, M extends Entity, T extends EntityMap & PrimaryKey<E1, F, R1>, E1 extends Entity> List<T> findRelatedManyByCross(QueryTarget target, M cross, Column<T, ?, ?>... columns) {
-//        T entityRV = columns[0].getInstance();
-//        return target.select(columns).join(cross, colID()).join(entityRV, entityRV.colID().transformTo(cross)).whereEqual(colID(), getId()).findManyAs(columns[0].getEntityClass());
-//    }
-
     @SuppressWarnings({"unchecked", "Duplicates"})
     default <M extends Entity, T extends Entity & PrimaryKey> List<T> findRelatedManyByCross(QueryTarget target, M cross, Column<T, ?, ?>... columns) {
         T entityRV = columns[0].getInstance();
@@ -194,7 +188,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
             if (!occColumnUpdated) {
                 Column<E, ?, ?>[] newArray = new Column[columnsToUpdate.length + 1];
                 System.arraycopy(columnsToUpdate, 0, newArray, 0, columnsToUpdate.length);
-                newArray[columnsToUpdate.length + 1] = occ.getOCCColumn();
+                newArray[columnsToUpdate.length] = occ.getOCCColumn();
                 columnsToUpdate = newArray;
 
             }
@@ -244,7 +238,7 @@ public interface PrimaryKey<E extends Entity, F, R extends RelatedTo> extends Re
             if (!occColumnUpdated) {
                 Column<E, ?, ?>[] newarray = new Column[columnsToUpdate.length + 1];
                 System.arraycopy(columnsToUpdate, 0, newarray, 0, columnsToUpdate.length);
-                newarray[columnsToUpdate.length + 1] = occ.getOCCColumn();
+                newarray[columnsToUpdate.length] = occ.getOCCColumn();
                 columnsToUpdate = newarray;
 
             }
