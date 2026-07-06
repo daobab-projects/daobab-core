@@ -47,6 +47,11 @@ public class StandardTypeConverterPrimaryKeyEntity<F, E extends Entity & Primary
         return pkTypeConverter.convertWritingTarget(to);
     }
 
+    @Override
+    public Object convertWritingParameter(E to) {
+        return pkTypeConverter.convertWritingParameter(to);
+    }
+
 
     public E getTable() {
         return table;

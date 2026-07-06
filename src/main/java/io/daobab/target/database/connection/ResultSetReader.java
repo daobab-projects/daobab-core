@@ -35,7 +35,12 @@ public interface ResultSetReader {
 
     void closeStatement(Statement stmt, ILoggerBean loggerBean);
 
-    int execute(String query, Connection conn, ILoggerBean loggerBean);
+    /**
+     * Binds the given parameters to the PreparedStatement, keeping their order.
+     */
+    void bindParameters(PreparedStatement stmt, List<Object> parameters) throws SQLException;
+
+    int execute(String query, List<Object> parameters, Connection conn, ILoggerBean loggerBean);
 
     int executeUpdate(QuerySpecialParameters insertQueryParameters, Connection conn);
 

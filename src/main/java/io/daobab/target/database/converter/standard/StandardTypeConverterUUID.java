@@ -18,4 +18,9 @@ public class StandardTypeConverterUUID extends TypeConverterStringBased<UUID> {
     public String convertWritingTarget(UUID to) {
         return to == null ? null : String.valueOf(to);
     }
+
+    @Override
+    public Object convertWritingParameter(UUID to) {
+        return to == null ? null : String.valueOf(to);
+    }
 }

@@ -31,7 +31,10 @@ import io.daobab.target.statistic.StatisticCollectorProvider;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -124,7 +127,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (query.getEntity() != null) query.getEntity().beforeDelete(this);
             String sqlQuery = toDeleteSqlQuery(query);
             query.setSentQuery(sqlQuery);
-            int rv = getResultSetReader().execute(sqlQuery, conn, this);
+            int rv = getResultSetReader().execute(sqlQuery, query.getIdentifierStorage().getBoundParameters(), conn, this);
             if (query.getEntity() != null) query.getEntity().afterDelete(this);
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
             return rv;
@@ -241,13 +244,14 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             }
 
             ResultSetReader rsReader = getResultSetReader();
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
             try {
                 String sqlQuery = toSqlQuery(s);
                 query.setSentQuery(sqlQuery);
-                stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlQuery);
+                stmt = conn.prepareStatement(sqlQuery);
+                rsReader.bindParameters(stmt, s.getIdentifierStorage().getBoundParameters());
+                ResultSet rs = stmt.executeQuery();
 
                 Column column = s.getFields().get(0).getColumn();
                 DatabaseTypeConverter<?, ?> typeConverter = query.getTarget().getConverterManager().getConverter(column).orElse(null);
@@ -275,12 +279,12 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozenQuery);
 
             ResultSetReader rsReader = getResultSetReader();
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             try {
                 String sqlQuery = withParameters(frozenQuery, parameters);
                 frozenQuery.setSentQuery(sqlQuery);
-                stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlQuery);
+                stmt = conn.prepareStatement(sqlQuery);
+                ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
                     if (isStatisticCollectingEnabled()) getStatisticCollector().received(frozenQuery, 1);
@@ -308,13 +312,14 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             }
 
             ResultSetReader rsReader = getResultSetReader();
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             List<F> rv = new ArrayList<>();
             try {
                 String sqlQuery = toSqlQuery(s);
                 query.setSentQuery(sqlQuery);
-                stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlQuery);
+                stmt = conn.prepareStatement(sqlQuery);
+                rsReader.bindParameters(stmt, s.getIdentifierStorage().getBoundParameters());
+                ResultSet rs = stmt.executeQuery();
                 Column<?, ?, ?> column = s.getFields().get(0).getColumn();
 
                 DatabaseTypeConverter<?, ?> optype = query.getTarget().getConverterManager().getConverter(column).orElse(null);
@@ -340,13 +345,13 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozenQuery);
 
             ResultSetReader rsReader = getResultSetReader();
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             List<F> rv = new ArrayList<>();
             try {
                 String sqlQuery = withParameters(frozenQuery, parameters);
                 frozenQuery.setSentQuery(sqlQuery);
-                stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlQuery);
+                stmt = conn.prepareStatement(sqlQuery);
+                ResultSet rs = stmt.executeQuery();
 
                 while (rs.next()) {
                     rv.add(rsReader.readCell(typeConverter, rs, 1, column));
@@ -372,14 +377,15 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(entityQuery);
             Class<E> clazz = entityQuery.getEntityClass();
 
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             List<E> rv = new ArrayList<>();
             ResultSetReader rsReader = getResultSetReader();
             try {
                 String sqlQuery = toSqlQuery(entityQuery);
                 entityQuery.setSentQuery(sqlQuery);
-                stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlQuery);
+                stmt = conn.prepareStatement(sqlQuery);
+                rsReader.bindParameters(stmt, entityQuery.getIdentifierStorage().getBoundParameters());
+                ResultSet rs = stmt.executeQuery();
 
                 E entityInstance = clazz.newInstance();
 
@@ -456,14 +462,14 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozen);
             Class<E> clazz = frozen.getEntityClass();
 
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             List<E> rv = new ArrayList<>();
             ResultSetReader rsReader = getResultSetReader();
             try {
                 String sqlQuery = withParameters(frozenQuery, parameters);
                 frozen.setSentQuery(sqlQuery);
-                stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlQuery);
+                stmt = conn.prepareStatement(sqlQuery);
+                ResultSet rs = stmt.executeQuery();
 
                 List<TableColumn> columns = frozen.unfreeze().getFields();
                 Column[] columnsArray = new Column[columns.size()];
@@ -527,12 +533,12 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozen);
             ResultSetReader rsReader = getResultSetReader();
             Class<E> clazz = frozen.getEntityClass();
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             try {
                 String sqlQuery = withParameters(frozenQuery, parameters);
                 frozen.setSentQuery(sqlQuery);
-                stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlQuery);
+                stmt = conn.prepareStatement(sqlQuery);
+                ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
 
@@ -564,12 +570,13 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(queryEntity);
             ResultSetReader rsReader = getResultSetReader();
             Class<E> clazz = queryEntity.getEntityClass();
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             try {
                 String sqlQuery = toSqlQuery(queryEntity);
                 queryEntity.setSentQuery(sqlQuery);
-                stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlQuery);
+                stmt = conn.prepareStatement(sqlQuery);
+                rsReader.bindParameters(stmt, queryEntity.getIdentifierStorage().getBoundParameters());
+                ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
                     E entity = rsReader.readEntity(query.getTarget(), rs, clazz, queryEntity.getFields());
@@ -603,15 +610,15 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
     default Plate readPlate(FrozenDataBaseQueryPlate frozenQuery, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConverters) {
         return doSthOnConnection(frozenQuery, (frozen, conn) -> {
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             ResultSetReader rsReader = getResultSetReader();
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozen);
 
             try {
                 String sqlQuery = withParameters(frozenQuery, parameters);
                 frozen.setSentQuery(sqlQuery);
-                stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlQuery);
+                stmt = conn.prepareStatement(sqlQuery);
+                ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
                     Plate plate = rsReader.readPlate(rs, frozen.getFields(), typeConverters);
@@ -633,7 +640,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
     default Plate readPlate(DataBaseQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (queryPlate, conn) -> {
-            Statement stmt = null;
+            PreparedStatement stmt = null;
             ResultSetReader rsReader = getResultSetReader();
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(queryPlate);
 
@@ -646,8 +653,9 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             try {
                 String sqlQuery = toSqlQuery(queryPlate);
                 queryPlate.setSentQuery(sqlQuery);
-                stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sqlQuery);
+                stmt = conn.prepareStatement(sqlQuery);
+                rsReader.bindParameters(stmt, queryPlate.getIdentifierStorage().getBoundParameters());
+                ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
                     Plate plate = rsReader.readPlate(rs, queryPlate.getFields(), typeConverters);
@@ -672,7 +680,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
         getLog().debug("Start readPlateList");
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(frozenQuery);
         List<Plate> plateList = new ArrayList<>();
         ResultSetReader rsReader = getResultSetReader();
@@ -681,8 +689,8 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             conn = this.getConnection();
             String sqlQuery = withParameters(frozenQuery, parameters);
             frozenQuery.setSentQuery(sqlQuery);
-            stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sqlQuery);
+            stmt = conn.prepareStatement(sqlQuery);
+            ResultSet rs = stmt.executeQuery();
             getLog().debug(format("readPlateList executed statement: %s", sqlQuery));
 
             while (rs.next()) {
@@ -709,7 +717,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
         getLog().debug("Start readPlateList");
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         List<Plate> rv = new ArrayList<>();
         ResultSetReader rsReader = getResultSetReader();
@@ -728,8 +736,9 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             conn = this.getConnection();
             String sqlQuery = toSqlQuery(query);
             query.setSentQuery(sqlQuery);
-            stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sqlQuery);
+            stmt = conn.prepareStatement(sqlQuery);
+            rsReader.bindParameters(stmt, query.getIdentifierStorage().getBoundParameters());
+            ResultSet rs = stmt.executeQuery();
             getLog().debug(format("readPlateList executed statement: %s", sqlQuery));
 
             while (rs.next()) {

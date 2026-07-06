@@ -31,4 +31,9 @@ public class StandardTypeConverterInstant extends TypeConverterLocalDateTimeBase
     public String convertWritingTarget(Instant to) {
         return target.getDatabaseDateConverter().toDatabaseLocalDateTime(LocalDateTime.ofInstant(to, ZoneOffset.UTC));
     }
+
+    @Override
+    public Object convertWritingParameter(Instant to) {
+        return to == null ? null : LocalDateTime.ofInstant(to, ZoneOffset.UTC);
+    }
 }

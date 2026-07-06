@@ -22,4 +22,9 @@ public class StandardTypeConverterBigInteger extends TypeConverterBigIntegerBase
     public String convertWritingTarget(BigInteger to) {
         return to == null ? null : to.toString();
     }
+
+    @Override
+    public Object convertWritingParameter(BigInteger to) {
+        return to == null ? null : new java.math.BigDecimal(to);
+    }
 }

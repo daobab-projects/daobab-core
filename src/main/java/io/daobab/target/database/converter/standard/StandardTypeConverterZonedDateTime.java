@@ -29,4 +29,9 @@ public class StandardTypeConverterZonedDateTime extends TypeConverterZonedDateTi
     public String convertWritingTarget(ZonedDateTime to) {
         return target.getDatabaseDateConverter().toDatabaseZonedDateTime(to);
     }
+
+    @Override
+    public Object convertWritingParameter(ZonedDateTime to) {
+        return to == null ? null : to.toOffsetDateTime();
+    }
 }

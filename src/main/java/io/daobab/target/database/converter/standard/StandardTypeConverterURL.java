@@ -22,4 +22,9 @@ public class StandardTypeConverterURL extends TypeConverterUrlBased<URL> {
     public String convertWritingTarget(URL to) {
         return to == null ? null : String.valueOf(to);
     }
+
+    @Override
+    public Object convertWritingParameter(URL to) {
+        return to == null ? null : String.valueOf(to);
+    }
 }

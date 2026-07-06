@@ -31,4 +31,9 @@ public class StandardTypeConverterEnum<E extends Enum> extends TypeConverterStri
     public String convertWritingTarget(Enum to) {
         return to == null ? null : "'" + to + "'";
     }
+
+    @Override
+    public Object convertWritingParameter(Enum to) {
+        return to == null ? null : to.toString();
+    }
 }

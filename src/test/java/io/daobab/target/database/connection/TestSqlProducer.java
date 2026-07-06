@@ -37,7 +37,7 @@ class TestSqlProducer implements SakilaTables, FunctionWhispererH2 {
         assertTrue(areEqual("select ihs1.RATING,COUNT(ihs1.FILM_ID) as cnt \n" +
                 " from FILM ihs1 \n" +
                 " group by ihs1.RATING\n" +
-                " having  cnt > 200", sql));
+                " having  cnt > ?", sql));
     }
 
     @Test

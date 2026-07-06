@@ -9,5 +9,13 @@ public interface TypeConverter<F, T> {
 
     String convertWritingTarget(T to);
 
+    /**
+     * Converts a value into an object which may be bound to a PreparedStatement parameter.
+     * By default the value is returned as is - override whenever the value needs
+     * a conversion before binding (enums, java.time types not supported by the driver etc.)
+     */
+    default Object convertWritingParameter(T to) {
+        return to;
+    }
 
 }

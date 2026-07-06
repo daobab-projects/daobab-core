@@ -29,4 +29,9 @@ public class StandardTypeConverterUtilDate extends TypeConverterUtilDateBased<Da
     public String convertWritingTarget(Date to) {
         return target.getDatabaseDateConverter().toDatabaseDate(to);
     }
+
+    @Override
+    public Object convertWritingParameter(Date to) {
+        return to == null ? null : new java.sql.Timestamp(to.getTime());
+    }
 }

@@ -28,6 +28,10 @@ public final class IdentifierStorage {
 
     private final Map<String, Column> identifiedColumnByAsKey = new HashMap<>();
 
+    private List<Object> boundParameters = new ArrayList<>();
+    private boolean parametersShared = false;
+    private boolean inlineParameters = false;
+
     public void registerIdentifiers(String... entities) {
         if (entities == null) throw new MandatoryEntity();
 
@@ -107,6 +111,47 @@ public final class IdentifierStorage {
 
     public List<ParameterInjectionPoint> getQueryParameters() {
         return queryParameters;
+    }
+
+    public void addBoundParameter(Object value) {
+        boundParameters.add(value);
+    }
+
+    public List<Object> getBoundParameters() {
+        return boundParameters;
+    }
+
+    /**
+     * Clears the bound parameters before a top level query generation.
+     * Does nothing if this storage shares the parameter list of an outer query,
+     * so that an inner query generation never wipes already collected parameters.
+     */
+    public void clearBoundParameters() {
+        if (!parametersShared) {
+            boundParameters.clear();
+        }
+    }
+
+    public boolean isInlineParameters() {
+        return inlineParameters;
+    }
+
+    /**
+     * When enabled, values are rendered as SQL literals instead of '?' placeholders.
+     * Used for frozen queries which keep the whole SQL as text.
+     */
+    public void setInlineParameters(boolean inlineParameters) {
+        this.inlineParameters = inlineParameters;
+    }
+
+    /**
+     * Makes the given sub query storage collect bound parameters into this storage list,
+     * keeping the parameter order consistent with the placeholders order in the final SQL.
+     */
+    public void shareParametersWith(IdentifierStorage subQueryStorage) {
+        subQueryStorage.boundParameters = this.boundParameters;
+        subQueryStorage.parametersShared = true;
+        subQueryStorage.inlineParameters = this.inlineParameters;
     }
 
     public void addColumnIdentifiedAsKey(String identifier, Column column) {

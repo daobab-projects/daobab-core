@@ -140,11 +140,28 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
     }
 
     @Override
-    public int execute(String query, Connection conn, ILoggerBean loggerBean) {
+    public void bindParameters(PreparedStatement stmt, List<Object> parameters) throws SQLException {
+        if (parameters == null) return;
+        for (int i = 0; i < parameters.size(); i++) {
+            bindParameter(stmt, i + 1, parameters.get(i));
+        }
+    }
+
+    private void bindParameter(PreparedStatement stmt, int index, Object value) throws SQLException {
+        if (value instanceof byte[]) {
+            stmt.setBinaryStream(index, new ByteArrayInputStream((byte[]) value));
+        } else {
+            stmt.setObject(index, value);
+        }
+    }
+
+    @Override
+    public int execute(String query, List<Object> parameters, Connection conn, ILoggerBean loggerBean) {
         PreparedStatement stmt = null;
 
         try {
             stmt = conn.prepareStatement(query);
+            bindParameters(stmt, parameters);
             return stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -159,7 +176,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
         try (PreparedStatement stmt = conn.prepareStatement(insertQueryParameters.getQuery().toString())) {
             for (int i = 1; i < insertQueryParameters.getCounter(); i++) {
-                stmt.setBinaryStream(i, new ByteArrayInputStream((byte[]) insertQueryParameters.getSpecialParameters().get(i)));
+                bindParameter(stmt, i, insertQueryParameters.getSpecialParameters().get(i));
             }
             return stmt.executeUpdate();
 
@@ -176,7 +193,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
             stmt = conn.prepareStatement(insertQueryParameters.getQuery().toString(), Statement.RETURN_GENERATED_KEYS);
 
             for (int i = 1; i < insertQueryParameters.getCounter(); i++) {
-                stmt.setBinaryStream(i, new ByteArrayInputStream((byte[]) insertQueryParameters.getSpecialParameters().get(i)));
+                bindParameter(stmt, i, insertQueryParameters.getSpecialParameters().get(i));
             }
 
             stmt.executeUpdate();
@@ -198,10 +215,10 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
     public <F> F getSequenceNextId(Connection conn, String sequenceName, Class<F> fieldClazz) {
         if (sequenceName == null || sequenceName.isEmpty()) throw new NoSequenceException();
         log.debug("Getting the sequence = {}", sequenceName);
-        Statement stmt = null;
+        PreparedStatement stmt = null;
         try {
-            stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select " + sequenceName + ".nextval from dual");
+            stmt = conn.prepareStatement("select " + sequenceName + ".nextval from dual");
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 F rv = readCellEasy(rs, 1, fieldClazz);
                 log.debug("Took the sequence = {} value: {}", sequenceName, rv);

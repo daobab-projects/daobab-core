@@ -54,6 +54,8 @@ public abstract class FrozenDataBaseQueryBase<E extends Entity, Q extends DataBa
     protected FrozenDataBaseQueryBase(Q originalQuery) {
         this.target = originalQuery.getTarget();
         IdentifierStorage identifierStorage = new IdentifierStorage();
+        //frozen query is kept as a pure SQL text, so the values have to be inlined instead of '?' placeholders
+        identifierStorage.setInlineParameters(true);
         this.frozenQuery = originalQuery.getTarget().toSqlQuery(originalQuery, identifierStorage);
         this.queryParametersInjectionPoints = identifierStorage.getQueryParameters();
         this.originalQuery = originalQuery;

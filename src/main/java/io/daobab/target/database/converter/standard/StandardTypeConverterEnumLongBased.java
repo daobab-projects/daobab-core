@@ -35,4 +35,10 @@ public class StandardTypeConverterEnumLongBased<E extends Enum & LongBasedEnum> 
     public String convertWritingTarget(Enum to) {
         return to == null ? null : String.valueOf(((E) to).getValue());
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object convertWritingParameter(Enum to) {
+        return to == null ? null : ((E) to).getValue();
+    }
 }
