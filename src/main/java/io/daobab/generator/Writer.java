@@ -23,8 +23,10 @@ public class Writer {
     int generatedTablesCount = 0;
     int generatedCompositesCount = 0;
     int generatedTargetsCount = 0;
+    int generatedDtosCount = 0;
 
     private TemplateLanguage language;
+    private boolean generateDtos = true;
 
     public Writer(TemplateLanguage language) {
         this.language = language;
@@ -32,6 +34,10 @@ public class Writer {
 
     public void setLanguage(TemplateLanguage language) {
         this.language = language;
+    }
+
+    public void setGenerateDtos(boolean generateDtos) {
+        this.generateDtos = generateDtos;
     }
 
     private static boolean isCompositeKeyNameWithSuffixFree(String tableNameWithSuffix, int counter, List<GenerateTable> allTables) {
@@ -102,7 +108,7 @@ public class Writer {
         replacer.clear();
 
         replacer.add(GenKeys.TABLES_INTERFACE_NAME, target.getTargetTablesInterfaceName())
-                .add(GenKeys.TAB_IMPORTS, target.getTableImports())
+                .add(GenKeys.TAB_IMPORTS, target.getTableImports(language))
                 .add(GenKeys.TABLES_INITIATED, target.getTablesInitiation(language))
                 .add(GenKeys.TARGET_PACKAGE, target.getJavaPackage() + ";");
 
@@ -154,13 +160,16 @@ public class Writer {
     void generateJavaTable(String catalog, String schema, GenerateTable table, List<GenerateTable> allTables, String javaackage, String path, boolean override, boolean schemaIntoTable) {
         String tableName = table.getTableName();
         String tableNameCamel = GenerateFormatter.toCamelCase(table.getTableName());
+        String entityName = table.getEntityCamelName(language);
+        String dtoName = table.getDtoName();
+        boolean generateDto = (language == JAVA || language == KOTLIN) && generateDtos;
         boolean pkExist = table.getPrimaryKeys() != null;
         String compositeKeyName = createCompositeKeyName(tableNameCamel, allTables);
 
-        StringBuilder javaPackage = JavaPackageResolver.resolve(javaackage, catalog, schema);
-        javaPackage.append(table.isView() ? ".view" : ".table");
+        String basePackage = JavaPackageResolver.resolve(javaackage, catalog, schema).toString();
+        String dtoPackage = basePackage + ".dto";
 
-        table.setJavaPackage(javaPackage.toString());
+        table.setJavaPackage(basePackage + (table.isView() ? ".view" : ".table"));
 
         Replacer replacer = new Replacer();
         String endImport = language == JAVA ? ";" : "";
@@ -180,9 +189,12 @@ public class Writer {
 
         replacer.add(GenKeys.COLUMN_IMPORTS, table.getColumnImport(tableNameCamel, endImport))
                 .add(GenKeys.TYPE_IMPORTS, table.getTypeImports(language))
-                .add(GenKeys.COLUMN_INTERFACES, table.getColumnInterfaces(replacer, language, compositeKeyName, tableNameCamel))
+                .add(GenKeys.DTO_IMPORT, generateDto ? "import " + dtoPackage + "." + dtoName + endImport : "")
+                .add(GenKeys.TABLE_SUPERCLASS, generateDto ? "DtoTable<" + entityName + ", " + dtoName + ">" : "Table<" + entityName + ">")
+                .add(GenKeys.DTO_METHODS, generateDto ? GenerateDto.getConversionMethods(table, entityName, dtoName, language) : "")
+                .add(GenKeys.COLUMN_INTERFACES, table.getColumnInterfaces(replacer, language, compositeKeyName, tableNameCamel, entityName))
                 .add(GenKeys.TABLE_NAME, schemaIntoTable ? (schema + "." + tableName) : tableName)
-                .add(GenKeys.TABLE_CAMEL_NAME, tableNameCamel)
+                .add(GenKeys.TABLE_CAMEL_NAME, entityName)
                 .add(GenKeys.COLUMN_METHODS, table.getColumnMethods(language))
                 .add(GenKeys.TABLE_PACKAGE, table.getJavaPackage());
         if (pkExist) {
@@ -191,16 +203,16 @@ public class Writer {
                 GeneratedColumnInTable git = pkCol.getColumnInTableOrCreate(tableName);
                 String pkColSimpleName = table.getPkTypeSimpleName(language, pkCol);
                 if (language == KOTLIN) {
-                    replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + tableNameCamel + "," + pkColSimpleName + "," + pkCol.getFinalFieldNameShortOrLong(tableNameCamel) + "<*, " + pkCol.getCorrectClassSimpleNameForLanguage(replacer, language) + (git.isNullable() ? "?" : "") + ">>");
+                    replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + entityName + "," + pkColSimpleName + "," + pkCol.getFinalFieldNameShortOrLong(tableNameCamel) + "<*, " + pkCol.getCorrectClassSimpleNameForLanguage(replacer, language) + (git.isNullable() ? "?" : "") + ">>");
                     replacer.add(GenKeys.PK_ID_METHOD, table.getPkIdMethod(language));
                 } else {
                     //Java
-                    replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + tableNameCamel + "," + pkColSimpleName + "," + table.getPrimaryKeys().get(0).getFinalFieldNameShortOrLong(tableNameCamel) + ">");
+                    replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + entityName + "," + pkColSimpleName + "," + table.getPrimaryKeys().get(0).getFinalFieldNameShortOrLong(tableNameCamel) + ">");
                     replacer.add(GenKeys.PK_ID_METHOD, table.getPkIdMethod(language));
                 }
 
             } else {
-                replacer.add(GenKeys.PK_INTERFACE, PrimaryCompositeKey.class.getSimpleName() + "<" + tableNameCamel + "," + compositeKeyName + "<" + tableNameCamel + ">>");
+                replacer.add(GenKeys.PK_INTERFACE, PrimaryCompositeKey.class.getSimpleName() + "<" + entityName + "," + compositeKeyName + "<" + entityName + ">>");
                 replacer.add(GenKeys.PK_ID_METHOD, table.getPkKeyMethod(compositeKeyName, language));
 
 //                generateCompositeKey(compositeKeyName, table);
@@ -211,8 +223,13 @@ public class Writer {
                     .add(GenKeys.PK_ID_METHOD, "");
         }
 
-        saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, TABLE_CLASS)), path, catalog, schema, (table.isView() ? "view" : "table"), tableNameCamel, language, override);
+        saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, TABLE_CLASS)), path, catalog, schema, (table.isView() ? "view" : "table"), entityName, language, override);
         generatedTablesCount++;
+
+        if (generateDto) {
+            saveGeneratedTo(GenerateDto.getDtoClassContent(table, dtoPackage, dtoName, language), path, catalog, schema, "dto", dtoName, language, override);
+            generatedDtosCount++;
+        }
 
     }
 

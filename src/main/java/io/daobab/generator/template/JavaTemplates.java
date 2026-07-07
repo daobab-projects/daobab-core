@@ -121,12 +121,13 @@ class JavaTemplates {
             "\n" + GenKeys.COLUMN_IMPORTS +
             "\n" + "import " + DaobabCache.class.getName() + ";" +
             "\n" + "import io.daobab.model.*;" +
+            "\n" + GenKeys.DTO_IMPORT +
             "\n" + GenKeys.TYPE_IMPORTS +
             "\nimport java.util.*;" +
             "\n" +
             "\n@SuppressWarnings({\"rawtypes\", \"unused\"})" +
             "\n@TableInformation(name = \"" + GenKeys.TABLE_NAME + "\")" +
-            "\npublic class " + GenKeys.TABLE_CAMEL_NAME + " extends Table<" + GenKeys.TABLE_CAMEL_NAME + "> implements" +
+            "\npublic class " + GenKeys.TABLE_CAMEL_NAME + " extends " + GenKeys.TABLE_SUPERCLASS + " implements" +
             "\n" + GenKeys.COLUMN_INTERFACES +
             "\n\t" + GenKeys.PK_INTERFACE +
             "\n\t{" +
@@ -138,7 +139,7 @@ class JavaTemplates {
             "\n\tpublic " + GenKeys.TABLE_CAMEL_NAME + "(Map<String, Object> parameters) {" +
             "\n\t\tsuper(parameters);" +
             "\n\t}" +
-            "\n" +
+            "\n" + GenKeys.DTO_METHODS +
             "\n\t@Override" +
             "\n\tpublic List<TableColumn> columns() {" +
             "\n\t\treturn " + DaobabCache.class.getSimpleName() + ".getTableColumns(this," +
@@ -148,6 +149,42 @@ class JavaTemplates {
             "\n\t}" +
             "\n" +
             "\n\t" + GenKeys.PK_ID_METHOD +
+            "\n}";
+
+    static final String DTO_CLASS_TEMP = "package " + GenKeys.DTO_PACKAGE + ";" +
+            "\n" +
+            "\n" + GenKeys.TYPE_IMPORTS +
+            "\nimport java.util.Objects;" +
+            "\n" +
+            "\npublic final class " + GenKeys.DTO_NAME + " {" +
+            "\n" +
+            "\n" + GenKeys.DTO_FIELDS +
+            "\n" +
+            "\n\tprivate " + GenKeys.DTO_NAME + "(Builder builder) {" +
+            "\n" + GenKeys.DTO_ASSIGNMENTS +
+            "\n\t}" +
+            "\n" +
+            "\n\tpublic static Builder builder() {" +
+            "\n\t\treturn new Builder();" +
+            "\n\t}" +
+            "\n" +
+            "\n" + GenKeys.DTO_GETTERS +
+            "\n" +
+            "\n" + GenKeys.DTO_EQUALS_HASHCODE +
+            "\n" +
+            "\n\tpublic static final class Builder {" +
+            "\n" +
+            "\n" + GenKeys.DTO_BUILDER_FIELDS +
+            "\n" +
+            "\n\t\tprivate Builder() {" +
+            "\n\t\t}" +
+            "\n" +
+            "\n" + GenKeys.DTO_BUILDER_METHODS +
+            "\n" +
+            "\n\t\tpublic " + GenKeys.DTO_NAME + " build() {" +
+            "\n\t\t\treturn new " + GenKeys.DTO_NAME + "(this);" +
+            "\n\t\t}" +
+            "\n\t}" +
             "\n}";
 
     private JavaTemplates() {

@@ -54,10 +54,11 @@ class KotlinTemplates {
             "\n" + GenKeys.COLUMN_IMPORTS +
             "\nimport " + DaobabCache.class.getName() +
             "\n" + "import io.daobab.model.*" +
+            "\n" + GenKeys.DTO_IMPORT +
             "\n" + GenKeys.TYPE_IMPORTS +
             "\nimport java.util.*" +
             "\n" +
-            "\nclass " + GenKeys.TABLE_CAMEL_NAME + " : Table<" + GenKeys.TABLE_CAMEL_NAME + ">, " +
+            "\nclass " + GenKeys.TABLE_CAMEL_NAME + " : " + GenKeys.TABLE_SUPERCLASS + ", " +
             "\n" + GenKeys.COLUMN_INTERFACES +
             "\n\t" + GenKeys.PK_INTERFACE +
             "\n\t{" +
@@ -65,7 +66,7 @@ class KotlinTemplates {
             "\n\tconstructor (): super()" +
             "\n" +
             "\n\tconstructor (parameters: Map<String?, Any?>?): super(parameters)" +
-            "\n" +
+            "\n" + GenKeys.DTO_METHODS +
             "\n\toverride fun columns(): List<TableColumn> = " +
             "\n\t\t" + DaobabCache.class.getSimpleName() + ".getTableColumns(this) {" +
             "\n\t\t\tArrays.asList(" +
@@ -74,6 +75,15 @@ class KotlinTemplates {
             "\n}" +
             "\n\t" + GenKeys.PK_ID_METHOD +
             "\n}";
+
+    public static final String DTO_CLASS_TEMP = "package " + GenKeys.DTO_PACKAGE +
+            "\n" +
+            "\n" + GenKeys.TYPE_IMPORTS +
+            "\n" +
+            "\ndata class " + GenKeys.DTO_NAME + "(" +
+            "\n" + GenKeys.DTO_FIELDS +
+            "\n)" + GenKeys.DTO_EQUALS_HASHCODE +
+            "\n";
 
     public static final String COLUMN_INTERFACE_TEMP = "package " + GenKeys.PACKAGE +
             "\n" +

@@ -92,13 +92,14 @@ class TestDaobabEntityProcessor {
         CompilationResult result = compile(List.of("apttest/BookDef.java"), List.of(BOOK_DEFINITION));
 
         assertTrue(result.success(), "compilation failed: " + result.diagnostics());
+        assertTrue(Files.exists(result.sourcesDir().resolve("apttest/BookEntity.java")));
         assertTrue(Files.exists(result.sourcesDir().resolve("apttest/Book.java")));
         assertTrue(Files.exists(result.sourcesDir().resolve("apttest/column/Title.java")));
 
         try (URLClassLoader loader = new URLClassLoader(
                 new URL[]{result.classesDir().toUri().toURL()}, Entity.class.getClassLoader())) {
 
-            Class<?> bookClass = loader.loadClass("apttest.Book");
+            Class<?> bookClass = loader.loadClass("apttest.BookEntity");
             Object book = bookClass.getConstructor().newInstance();
 
             //columns list: bookId, title, printDate, pages
@@ -123,6 +124,23 @@ class TestDaobabEntityProcessor {
             assertTrue(sql.contains("BOOK"), "unexpected sql: " + sql);
             assertTrue(sql.contains("BOOK_ID"), "unexpected sql: " + sql);
             assertTrue(sql.contains("PRINT_DATE"), "unexpected sql: " + sql);
+
+            //the DTO round trip: entity -> dto -> entity (pk holds title, pages and the id)
+            Class<?> dtoClass = loader.loadClass("apttest.Book");
+            Object dto = bookClass.getMethod("toDto").invoke(pk);
+            assertEquals(dtoClass, dto.getClass());
+            assertEquals("Dune", dtoClass.getMethod("getTitle").invoke(dto));
+            assertEquals(412, dtoClass.getMethod("getPages").invoke(dto));
+
+            Object bookBack = bookClass.getMethod("fromDto", dtoClass).invoke(null, dto);
+            assertEquals("Dune", bookClass.getMethod("getTitle").invoke(bookBack));
+            assertEquals(7, bookClass.getMethod("getBookId").invoke(bookBack));
+
+            //the DTO can also be built directly
+            Object builder = dtoClass.getMethod("builder").invoke(null);
+            builder.getClass().getMethod("title", String.class).invoke(builder, "Solaris");
+            Object builtDto = builder.getClass().getMethod("build").invoke(builder);
+            assertEquals("Solaris", dtoClass.getMethod("getTitle").invoke(builtDto));
         }
     }
 
@@ -150,8 +168,8 @@ class TestDaobabEntityProcessor {
         try (URLClassLoader loader = new URLClassLoader(
                 new URL[]{result.classesDir().toUri().toURL()}, Entity.class.getClassLoader())) {
 
-            Class<?> bookClass = loader.loadClass("apttest.Book");
-            Class<?> magazineClass = loader.loadClass("apttest.Magazine");
+            Class<?> bookClass = loader.loadClass("apttest.BookEntity");
+            Class<?> magazineClass = loader.loadClass("apttest.MagazineEntity");
             Class<?> titleColumn = loader.loadClass("apttest.column.Title");
 
             assertTrue(titleColumn.isAssignableFrom(bookClass));
@@ -207,30 +225,40 @@ class TestDaobabEntityProcessor {
     }
 
     @Test
-    void definitionWithoutSuffixRequiresExplicitEntityName() throws Exception {
+    void definitionWithoutSuffixRequiresExplicitDtoName() throws Exception {
         String definition = """
                 package apttest;
-                
+
                 import io.daobab.annotation.DaobabTable;
-                
+
                 @DaobabTable
                 public interface Book {
                     String title();
                 }
                 """;
 
+        //the generated DTO would collide with the definition itself
         CompilationResult result = compile(List.of("apttest/Book.java"), List.of(definition));
 
         assertFalse(result.success());
         assertTrue(result.diagnostics().contains("collide"), "unexpected diagnostics: " + result.diagnostics());
 
-        //the same definition compiles once the entity name is explicit
-        String fixed = definition.replace("@DaobabTable", "@DaobabTable(entityName = \"BookEntity\")");
+        //the same definition compiles once the DTO name is explicit
+        String fixed = definition.replace("@DaobabTable", "@DaobabTable(dtoName = \"BookDto\")");
         CompilationResult fixedResult = compile(List.of("apttest/Book.java"), List.of(fixed));
 
         assertTrue(fixedResult.success(), "compilation failed: " + fixedResult.diagnostics());
-        assertNotEquals(null, fixedResult.classesDir().resolve("apttest/BookEntity.class"));
         assertTrue(Files.exists(fixedResult.classesDir().resolve("apttest/BookEntity.class")));
+        assertTrue(Files.exists(fixedResult.classesDir().resolve("apttest/BookDto.class")));
+
+        //and also when the DTO generation is disabled
+        String noDto = definition.replace("@DaobabTable", "@DaobabTable(generateDto = false)");
+        CompilationResult noDtoResult = compile(List.of("apttest/Book.java"), List.of(noDto));
+
+        assertTrue(noDtoResult.success(), "compilation failed: " + noDtoResult.diagnostics());
+        assertTrue(Files.exists(noDtoResult.classesDir().resolve("apttest/BookEntity.class")));
+        //no DTO source is generated
+        assertFalse(Files.exists(noDtoResult.sourcesDir().resolve("apttest/Book.java")));
     }
 
     private record CompilationResult(boolean success, Path classesDir, Path sourcesDir, String diagnostics) {

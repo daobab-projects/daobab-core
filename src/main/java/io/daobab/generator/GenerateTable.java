@@ -182,17 +182,17 @@ public class GenerateTable {
         return sb.toString();
     }
 
-    public String getColumnInterfaces(Replacer replacer, TemplateLanguage language, String compositeKeyName, String tableCamelName) {
+    public String getColumnInterfaces(Replacer replacer, TemplateLanguage language, String compositeKeyName, String tableCamelName, String entityName) {
         StringBuilder sb = new StringBuilder();
 
         if (getPrimaryKeys() != null && getPrimaryKeys().size() > 1) {
-            sb.append(format("\t%s<%s>,%n", compositeKeyName, tableCamelName));
+            sb.append(format("\t%s<%s>,%n", compositeKeyName, entityName));
         }
 
         for (int i = 0; i < getColumnList().size(); i++) {
             GenerateColumn gc = getColumnList().get(i);
             sb.append("\t");
-            sb.append(gc.getColumnInterface(replacer, language, tableCamelName, this.getTableName()));
+            sb.append(gc.getColumnInterface(replacer, language, tableCamelName, entityName, this.getTableName()));
             if (i < getColumnList().size() - 1) sb.append(",\n");
         }
 
@@ -258,7 +258,7 @@ public class GenerateTable {
         }
 
         return replacer
-                .add(GenKeys.TABLE_NAME, GenerateFormatter.toCamelCase(getTableName()))
+                .add(GenKeys.TABLE_NAME, getEntityCamelName(language))
                 .add(GenKeys.PK_TYPE_IMPORT, pkType)
                 .add(GenKeys.TYPE_IMPORTS, getPkTypeSimpleName(language, pk))
                 .add(GenKeys.INTERFACE_NAME, pk.getFinalFieldNameShortOrLong(tableName))
@@ -277,7 +277,7 @@ public class GenerateTable {
     public String getPkKeyMethod(String compositeKeyName, TemplateLanguage language) {
         if (getPrimaryKeys() == null || getPrimaryKeys().isEmpty()) return "";
         return new Replacer()
-                .add(GenKeys.TABLE_NAME, GenerateFormatter.toCamelCase(getTableName()))
+                .add(GenKeys.TABLE_NAME, getEntityCamelName(language))
                 .add(GenKeys.COMPOSITE_KEY_METHOD, compositeKeyName)
                 .replaceAll(TemplateProvider.getTemplate(language, COMPOSITE_PK_KEY_METHOD));
     }
@@ -405,6 +405,21 @@ public class GenerateTable {
 
     public String getCamelTableName() {
         return GenerateFormatter.toCamelCase(getTableName());
+    }
+
+    /**
+     * Generated entity class name: the camel case table name with the 'Entity' suffix (Java and Kotlin).
+     */
+    public String getEntityCamelName(TemplateLanguage language) {
+        String camelName = getCamelTableName();
+        return language == JAVA || language == KOTLIN ? camelName + "Entity" : camelName;
+    }
+
+    /**
+     * Generated DTO class name: the plain camel case table name.
+     */
+    public String getDtoName() {
+        return getCamelTableName();
     }
 
     public String getCatalogName() {

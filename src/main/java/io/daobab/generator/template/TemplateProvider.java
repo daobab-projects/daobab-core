@@ -17,6 +17,8 @@ public class TemplateProvider {
                 switch (type) {
                     case TABLE_CLASS:
                         return JavaTemplates.TABLE_CLASS_TEMP;
+                    case DTO_CLASS:
+                        return JavaTemplates.DTO_CLASS_TEMP;
                     case COLUMN_INTERFACE:
                         return JavaTemplates.COLUMN_INTERFACE_TEMP;
                     case DATABASE_TABLES_INTERFACE:
@@ -39,6 +41,8 @@ public class TemplateProvider {
                 switch (type) {
                     case TABLE_CLASS:
                         return KotlinTemplates.TABLE_CLASS_TEMP;
+                    case DTO_CLASS:
+                        return KotlinTemplates.DTO_CLASS_TEMP;
                     case COLUMN_INTERFACE:
                         return KotlinTemplates.COLUMN_INTERFACE_TEMP;
                     case DATABASE_TABLES_INTERFACE:

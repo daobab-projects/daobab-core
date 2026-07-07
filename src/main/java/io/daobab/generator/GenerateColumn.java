@@ -43,7 +43,7 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
     }
 
 
-    public String getColumnInterface(Replacer replacer, TemplateLanguage language, String tableCamelName, String tableRealName) {
+    public String getColumnInterface(Replacer replacer, TemplateLanguage language, String tableCamelName, String entityName, String tableRealName) {
 
         GeneratedColumnInTable g = getColumnInTable(tableRealName);
         if (g == null) {
@@ -53,9 +53,9 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         String type = getCorrectClassSimpleNameForLanguage(replacer, language);
 
         if (TemplateLanguage.JAVA.equals(language)) {
-            return getFinalFieldNameShortOrLong(tableCamelName) + "<" + tableCamelName + ">";
+            return getFinalFieldNameShortOrLong(tableCamelName) + "<" + entityName + ">";
         } else if (TemplateLanguage.KOTLIN.equals(language)) {
-            return getFinalFieldNameShortOrLong(tableCamelName) + "<" + tableCamelName + ", " + type + ("1".equalsIgnoreCase(g.getNullable()) ? "?" : "") + ">";
+            return getFinalFieldNameShortOrLong(tableCamelName) + "<" + entityName + ", " + type + ("1".equalsIgnoreCase(g.getNullable()) ? "?" : "") + ">";
         } else {
             throw new RuntimeException("Unknown language: " + language);
         }

@@ -68,13 +68,13 @@ public class GenerateTarget {
     }
 
 
-    public String getTableImports() {
+    public String getTableImports(TemplateLanguage language) {
         if (getTableList() == null) return "";
         StringBuilder sb = new StringBuilder();
         getTableList().forEach(gc -> sb.append("import ")
                 .append(gc.getJavaPackage())
                 .append(".")
-                .append(GenerateFormatter.toCamelCase(gc.getTableName()))
+                .append(gc.getEntityCamelName(language))
                 .append(";")
                 .append("\n"));
         return sb.toString();
@@ -105,14 +105,15 @@ public class GenerateTarget {
         if (language == TemplateLanguage.JAVA) {
             for (GenerateTable gc : getTableList()) {
                 String tableNameCamel = GenerateFormatter.toCamelCase(gc.getTableName());
+                String entityName = gc.getEntityCamelName(language);
                 sb.append(TableDescriptionGenerator.getTableDescription(gc))
                         .append("\t")
-                        .append(tableNameCamel)
+                        .append(entityName)
                         .append(" ")
                         .append(gc.isView() ? "view" : "tab")
                         .append(tableNameCamel)
                         .append(" = new ")
-                        .append(tableNameCamel)
+                        .append(entityName)
                         .append("();");
             }
             sb.append("\n");

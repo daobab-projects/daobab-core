@@ -34,12 +34,14 @@ public class DaobabGenerator {
     int generatedTablesCount = 0;
     int generatedCompositesCount = 0;
     int generatedTargetsCount = 0;
+    int generatedDtosCount = 0;
     private String filePath;
     private String javaPackage;
     private boolean override = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_OVERRIDE, "true");
     private boolean generateTables = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_TABLES, "true");
     private boolean generateViews = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_VIEWS, "true");
     private boolean generateColumns = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_COLUMNS, "true");
+    private boolean generateDtos = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_DTOS, "true");
     private TemplateLanguage language = PropertyReader.readEnum(DaobabProperty.GENERATOR_LANGUAGE, TemplateLanguage.class, "JAVA");
     private boolean schemaIntoTableName = PropertyReader.readBooleanSmall(DaobabProperty.GENERATOR_USE_SCHEMA_INTO_TABLE_NAME, "false");
     private String[] schemas;
@@ -209,6 +211,7 @@ public class DaobabGenerator {
 
     private List<GenerateTable> createTables(DatabaseMetaData meta, String catalog, String schema) {
         Writer writer = new Writer(language);
+        writer.setGenerateDtos(generateDtos);
 
         List<GenerateColumn> allColumns = new ArrayList<>();
         List<GenerateTable> allTables = getTablesFromDB(meta, catalog, schema, allColumns);
@@ -259,6 +262,7 @@ public class DaobabGenerator {
         generatedTablesCount = generatedTablesCount + writer.generatedTablesCount;
         generatedCompositesCount = generatedCompositesCount + writer.generatedCompositesCount;
         generatedTargetsCount = generatedTargetsCount + writer.generatedTargetsCount;
+        generatedDtosCount = generatedDtosCount + writer.generatedDtosCount;
         return allTables;
     }
 
@@ -508,6 +512,15 @@ public class DaobabGenerator {
         return this;
     }
 
+    public boolean isEnabledDtoGeneration() {
+        return generateDtos;
+    }
+
+    public DaobabGenerator enableDtoGeneration(boolean generateDtos) {
+        this.generateDtos = generateDtos;
+        return this;
+    }
+
 
     private void summary(long startTime) {
         long stopTime = System.currentTimeMillis();
@@ -527,6 +540,7 @@ public class DaobabGenerator {
         System.out.println("---------------------------------------------------------");
         System.out.println("Generated targets: " + generatedTargetsCount);
         System.out.println("Generated tables: " + generatedTablesCount);
+        System.out.println("Generated DTOs: " + generatedDtosCount);
         System.out.println("Generated composite keys: " + generatedCompositesCount);
         System.out.println("Generated columns: " + generatedColumnsCount);
         System.out.println("Execution time: " + sdf.format(new Date(stopTime - startTime)) + " sec");
