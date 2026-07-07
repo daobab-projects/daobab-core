@@ -4,6 +4,7 @@ import io.daobab.dict.DictDatabaseType;
 import io.daobab.query.base.QuerySpecialParameters;
 import io.daobab.statement.condition.Order;
 import io.daobab.target.database.MockDataBase;
+import io.daobab.target.database.converter.dateformat.DatabaseDateConverterMySql;
 import io.daobab.target.database.query.*;
 import io.daobab.target.database.query.frozen.DaoParam;
 import io.daobab.target.database.query.frozen.FrozenDataBaseQueryField;
@@ -325,6 +326,26 @@ class TestSqlProducerGeneration implements SakilaTables {
 
         assertFalse(sql.contains("~~~"));
         assertTrue(sql.contains("10"));
+    }
+
+    //------------------------------------------------ procedure values ------------------------------------------------
+
+    @Test
+    void procedureTimeValueKeepsTimeOfDay() {
+        mysql.setDatabaseDateConverter(new DatabaseDateConverterMySql());
+        java.sql.Time time = java.sql.Time.valueOf("10:15:30");
+
+        String rendered = mysql.toProcedureSQL(time, new StringBuilder(), mysql).toString();
+
+        assertTrue(rendered.contains("10:15:30"), "time of day lost in: " + rendered);
+    }
+
+    @Test
+    void procedureValuesRendering() {
+        assertEquals("null", mysql.toProcedureSQL(null, new StringBuilder(), mysql).toString());
+        assertEquals("'MATRIX'", mysql.toProcedureSQL("MATRIX", new StringBuilder(), mysql).toString());
+        assertEquals("42", mysql.toProcedureSQL(42, new StringBuilder(), mysql).toString());
+        assertEquals("?", mysql.toProcedureSQL(new byte[]{1, 2}, new StringBuilder(), mysql).toString());
     }
 
     //------------------------------------------------ regeneration ------------------------------------------------

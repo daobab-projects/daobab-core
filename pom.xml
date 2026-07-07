@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.daobab</groupId>
     <artifactId>daobab-core</artifactId>
-    <version>1.8.2</version>
+    <version>1.8.3</version>
     <name>Daobab</name>
     <url>http://www.daobab.io</url>
     <description>Daobab Java ORM</description>
@@ -12,15 +12,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
         <!-- Java version -->
-        <java.version>17</java.version>
-        <java.version.source>17</java.version.source>
-        <java.version.target>17</java.version.target>
+        <java.version>21</java.version>
+        <java.version.source>21</java.version.source>
+        <java.version.target>21</java.version.target>
         <!-- Manifest data -->
         <manifest.name>Klaudiusz Wojtkowiak Elephant Software Daobab</manifest.name>
         <!-- Plugins versions -->
         <plugin.jar.version>3.7.0</plugin.jar.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
 
@@ -83,7 +83,9 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
-
+                    <!-- daobab ships its own annotation processor (registered in META-INF/services),
+                         which must not run while daobab itself is being compiled -->
+                    <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
             </plugin>
 
@@ -178,7 +180,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.0</version>
                 <configuration>
                     <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
                     <show>public</show>
@@ -211,7 +213,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.0</version>
                         <configuration>
                             <additionalJOptions>
                                 <additionalJOption>-Xdoclint:none</additionalJOption>

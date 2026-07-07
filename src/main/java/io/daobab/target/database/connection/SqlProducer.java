@@ -261,18 +261,16 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             values.append(NULL);
         } else if (val instanceof Timestamp valts) {
             values.append(target.getDatabaseDateConverter().toDatabaseTimestamp(valts));
+        } else if (val instanceof Time valTime) {
+            //Time extends java.util.Date, so it has to be checked before the Date case
+            values.append(target.getDatabaseDateConverter().toDatabaseTimestamp(valTime));
         } else if (val instanceof Date valDate) {
             values.append(target.getDatabaseDateConverter().toDatabaseDate(valDate));
         } else if (val instanceof byte[]) {
             values.append("?");
-//            rv.getSpecialParameters().put(rv.getCounter(), val);
-//            rv.setCounter(rv.getCounter() + 1);
         } else if (val instanceof String) {
-            values.append(APOSTROPHE)
-                    .append(StandardTypeConverterString.valueStringToSQL(val))
-                    .append(APOSTROPHE);
-        } else if (val instanceof Time) {
-            values.append(target.getDatabaseDateConverter().toDatabaseTimestamp((Time) val));
+            //valueStringToSQL already returns a quoted literal
+            values.append(StandardTypeConverterString.valueStringToSQL(val));
         } else {
             values.append(val);
         }
@@ -902,11 +900,8 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
             } else if (secondColumn instanceof Column col) {
                 sb.append(storage.getIdentifierForColumn(this, col));
             } else if (secondColumn instanceof String) {
-                sb.append(APOSTROPHE)
-                        .append(StandardTypeConverterString.valueStringToSQL(secondColumn))
-                        .append(APOSTROPHE);
-//            }else if (secondColumn instanceof Number){
-//                sb.append(secondColumn);
+                //valueStringToSQL already returns a quoted literal
+                sb.append(StandardTypeConverterString.valueStringToSQL(secondColumn));
             } else if (secondColumn instanceof FunctionKey sc) {
                 sb.append((sc).getKey());
             } else {
