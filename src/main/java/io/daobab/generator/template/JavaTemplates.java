@@ -151,6 +151,18 @@ class JavaTemplates {
             "\n\t" + GenKeys.PK_ID_METHOD +
             "\n}";
 
+    static final String DEFINITION_INTERFACE_TEMP = "package " + GenKeys.TABLE_PACKAGE + ";" +
+            "\n" +
+            "\nimport io.daobab.annotation.DaobabColumn;" +
+            "\nimport io.daobab.annotation.DaobabTable;" +
+            "\n" + GenKeys.TYPE_IMPORTS +
+            "\n" +
+            "\n@DaobabTable(tableName = \"" + GenKeys.TABLE_NAME + "\"" + GenKeys.DEFINITION_TABLE_ATTRIBUTES + ")" +
+            "\npublic interface " + GenKeys.DEFINITION_NAME + " {" +
+            "\n" +
+            "\n" + GenKeys.DEFINITION_METHODS +
+            "\n}";
+
     static final String DTO_CLASS_TEMP = "package " + GenKeys.DTO_PACKAGE + ";" +
             "\n" +
             "\n" + GenKeys.TYPE_IMPORTS +

@@ -24,6 +24,7 @@ public class Writer {
     int generatedCompositesCount = 0;
     int generatedTargetsCount = 0;
     int generatedDtosCount = 0;
+    int generatedDefinitionsCount = 0;
 
     private TemplateLanguage language;
     private boolean generateDtos = true;
@@ -156,6 +157,25 @@ public class Writer {
         generatedColumnsCount++;
     }
 
+
+    /**
+     * Generates the annotated definition interface only - the input for the daobab annotation processor,
+     * which produces the entity, columns and DTO during the compilation. Always a Java source.
+     */
+    void generateJavaDefinition(String catalog, String schema, GenerateTable table, String javaackage, String path, boolean override, boolean schemaIntoTable) {
+        String tableName = schemaIntoTable ? (schema + "." + table.getTableName()) : table.getTableName();
+        String basePackage = JavaPackageResolver.resolve(javaackage, catalog, schema).toString();
+        String definitionName = table.getCamelTableName() + "Def";
+
+        String content = GenerateDefinition.getDefinitionContent(table, tableName,
+                basePackage + ".definition", definitionName,
+                basePackage + (table.isView() ? ".view" : ".table"),
+                basePackage + ".column",
+                basePackage + ".dto");
+
+        saveGeneratedTo(content, path, catalog, schema, "definition", definitionName, JAVA, override);
+        generatedDefinitionsCount++;
+    }
 
     void generateJavaTable(String catalog, String schema, GenerateTable table, List<GenerateTable> allTables, String javaackage, String path, boolean override, boolean schemaIntoTable) {
         String tableName = table.getTableName();

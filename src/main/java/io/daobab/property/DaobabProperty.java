@@ -17,5 +17,6 @@ public interface DaobabProperty {
     String GENERATOR_LANGUAGE = "daobab.generator.language";
     String GENERATOR_TARGET_INTERFACE = "daobab.generator.generate.target.internace";
     String GENERATOR_DTOS = "daobab.generator.generate.dtos";
+    String GENERATOR_DEFINITIONS = "daobab.generator.generate.definitions";
 
 }

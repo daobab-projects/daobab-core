@@ -14,52 +14,33 @@ public class TemplateProvider {
         switch (language) {
             default:
             case JAVA: {
-                switch (type) {
-                    case TABLE_CLASS:
-                        return JavaTemplates.TABLE_CLASS_TEMP;
-                    case DTO_CLASS:
-                        return JavaTemplates.DTO_CLASS_TEMP;
-                    case COLUMN_INTERFACE:
-                        return JavaTemplates.COLUMN_INTERFACE_TEMP;
-                    case DATABASE_TABLES_INTERFACE:
-                        return JavaTemplates.DATABASE_TABLES_INTERFACE_TEMP;
-                    case DATA_BASE_TARGET_CLASS:
-                        return JavaTemplates.DATA_BASE_TARGET_CLASS_TEMP;
-                    case COMPOSITE_KEY_TEMP:
-                        return JavaTemplates.COMPOSITE_KEY_TEMP;
-                    case PK_COL_METHOD:
-                        return JavaTemplates.PK_COL_METHOD_TEMP;
-                    case COMPOSITE_PK_KEY_METHOD:
-                        return JavaTemplates.COMPOSITE_PK_KEY_METHOD_TEMP;
-                    case COMPOSITE_METHOD:
-                        return JavaTemplates.COMPOSITE_METHOD_TEMP;
-                    default:
-                        return "";
-                }
+                return switch (type) {
+                    case TABLE_CLASS -> JavaTemplates.TABLE_CLASS_TEMP;
+                    case DTO_CLASS -> JavaTemplates.DTO_CLASS_TEMP;
+                    case DEFINITION_INTERFACE -> JavaTemplates.DEFINITION_INTERFACE_TEMP;
+                    case COLUMN_INTERFACE -> JavaTemplates.COLUMN_INTERFACE_TEMP;
+                    case DATABASE_TABLES_INTERFACE -> JavaTemplates.DATABASE_TABLES_INTERFACE_TEMP;
+                    case DATA_BASE_TARGET_CLASS -> JavaTemplates.DATA_BASE_TARGET_CLASS_TEMP;
+                    case COMPOSITE_KEY_TEMP -> JavaTemplates.COMPOSITE_KEY_TEMP;
+                    case PK_COL_METHOD -> JavaTemplates.PK_COL_METHOD_TEMP;
+                    case COMPOSITE_PK_KEY_METHOD -> JavaTemplates.COMPOSITE_PK_KEY_METHOD_TEMP;
+                    case COMPOSITE_METHOD -> JavaTemplates.COMPOSITE_METHOD_TEMP;
+                    default -> "";
+                };
             }
             case KOTLIN: {
-                switch (type) {
-                    case TABLE_CLASS:
-                        return KotlinTemplates.TABLE_CLASS_TEMP;
-                    case DTO_CLASS:
-                        return KotlinTemplates.DTO_CLASS_TEMP;
-                    case COLUMN_INTERFACE:
-                        return KotlinTemplates.COLUMN_INTERFACE_TEMP;
-                    case DATABASE_TABLES_INTERFACE:
-                        return KotlinTemplates.DATABASE_TABLES_INTERFACE_TEMP;
-                    case DATA_BASE_TARGET_CLASS:
-                        return KotlinTemplates.DATA_BASE_TARGET_CLASS_TEMP;
-                    case COMPOSITE_KEY_TEMP:
-                        return KotlinTemplates.COMPOSITE_KEY_TEMP;
-                    case PK_COL_METHOD:
-                        return KotlinTemplates.PK_COL_METHOD_TEMP;
-                    case COMPOSITE_PK_KEY_METHOD:
-                        return KotlinTemplates.COMPOSITE_PK_KEY_METHOD_TEMP;
-                    case COMPOSITE_METHOD:
-                        return KotlinTemplates.COMPOSITE_METHOD_TEMP;
-                    default:
-                        return "";
-                }
+                return switch (type) {
+                    case TABLE_CLASS -> KotlinTemplates.TABLE_CLASS_TEMP;
+                    case DTO_CLASS -> KotlinTemplates.DTO_CLASS_TEMP;
+                    case COLUMN_INTERFACE -> KotlinTemplates.COLUMN_INTERFACE_TEMP;
+                    case DATABASE_TABLES_INTERFACE -> KotlinTemplates.DATABASE_TABLES_INTERFACE_TEMP;
+                    case DATA_BASE_TARGET_CLASS -> KotlinTemplates.DATA_BASE_TARGET_CLASS_TEMP;
+                    case COMPOSITE_KEY_TEMP -> KotlinTemplates.COMPOSITE_KEY_TEMP;
+                    case PK_COL_METHOD -> KotlinTemplates.PK_COL_METHOD_TEMP;
+                    case COMPOSITE_PK_KEY_METHOD -> KotlinTemplates.COMPOSITE_PK_KEY_METHOD_TEMP;
+                    case COMPOSITE_METHOD -> KotlinTemplates.COMPOSITE_METHOD_TEMP;
+                    default -> "";
+                };
             }
             case TYPE_SCRIPT: {
                 if (Objects.requireNonNull(type) == TemplateType.TABLE_CLASS) {
@@ -72,14 +53,10 @@ public class TemplateProvider {
 
 
     public static String getFileExtension(TemplateLanguage language) {
-        switch (language) {
-            default:
-            case JAVA:
-                return ".java";
-            case KOTLIN:
-                return ".kt";
-            case TYPE_SCRIPT:
-                return ".ts";
-        }
+        return switch (language) {
+            default -> ".java";
+            case KOTLIN -> ".kt";
+            case TYPE_SCRIPT -> ".ts";
+        };
     }
 }
