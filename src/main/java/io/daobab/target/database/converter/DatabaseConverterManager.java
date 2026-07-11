@@ -6,11 +6,13 @@ import io.daobab.model.PrimaryKey;
 import io.daobab.target.database.DataBaseTarget;
 import io.daobab.target.database.converter.enums.IntBasedEnum;
 import io.daobab.target.database.converter.enums.LongBasedEnum;
+import io.daobab.target.database.converter.enums.StringBasedEnum;
 import io.daobab.target.database.converter.standard.*;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -56,6 +58,19 @@ public class DatabaseConverterManager {
         registerTypeConverter(LocalTime.class, new StandardTypeConverterLocalTime(target));
         registerTypeConverter(URL.class, new StandardTypeConverterURL());
         registerTypeConverter(UUID.class, new StandardTypeConverterUUID());
+        registerTypeConverter(URI.class, new StandardTypeConverterURI());
+        registerTypeConverter(Locale.class, new StandardTypeConverterLocale());
+        registerTypeConverter(Character.class, new StandardTypeConverterCharacter());
+        registerTypeConverter(char.class, new StandardTypeConverterCharacter());
+        registerTypeConverter(Duration.class, new StandardTypeConverterDuration());
+        registerTypeConverter(Period.class, new StandardTypeConverterPeriod());
+        registerTypeConverter(YearMonth.class, new StandardTypeConverterYearMonth());
+        registerTypeConverter(MonthDay.class, new StandardTypeConverterMonthDay());
+        registerTypeConverter(OffsetDateTime.class, new StandardTypeConverterOffsetDateTime());
+        registerTypeConverter(OffsetTime.class, new StandardTypeConverterOffsetTime());
+        registerTypeConverter(Year.class, new StandardTypeConverterYear());
+        registerTypeConverter(Month.class, new StandardTypeConverterMonth());
+        registerTypeConverter(DayOfWeek.class, new StandardTypeConverterDayOfWeek());
 
         for (Entity entity : target.getTables()) {
             if (entity instanceof PrimaryKey) {
@@ -99,6 +114,8 @@ public class DatabaseConverterManager {
                     rv = new StandardTypeConverterEnumIntBased<>(enumClass);
                 } else if (LongBasedEnum.class.isAssignableFrom(enumClass)) {
                     rv = new StandardTypeConverterEnumLongBased<>(enumClass);
+                } else if (StringBasedEnum.class.isAssignableFrom(enumClass)) {
+                    rv = new StandardTypeConverterEnumStringBased<>(enumClass);
                 } else {
                     rv = new StandardTypeConverterEnum(enumClass);
                 }
