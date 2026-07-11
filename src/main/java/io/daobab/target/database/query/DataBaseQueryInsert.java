@@ -10,7 +10,8 @@ import io.daobab.statement.condition.SetFields;
 import io.daobab.target.database.QueryTarget;
 import io.daobab.transaction.Propagation;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static io.daobab.model.IdGeneratorType.*;
@@ -51,7 +52,9 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
 
         init(target, entity);
         setEntity(entity);
-        setFields(new LinkedList<>());
+
+        List<TableColumn> tableColumns = target.getColumnsForTable(entity);
+        setFields(new ArrayList<>(tableColumns.size() + 1));
 
         SetFields sd = new SetFields();
 
@@ -80,7 +83,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
             }
         }
 
-        for (TableColumn tableColumn : target.getColumnsForTable(entity)) {
+        for (TableColumn tableColumn : tableColumns) {
 
             Column column = tableColumn.getColumn();
 
@@ -90,7 +93,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
             if (entityIsPk && ((PrimaryKey) entity).colID().equals(column) && (SEQUENCE.equals(idgeneratorType) || AUTO_INCREMENT.equals(idgeneratorType))) {
                 continue;
             }
-            getFields().add(getInfoColumn(column));
+            getFields().add(tableColumn);
             sd.setValue(column, value);
         }
         set(sd);
@@ -106,7 +109,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         E entity = columns[0].getInstance();
         init(target, entity);
         setEntity(entity);
-        setFields(new LinkedList<>());
+        setFields(new ArrayList<>(columns.length + 1));
 
         SetFields sd = new SetFields();
 

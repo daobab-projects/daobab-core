@@ -39,11 +39,11 @@ public class JavaPackageResolver {
         StringBuilder properCatalog = resolveCatalog(catalog);
         StringBuilder properSchema = resolveSchema(schema);
 
-        if (properCatalog.length() > 0) {
+        if (!properCatalog.isEmpty()) {
             sb.append(".").append(properCatalog);
         }
 
-        if (properSchema.length() > 0) {
+        if (!properSchema.isEmpty()) {
             sb.append(".").append(properSchema);
         }
 

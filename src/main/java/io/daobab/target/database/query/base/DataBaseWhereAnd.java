@@ -89,8 +89,9 @@ public class DataBaseWhereAnd extends WhereAnd {
 
 
     private <E extends Entity, F, R extends RelatedTo> void temp(Field<E, F, R> column, Operator operator, DaoParam val) {
-        val.setAccessibleType(column.getFieldClass());
         if (column == null) throw new MandatoryColumn();
+        if (val == null) throw new ValueCanNotBeNullException();
+        val.setAccessibleType(column.getFieldClass());
         putKeyMandatoryRelationValue(column, operator, val);
     }
 

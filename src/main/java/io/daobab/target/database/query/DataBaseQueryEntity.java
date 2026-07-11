@@ -30,8 +30,7 @@ public final class DataBaseQueryEntity<E extends Entity> extends DataBaseQueryBa
 
     public DataBaseQueryEntity(QueryTarget target, E entity) {
         init(target, entity);
-        setFields(new ArrayList<>(target.getColumnsForTable(entity).size()));
-        target.getColumnsForTable(entity).forEach(e -> getFields().add(e));
+        setFields(new ArrayList<>(target.getColumnsForTable(entity)));
     }
 
 

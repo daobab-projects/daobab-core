@@ -29,12 +29,12 @@ public interface SaveGenerated {
         StringBuilder properCatalog = JavaPackageResolver.resolveCatalog(catalog);
         StringBuilder properSchema = JavaPackageResolver.resolveSchema(schema);
 
-        if (properCatalog.length() > 0) {
+        if (!properCatalog.isEmpty()) {
             sbfol.append(properCatalog);
             sbfol.append(File.separator);
         }
 
-        if (properSchema.length() > 0) {
+        if (!properSchema.isEmpty()) {
             sbfol.append(properSchema);
             sbfol.append(File.separator);
         }

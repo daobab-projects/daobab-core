@@ -21,6 +21,8 @@
         <plugin.jar.version>3.7.0</plugin.jar.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <!-- Benchmarks -->
+        <jmh.version>1.37</jmh.version>
     </properties>
 
 
@@ -191,6 +193,94 @@
 
 
     <profiles>
+        <!-- JMH performance benchmarks: sources in src/benchmark/java, compiled and run only with this profile.
+             Usage: mvn -Pbenchmark clean test-compile exec:exec
+             A subset: mvn -Pbenchmark clean test-compile exec:exec "-Dbenchmark.include=io.daobab.benchmark.EntityBenchmark.*"
+             Note: benchmarking leaves the JMH classes in target/test-classes - run 'mvn clean' before a regular build. -->
+        <profile>
+            <id>benchmark</id>
+            <properties>
+                <benchmark.include>io.daobab.benchmark..*</benchmark.include>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.openjdk.jmh</groupId>
+                    <artifactId>jmh-core</artifactId>
+                    <version>${jmh.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>add-benchmark-sources</id>
+                                <phase>generate-test-sources</phase>
+                                <goals>
+                                    <goal>add-test-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>src/benchmark/java</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.13.0</version>
+                        <configuration combine.self="override">
+                            <source>${maven.compiler.source}</source>
+                            <target>${maven.compiler.target}</target>
+                            <!-- same effect as the base -proc:none: daobab's own annotation processor
+                                 must not run while daobab itself is being compiled -->
+                            <proc>none</proc>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-testCompile</id>
+                                <goals>
+                                    <goal>testCompile</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- the JMH annotation processor generates the benchmark harness classes -->
+                                    <proc>full</proc>
+                                    <annotationProcessorPaths>
+                                        <path>
+                                            <groupId>org.openjdk.jmh</groupId>
+                                            <artifactId>jmh-generator-annprocess</artifactId>
+                                            <version>${jmh.version}</version>
+                                        </path>
+                                    </annotationProcessorPaths>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <!-- the same JDK the build runs on, not whatever 'java' is on the PATH -->
+                            <executable>${java.home}/bin/java</executable>
+                            <classpathScope>test</classpathScope>
+                            <arguments>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>org.openjdk.jmh.Main</argument>
+                                <argument>${benchmark.include}</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>release</id>
             <build>

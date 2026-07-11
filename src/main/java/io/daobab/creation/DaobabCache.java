@@ -7,24 +7,34 @@ import io.daobab.model.Entity;
 import io.daobab.model.Table;
 import io.daobab.model.TableColumn;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 @SuppressWarnings({"rawtypes", "java:S6548"})
 public class DaobabCache {
 
     private static final DaobabCache INSTANCE = new DaobabCache();
-    private final Map<String, Column> columnCache;
+
+    /**
+     * Columns per entity class and field name. Concurrent maps: the cache is filled lazily
+     * from any thread touching a column for the first time. The nested keying avoids
+     * a string concatenation on every column access.
+     */
+    private final Map<Class<? extends Entity>, Map<String, Column>> columnCache;
     private final Map<Class<? extends Entity>, List<TableColumn>> entityTableCache;
 
     private DaobabCache() {
-        columnCache = new HashMap<>();
-        entityTableCache = new HashMap<>();
+        columnCache = new ConcurrentHashMap<>();
+        entityTableCache = new ConcurrentHashMap<>();
     }
 
     public static <E extends Table<?>, F> Column getColumn(String fieldName, String columnName, E entity, Class<F> clazz) {
 
-        return INSTANCE.columnCache.computeIfAbsent(entity.entityClass().getName() + fieldName,
+        return INSTANCE.columnsOf(entity.entityClass()).computeIfAbsent(fieldName,
                 x -> {
                     if (clazz.isAssignableFrom(Optional.class) || clazz.isAssignableFrom(Collection.class)) {
                         throw new DaobabException("Collections, Arrays and Optionals has to provide innerTypeClass as well");
@@ -34,8 +44,12 @@ public class DaobabCache {
     }
 
     public static <E extends Table<?>, F> Column getColumn(String fieldName, String columnName, E entity, Class<F> clazz, Class innerTypeClazz) {
-        return INSTANCE.columnCache.computeIfAbsent(entity.entityClass().getName() + fieldName,
+        return INSTANCE.columnsOf(entity.entityClass()).computeIfAbsent(fieldName,
                 x -> ColumnCreator.createInnerTypeColumn(fieldName, columnName, entity, clazz, innerTypeClazz));
+    }
+
+    private Map<String, Column> columnsOf(Class<? extends Entity> entityClass) {
+        return columnCache.computeIfAbsent(entityClass, x -> new ConcurrentHashMap<>());
     }
 
     /**

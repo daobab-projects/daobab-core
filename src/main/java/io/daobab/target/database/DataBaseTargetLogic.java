@@ -387,7 +387,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 rsReader.bindParameters(stmt, entityQuery.getIdentifierStorage().getBoundParameters());
                 ResultSet rs = stmt.executeQuery();
 
-                E entityInstance = clazz.newInstance();
+                E entityInstance = EntityCreator.createEntity(clazz);
 
                 List<TableColumn> columns = entityQuery.getFields();
                 Column[] columnsArray = new Column[columns.size()];
@@ -409,7 +409,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                     }
                 }
 
-                EntityBuilder<E> builder = EntityCreator.builder(clazz);
+                EntityBuilder<E> builder = EntityCreator.builder(clazz, columns.size());
 
                 while (rs.next()) {
 

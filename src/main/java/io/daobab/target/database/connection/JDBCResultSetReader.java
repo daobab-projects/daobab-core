@@ -28,6 +28,13 @@ import java.util.function.Consumer;
  */
 public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
 
+    /**
+     * JDBC drivers mutate the calendar passed to getTimestamp, so it cannot be shared between threads,
+     * but creating one per cell is a hot-path allocation - hence one calendar per thread.
+     */
+    private static final ThreadLocal<Calendar> DEFAULT_TIMEZONE_CALENDAR =
+            ThreadLocal.withInitial(() -> Calendar.getInstance(TimeZone.getDefault()));
+
     protected Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -95,7 +102,7 @@ public class JDBCResultSetReader implements ResultSetReader, ILoggerBean {
                     throw new DaobabException("Problem during reading column " + column + " using TypeConverter: " + typeConverter.getClass().getName(), e);
                 }
             } else if (Timestamp.class.equals(columnType)) {
-                return (F) rs.getTimestamp(columnIndex, Calendar.getInstance(TimeZone.getDefault()));
+                return (F) rs.getTimestamp(columnIndex, DEFAULT_TIMEZONE_CALENDAR.get());
             } else if (columnType.isEnum()) {
                 String rd = rs.getString(columnIndex);
                 if (rd == null) return null;

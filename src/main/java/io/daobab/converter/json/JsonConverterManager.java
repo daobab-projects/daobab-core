@@ -11,6 +11,7 @@ import io.daobab.model.Plate;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
 import java.net.URL;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -61,6 +62,17 @@ public class JsonConverterManager {
         registerTypeConverter(Instant.class, new JsonInstantConverter());
         registerTypeConverter(LocalTime.class, new JsonLocalTimeConverter());
         registerTypeConverter(URL.class, new JsonUrlConverter());
+        registerTypeConverter(URI.class, new JsonUriConverter());
+        registerTypeConverter(UUID.class, new JsonUuidConverter());
+        registerTypeConverter(Locale.class, new JsonLocaleConverter());
+        registerTypeConverter(Character.class, new JsonCharacterConverter());
+        registerTypeConverter(char.class, new JsonCharacterConverter());
+        registerTypeConverter(OffsetDateTime.class, new JsonOffsetDateTimeConverter());
+        registerTypeConverter(OffsetTime.class, new JsonOffsetTimeConverter());
+        registerTypeConverter(YearMonth.class, new JsonYearMonthConverter());
+        registerTypeConverter(MonthDay.class, new JsonMonthDayConverter());
+        registerTypeConverter(Duration.class, new JsonDurationConverter());
+        registerTypeConverter(Period.class, new JsonPeriodConverter());
 
 //        for (Entity entity : target.getTables()) {
 //            if (entity instanceof PrimaryKey) {

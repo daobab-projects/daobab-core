@@ -41,11 +41,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         TableColumn fieldDao = columns.get(0);
         if (fieldDao == null) throw new MandatoryColumn();
         init(target, fieldDao.getColumn().getInstance());
-        andColumn(fieldDao.getColumn());
-
-        for (int i = 1; i < columns.size(); i++) {
-            getFields().add(columns.get(i));
-        }
+        getFields().addAll(columns);
         setSingleEntity(entities.length == 1);
     }
 

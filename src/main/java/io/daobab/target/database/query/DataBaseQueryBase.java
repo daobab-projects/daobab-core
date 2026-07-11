@@ -26,6 +26,7 @@ import io.daobab.target.database.QueryTarget;
 import io.daobab.target.database.query.base.DataBaseQueryHaving;
 import io.daobab.target.database.query.base.DataBaseQueryLimit;
 import io.daobab.target.database.query.base.DataBaseQueryWhere;
+import io.daobab.target.statistic.StatisticCollectorProvider;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -247,6 +248,7 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     public void handleException(String statement, Throwable t) {
         if (getTarget() == null) {
             t.printStackTrace();
+            return;
         }
         getTarget().getLog().error("Query: " + statement + " produces error. ", t);
     }
@@ -376,7 +378,9 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
     }
 
     protected <Q1 extends Query> Q1 modifyQuery(Q1 query) {
-        query.setIdentifier(UUID.randomUUID().toString());
+        if (getTarget() instanceof StatisticCollectorProvider && ((StatisticCollectorProvider) getTarget()).isStatisticCollectingEnabled()) {
+            query.setIdentifier(UUID.randomUUID().toString());
+        }
         if (query.getEntityClass() == null) return query;
 
         if (EnhancedEntity.class.isAssignableFrom(query.getEntityClass())) {
@@ -424,12 +428,12 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
             return new TableColumn(column);
         }
 
-        return target.getColumnsForTable(column.getInstance())
-                .stream()
-                .filter(tableColumn -> tableColumn.getColumn().equalsColumn(column))
-                .findFirst()
-                .orElse(null);
-
+        for (TableColumn tableColumn : target.getColumnsForTable(column.getInstance())) {
+            if (tableColumn.getColumn().equalsColumn(column)) {
+                return tableColumn;
+            }
+        }
+        return null;
     }
 
     public String getSentQuery() {
@@ -442,8 +446,8 @@ public abstract class DataBaseQueryBase<E extends Entity, Q extends DataBaseQuer
 
     public <E1 extends Entity> Q from(E1 entity) {
         if (entity == null) throw new MandatoryEntity();
-        setEntityName(target.getEntityName(entityClass));
         setEntityClass(entity.entityClass());
+        setEntityName(target.getEntityName(entity.entityClass()));
         setIdentifierStorage(new IdentifierStorage());
         getIdentifierStorage().registerIdentifiers(getEntityName());
         return (Q) this;

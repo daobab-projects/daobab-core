@@ -9,8 +9,10 @@ import io.daobab.model.Entity;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -20,11 +22,36 @@ import java.util.stream.Collectors;
  */
 public final class EntityCreator {
 
+    /**
+     * Map-parameter constructors per entity class. The reflective constructor lookup is expensive
+     * and entities are created per result set row, so the constructors are resolved once and reused.
+     */
+    private static final Map<Class<?>, Constructor<?>> MAP_CONSTRUCTORS = new ConcurrentHashMap<>();
+
     private EntityCreator() {
     }
 
     public static <E extends Entity> EntityBuilder<E> builder(Class<E> entityClass) {
         return new EntityBuilder<>(entityClass);
+    }
+
+    public static <E extends Entity> EntityBuilder<E> builder(Class<E> entityClass, int expectedColumns) {
+        return new EntityBuilder<>(entityClass, new HashMap<>(hashMapCapacityFor(expectedColumns)));
+    }
+
+    private static int hashMapCapacityFor(int expectedSize) {
+        return (int) (expectedSize / 0.75f) + 1;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <E extends Entity> Constructor<E> mapConstructorOf(Class<E> entityClass) {
+        return (Constructor<E>) MAP_CONSTRUCTORS.computeIfAbsent(entityClass, clazz -> {
+            try {
+                return clazz.getDeclaredConstructor(Map.class);
+            } catch (NoSuchMethodException e) {
+                throw new DaobabEntityCreationException(clazz, e);
+            }
+        });
     }
 
     public static <E extends Entity> E createEntity(Class<E> entityClass) {
@@ -61,10 +88,18 @@ public final class EntityCreator {
     }
 
     public static <E extends Entity> E createEntity(Class<E> entityClass, Map<String, Object> map) {
+        return createEntityFromOwnedMap(entityClass, new LinkedHashMap<>(map));
+    }
+
+    /**
+     * Creates the entity taking the ownership of the given map - no defensive copy is made,
+     * so the caller must not modify the map afterwards. The hot creation path (setters, result set rows)
+     * uses it to avoid copying the parameters twice.
+     */
+    public static <E extends Entity> E createEntityFromOwnedMap(Class<E> entityClass, Map<String, Object> ownedMap) {
         try {
-            return entityClass.getDeclaredConstructor(Map.class).newInstance(Collections.unmodifiableMap(new LinkedHashMap<>(map)));
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                 InvocationTargetException e) {
+            return mapConstructorOf(entityClass).newInstance(Collections.unmodifiableMap(ownedMap));
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new DaobabEntityCreationException(entityClass, e);
         }
     }

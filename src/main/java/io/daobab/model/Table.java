@@ -36,11 +36,12 @@ public abstract class Table<E extends Table> implements Entity, MapHandler<E>, J
         return (X) dtoParameterMap.get(key);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <X> E storeParam(String key, X param) {
         Map<String, Object> newParameters = new HashMap<>(dtoParameterMap);
         newParameters.put(key, param);
-        return (E) EntityCreator.createEntity(entityClass(), newParameters);
+        return (E) EntityCreator.createEntityFromOwnedMap(entityClass(), newParameters);
     }
 
     @Override
@@ -79,19 +80,19 @@ public abstract class Table<E extends Table> implements Entity, MapHandler<E>, J
     public E put(String key, Object value) {
         Map<String, Object> params = new HashMap<>(dtoParameterMap);
         params.put(key, value);
-        return (E) EntityCreator.createEntity(entityClass(), params);
+        return (E) EntityCreator.createEntityFromOwnedMap(entityClass(), params);
     }
 
     public E putAll(Map<String, Object> values) {
         Map<String, Object> params = new HashMap<>(dtoParameterMap);
         params.putAll(values);
-        return (E) EntityCreator.createEntity(entityClass(), params);
+        return (E) EntityCreator.createEntityFromOwnedMap(entityClass(), params);
     }
 
     public E merge(Table<?> anotherTable) {
         Map<String, Object> params = new HashMap<>(dtoParameterMap);
         params.putAll(anotherTable.accessParameterMap());
-        return (E) EntityCreator.createEntity(entityClass(), params);
+        return (E) EntityCreator.createEntityFromOwnedMap(entityClass(), params);
     }
 
     public EntityBuilder<E> builder() {
