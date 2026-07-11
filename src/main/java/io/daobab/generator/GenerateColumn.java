@@ -163,21 +163,21 @@ public class GenerateColumn extends HashMap<String, GeneratedColumnInTable> {
         if (tables.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
 
-        sb.append("    /**\n");
+        sb.append("\t/**\n");
+        sb.append("\t * Column <b>").append(columnName).append("</b> occurrences across the generated tables:\n");
+        sb.append("\t * <table>\n");
+        sb.append("\t * <caption>column usage</caption>\n");
+        sb.append("\t * <tr><th>Table</th><th>Type</th><th>Size</th><th>Nullable</th></tr>\n");
         for (TableAndType tableAndType : tables) {
             GeneratedColumnInTable git = get(tableAndType.table);
-            sb.append("     * ")
-                    .append("table:")
-                    .append(tableAndType.table)
-                    .append(", type:")
-                    .append(tableAndType.type)
-                    .append(", size:")
-                    .append(git.getColumnSize())
-                    .append(", nullable:")
-                    .append(git.getNullable().equals("1") ? "true" : "false")
-                    .append("\n");
+            sb.append("\t * <tr><td>").append(tableAndType.table)
+                    .append("</td><td>").append(tableAndType.type)
+                    .append("</td><td>").append(git.getColumnSize())
+                    .append("</td><td>").append("1".equals(git.getNullable()))
+                    .append("</td></tr>\n");
         }
-        sb.append("     */");
+        sb.append("\t * </table>\n");
+        sb.append("\t */");
 
         return sb.toString();
     }

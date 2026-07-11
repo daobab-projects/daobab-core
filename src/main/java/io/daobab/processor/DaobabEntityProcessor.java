@@ -22,7 +22,8 @@ import java.util.*;
  * <p>
  * For every definition interface the processor generates:
  * <ul>
- *     <li>a column interface per definition method (skipped when a matching interface already exists),</li>
+ *     <li>a column interface per definition method (reused when a matching interface already exists,
+ *     or disambiguated with a type suffix when a column of the same name but a different type shows up),</li>
  *     <li>the entity class (named with the 'Entity' suffix) extending {@code DtoTable}, implementing
  *     the column interfaces and, when a primary key column is marked, the {@code PrimaryKey} interface,</li>
  *     <li>an immutable DTO class with a builder, connected to the entity by the
@@ -36,9 +37,15 @@ public class DaobabEntityProcessor extends AbstractProcessor {
 
     /**
      * Column interfaces generated in this compilation: fully qualified name -&gt; field type.
-     * Lets many definitions share one column interface and detects the type conflicts.
+     * Lets many definitions share one column interface and disambiguates the type conflicts.
      */
     private final Map<String, String> generatedColumns = new HashMap<>();
+
+    /**
+     * Column interface usage collected across all the definitions of the round: usage key -&gt; usages.
+     * Feeds the documentation table generated above each {@code col...()} method.
+     */
+    private final Map<String, List<ColumnUsage>> columnUsage = new HashMap<>();
 
     private static String stripDefinitionSuffix(String definitionName) {
         if (definitionName.endsWith("Definition")) {
@@ -87,80 +94,24 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         return SourceVersion.latestSupported();
     }
 
-    @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        for (Element element : roundEnv.getElementsAnnotatedWith(DaobabTable.class)) {
-            if (element.getKind() != ElementKind.INTERFACE) {
-                error(element, "@DaobabTable may annotate an interface only");
-                continue;
-            }
-            try {
-                generateEntity((TypeElement) element);
-            } catch (IOException e) {
-                error(element, "Cannot write a generated source: " + e.getMessage());
-            }
+    /**
+     * The disambiguating suffix appended to a column name on a type clash, mirroring the generator:
+     * {@code java.lang.Integer -> TypeInteger}, {@code byte[] -> TypeByteArray}.
+     */
+    private static String typeSuffix(String fieldType) {
+        if (fieldType.endsWith("[]")) {
+            return "Type" + capitalize(simpleName(fieldType.substring(0, fieldType.length() - 2))) + "Array";
         }
-        return true;
+        return "Type" + simpleName(fieldType);
     }
 
-    private void generateEntity(TypeElement definition) throws IOException {
-        DaobabTable table = definition.getAnnotation(DaobabTable.class);
+    private static String simpleName(String fqcn) {
+        int dot = fqcn.lastIndexOf('.');
+        return dot < 0 ? fqcn : fqcn.substring(dot + 1);
+    }
 
-        String definitionPackage = processingEnv.getElementUtils().getPackageOf(definition).getQualifiedName().toString();
-        String definitionName = definition.getSimpleName().toString();
-
-        String entityName = table.entityName().isEmpty() ? stripDefinitionSuffix(definitionName) + "Entity" : table.entityName();
-        String entityPackage = table.entityPackage().isEmpty() ? definitionPackage : table.entityPackage();
-        String columnPackage = table.columnPackage().isEmpty() ? definitionPackage + ".column" : table.columnPackage();
-        String tableName = table.tableName().isEmpty() ? toUpperSnakeCase(stripEntitySuffix(entityName)) : table.tableName();
-
-        boolean generateDto = table.generateDto();
-        String dtoName = table.dtoName().isEmpty() ? stripDefinitionSuffix(definitionName) : table.dtoName();
-        String dtoPackage = table.dtoPackage().isEmpty() ? entityPackage : table.dtoPackage();
-
-        if (entityName.equals(definitionName) && entityPackage.equals(definitionPackage)) {
-            error(definition, "The generated entity would collide with its definition."
-                    + " Rename the definition (e.g. " + definitionName + "Def) or set the entityName/entityPackage attribute.");
-            return;
-        }
-
-        if (generateDto && dtoName.equals(definitionName) && dtoPackage.equals(definitionPackage)) {
-            error(definition, "The generated DTO would collide with its definition."
-                    + " Rename the definition (e.g. " + definitionName + "Def) or set the dtoName/dtoPackage attribute.");
-            return;
-        }
-
-        if (generateDto && dtoName.equals(entityName) && dtoPackage.equals(entityPackage)) {
-            error(definition, "The generated DTO would collide with the generated entity."
-                    + " Set the dtoName or dtoPackage attribute.");
-            return;
-        }
-
-        List<ColumnModel> columns = readColumns(definition);
-        if (columns == null) {
-            return;
-        }
-        if (columns.isEmpty()) {
-            error(definition, "The definition has no column methods");
-            return;
-        }
-        if (columns.stream().filter(c -> c.primaryKey).count() > 1) {
-            error(definition, "Composite primary keys are not supported: mark at most one column with primaryKey = true");
-            return;
-        }
-
-        for (ColumnModel column : columns) {
-            if (!ensureColumnInterface(definition, columnPackage, column)) {
-                return;
-            }
-        }
-
-        if (generateDto) {
-            writeDto(definition, dtoPackage, dtoName, columns);
-        }
-
-        writeEntity(definition, entityPackage, columnPackage, entityName, tableName, columns,
-                generateDto, dtoPackage, dtoName);
+    private static String usageKey(String columnPackage, String fieldName, String fieldType) {
+        return columnPackage + "|" + fieldName + "|" + fieldType;
     }
 
     /**
@@ -201,40 +152,193 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         return columns;
     }
 
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        List<EntityContext> contexts = new ArrayList<>();
+        for (Element element : roundEnv.getElementsAnnotatedWith(DaobabTable.class)) {
+            if (element.getKind() != ElementKind.INTERFACE) {
+                error(element, "@DaobabTable may annotate an interface only");
+                continue;
+            }
+            EntityContext context = prepare((TypeElement) element);
+            if (context != null) {
+                contexts.add(context);
+            }
+        }
+
+        //collect the column usage across all the definitions first, so each column interface can be
+        //documented with every table it appears in, together with its type and its size
+        columnUsage.clear();
+        for (EntityContext context : contexts) {
+            for (ColumnModel column : context.columns) {
+                columnUsage.computeIfAbsent(usageKey(context.columnPackage, column.fieldName, column.fieldType),
+                                k -> new ArrayList<>())
+                        .add(new ColumnUsage(context.tableName, column.fieldType, column.size, column.notNull, column.lob));
+            }
+        }
+
+        for (EntityContext context : contexts) {
+            try {
+                writeSources(context);
+            } catch (IOException e) {
+                error(context.definition, "Cannot write a generated source: " + e.getMessage());
+            }
+        }
+        return true;
+    }
+
     /**
-     * Generates the column interface unless a matching one already exists.
-     * Column interfaces are shared between the entities, so a type conflict is an error.
+     * Reads and validates a definition. Returns the context to generate from, or {@code null} when the
+     * definition is invalid (an error is already reported) and has to be skipped.
+     */
+    private EntityContext prepare(TypeElement definition) {
+        DaobabTable table = definition.getAnnotation(DaobabTable.class);
+
+        String definitionPackage = processingEnv.getElementUtils().getPackageOf(definition).getQualifiedName().toString();
+        String definitionName = definition.getSimpleName().toString();
+
+        String entityName = table.entityName().isEmpty() ? stripDefinitionSuffix(definitionName) + "Entity" : table.entityName();
+        String entityPackage = table.entityPackage().isEmpty() ? definitionPackage : table.entityPackage();
+        String columnPackage = table.columnPackage().isEmpty() ? definitionPackage + ".column" : table.columnPackage();
+        String tableName = table.tableName().isEmpty() ? toUpperSnakeCase(stripEntitySuffix(entityName)) : table.tableName();
+
+        boolean generateDto = table.generateDto();
+        String dtoName = table.dtoName().isEmpty() ? stripDefinitionSuffix(definitionName) : table.dtoName();
+        String dtoPackage = table.dtoPackage().isEmpty() ? entityPackage : table.dtoPackage();
+
+        if (entityName.equals(definitionName) && entityPackage.equals(definitionPackage)) {
+            error(definition, "The generated entity would collide with its definition."
+                    + " Rename the definition (e.g. " + definitionName + "Def) or set the entityName/entityPackage attribute.");
+            return null;
+        }
+
+        if (generateDto && dtoName.equals(definitionName) && dtoPackage.equals(definitionPackage)) {
+            error(definition, "The generated DTO would collide with its definition."
+                    + " Rename the definition (e.g. " + definitionName + "Def) or set the dtoName/dtoPackage attribute.");
+            return null;
+        }
+
+        if (generateDto && dtoName.equals(entityName) && dtoPackage.equals(entityPackage)) {
+            error(definition, "The generated DTO would collide with the generated entity."
+                    + " Set the dtoName or dtoPackage attribute.");
+            return null;
+        }
+
+        List<ColumnModel> columns = readColumns(definition);
+        if (columns == null) {
+            return null;
+        }
+        if (columns.isEmpty()) {
+            error(definition, "The definition has no column methods");
+            return null;
+        }
+        if (columns.stream().filter(c -> c.primaryKey).count() > 1) {
+            error(definition, "Composite primary keys are not supported: mark at most one column with primaryKey = true");
+            return null;
+        }
+
+        EntityContext context = new EntityContext();
+        context.definition = definition;
+        context.entityPackage = entityPackage;
+        context.columnPackage = columnPackage;
+        context.entityName = entityName;
+        context.tableName = tableName;
+        context.columns = columns;
+        context.generateDto = generateDto;
+        context.dtoPackage = dtoPackage;
+        context.dtoName = dtoName;
+        return context;
+    }
+
+    private void writeSources(EntityContext context) throws IOException {
+        for (ColumnModel column : context.columns) {
+            if (!ensureColumnInterface(context.definition, context.columnPackage, column)) {
+                return;
+            }
+        }
+
+        if (context.generateDto) {
+            writeDto(context.definition, context.dtoPackage, context.dtoName, context.columns);
+        }
+
+        writeEntity(context.definition, context.entityPackage, context.columnPackage, context.entityName,
+                context.tableName, context.columns, context.generateDto, context.dtoPackage, context.dtoName);
+    }
+
+    /**
+     * Resolves the column interface for the given column, generating it unless a matching one
+     * already exists. Column interfaces are shared between entities by their simple name, so when a
+     * column of the same name but a different type shows up, the field name is disambiguated with a
+     * type suffix (e.g. {@code TitleTypeInteger}) - the same rule the generator applies - instead of
+     * failing the compilation. The resolved name is written back into {@code column.fieldName}, so the
+     * entity and the DTO pick it up.
      *
      * @return false when the compilation should fail
      */
     private boolean ensureColumnInterface(TypeElement definition, String columnPackage, ColumnModel column) throws IOException {
-        String fqcn = columnPackage + "." + column.fieldName;
+        String baseName = column.fieldName;
+        List<String> candidates = List.of(baseName, baseName + typeSuffix(column.fieldType));
 
-        String alreadyGeneratedType = generatedColumns.get(fqcn);
-        if (alreadyGeneratedType != null) {
-            if (!alreadyGeneratedType.equals(column.fieldType)) {
-                error(definition, "Column " + column.fieldName + " is already generated with the type " + alreadyGeneratedType
-                        + ", the type " + column.fieldType + " conflicts with it");
-                return false;
-            }
-            return true;
-        }
+        for (String candidate : candidates) {
+            String fqcn = columnPackage + "." + candidate;
 
-        TypeElement existing = processingEnv.getElementUtils().getTypeElement(fqcn);
-        if (existing != null) {
-            String existingType = getterTypeOf(existing, column.fieldName);
-            if (existingType != null && !existingType.equals(column.fieldType)) {
-                error(definition, "The existing column interface " + fqcn + " keeps the type " + existingType
-                        + ", the type " + column.fieldType + " conflicts with it");
-                return false;
+            String alreadyGeneratedType = generatedColumns.get(fqcn);
+            if (alreadyGeneratedType != null) {
+                if (alreadyGeneratedType.equals(column.fieldType)) {
+                    column.fieldName = candidate;
+                    return true;
+                }
+                continue; //the name is taken by another type, fall back to the type-qualified candidate
             }
+
+            TypeElement existing = processingEnv.getElementUtils().getTypeElement(fqcn);
+            if (existing != null) {
+                String existingType = getterTypeOf(existing, candidate);
+                if (existingType != null && !existingType.equals(column.fieldType)) {
+                    continue; //a hand-written interface of another type, fall back to the type-qualified candidate
+                }
+                generatedColumns.put(fqcn, column.fieldType);
+                column.fieldName = candidate;
+                return true;
+            }
+
+            column.fieldName = candidate;
+            String doc = columnDoc(candidate, columnUsage.get(usageKey(columnPackage, baseName, column.fieldType)));
+            writeColumnInterface(definition, columnPackage, column, doc);
             generatedColumns.put(fqcn, column.fieldType);
             return true;
         }
 
-        writeColumnInterface(definition, columnPackage, column);
-        generatedColumns.put(fqcn, column.fieldType);
-        return true;
+        error(definition, "Column " + baseName + " of the type " + column.fieldType
+                + " conflicts with an already generated column of the same name, and the type-qualified"
+                + " name " + baseName + typeSuffix(column.fieldType) + " is taken by yet another type");
+        return false;
+    }
+
+    /**
+     * The Javadoc table rendered above a {@code col...()} method: every table the column appears in,
+     * with its type and its size. Returns an empty string when there is no collected usage.
+     */
+    private String columnDoc(String interfaceName, List<ColumnUsage> usages) {
+        if (usages == null || usages.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("\t/**\n");
+        sb.append("\t * Column <b>").append(interfaceName).append("</b> occurrences across the generated tables:\n");
+        sb.append("\t * <table>\n");
+        sb.append("\t * <caption>column usage</caption>\n");
+        sb.append("\t * <tr><th>Table</th><th>Type</th><th>Size</th><th>Not null</th></tr>\n");
+        for (ColumnUsage usage : usages) {
+            sb.append("\t * <tr><td>").append(usage.tableName)
+                    .append("</td><td>").append(simpleName(usage.fieldType))
+                    .append("</td><td>").append(usage.lob ? "LOB" : (usage.size > 0 ? Integer.toString(usage.size) : "-"))
+                    .append("</td><td>").append(usage.notNull)
+                    .append("</td></tr>\n");
+        }
+        sb.append("\t * </table>\n");
+        sb.append("\t */\n");
+        return sb.toString();
     }
 
     private String getterTypeOf(TypeElement columnInterface, String fieldName) {
@@ -246,7 +350,7 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         return null;
     }
 
-    private void writeColumnInterface(TypeElement definition, String columnPackage, ColumnModel column) throws IOException {
+    private void writeColumnInterface(TypeElement definition, String columnPackage, ColumnModel column, String doc) throws IOException {
         String name = column.fieldName;
         String type = column.fieldType;
 
@@ -262,6 +366,7 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         sb.append("\tdefault E set").append(name).append("(").append(type).append(" val) {\n");
         sb.append("\t\treturn storeParam(\"").append(name).append("\", val);\n");
         sb.append("\t}\n\n");
+        sb.append(doc);
         sb.append("\t@SuppressWarnings({\"rawtypes\", \"unchecked\"})\n");
         sb.append("\tdefault Column<E, ").append(type).append(", ").append(name).append("> col").append(name).append("() {\n");
         sb.append("\t\treturn DaobabCache.getColumn(\"").append(name).append("\", \"").append(column.columnName)
@@ -498,5 +603,39 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         boolean notNull;
         boolean unique;
         boolean lob;
+    }
+
+    /**
+     * One usage of a column interface by a table: the source for a documentation table row.
+     */
+    private static final class ColumnUsage {
+        final String tableName;
+        final String fieldType;
+        final int size;
+        final boolean notNull;
+        final boolean lob;
+
+        ColumnUsage(String tableName, String fieldType, int size, boolean notNull, boolean lob) {
+            this.tableName = tableName;
+            this.fieldType = fieldType;
+            this.size = size;
+            this.notNull = notNull;
+            this.lob = lob;
+        }
+    }
+
+    /**
+     * A prepared and validated definition, ready to generate the sources from.
+     */
+    private static final class EntityContext {
+        TypeElement definition;
+        String entityPackage;
+        String columnPackage;
+        String entityName;
+        String tableName;
+        List<ColumnModel> columns;
+        boolean generateDto;
+        String dtoPackage;
+        String dtoName;
     }
 }

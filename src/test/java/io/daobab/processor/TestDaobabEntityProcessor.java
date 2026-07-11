@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.tools.*;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -179,11 +181,54 @@ class TestDaobabEntityProcessor {
         }
     }
 
+    private static Method titleGetter(Class<?> entity) {
+        return Arrays.stream(entity.getMethods())
+                .filter(m -> m.getName().startsWith("getTitle") && m.getParameterCount() == 0)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("no title getter on " + entity.getName()));
+    }
+
     @Test
-    void conflictingColumnTypeFailsCompilation() throws Exception {
+    void columnInterfaceDocumentsEveryUsingTable() throws Exception {
+        //Book.title (VARCHAR 256) and Magazine.title (no size) share the Title column interface
         String magazineDef = """
                 package apttest;
                 
+                import io.daobab.annotation.DaobabTable;
+                
+                @DaobabTable
+                public interface MagazineDef {
+                    String title();
+                }
+                """;
+
+        CompilationResult result = compile(
+                List.of("apttest/BookDef.java", "apttest/MagazineDef.java"),
+                List.of(BOOK_DEFINITION, magazineDef));
+
+        assertTrue(result.success(), "compilation failed: " + result.diagnostics());
+
+        String title = Files.readString(result.sourcesDir().resolve("apttest/column/Title.java"));
+
+        //the doc table sits above the col...() method
+        int tableDoc = title.indexOf("<table>");
+        int colMethod = title.indexOf("default Column");
+        assertTrue(tableDoc >= 0, "no documentation table in:\n" + title);
+        assertTrue(tableDoc < colMethod, "the documentation table must sit above colTitle()");
+
+        //every table using the column is listed, with its size
+        assertTrue(title.contains("<td>BOOK</td>"), "missing BOOK row in:\n" + title);
+        assertTrue(title.contains("<td>MAGAZINE</td>"), "missing MAGAZINE row in:\n" + title);
+        assertTrue(title.contains("<td>256</td>"), "missing BOOK size in:\n" + title);
+    }
+
+    @Test
+    void conflictingColumnTypeIsDisambiguated() throws Exception {
+        //Book.title is String, Magazine.title is Integer: instead of failing, the processor
+        //disambiguates the colliding column with a type suffix, just like the generator.
+        String magazineDef = """
+                package apttest;
+
                 import io.daobab.annotation.DaobabTable;
                 
                 @DaobabTable
@@ -196,8 +241,24 @@ class TestDaobabEntityProcessor {
                 List.of("apttest/BookDef.java", "apttest/MagazineDef.java"),
                 List.of(BOOK_DEFINITION, magazineDef));
 
-        assertFalse(result.success());
-        assertTrue(result.diagnostics().contains("conflicts"), "unexpected diagnostics: " + result.diagnostics());
+        assertTrue(result.success(), "compilation should disambiguate, not fail: " + result.diagnostics());
+
+        try (URLClassLoader loader = new URLClassLoader(
+                new URL[]{result.classesDir().toUri().toURL()}, Entity.class.getClassLoader())) {
+
+            Class<?> bookClass = loader.loadClass("apttest.BookEntity");
+            Class<?> magazineClass = loader.loadClass("apttest.MagazineEntity");
+
+            //the processing order decides which entity keeps the plain 'Title' interface and which
+            //one gets the type-qualified variant, so assert on the resolved accessors, not on the names
+            Method bookTitle = titleGetter(bookClass);
+            Method magazineTitle = titleGetter(magazineClass);
+
+            assertEquals(String.class, bookTitle.getReturnType());
+            assertEquals(Integer.class, magazineTitle.getReturnType());
+            //the two columns resolved to two distinct interfaces/accessors, no conflict
+            assertNotEquals(bookTitle.getName(), magazineTitle.getName());
+        }
     }
 
     @Test

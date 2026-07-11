@@ -160,8 +160,8 @@ public class JDBCTypeConverter {
         if (clazz.equals(String.class)) return "string";
         if (Number.class.isAssignableFrom(clazz)) return "number";
         if (isOneOf(clazz, Date.class, Timestamp.class, Date.class, Time.class)) return "Date";
-        if (clazz.isInstance(Object[].class)) return "any[]";
-        if (clazz.isInstance(byte[].class)) return "any";
+        if (clazz.equals(byte[].class)) return "any";
+        if (clazz.isArray()) return "any[]";
         if (isOneOf(clazz, Boolean.class, boolean.class)) return "boolean";
         return "any";
 
