@@ -1,12 +1,14 @@
 package io.daobab.processor;
 
 import io.daobab.annotation.DaobabColumn;
+import io.daobab.annotation.DaobabDataBase;
 import io.daobab.annotation.DaobabTable;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
+import javax.lang.model.type.MirroredTypesException;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -84,9 +86,8 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         return sb.toString();
     }
 
-    @Override
-    public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(DaobabTable.class.getName());
+    private static String nameCell(ColumnModel c) {
+        return c.primaryKey ? c.fieldName + "(PK)" : c.fieldName;
     }
 
     @Override
@@ -152,15 +153,62 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         return columns;
     }
 
+    private static String sizeCell(ColumnModel c) {
+        return c.lob ? "LOB" : (c.size > 0 ? Integer.toString(c.size) : "-");
+    }
+
+    /**
+     * Pads a cell to the column width the way the generator's {@code TableDescriptionGenerator} does:
+     * a leading space, the value, right padding, a trailing space.
+     */
+    private static String pad(String value, int width) {
+        if (value == null) {
+            value = "";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(' ').append(value);
+        for (int i = value.length(); i < width; i++) {
+            sb.append(' ');
+        }
+        sb.append(' ');
+        return sb.toString();
+    }
+
+    private void writeSources(EntityContext context) throws IOException {
+        for (ColumnModel column : context.columns) {
+            if (!ensureColumnInterface(context.definition, context.columnPackage, column)) {
+                return;
+            }
+        }
+
+        if (context.generateDto) {
+            writeDto(context.definition, context.dtoPackage, context.dtoName, context.columns);
+        }
+
+        writeEntity(context.definition, context.entityPackage, context.columnPackage, context.entityName,
+                context.tableName, context.columns, context.generateDto, context.dtoPackage, context.dtoName);
+    }
+
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        return Set.of(DaobabTable.class.getName(), DaobabDataBase.class.getName());
+    }
+
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         List<EntityContext> contexts = new ArrayList<>();
+        //all the @DaobabTable definitions of the round indexed by package, so a @DaobabDataBase can
+        //pick up a whole package by name instead of listing every definition class
+        Map<String, List<TypeElement>> definitionsByPackage = new LinkedHashMap<>();
         for (Element element : roundEnv.getElementsAnnotatedWith(DaobabTable.class)) {
             if (element.getKind() != ElementKind.INTERFACE) {
                 error(element, "@DaobabTable may annotate an interface only");
                 continue;
             }
-            EntityContext context = prepare((TypeElement) element);
+            TypeElement definition = (TypeElement) element;
+            String definitionPackage = processingEnv.getElementUtils().getPackageOf(definition).getQualifiedName().toString();
+            definitionsByPackage.computeIfAbsent(definitionPackage, k -> new ArrayList<>()).add(definition);
+            EntityContext context = prepare(definition);
             if (context != null) {
                 contexts.add(context);
             }
@@ -184,6 +232,19 @@ public class DaobabEntityProcessor extends AbstractProcessor {
                 error(context.definition, "Cannot write a generated source: " + e.getMessage());
             }
         }
+
+        //assemble the database interfaces gathering every entity of a @DaobabDataBase into one place
+        for (Element element : roundEnv.getElementsAnnotatedWith(DaobabDataBase.class)) {
+            if (element.getKind() != ElementKind.INTERFACE && element.getKind() != ElementKind.CLASS) {
+                error(element, "@DaobabDataBase may annotate a type only");
+                continue;
+            }
+            try {
+                writeTablesInterface((TypeElement) element, definitionsByPackage);
+            } catch (IOException e) {
+                error(element, "Cannot write a generated source: " + e.getMessage());
+            }
+        }
         return true;
     }
 
@@ -197,8 +258,9 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         String definitionPackage = processingEnv.getElementUtils().getPackageOf(definition).getQualifiedName().toString();
         String definitionName = definition.getSimpleName().toString();
 
-        String entityName = table.entityName().isEmpty() ? stripDefinitionSuffix(definitionName) + "Entity" : table.entityName();
-        String entityPackage = table.entityPackage().isEmpty() ? definitionPackage : table.entityPackage();
+        EntityRef entityRef = resolveEntityRef(definition);
+        String entityName = entityRef.entityName;
+        String entityPackage = entityRef.entityPackage;
         String columnPackage = table.columnPackage().isEmpty() ? definitionPackage + ".column" : table.columnPackage();
         String tableName = table.tableName().isEmpty() ? toUpperSnakeCase(stripEntitySuffix(entityName)) : table.tableName();
 
@@ -250,19 +312,166 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         return context;
     }
 
-    private void writeSources(EntityContext context) throws IOException {
-        for (ColumnModel column : context.columns) {
-            if (!ensureColumnInterface(context.definition, context.columnPackage, column)) {
+    /**
+     * Resolves the fully qualified name of the entity generated out of a {@link DaobabTable}
+     * definition, applying the same defaulting rules as {@link #prepare(TypeElement)}. Shared by
+     * the entity generation and by the {@link DaobabDataBase} interface assembly, so both agree on
+     * where every entity ends up.
+     */
+    private EntityRef resolveEntityRef(TypeElement definition) {
+        DaobabTable table = definition.getAnnotation(DaobabTable.class);
+        String definitionPackage = processingEnv.getElementUtils().getPackageOf(definition).getQualifiedName().toString();
+        String definitionName = definition.getSimpleName().toString();
+
+        String entityName = table.entityName().isEmpty() ? stripDefinitionSuffix(definitionName) + "Entity" : table.entityName();
+        String entityPackage = table.entityPackage().isEmpty() ? definitionPackage : table.entityPackage();
+        return new EntityRef(entityPackage, entityName);
+    }
+
+    /**
+     * Generates the database interface of a {@link DaobabDataBase}: an interface named after the
+     * database with the 'Tables' suffix, exposing an initialized field per entity (e.g.
+     * {@code BookEntity tabBook = new BookEntity();}) - the compile time counterpart of the
+     * hand written {@code MetaDataTables} and of the {@code Tables} interface emitted by the generator.
+     */
+    private void writeTablesInterface(TypeElement configElement, Map<String, List<TypeElement>> definitionsByPackage) throws IOException {
+        DaobabDataBase db = configElement.getAnnotation(DaobabDataBase.class);
+
+        String targetPackage = db.targetPackage().isEmpty()
+                ? processingEnv.getElementUtils().getPackageOf(configElement).getQualifiedName().toString()
+                : db.targetPackage();
+        String interfaceName = db.name() + "Tables";
+
+        //the tables listed explicitly, in the given order...
+        List<TypeElement> definitions = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+        for (TypeMirror mirror : tableMirrors(db)) {
+            Element definition = processingEnv.getTypeUtils().asElement(mirror);
+            if (definition == null || definition.getKind() != ElementKind.INTERFACE) {
+                error(configElement, "@DaobabDataBase.tables must list interfaces annotated with @DaobabTable");
                 return;
+            }
+            if (definition.getAnnotation(DaobabTable.class) == null) {
+                error(configElement, "The table " + ((TypeElement) definition).getQualifiedName()
+                        + " referenced by @DaobabDataBase is not annotated with @DaobabTable");
+                return;
+            }
+            if (seen.add(((TypeElement) definition).getQualifiedName().toString())) {
+                definitions.add((TypeElement) definition);
             }
         }
 
-        if (context.generateDto) {
-            writeDto(context.definition, context.dtoPackage, context.dtoName, context.columns);
+        //...plus every @DaobabTable definition of the scanned package, added alphabetically for a
+        //stable output and skipping the ones already listed explicitly
+        if (!db.tablesPackage().isEmpty()) {
+            List<TypeElement> fromPackage = definitionsByPackage.getOrDefault(db.tablesPackage(), List.of()).stream()
+                    .sorted(Comparator.comparing(d -> d.getSimpleName().toString()))
+                    .toList();
+            if (fromPackage.isEmpty()) {
+                error(configElement, "@DaobabDataBase.tablesPackage \"" + db.tablesPackage()
+                        + "\" holds no @DaobabTable definition in this compilation");
+                return;
+            }
+            for (TypeElement definition : fromPackage) {
+                if (seen.add(definition.getQualifiedName().toString())) {
+                    definitions.add(definition);
+                }
+            }
         }
 
-        writeEntity(context.definition, context.entityPackage, context.columnPackage, context.entityName,
-                context.tableName, context.columns, context.generateDto, context.dtoPackage, context.dtoName);
+        if (definitions.isEmpty()) {
+            error(configElement, "@DaobabDataBase requires at least one table: set tables or tablesPackage");
+            return;
+        }
+
+        List<EntityRef> refs = new ArrayList<>();
+        for (TypeElement definition : definitions) {
+            refs.add(resolveEntityRef(definition));
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("package ").append(targetPackage).append(";\n\n");
+        sb.append("import io.daobab.query.base.QueryWhisperer;\n");
+        Set<String> imports = new LinkedHashSet<>();
+        for (EntityRef ref : refs) {
+            if (!ref.entityPackage.equals(targetPackage)) {
+                imports.add(ref.entityPackage + "." + ref.entityName);
+            }
+        }
+        for (String imp : imports) {
+            sb.append("import ").append(imp).append(";\n");
+        }
+        sb.append("\n");
+
+        sb.append("public interface ").append(interfaceName).append(" extends QueryWhisperer {\n\n");
+        for (int i = 0; i < definitions.size(); i++) {
+            TypeElement definition = definitions.get(i);
+            EntityRef ref = refs.get(i);
+            DaobabTable table = definition.getAnnotation(DaobabTable.class);
+            String tableName = table.tableName().isEmpty()
+                    ? toUpperSnakeCase(stripEntitySuffix(ref.entityName)) : table.tableName();
+            String fieldName = "tab" + stripEntitySuffix(ref.entityName);
+
+            sb.append(tableDoc(tableName, readColumns(definition)));
+            sb.append("\t").append(ref.entityName).append(" ").append(fieldName)
+                    .append(" = new ").append(ref.entityName).append("();\n\n");
+        }
+        sb.append("}\n");
+
+        writeSource(targetPackage + "." + interfaceName, sb.toString(), configElement);
+    }
+
+    /**
+     * The Javadoc placed above an initialized table field of a {@link DaobabDataBase} interface: the
+     * schema of the table rendered as an aligned {@code <pre>} block (Name / Type / Size / DBName),
+     * mirroring the documentation the generator emits above its {@code tab...} fields. DBType and the
+     * remarks are omitted because a definition, unlike live JDBC metadata, does not carry them.
+     */
+    private String tableDoc(String tableName, List<ColumnModel> columns) {
+        if (columns == null || columns.isEmpty()) {
+            return "";
+        }
+        List<ColumnModel> sorted = new ArrayList<>(columns);
+        sorted.sort(Comparator.comparing(c -> c.fieldName));
+
+        int wName = "Name".length();
+        int wType = "Type".length();
+        int wSize = "Size".length();
+        int wDbName = "DBName".length();
+        for (ColumnModel c : sorted) {
+            wName = Math.max(wName, nameCell(c).length());
+            wType = Math.max(wType, simpleName(c.fieldType).length());
+            wSize = Math.max(wSize, sizeCell(c).length());
+            wDbName = Math.max(wDbName, c.columnName.length());
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\t/**\n");
+        sb.append("\t * Table <b>").append(tableName).append("</b>:\n");
+        sb.append("\t * <pre>\n");
+        sb.append("\t * <u>").append(pad("Name", wName)).append(pad("Type", wType))
+                .append(pad("Size", wSize)).append(pad("DBName", wDbName)).append("</u>\n");
+        for (ColumnModel c : sorted) {
+            sb.append("\t * ").append(pad(nameCell(c), wName)).append(pad(simpleName(c.fieldType), wType))
+                    .append(pad(sizeCell(c), wSize)).append(pad(c.columnName, wDbName)).append("\n");
+        }
+        sb.append("\t * </pre>\n");
+        sb.append("\t */\n");
+        return sb.toString();
+    }
+
+    /**
+     * Reads the {@code tables()} class array of a {@link DaobabDataBase}. Class valued annotation
+     * members are not available as {@code Class} objects during the annotation processing - accessing
+     * them throws {@link MirroredTypesException} carrying the {@link TypeMirror}s instead.
+     */
+    private List<? extends TypeMirror> tableMirrors(DaobabDataBase db) {
+        try {
+            db.tables();
+            return List.of();
+        } catch (MirroredTypesException e) {
+            return e.getTypeMirrors();
+        }
     }
 
     /**
@@ -590,6 +799,20 @@ public class DaobabEntityProcessor extends AbstractProcessor {
 
     private void error(Element element, String message) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, element);
+    }
+
+    /**
+     * The fully qualified name of an entity generated out of a definition: where a
+     * {@link DaobabDataBase} field points and what the entity generation emits.
+     */
+    private static final class EntityRef {
+        final String entityPackage;
+        final String entityName;
+
+        EntityRef(String entityPackage, String entityName) {
+            this.entityPackage = entityPackage;
+            this.entityName = entityName;
+        }
     }
 
     private static final class ColumnModel {

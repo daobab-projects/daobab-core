@@ -49,6 +49,22 @@ class TestDaobabEntityProcessor {
             }
             """;
 
+    private static final String AUTHOR_DEFINITION = """
+            package apttest;
+            
+            import io.daobab.annotation.DaobabColumn;
+            import io.daobab.annotation.DaobabTable;
+            
+            @DaobabTable(tableName = "AUTHOR")
+            public interface AuthorDef {
+            
+                @DaobabColumn(primaryKey = true)
+                Integer authorId();
+            
+                String name();
+            }
+            """;
+
     private CompilationResult compile(List<String> fileNames, List<String> sources) throws IOException {
         Path workDir = Files.createTempDirectory("daobab-apt-test");
         Path srcDir = Files.createDirectories(workDir.resolve("src"));
@@ -179,6 +195,174 @@ class TestDaobabEntityProcessor {
             //Magazine has no primary key column
             assertFalse(PrimaryKey.class.isAssignableFrom(magazineClass));
         }
+    }
+
+    @Test
+    void generatesDatabaseTablesInterface() throws Exception {
+        //@DaobabDataBase gathers the entities generated out of its table definitions into one interface
+        String config = """
+                package apttest;
+                
+                import io.daobab.annotation.DaobabDataBase;
+                
+                @DaobabDataBase(name = "Library", tables = {BookDef.class, AuthorDef.class})
+                public interface LibraryConfig {
+                }
+                """;
+
+        CompilationResult result = compile(
+                List.of("apttest/BookDef.java", "apttest/AuthorDef.java", "apttest/LibraryConfig.java"),
+                List.of(BOOK_DEFINITION, AUTHOR_DEFINITION, config));
+
+        assertTrue(result.success(), "compilation failed: " + result.diagnostics());
+
+        //the interface is named after the database with the 'Tables' suffix
+        Path tablesSource = result.sourcesDir().resolve("apttest/LibraryTables.java");
+        assertTrue(Files.exists(tablesSource), "no LibraryTables generated");
+
+        String tables = Files.readString(tablesSource);
+        assertTrue(tables.contains("extends QueryWhisperer"), "the tables interface must extend QueryWhisperer:\n" + tables);
+        assertTrue(tables.contains("BookEntity tabBook = new BookEntity();"), "missing tabBook field:\n" + tables);
+        assertTrue(tables.contains("AuthorEntity tabAuthor = new AuthorEntity();"), "missing tabAuthor field:\n" + tables);
+
+        //each initialized field is documented with the table schema, above the field, like the generator
+        assertTrue(tables.contains("Table <b>BOOK</b>:"), "missing BOOK doc header:\n" + tables);
+        assertTrue(tables.contains("Table <b>AUTHOR</b>:"), "missing AUTHOR doc header:\n" + tables);
+        assertTrue(tables.contains("<pre>"), "the doc must render a <pre> schema block:\n" + tables);
+        assertTrue(tables.contains("BookId(PK)"), "the primary key column must be marked:\n" + tables);
+        assertTrue(tables.contains("PRINT_DATE"), "the DB column name must be listed:\n" + tables);
+        assertTrue(tables.contains("256"), "the column size must be listed:\n" + tables);
+        assertTrue(tables.indexOf("Table <b>BOOK</b>") < tables.indexOf("tabBook"),
+                "the doc must sit above the field:\n" + tables);
+
+        try (URLClassLoader loader = new URLClassLoader(
+                new URL[]{result.classesDir().toUri().toURL()}, Entity.class.getClassLoader())) {
+
+            Class<?> tablesInterface = loader.loadClass("apttest.LibraryTables");
+            assertTrue(tablesInterface.isInterface());
+
+            //every field is initialized to a live entity instance ready for the queries
+            Object book = tablesInterface.getField("tabBook").get(null);
+            Object author = tablesInterface.getField("tabAuthor").get(null);
+            assertEquals("apttest.BookEntity", book.getClass().getName());
+            assertEquals("apttest.AuthorEntity", author.getClass().getName());
+            assertTrue(book instanceof Entity);
+            assertTrue(author instanceof Entity);
+        }
+    }
+
+    @Test
+    void databaseWithNonDaobabTableReferenceFails() throws Exception {
+        //a table that is not a @DaobabTable definition is rejected
+        String plainInterface = """
+                package apttest;
+                
+                public interface NotATable {
+                    String value();
+                }
+                """;
+        String config = """
+                package apttest;
+                
+                import io.daobab.annotation.DaobabDataBase;
+                
+                @DaobabDataBase(name = "Broken", tables = {NotATable.class})
+                public interface BrokenConfig {
+                }
+                """;
+
+        CompilationResult result = compile(
+                List.of("apttest/NotATable.java", "apttest/BrokenConfig.java"),
+                List.of(plainInterface, config));
+
+        assertFalse(result.success());
+        assertTrue(result.diagnostics().contains("not annotated with @DaobabTable"),
+                "unexpected diagnostics: " + result.diagnostics());
+    }
+
+    @Test
+    void generatesDatabaseFromPackageScan() throws Exception {
+        //instead of listing the classes, a whole package is scanned for @DaobabTable definitions
+        String bookDef = """
+                package apttest.lib;
+                
+                import io.daobab.annotation.DaobabColumn;
+                import io.daobab.annotation.DaobabTable;
+                
+                @DaobabTable(tableName = "BOOK")
+                public interface BookDef {
+                    @DaobabColumn(primaryKey = true)
+                    Integer bookId();
+                    String title();
+                }
+                """;
+        String authorDef = """
+                package apttest.lib;
+                
+                import io.daobab.annotation.DaobabColumn;
+                import io.daobab.annotation.DaobabTable;
+                
+                @DaobabTable(tableName = "AUTHOR")
+                public interface AuthorDef {
+                    @DaobabColumn(primaryKey = true)
+                    Integer authorId();
+                    String name();
+                }
+                """;
+        String config = """
+                package apttest;
+                
+                import io.daobab.annotation.DaobabDataBase;
+                
+                @DaobabDataBase(name = "Library", tablesPackage = "apttest.lib")
+                public interface LibraryConfig {
+                }
+                """;
+
+        CompilationResult result = compile(
+                List.of("apttest/lib/BookDef.java", "apttest/lib/AuthorDef.java", "apttest/LibraryConfig.java"),
+                List.of(bookDef, authorDef, config));
+
+        assertTrue(result.success(), "compilation failed: " + result.diagnostics());
+
+        String tables = Files.readString(result.sourcesDir().resolve("apttest/LibraryTables.java"));
+
+        //both definitions of the package are picked up, alphabetically (Author before Book)
+        assertTrue(tables.contains("AuthorEntity tabAuthor = new AuthorEntity();"), tables);
+        assertTrue(tables.contains("BookEntity tabBook = new BookEntity();"), tables);
+        assertTrue(tables.indexOf("tabAuthor") < tables.indexOf("tabBook"), "package scan must be alphabetical:\n" + tables);
+        //the entities live in the scanned package, so the interface (in apttest) imports them
+        assertTrue(tables.contains("import apttest.lib.BookEntity;"), tables);
+        assertTrue(tables.contains("import apttest.lib.AuthorEntity;"), tables);
+
+        try (URLClassLoader loader = new URLClassLoader(
+                new URL[]{result.classesDir().toUri().toURL()}, Entity.class.getClassLoader())) {
+
+            Class<?> tablesInterface = loader.loadClass("apttest.LibraryTables");
+            Object book = tablesInterface.getField("tabBook").get(null);
+            assertEquals("apttest.lib.BookEntity", book.getClass().getName());
+            assertTrue(book instanceof Entity);
+        }
+    }
+
+    @Test
+    void databaseWithEmptyPackageScanFails() throws Exception {
+        //a package that holds no @DaobabTable definition is reported instead of silently generating nothing
+        String config = """
+                package apttest;
+                
+                import io.daobab.annotation.DaobabDataBase;
+                
+                @DaobabDataBase(name = "Empty", tablesPackage = "apttest.nothing")
+                public interface EmptyConfig {
+                }
+                """;
+
+        CompilationResult result = compile(List.of("apttest/EmptyConfig.java"), List.of(config));
+
+        assertFalse(result.success());
+        assertTrue(result.diagnostics().contains("holds no @DaobabTable"),
+                "unexpected diagnostics: " + result.diagnostics());
     }
 
     private static Method titleGetter(Class<?> entity) {
