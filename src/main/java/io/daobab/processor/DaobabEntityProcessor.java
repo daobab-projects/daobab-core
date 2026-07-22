@@ -337,9 +337,8 @@ public class DaobabEntityProcessor extends AbstractProcessor {
     private void writeTablesInterface(TypeElement configElement, Map<String, List<TypeElement>> definitionsByPackage) throws IOException {
         DaobabDataBase db = configElement.getAnnotation(DaobabDataBase.class);
 
-        String targetPackage = db.targetPackage().isEmpty()
-                ? processingEnv.getElementUtils().getPackageOf(configElement).getQualifiedName().toString()
-                : db.targetPackage();
+        String elementPackage = processingEnv.getElementUtils().getPackageOf(configElement).getQualifiedName().toString();
+        String targetPackage = db.targetPackage().isEmpty() ? elementPackage : db.targetPackage();
         String interfaceName = db.name() + "Tables";
 
         //the tables listed explicitly, in the given order...
@@ -364,19 +363,27 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         //...plus every @DaobabTable definition of the scanned package, added alphabetically for a
         //stable output and skipping the ones already listed explicitly
         if (!db.tablesPackage().isEmpty()) {
-            List<TypeElement> fromPackage = definitionsByPackage.getOrDefault(db.tablesPackage(), List.of()).stream()
-                    .sorted(Comparator.comparing(d -> d.getSimpleName().toString()))
-                    .toList();
+            List<TypeElement> fromPackage = definitionsInPackage(definitionsByPackage, db.tablesPackage());
             if (fromPackage.isEmpty()) {
                 error(configElement, "@DaobabDataBase.tablesPackage \"" + db.tablesPackage()
                         + "\" holds no @DaobabTable definition in this compilation");
                 return;
             }
-            for (TypeElement definition : fromPackage) {
-                if (seen.add(definition.getQualifiedName().toString())) {
-                    definitions.add(definition);
-                }
+            addNew(definitions, seen, fromPackage);
+        } else if (definitions.isEmpty()) {
+            //neither tables nor tablesPackage was given: fall back to the annotated element's own package,
+            //and record it - it is an implicit default the user did not spell out
+            List<TypeElement> fromPackage = definitionsInPackage(definitionsByPackage, elementPackage);
+            if (fromPackage.isEmpty()) {
+                error(configElement, "@DaobabDataBase \"" + db.name() + "\" declares neither tables nor tablesPackage,"
+                        + " and no @DaobabTable definition was found in the current package \"" + elementPackage + "\"");
+                return;
             }
+            List<String> names = fromPackage.stream().map(d -> d.getSimpleName().toString()).toList();
+            note(configElement, "@DaobabDataBase \"" + db.name() + "\" declares neither tables nor tablesPackage;"
+                    + " defaulting to the current package \"" + elementPackage + "\" ("
+                    + names.size() + " table(s): " + String.join(", ", names) + ")");
+            addNew(definitions, seen, fromPackage);
         }
 
         if (definitions.isEmpty()) {
@@ -458,6 +465,27 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         sb.append("\t * </pre>\n");
         sb.append("\t */\n");
         return sb.toString();
+    }
+
+    /**
+     * The {@link DaobabTable} definitions collected in the given package during this round, sorted by
+     * simple name for a stable, reproducible output.
+     */
+    private List<TypeElement> definitionsInPackage(Map<String, List<TypeElement>> definitionsByPackage, String pkg) {
+        return definitionsByPackage.getOrDefault(pkg, List.of()).stream()
+                .sorted(Comparator.comparing(d -> d.getSimpleName().toString()))
+                .toList();
+    }
+
+    /**
+     * Appends the definitions not already collected (deduplicated by fully qualified name).
+     */
+    private void addNew(List<TypeElement> target, Set<String> seen, List<TypeElement> toAdd) {
+        for (TypeElement definition : toAdd) {
+            if (seen.add(definition.getQualifiedName().toString())) {
+                target.add(definition);
+            }
+        }
     }
 
     /**
@@ -799,6 +827,10 @@ public class DaobabEntityProcessor extends AbstractProcessor {
 
     private void error(Element element, String message) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, element);
+    }
+
+    private void note(Element element, String message) {
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message, element);
     }
 
     /**

@@ -1,6 +1,10 @@
 package io.daobab.statement.function.base;
 
 /**
+ * A date/time part, used by the interval and date functions (e.g. {@code EXTRACT}, {@code DATEADD},
+ * {@code DATEDIFF}). Covers both single fields ({@code YEAR}, {@code MONTH}, ...) and the compound
+ * ranges some engines accept ({@code DAY_HOUR}, {@code MINUTE_SECOND}, ...).
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public enum DatePeriod {

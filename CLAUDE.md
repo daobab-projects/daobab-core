@@ -89,8 +89,9 @@ definitions into one **`Tables` interface** — the compile-time counterpart of 
 `io.daobab.target.database.meta.MetaDataTables` and of the `Tables` interface the generator emits from JDBC
 metadata (`GenerateTarget`). Attributes: `name()` (→ interface named `name + "Tables"`), `tables()`
 (`Class<?>[]` of the `@DaobabTable` definition interfaces, optional), `tablesPackage()` (scan a whole package,
-optional), `targetPackage()` (default: the annotated element's package). At least one of `tables`/`tablesPackage`
-must select a table.
+optional), `targetPackage()` (default: the annotated element's package). When **neither** `tables` nor
+`tablesPackage` is set, the annotated element's own package is scanned by default and a `NOTE` is logged
+(`note()` → `Diagnostic.Kind.NOTE`) — handy when the config sits next to its definitions.
 
 - The **same** `DaobabEntityProcessor` handles it (added to `getSupportedAnnotationTypes()`). After the entity
   pass, `process()` calls `writeTablesInterface()` for each `@DaobabDataBase` element, passing a
@@ -98,10 +99,11 @@ must select a table.
 - `tables()` is read via **`MirroredTypesException`** (`tableMirrors()`) — the referenced defs are being
   compiled, so they aren't available as `Class` objects. Each must be an interface annotated `@DaobabTable`,
   else compilation fails.
-- `tablesPackage()` picks up every `@DaobabTable` interface of that package **from the round index** (not from
-  the classpath — source-retention means only same-compilation defs are visible), added after the explicit
-  `tables()` and **sorted alphabetically** for a stable output; duplicates across the two are deduplicated by
-  FQN. An empty scan is an error, not a silent no-op.
+- `tablesPackage()` (or the current-package default) picks up every `@DaobabTable` interface of that package
+  **from the round index** (not from the classpath — source-retention means only same-compilation defs are
+  visible), added after the explicit `tables()` and **sorted alphabetically** for a stable output; duplicates
+  across the sources are deduplicated by FQN (`definitionsInPackage()` + `addNew()`). An **explicit** empty
+  `tablesPackage` is an error; the current-package default finding nothing is also an error (distinct message).
 - Emitted interface `extends QueryWhisperer` (generator parity) with one field per entity:
   `BookEntity tabBook = new BookEntity();`. Field name is `tab` + entity name **stripped of the `Entity`
   suffix** (`tabBook`, matching the `tabCustomer` ergonomics and `SakilaTables`/`MetaDataTables`).

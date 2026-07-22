@@ -1,6 +1,10 @@
 package io.daobab.statement.function.dictionary;
 
 /**
+ * The dictionary of H2 SQL function names. The matching
+ * {@link io.daobab.statement.function.FunctionWhispererH2} references these constants when building the
+ * {@link io.daobab.statement.function.type.ColumnFunction column functions}.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")

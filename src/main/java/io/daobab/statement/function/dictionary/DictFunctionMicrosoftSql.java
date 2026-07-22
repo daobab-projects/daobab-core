@@ -1,6 +1,10 @@
 package io.daobab.statement.function.dictionary;
 
 /**
+ * The dictionary of Microsoft SQL Server function names. The matching
+ * {@link io.daobab.statement.function.FunctionWhispererMicrosoftSql} references these constants when building
+ * the {@link io.daobab.statement.function.type.ColumnFunction column functions}.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")

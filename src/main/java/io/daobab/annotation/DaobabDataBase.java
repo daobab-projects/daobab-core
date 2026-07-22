@@ -26,7 +26,9 @@ import java.lang.annotation.Target;
  * public interface LibraryConfig {
  * }
  * }</pre>
- * Either form produces the {@code LibraryTables} interface:
+ * When neither {@link #tables()} nor {@link #tablesPackage()} is given, the package of the annotated
+ * element is scanned by default (and a note is logged), which is handy when the definitions and this
+ * element share a package. Either form produces the {@code LibraryTables} interface:
  * <pre>{@code
  * public interface LibraryTables extends QueryWhisperer {
  *
@@ -53,19 +55,21 @@ public @interface DaobabDataBase {
     /**
      * The entity definition interfaces of the database, each annotated with {@link DaobabTable}.
      * The generated interface exposes one initialized field per definition. May be combined with
-     * {@link #tablesPackage()}; at least one of the two has to select a table.
+     * {@link #tablesPackage()}. When neither is set, the annotated element's own package is scanned
+     * (a note is logged).
      */
     Class<?>[] tables() default {};
 
     /**
      * Package scanned for {@link DaobabTable} definitions: every such interface of the package
      * (compiled in the same compilation as this element) becomes a table of the database, in
-     * addition to the ones listed in {@link #tables()}. At least one of the two has to select a table.
+     * addition to the ones listed in {@link #tables()}. When neither {@code tables} nor
+     * {@code tablesPackage} is set, the package of the annotated element is scanned by default.
      */
     String tablesPackage() default "";
 
     /**
-     * Package of the generated interface. By default the package of the annotated element.
+     * Package of the generated interface. By default, the package of the annotated element.
      */
     String targetPackage() default "";
 }

@@ -21,6 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A mix-in of the MySQL SQL functions: each method builds a
+ * {@link io.daobab.statement.function.type.ColumnFunction} for the matching SQL function, usable in a select
+ * list, an {@code ORDER BY} or a {@code HAVING} clause. For example:
+ * <pre>{@code
+ * db.select(tabCustomer.colLastName(), upper(tabCustomer.colLastName()))
+ *   .findMany();
+ * }</pre>
+ * The function names come from {@link io.daobab.statement.function.dictionary.DictFunctionMySql}.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"rawtypes", "unused"})

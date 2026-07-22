@@ -71,88 +71,48 @@ public class JDBCTypeConverter {
     }
 
     public static String getDataBaseTypeName(int type) {
-        switch (type) {
-            case (Types.ARRAY):
-                return "ARRAY";
-            case (Types.BIGINT):
-                return "BIGINT";
-            case (Types.BINARY):
-                return "BINARY";
-            case (Types.BIT):
-                return "BIT";
-            case (Types.BLOB):
-                return "BLOB";
-            case (Types.BOOLEAN):
-                return "BOOLEAN";
-            case (Types.CHAR):
-                return "CHAR";
-            case (Types.CLOB):
-                return "CLOB";
-            case (Types.DATALINK):
-                return "DATALINK";
-            case (Types.DATE):
-                return "DATE";
-            case (Types.DECIMAL):
-                return "DECIMAL";
-            case (Types.DISTINCT):
-                return "DISTINCT";
-            case (Types.DOUBLE):
-                return "DOUBLE";
-            case (Types.FLOAT):
-                return "FLOAT";
-            case (Types.INTEGER):
-                return "INTEGER";
-            case (Types.JAVA_OBJECT):
-                return "JAVA_OBJECT";
-            case (Types.LONGNVARCHAR):
-                return "LONGNVARCHAR";
-            case (Types.LONGVARBINARY):
-                return "LONGVARBINARY";
-            case (Types.LONGVARCHAR):
-                return "LONGVARCHAR";
-            case (Types.NCHAR):
-                return "NCHAR";
-            case (Types.NCLOB):
-                return "NCLOB";
-            case (Types.NULL):
-                return "NULL";
-            case (Types.NUMERIC):
-                return "NUMERIC";
-            case (Types.NVARCHAR):
-                return "NVARCHAR";
-            case (Types.OTHER):
-                return "OTHER";
-            case (Types.REAL):
-                return "REAL";
-            case (Types.REF):
-                return "REF";
-            case (Types.REF_CURSOR):
-                return "REF_CURSOR";
-            case (Types.ROWID):
-                return "ROWID";
-            case (Types.SMALLINT):
-                return "SMALLINT";
-            case (Types.SQLXML):
-                return "SQLXML";
-            case (Types.STRUCT):
-                return "STRUCT";
-            case (Types.TIME):
-                return "TIME";
-            case (Types.TIME_WITH_TIMEZONE):
-                return "TIME_WITH_TIMEZONE";
-            case (Types.TIMESTAMP):
-                return "TIMESTAMP";
-            case (Types.TIMESTAMP_WITH_TIMEZONE):
-                return "TIMESTAMP_WITH_TIMEZONE";
-            case (Types.TINYINT):
-                return "TINYINT";
-            case (Types.VARBINARY):
-                return "VARBINARY";
-            case (Types.VARCHAR):
-                return "VARCHAR";
-            default:
-                return "";
-        }
+        return switch (type) {
+            case (Types.ARRAY) -> "ARRAY";
+            case (Types.BIGINT) -> "BIGINT";
+            case (Types.BINARY) -> "BINARY";
+            case (Types.BIT) -> "BIT";
+            case (Types.BLOB) -> "BLOB";
+            case (Types.BOOLEAN) -> "BOOLEAN";
+            case (Types.CHAR) -> "CHAR";
+            case (Types.CLOB) -> "CLOB";
+            case (Types.DATALINK) -> "DATALINK";
+            case (Types.DATE) -> "DATE";
+            case (Types.DECIMAL) -> "DECIMAL";
+            case (Types.DISTINCT) -> "DISTINCT";
+            case (Types.DOUBLE) -> "DOUBLE";
+            case (Types.FLOAT) -> "FLOAT";
+            case (Types.INTEGER) -> "INTEGER";
+            case (Types.JAVA_OBJECT) -> "JAVA_OBJECT";
+            case (Types.LONGNVARCHAR) -> "LONGNVARCHAR";
+            case (Types.LONGVARBINARY) -> "LONGVARBINARY";
+            case (Types.LONGVARCHAR) -> "LONGVARCHAR";
+            case (Types.NCHAR) -> "NCHAR";
+            case (Types.NCLOB) -> "NCLOB";
+            case (Types.NULL) -> "NULL";
+            case (Types.NUMERIC) -> "NUMERIC";
+            case (Types.NVARCHAR) -> "NVARCHAR";
+            case (Types.OTHER) -> "OTHER";
+            case (Types.REAL) -> "REAL";
+            case (Types.REF) -> "REF";
+            case (Types.REF_CURSOR) -> "REF_CURSOR";
+            case (Types.ROWID) -> "ROWID";
+            case (Types.SMALLINT) -> "SMALLINT";
+            case (Types.SQLXML) -> "SQLXML";
+            case (Types.STRUCT) -> "STRUCT";
+            case (Types.TIME) -> "TIME";
+            case (Types.TIME_WITH_TIMEZONE) -> "TIME_WITH_TIMEZONE";
+            case (Types.TIMESTAMP) -> "TIMESTAMP";
+            case (Types.TIMESTAMP_WITH_TIMEZONE) -> "TIMESTAMP_WITH_TIMEZONE";
+            case (Types.TINYINT) -> "TINYINT";
+            case (Types.VARBINARY) -> "VARBINARY";
+            case (Types.VARCHAR) -> "VARCHAR";
+            default -> "";
+        };
 
     }
 

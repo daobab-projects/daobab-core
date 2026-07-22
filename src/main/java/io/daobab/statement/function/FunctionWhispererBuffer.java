@@ -6,6 +6,15 @@ import io.daobab.query.marker.ColumnOrQuery;
 import io.daobab.statement.function.type.ColumnFunction;
 
 /**
+ * A mix-in of the functions supported by the in-memory buffer target: each method builds a
+ * {@link io.daobab.statement.function.type.ColumnFunction} for the matching function, usable in a select list,
+ * an {@code ORDER BY} or a {@code HAVING} clause. For example:
+ * <pre>{@code
+ * buffer.select(tabCustomer.colLastName(), upper(tabCustomer.colLastName()))
+ *       .findMany();
+ * }</pre>
+ * The function names come from {@link io.daobab.statement.function.dictionary.DictFunctionBuffer}.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"rawtypes", "unused"})

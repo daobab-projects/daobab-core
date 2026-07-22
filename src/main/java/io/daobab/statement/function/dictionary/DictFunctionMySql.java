@@ -1,6 +1,10 @@
 package io.daobab.statement.function.dictionary;
 
 /**
+ * The dictionary of MySQL SQL function names (string, numeric, date and advanced functions). The matching
+ * {@link io.daobab.statement.function.FunctionWhispererMySql} references these constants when building the
+ * {@link io.daobab.statement.function.type.ColumnFunction column functions}.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")

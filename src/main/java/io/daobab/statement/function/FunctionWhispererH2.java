@@ -18,6 +18,15 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 /**
+ * A mix-in of the H2 SQL functions: each method builds a
+ * {@link io.daobab.statement.function.type.ColumnFunction} for the matching SQL function, usable in a select
+ * list, an {@code ORDER BY} or a {@code HAVING} clause. For example:
+ * <pre>{@code
+ * db.select(tabCustomer.colLastName(), upper(tabCustomer.colLastName()))
+ *   .findMany();
+ * }</pre>
+ * The function names come from {@link io.daobab.statement.function.dictionary.DictFunctionH2}.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"rawtypes", "unused"})

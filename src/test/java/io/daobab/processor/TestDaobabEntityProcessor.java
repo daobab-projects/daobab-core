@@ -365,6 +365,35 @@ class TestDaobabEntityProcessor {
                 "unexpected diagnostics: " + result.diagnostics());
     }
 
+    @Test
+    void databaseDefaultsToCurrentPackageAndLogsIt() throws Exception {
+        //neither tables nor tablesPackage: the annotated element's own package is scanned, and it is logged
+        String config = """
+                package apttest;
+                
+                import io.daobab.annotation.DaobabDataBase;
+                
+                @DaobabDataBase(name = "Library")
+                public interface LibraryConfig {
+                }
+                """;
+
+        CompilationResult result = compile(
+                List.of("apttest/BookDef.java", "apttest/AuthorDef.java", "apttest/LibraryConfig.java"),
+                List.of(BOOK_DEFINITION, AUTHOR_DEFINITION, config));
+
+        assertTrue(result.success(), "compilation failed: " + result.diagnostics());
+
+        //the implicit default is recorded in the compiler notes
+        assertTrue(result.diagnostics().contains("defaulting to the current package"),
+                "expected a note about the default package: " + result.diagnostics());
+
+        //both @DaobabTable definitions of the package are picked up
+        String tables = Files.readString(result.sourcesDir().resolve("apttest/LibraryTables.java"));
+        assertTrue(tables.contains("BookEntity tabBook = new BookEntity();"), tables);
+        assertTrue(tables.contains("AuthorEntity tabAuthor = new AuthorEntity();"), tables);
+    }
+
     private static Method titleGetter(Class<?> entity) {
         return Arrays.stream(entity.getMethods())
                 .filter(m -> m.getName().startsWith("getTitle") && m.getParameterCount() == 0)

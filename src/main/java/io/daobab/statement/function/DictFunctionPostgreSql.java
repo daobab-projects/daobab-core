@@ -1,6 +1,10 @@
 package io.daobab.statement.function;
 
 /**
+ * The dictionary of PostgreSQL SQL function names. The matching
+ * {@link io.daobab.statement.function.FunctionWhispererPostgreSql} references these constants when building the
+ * {@link io.daobab.statement.function.type.ColumnFunction column functions}.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface DictFunctionPostgreSql {
