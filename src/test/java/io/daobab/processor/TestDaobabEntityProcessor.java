@@ -1,7 +1,6 @@
 package io.daobab.processor;
 
-import io.daobab.model.Entity;
-import io.daobab.model.PrimaryKey;
+import io.daobab.model.*;
 import io.daobab.target.database.MockDataBase;
 import org.junit.jupiter.api.Test;
 
@@ -475,27 +474,83 @@ class TestDaobabEntityProcessor {
     }
 
     @Test
-    void compositePrimaryKeyFailsCompilation() throws Exception {
+    void compositePrimaryKeyGeneratesKeyInterface() throws Exception {
+        //two primary key columns: a composite key interface is generated next to the entity,
+        //grouping the key columns - the same shape the generator emits for a composite key
         String definition = """
                 package apttest;
-                
+
                 import io.daobab.annotation.DaobabColumn;
                 import io.daobab.annotation.DaobabTable;
                 
-                @DaobabTable
+                @DaobabTable(tableName = "ORDER_LINE")
                 public interface OrderLineDef {
                     @DaobabColumn(primaryKey = true)
                     Integer orderId();
-                
+
                     @DaobabColumn(primaryKey = true)
                     Integer lineNumber();
+                
+                    String product();
                 }
                 """;
 
         CompilationResult result = compile(List.of("apttest/OrderLineDef.java"), List.of(definition));
 
-        assertFalse(result.success());
-        assertTrue(result.diagnostics().contains("Composite primary keys"), "unexpected diagnostics: " + result.diagnostics());
+        assertTrue(result.success(), "compilation failed: " + result.diagnostics());
+        Path keySource = result.sourcesDir().resolve("apttest/OrderLineKey.java");
+        assertTrue(Files.exists(keySource), "no composite key interface generated");
+
+        String key = Files.readString(keySource);
+        assertTrue(key.contains("public interface OrderLineKey<E extends Entity & OrderId<E> & LineNumber<E>>"), key);
+        assertTrue(key.contains("Composite<E>"), key);
+        assertTrue(key.contains("default CompositeColumns<OrderLineKey<E>> compositeOrderLineKey()"), key);
+
+        try (URLClassLoader loader = new URLClassLoader(
+                new URL[]{result.classesDir().toUri().toURL()}, Entity.class.getClassLoader())) {
+
+            Class<?> entityClass = loader.loadClass("apttest.OrderLineEntity");
+            Class<?> keyInterface = loader.loadClass("apttest.OrderLineKey");
+
+            //the entity carries the composite key the way the generator wires it
+            assertTrue(PrimaryCompositeKey.class.isAssignableFrom(entityClass));
+            assertTrue(Composite.class.isAssignableFrom(keyInterface));
+            assertTrue(keyInterface.isAssignableFrom(entityClass));
+            assertFalse(PrimaryKey.class.isAssignableFrom(entityClass));
+
+            Object line = entityClass.getConstructor().newInstance();
+            line = entityClass.getMethod("setOrderId", Integer.class).invoke(line, 7);
+            line = entityClass.getMethod("setLineNumber", Integer.class).invoke(line, 2);
+            line = entityClass.getMethod("setProduct", String.class).invoke(line, "daobab");
+
+            //colCompositeId() groups both key columns, in the declaration order
+            CompositeColumns<?> compositeId = (CompositeColumns<?>) entityClass.getMethod("colCompositeId").invoke(line);
+            assertEquals(2, compositeId.size());
+            assertEquals("ORDER_ID", compositeId.get(0).getColumn().getColumnName());
+            assertEquals("LINE_NUMBER", compositeId.get(1).getColumn().getColumnName());
+
+            //entity equality follows the whole composite key
+            Object sameKey = entityClass.getConstructor().newInstance();
+            sameKey = entityClass.getMethod("setOrderId", Integer.class).invoke(sameKey, 7);
+            sameKey = entityClass.getMethod("setLineNumber", Integer.class).invoke(sameKey, 2);
+            assertEquals(line, sameKey);
+            Object otherKey = entityClass.getMethod("setLineNumber", Integer.class).invoke(sameKey, 3);
+            assertNotEquals(line, otherKey);
+
+            //the entity works with the SQL generation end to end
+            String sql = new MockDataBase().select((Entity) line).toSqlQuery();
+            assertTrue(sql.contains("ORDER_LINE"), "unexpected sql: " + sql);
+            assertTrue(sql.contains("LINE_NUMBER"), "unexpected sql: " + sql);
+
+            //the DTO of a composite key table bases its equality on all the fields, like the generator
+            Class<?> dtoClass = loader.loadClass("apttest.OrderLine");
+            Object dto = entityClass.getMethod("toDto").invoke(line);
+            Object builder = dtoClass.getMethod("builder").invoke(null);
+            builder.getClass().getMethod("orderId", Integer.class).invoke(builder, 7);
+            builder.getClass().getMethod("lineNumber", Integer.class).invoke(builder, 2);
+            builder.getClass().getMethod("product", String.class).invoke(builder, "daobab");
+            assertEquals(dto, builder.getClass().getMethod("build").invoke(builder));
+        }
     }
 
     @Test

@@ -1,8 +1,7 @@
 package io.daobab.generator;
 
 import io.daobab.generator.template.TemplateLanguage;
-import io.daobab.model.DtoTable;
-import io.daobab.model.Entity;
+import io.daobab.model.*;
 import io.daobab.processor.DaobabEntityProcessor;
 import org.junit.jupiter.api.Test;
 
@@ -87,6 +86,62 @@ class JavaDefinitionGenerationTest {
 
             Object entityBack = entityClass.getMethod("fromDto", dtoClass).invoke(null, dto);
             assertEquals("generated", entityClass.getMethod("getDescription").invoke(entityBack));
+        }
+    }
+
+    @Test
+    void compositeKeyDefinitionMarksEveryKeyColumn() throws Exception {
+        //a composite primary key: the definition carries primaryKey = true on every key column and the
+        //annotation processor turns it into a PrimaryCompositeKey entity with the XxxKey interface
+        Path outDir = Files.createTempDirectory("daobab-gen-def-composite-test");
+        Path packageDir = outDir.resolve(BASE_PACKAGE);
+
+        List<GenerateColumn> allColumns = new ArrayList<>();
+        GenerateColumn orderId = column(allColumns, "ORDER_ID", Integer.class, false);
+        GenerateColumn lineNumber = column(allColumns, "LINE_NUMBER", Integer.class, false);
+        GenerateColumn product = column(allColumns, "PRODUCT", String.class, true);
+
+        GenerateTable table = new GenerateTable();
+        table.setTableName("order_line");
+        table.setType("TABLE");
+        table.getColumnList().addAll(allColumns);
+        table.addPrimaryKey(orderId);
+        table.addPrimaryKey(lineNumber);
+        //the column helper records the metadata under the shared MODEL_ITEM table; this table needs its own
+        orderId.getColumnInTableOrCreate("order_line").setColumnSize(10).setNullable("0").setPk(true);
+        lineNumber.getColumnInTableOrCreate("order_line").setColumnSize(10).setNullable("0").setPk(true);
+        product.getColumnInTableOrCreate("order_line").setColumnSize(10).setNullable("1");
+
+        ColumnAnalysator.compileNames(allColumns);
+
+        Writer writer = new Writer(TemplateLanguage.JAVA);
+        writer.generateJavaDefinition(null, null, table, BASE_PACKAGE, packageDir.toString(), true, false);
+
+        Path definitionFile = packageDir.resolve("definition/OrderLineDef.java");
+        assertTrue(Files.exists(definitionFile));
+
+        String definitionSource = Files.readString(definitionFile);
+        assertTrue(definitionSource.contains("@DaobabColumn(name = \"ORDER_ID\", primaryKey = true, size = 10, notNull = true)"), definitionSource);
+        assertTrue(definitionSource.contains("@DaobabColumn(name = \"LINE_NUMBER\", primaryKey = true, size = 10, notNull = true)"), definitionSource);
+
+        Path classesDir = compileWithProcessor(outDir, definitionFile);
+
+        try (URLClassLoader loader = new URLClassLoader(
+                new URL[]{classesDir.toUri().toURL()}, Entity.class.getClassLoader())) {
+
+            Class<?> entityClass = loader.loadClass("gentest.table.OrderLineEntity");
+            Class<?> keyInterface = loader.loadClass("gentest.table.OrderLineKey");
+
+            assertTrue(PrimaryCompositeKey.class.isAssignableFrom(entityClass));
+            assertTrue(Composite.class.isAssignableFrom(keyInterface));
+            assertTrue(keyInterface.isAssignableFrom(entityClass));
+
+            Object line = entityClass.getConstructor().newInstance();
+            line = entityClass.getMethod("setOrderId", Integer.class).invoke(line, 1);
+            line = entityClass.getMethod("setLineNumber", Integer.class).invoke(line, 4);
+
+            CompositeColumns<?> compositeId = (CompositeColumns<?>) entityClass.getMethod("colCompositeId").invoke(line);
+            assertEquals(2, compositeId.size());
         }
     }
 

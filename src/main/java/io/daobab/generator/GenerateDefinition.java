@@ -47,27 +47,22 @@ class GenerateDefinition {
                 "\n\t\tdtoPackage = \"" + dtoPackage + "\"";
     }
 
-    /** The {@code @DaobabColumn} definition methods; a composite primary key is not marked (and warns). */
+    /**
+     * The {@code @DaobabColumn} definition methods; every primary key column (composite too) is marked.
+     */
     private static String getColumnMethods(GenerateTable table) {
-        //the annotation processor does not support composite primary keys
-        boolean markPrimaryKey = table.getPrimaryKeys() != null && table.getPrimaryKeys().size() == 1;
-        if (table.getPrimaryKeys() != null && table.getPrimaryKeys().size() > 1) {
-            System.out.println("Warning: table " + table.getTableName() + " has a composite primary key,"
-                    + " which the annotation processor does not support. The definition is generated without the primary key markers.");
-        }
-
         return table.getColumnList().stream()
-                .map(gc -> getColumnMethod(table, gc, markPrimaryKey))
+                .map(gc -> getColumnMethod(table, gc))
                 .collect(Collectors.joining("\n\n"));
     }
 
     /** One {@code @DaobabColumn(...)} method: the column attributes (name, primaryKey, size/lob, scale, notNull). */
-    private static String getColumnMethod(GenerateTable table, GenerateColumn gc, boolean markPrimaryKey) {
+    private static String getColumnMethod(GenerateTable table, GenerateColumn gc) {
         GeneratedColumnInTable git = gc.getColumnInTableOrCreate(table.getTableName());
 
         List<String> attributes = new ArrayList<>();
         attributes.add("name = \"" + gc.getColumnName() + "\"");
-        if (markPrimaryKey && git.isPk()) {
+        if (git.isPk()) {
             attributes.add("primaryKey = true");
         }
         if (git.getColumnSize() == LOB_SIZE) {

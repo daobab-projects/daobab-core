@@ -120,9 +120,20 @@ optional), `targetPackage()` (default: the annotated element's package). When **
 
 Entities get an `Entity` suffix and extend `DtoTable<E, D>`; a plain-Java immutable DTO with a builder is
 generated (deliberately **no Lombok** — Daobab must not force the dependency), with `toDto()`/`fromDto()`.
-Kotlin path emits a `data class` DTO. TypeScript path unchanged. Composite primary keys are **not** supported
-by the processor (the generator warns and omits PK markers). Reference pattern: `ModelItemEntity`/`ModelItem`
+Kotlin path emits a `data class` DTO. TypeScript path unchanged. Reference pattern: `ModelItemEntity`/`ModelItem`
 in the sibling project `E:\IdeaProjects\item-collector`.
+
+### Composite primary keys (both paths)
+
+Several `primaryKey = true` columns (or a multi-column JDBC PK) produce, in **both** the generator and the
+processor, an extra **`XxxKey` interface** next to the entity: it extends every key column interface plus the
+`Composite<E>` marker, bounds its type parameter (`<E extends Entity & ColA<E> & ColB<E>>`) and groups the key
+columns in `default CompositeColumns<XxxKey<E>> compositeXxxKey()`. The entity then implements
+`XxxKey<Entity>` (first in the list) and `PrimaryCompositeKey<Entity, XxxKey<Entity>>` instead of
+`PrimaryKey`, overriding `colCompositeId()` to return that group. Key naming: base name + `Key`, numeric
+counter on a clash (`Writer.createCompositeKeyName` / processor `compositeKeyName()`). The DTO of a
+composite-key table bases equality on **all fields** (no single id). `GenerateDefinition` marks every key
+column with `primaryKey = true`, so the definitions-only mode round-trips through the processor.
 
 ## Build & test
 

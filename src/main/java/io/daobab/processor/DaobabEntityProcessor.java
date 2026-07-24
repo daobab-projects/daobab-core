@@ -27,7 +27,10 @@ import java.util.*;
  *     <li>a column interface per definition method (reused when a matching interface already exists,
  *     or disambiguated with a type suffix when a column of the same name but a different type shows up),</li>
  *     <li>the entity class (named with the 'Entity' suffix) extending {@code DtoTable}, implementing
- *     the column interfaces and, when a primary key column is marked, the {@code PrimaryKey} interface,</li>
+ *     the column interfaces and, when a primary key column is marked, the {@code PrimaryKey} interface;
+ *     several marked columns form a composite primary key: a {@code XxxKey} interface grouping the key
+ *     columns is generated next to the entity, which implements it together with
+ *     {@code PrimaryCompositeKey} - matching the generator's composite key output,</li>
  *     <li>an immutable DTO class with a builder, connected to the entity by the
  *     {@code toDto()}/{@code fromDto(dto)} conversion methods.</li>
  * </ul>
@@ -174,6 +177,23 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         return sb.toString();
     }
 
+    /**
+     * The {@code TableColumn} builder chain describing one column - shared by the entity's
+     * {@code columns()} body and by the composite key's column group.
+     */
+    private static String tableColumnChain(ColumnModel column) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("new TableColumn(col").append(column.fieldName).append("())");
+        if (column.primaryKey) sb.append(".primaryKey()");
+        if (column.size > 0) sb.append(".size(").append(column.size).append(")");
+        if (column.precision > 0) sb.append(".precision(").append(column.precision).append(")");
+        if (column.scale > 0) sb.append(".scale(").append(column.scale).append(")");
+        if (column.notNull) sb.append(".notNull()");
+        if (column.unique) sb.append(".unique()");
+        if (column.lob) sb.append(".lob()");
+        return sb.toString();
+    }
+
     private void writeSources(EntityContext context) throws IOException {
         for (ColumnModel column : context.columns) {
             if (!ensureColumnInterface(context.definition, context.columnPackage, column)) {
@@ -181,12 +201,18 @@ public class DaobabEntityProcessor extends AbstractProcessor {
             }
         }
 
+        //after the column names are resolved, so the key interface uses the disambiguated names
+        if (context.compositeKeyName != null) {
+            writeCompositeKey(context);
+        }
+
         if (context.generateDto) {
             writeDto(context.definition, context.dtoPackage, context.dtoName, context.columns);
         }
 
         writeEntity(context.definition, context.entityPackage, context.columnPackage, context.entityName,
-                context.tableName, context.columns, context.generateDto, context.dtoPackage, context.dtoName);
+                context.tableName, context.columns, context.generateDto, context.dtoPackage, context.dtoName,
+                context.compositeKeyName);
     }
 
     @Override
@@ -194,58 +220,20 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         return Set.of(DaobabTable.class.getName(), DaobabDataBase.class.getName());
     }
 
-    @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        List<EntityContext> contexts = new ArrayList<>();
-        //all the @DaobabTable definitions of the round indexed by package, so a @DaobabDataBase can
-        //pick up a whole package by name instead of listing every definition class
-        Map<String, List<TypeElement>> definitionsByPackage = new LinkedHashMap<>();
-        for (Element element : roundEnv.getElementsAnnotatedWith(DaobabTable.class)) {
-            if (element.getKind() != ElementKind.INTERFACE) {
-                error(element, "@DaobabTable may annotate an interface only");
-                continue;
-            }
-            TypeElement definition = (TypeElement) element;
-            String definitionPackage = processingEnv.getElementUtils().getPackageOf(definition).getQualifiedName().toString();
-            definitionsByPackage.computeIfAbsent(definitionPackage, k -> new ArrayList<>()).add(definition);
-            EntityContext context = prepare(definition);
-            if (context != null) {
-                contexts.add(context);
-            }
+    /**
+     * A free name for the composite key interface: the entity base name with the 'Key' suffix, plus a
+     * numeric counter when the name is already taken - the same naming rule the generator applies.
+     */
+    private String compositeKeyName(EntityContext context, Set<String> reservedNames) {
+        String base = stripEntitySuffix(context.entityName) + "Key";
+        String candidate = base;
+        int counter = 0;
+        while (reservedNames.contains(context.entityPackage + "." + candidate)
+                || processingEnv.getElementUtils().getTypeElement(context.entityPackage + "." + candidate) != null) {
+            counter++;
+            candidate = base + counter;
         }
-
-        //collect the column usage across all the definitions first, so each column interface can be
-        //documented with every table it appears in, together with its type and its size
-        columnUsage.clear();
-        for (EntityContext context : contexts) {
-            for (ColumnModel column : context.columns) {
-                columnUsage.computeIfAbsent(usageKey(context.columnPackage, column.fieldName, column.fieldType),
-                                k -> new ArrayList<>())
-                        .add(new ColumnUsage(context.tableName, column.fieldType, column.size, column.notNull, column.lob));
-            }
-        }
-
-        for (EntityContext context : contexts) {
-            try {
-                writeSources(context);
-            } catch (IOException e) {
-                error(context.definition, "Cannot write a generated source: " + e.getMessage());
-            }
-        }
-
-        //assemble the database interfaces gathering every entity of a @DaobabDataBase into one place
-        for (Element element : roundEnv.getElementsAnnotatedWith(DaobabDataBase.class)) {
-            if (element.getKind() != ElementKind.INTERFACE && element.getKind() != ElementKind.CLASS) {
-                error(element, "@DaobabDataBase may annotate a type only");
-                continue;
-            }
-            try {
-                writeTablesInterface((TypeElement) element, definitionsByPackage);
-            } catch (IOException e) {
-                error(element, "Cannot write a generated source: " + e.getMessage());
-            }
-        }
-        return true;
+        return candidate;
     }
 
     /**
@@ -294,11 +282,6 @@ public class DaobabEntityProcessor extends AbstractProcessor {
             error(definition, "The definition has no column methods");
             return null;
         }
-        if (columns.stream().filter(c -> c.primaryKey).count() > 1) {
-            error(definition, "Composite primary keys are not supported: mark at most one column with primaryKey = true");
-            return null;
-        }
-
         EntityContext context = new EntityContext();
         context.definition = definition;
         context.entityPackage = entityPackage;
@@ -614,11 +597,126 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         writeSource(columnPackage + "." + name, sb.toString(), definition);
     }
 
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        List<EntityContext> contexts = new ArrayList<>();
+        //all the @DaobabTable definitions of the round indexed by package, so a @DaobabDataBase can
+        //pick up a whole package by name instead of listing every definition class
+        Map<String, List<TypeElement>> definitionsByPackage = new LinkedHashMap<>();
+        for (Element element : roundEnv.getElementsAnnotatedWith(DaobabTable.class)) {
+            if (element.getKind() != ElementKind.INTERFACE) {
+                error(element, "@DaobabTable may annotate an interface only");
+                continue;
+            }
+            TypeElement definition = (TypeElement) element;
+            String definitionPackage = processingEnv.getElementUtils().getPackageOf(definition).getQualifiedName().toString();
+            definitionsByPackage.computeIfAbsent(definitionPackage, k -> new ArrayList<>()).add(definition);
+            EntityContext context = prepare(definition);
+            if (context != null) {
+                contexts.add(context);
+            }
+        }
+
+        //collect the column usage across all the definitions first, so each column interface can be
+        //documented with every table it appears in, together with its type and its size
+        columnUsage.clear();
+        for (EntityContext context : contexts) {
+            for (ColumnModel column : context.columns) {
+                columnUsage.computeIfAbsent(usageKey(context.columnPackage, column.fieldName, column.fieldType),
+                                k -> new ArrayList<>())
+                        .add(new ColumnUsage(context.tableName, column.fieldType, column.size, column.notNull, column.lob));
+            }
+        }
+
+        //name the composite key interface of every definition with a multi-column primary key,
+        //avoiding every type this compilation generates or compiles
+        Set<String> reservedNames = new HashSet<>();
+        for (EntityContext context : contexts) {
+            reservedNames.add(context.entityPackage + "." + context.entityName);
+            reservedNames.add(context.definition.getQualifiedName().toString());
+            if (context.generateDto) {
+                reservedNames.add(context.dtoPackage + "." + context.dtoName);
+            }
+        }
+        for (EntityContext context : contexts) {
+            if (context.columns.stream().filter(c -> c.primaryKey).count() > 1) {
+                context.compositeKeyName = compositeKeyName(context, reservedNames);
+                reservedNames.add(context.entityPackage + "." + context.compositeKeyName);
+            }
+        }
+
+        for (EntityContext context : contexts) {
+            try {
+                writeSources(context);
+            } catch (IOException e) {
+                error(context.definition, "Cannot write a generated source: " + e.getMessage());
+            }
+        }
+
+        //assemble the database interfaces gathering every entity of a @DaobabDataBase into one place
+        for (Element element : roundEnv.getElementsAnnotatedWith(DaobabDataBase.class)) {
+            if (element.getKind() != ElementKind.INTERFACE && element.getKind() != ElementKind.CLASS) {
+                error(element, "@DaobabDataBase may annotate a type only");
+                continue;
+            }
+            try {
+                writeTablesInterface((TypeElement) element, definitionsByPackage);
+            } catch (IOException e) {
+                error(element, "Cannot write a generated source: " + e.getMessage());
+            }
+        }
+        return true;
+    }
+
+    /**
+     * The composite key interface of a definition with a multi-column primary key - the counterpart of
+     * the {@code XxxKey} interface the generator emits. It extends every key column interface (so its
+     * default method reaches the {@code col...()} accessors) plus the {@code Composite} marker, and
+     * groups the key columns in {@code compositeXxxKey()}; the entity implements it and returns the
+     * group from {@code colCompositeId()}.
+     */
+    private void writeCompositeKey(EntityContext context) throws IOException {
+        String keyName = context.compositeKeyName;
+        List<ColumnModel> keyColumns = context.columns.stream().filter(c -> c.primaryKey).toList();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("package ").append(context.entityPackage).append(";\n\n");
+        for (ColumnModel column : keyColumns) {
+            sb.append("import ").append(context.columnPackage).append(".").append(column.fieldName).append(";\n");
+        }
+        sb.append("import io.daobab.model.*;\n\n");
+
+        sb.append("@SuppressWarnings({\"rawtypes\", \"unused\"})\n");
+        sb.append("public interface ").append(keyName).append("<E extends Entity");
+        for (ColumnModel column : keyColumns) {
+            sb.append(" & ").append(column.fieldName).append("<E>");
+        }
+        sb.append("> extends\n");
+        for (ColumnModel column : keyColumns) {
+            sb.append("\t\t").append(column.fieldName).append("<E>,\n");
+        }
+        sb.append("\t\tComposite<E> {\n\n");
+
+        sb.append("\tdefault CompositeColumns<").append(keyName).append("<E>> composite").append(keyName).append("() {\n");
+        sb.append("\t\treturn new CompositeColumns<>(\n");
+        for (int i = 0; i < keyColumns.size(); i++) {
+            sb.append("\t\t\t\t").append(tableColumnChain(keyColumns.get(i)));
+            sb.append(i < keyColumns.size() - 1 ? ",\n" : ");\n");
+        }
+        sb.append("\t}\n");
+        sb.append("}\n");
+
+        writeSource(context.entityPackage + "." + keyName, sb.toString(), context.definition);
+    }
+
     private void writeEntity(TypeElement definition, String entityPackage, String columnPackage,
                              String entityName, String tableName, List<ColumnModel> columns,
-                             boolean generateDto, String dtoPackage, String dtoName) throws IOException {
+                             boolean generateDto, String dtoPackage, String dtoName,
+                             String compositeKeyName) throws IOException {
 
-        ColumnModel pk = columns.stream().filter(c -> c.primaryKey).findFirst().orElse(null);
+        List<ColumnModel> pkColumns = columns.stream().filter(c -> c.primaryKey).toList();
+        ColumnModel pk = pkColumns.size() == 1 ? pkColumns.get(0) : null;
+        boolean compositePk = pkColumns.size() > 1;
 
         //the column interfaces are imported by their simple names, so a DTO of the same name has to stay fully qualified
         boolean dtoNameCollides = columns.stream().anyMatch(c -> c.fieldName.equals(dtoName));
@@ -645,11 +743,18 @@ public class DaobabEntityProcessor extends AbstractProcessor {
             sb.append("Table<").append(entityName).append(">");
         }
         sb.append(" implements\n");
+        if (compositePk) {
+            //the composite key interface leads the list, the way the generator wires it
+            sb.append("\t\t").append(compositeKeyName).append("<").append(entityName).append(">,\n");
+        }
         for (ColumnModel column : columns) {
             sb.append("\t\t").append(column.fieldName).append("<").append(entityName).append(">,\n");
         }
         if (pk != null) {
             sb.append("\t\tPrimaryKey<").append(entityName).append(", ").append(pk.fieldType).append(", ").append(pk.fieldName).append("> {\n\n");
+        } else if (compositePk) {
+            sb.append("\t\tPrimaryCompositeKey<").append(entityName).append(", ").append(compositeKeyName)
+                    .append("<").append(entityName).append(">> {\n\n");
         } else {
             //no primary key: close the implements list on the last column interface
             sb.setLength(sb.length() - 2);
@@ -681,15 +786,7 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         sb.append("\t\treturn DaobabCache.getTableColumns(this,\n");
         sb.append("\t\t\t\t() -> Arrays.asList(\n");
         for (int i = 0; i < columns.size(); i++) {
-            ColumnModel column = columns.get(i);
-            sb.append("\t\t\t\t\t\tnew TableColumn(col").append(column.fieldName).append("())");
-            if (column.primaryKey) sb.append(".primaryKey()");
-            if (column.size > 0) sb.append(".size(").append(column.size).append(")");
-            if (column.precision > 0) sb.append(".precision(").append(column.precision).append(")");
-            if (column.scale > 0) sb.append(".scale(").append(column.scale).append(")");
-            if (column.notNull) sb.append(".notNull()");
-            if (column.unique) sb.append(".unique()");
-            if (column.lob) sb.append(".lob()");
+            sb.append("\t\t\t\t\t\t").append(tableColumnChain(columns.get(i)));
             sb.append(i < columns.size() - 1 ? ",\n" : "\n");
         }
         sb.append("\t\t\t\t));\n");
@@ -712,6 +809,35 @@ public class DaobabEntityProcessor extends AbstractProcessor {
             sb.append("\t\tPrimaryKey<?, ?, ?> other = (PrimaryKey<?, ?, ?>) obj;\n");
             sb.append("\t\treturn Objects.equals(getId(), other.getId());\n");
             sb.append("\t}\n");
+        } else if (compositePk) {
+            sb.append("\n\t@Override\n");
+            sb.append("\tpublic CompositeColumns<").append(compositeKeyName).append("<").append(entityName).append(">> colCompositeId() {\n");
+            sb.append("\t\treturn composite").append(compositeKeyName).append("();\n");
+            sb.append("\t}\n");
+            //equality on the whole composite key, mirroring the single-column primary key above
+            sb.append("\n\t@Override\n");
+            sb.append("\tpublic int hashCode() {\n");
+            sb.append("\t\treturn Objects.hash(");
+            for (int i = 0; i < pkColumns.size(); i++) {
+                sb.append("get").append(pkColumns.get(i).fieldName).append("()");
+                if (i < pkColumns.size() - 1) sb.append(", ");
+            }
+            sb.append(");\n");
+            sb.append("\t}\n");
+            sb.append("\n\t@Override\n");
+            sb.append("\tpublic boolean equals(Object obj) {\n");
+            sb.append("\t\tif (this == obj) return true;\n");
+            sb.append("\t\tif (obj == null) return false;\n");
+            sb.append("\t\tif (getClass() != obj.getClass()) return false;\n");
+            sb.append("\t\t").append(entityName).append(" other = (").append(entityName).append(") obj;\n");
+            sb.append("\t\treturn ");
+            for (int i = 0; i < pkColumns.size(); i++) {
+                ColumnModel keyColumn = pkColumns.get(i);
+                sb.append("Objects.equals(get").append(keyColumn.fieldName).append("(), other.get").append(keyColumn.fieldName).append("())");
+                if (i < pkColumns.size() - 1) sb.append("\n\t\t\t\t&& ");
+            }
+            sb.append(";\n");
+            sb.append("\t}\n");
         }
         sb.append("}\n");
 
@@ -723,7 +849,9 @@ public class DaobabEntityProcessor extends AbstractProcessor {
      * and equality based on the primary key (or on all the fields when there is no primary key).
      */
     private void writeDto(TypeElement definition, String dtoPackage, String dtoName, List<ColumnModel> columns) throws IOException {
-        ColumnModel pk = columns.stream().filter(c -> c.primaryKey).findFirst().orElse(null);
+        //equality on the single primary key; a composite key (or none) falls back to all the fields, like the generator
+        List<ColumnModel> pkColumns = columns.stream().filter(c -> c.primaryKey).toList();
+        ColumnModel pk = pkColumns.size() == 1 ? pkColumns.get(0) : null;
 
         StringBuilder sb = new StringBuilder();
         sb.append("package ").append(dtoPackage).append(";\n\n");
@@ -892,5 +1020,9 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         boolean generateDto;
         String dtoPackage;
         String dtoName;
+        /**
+         * The composite key interface name; {@code null} unless the primary key spans several columns.
+         */
+        String compositeKeyName;
     }
 }
