@@ -6,22 +6,27 @@ import io.daobab.error.AttemptToWriteIntoNullEntityException;
 import java.util.Objects;
 
 /**
+ * Mixes in the {@code DUMMY} (VARCHAR) column - the single scratch column carried by pseudo-tables such as
+ * {@link Dual}.
+ *
+ * @param <E> the entity type
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface Dummy<E extends Entity> extends RelatedTo<E>, MapHandler<E>, Entity {
 
     /**
-     * db name: DUMMY,
-     * db type: VARCHAR
+     * The dummy value.
      */
     default String getDummy() {
         return readParam("Dummy");
     }
 
+    /** Sets the dummy value, returning a new entity. */
     default E setDummy(String val) {
         return storeParam("Dummy", val);
     }
 
+    /** The {@code DUMMY} column handle. */
     @SuppressWarnings("rawtypes")
     default Column<E, String, Dummy> colDummy() {
         return new Column<E, String, Dummy>() {

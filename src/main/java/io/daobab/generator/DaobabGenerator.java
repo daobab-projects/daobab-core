@@ -22,6 +22,14 @@ import static io.daobab.generator.GenerateFormatter.decapitalize;
 import static java.lang.String.join;
 
 /**
+ * The runtime code generator: it reverse-engineers a database through the JDBC {@code DatabaseMetaData} and
+ * writes the Daobab sources - entities, shared column interfaces, DTOs, composite keys and the target/tables
+ * classes - via the {@link Writer} and the language templates. What and how to generate (language, catalog/schema
+ * filters, type overrides, output path/package) is set with the fluent {@code enableXxx}/{@code generateOnlyXxx}
+ * methods and the {@code GENERATOR_*} properties. In "definitions only" mode it emits the {@code @DaobabTable}
+ * definition interfaces instead, leaving the entity/column/DTO generation to the annotation processor. The entry
+ * points are the {@code reverseEngineering} overloads.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"java:S106", "java:S1192", "java:S1144", "unused"})
@@ -54,18 +62,24 @@ public class DaobabGenerator {
 
     }
 
+    /**
+     * Sets the target language of the generated sources.
+     */
     public void setLanguage(TemplateLanguage language) {
         this.language = language;
     }
 
+    /** Whether the schema is prefixed into the generated table name. */
     public boolean isSchemaIntoTableName() {
         return schemaIntoTableName;
     }
 
+    /** Sets whether the schema is prefixed into the generated table name. */
     public void setSchemaIntoTableName(boolean enable) {
         schemaIntoTableName = enable;
     }
 
+    /** Reverse-engineers the database reached by the JDBC url/user/password (registering {@code driver} first). */
     public void reverseEngineering(String url, String user, String pass, Class<? extends Driver> driver) {
 
         Connection connection = null;
@@ -109,6 +123,7 @@ public class DaobabGenerator {
         setPath(sb.toString());
     }
 
+    /** Reverse-engineers the database reached by the given {@link DataSource}. */
     public void reverseEngineering(DataSource ds) {
         Connection connection = null;
         try {
@@ -126,6 +141,7 @@ public class DaobabGenerator {
         }
     }
 
+    /** Copies the given database meta data onto itself (a no-op placeholder overload). */
     public void reverseEngineering(DaobabDataBaseMetaData rv) {
         rv.setDatabaseMajorVersion(rv.getDatabaseMajorVersion());
         rv.setDatabaseProductName(rv.getDatabaseProductName());
@@ -134,6 +150,7 @@ public class DaobabGenerator {
         rv.setMaxConnections(rv.getMaxConnections());
     }
 
+    /** Connects and prints the reachable catalogs/schemas - a diagnostic to verify the connection and access. */
     public void checkConnection(String url, String user, String pass, Class<? extends Driver> driver) {
         Connection connection = null;
         Driver driverInstance;
@@ -198,6 +215,7 @@ public class DaobabGenerator {
         }
     }
 
+    /** Generates every allowed catalog and schema of the metadata. */
     private void createTables(DatabaseMetaData metaData) {
         List<String> catalogs = getCatalogues(metaData);
         for (String cat : catalogs) {
@@ -211,6 +229,7 @@ public class DaobabGenerator {
         }
     }
 
+    /** Reads the tables/columns of one catalog+schema, resolves the column names and writes all the artifacts. */
     private List<GenerateTable> createTables(DatabaseMetaData meta, String catalog, String schema) {
         Writer writer = new Writer(language);
         writer.setGenerateDtos(generateDtos);
@@ -275,6 +294,7 @@ public class DaobabGenerator {
         return allTables;
     }
 
+    /** Fills a column's field name, field class, interface name and package (under {@code <base>.column}). */
     private void prepareColumn(String tableName, String catalog, String schema, GenerateColumn column) {
         if (column == null) return;
         String interfaceName = GenerateFormatter.toCamelCase(column.getColumnName());
@@ -292,6 +312,7 @@ public class DaobabGenerator {
 
     }
 
+    /** The output directory (mandatory). */
     @SuppressWarnings("java:S112")
     public String getPath() {
         if (filePath == null || filePath.trim().isEmpty())
@@ -300,10 +321,12 @@ public class DaobabGenerator {
         return filePath;
     }
 
+    /** Sets the output directory. */
     public void setPath(String fileDirectoryPath) {
         this.filePath = fileDirectoryPath;
     }
 
+    /** The root Java package of the generated sources (mandatory). */
     @SuppressWarnings("java:S112")
     public String getPackage() {
         if (javaPackage == null || javaPackage.trim().isEmpty()) {
@@ -313,18 +336,22 @@ public class DaobabGenerator {
         return javaPackage;
     }
 
+    /** Sets the root Java package. */
     public void setPackage(String javaPackage) {
         this.javaPackage = javaPackage;
     }
 
+    /** Whether existing files are overwritten. */
     public boolean isOverride() {
         return override;
     }
 
+    /** Sets whether existing files are overwritten. */
     public void setOverride(boolean override) {
         this.override = override;
     }
 
+    /** Reuses an existing column of the same name and type (recording the table usage), or creates a new one. */
     private GenerateColumn getUniqueColumn(List<GenerateColumn> allColumns, String tableName, String columnName, int datatype, String size, String digits) {
         for (GenerateColumn g : allColumns) {
             if (columnName.equalsIgnoreCase(g.getColumnName()) && typeConverter.convert(tableName, columnName, datatype, ParserString.toInteger(size), ParserString.toInteger(digits)).equals(g.getFieldClass())) {
@@ -341,6 +368,7 @@ public class DaobabGenerator {
         return rv;
     }
 
+    /** The catalogs the metadata exposes, filtered by the {@code catalogues} allow-list. */
     private List<String> getCatalogues(DatabaseMetaData meta) {
         List<String> rv = new ArrayList<>();
         try {
@@ -357,6 +385,7 @@ public class DaobabGenerator {
         return rv;
     }
 
+    /** Whether {@code str} is in {@code array}; a {@code null}/empty array passes everything. */
     private boolean arrayContains(String[] array, String str) {
         if (array == null || array.length == 0) return true; //all pass
         for (String arrstr : array) {
@@ -372,6 +401,7 @@ public class DaobabGenerator {
     }
 
 
+    /** The schemas of the catalog, filtered by the {@code schemas} allow-list. */
     private List<String> getSchemas(DatabaseMetaData meta, String catalog) {
         List<String> rv = new ArrayList<>();
         try {
@@ -388,6 +418,7 @@ public class DaobabGenerator {
         return rv;
     }
 
+    /** Reads the tables and their columns/primary keys of a catalog+schema from the metadata. */
     @SuppressWarnings("java:S3776")
     private List<GenerateTable> getTablesFromDB(DatabaseMetaData meta, String catalog, String schema, List<GenerateColumn> allColumns) {
 
@@ -470,6 +501,7 @@ public class DaobabGenerator {
         return "(" + size + ")";
     }
 
+    /** Whether the table passes the {@code generateOnlyTables} allow-list (empty list allows all). */
     private boolean isTableAllowedToGenerate(String tableName) {
         if (tableName == null) return false;
         if (onlyAllowedTables.isEmpty()) return true;
@@ -480,6 +512,7 @@ public class DaobabGenerator {
         return schemas;
     }
 
+    /** Restricts generation to the given schemas. */
     public DaobabGenerator generateOnlyForSchemas(String... schemas) {
         this.schemas = schemas;
         return this;
@@ -489,6 +522,7 @@ public class DaobabGenerator {
         return catalogues;
     }
 
+    /** Restricts generation to the given catalogs. */
     public DaobabGenerator generateOnlyForCatalogues(String... catalogues) {
         this.catalogues = catalogues;
         return this;
@@ -498,6 +532,7 @@ public class DaobabGenerator {
         return generateTables;
     }
 
+    /** Enables or disables generating tables. */
     public DaobabGenerator enableTablesGeneration(boolean generateTables) {
         this.generateTables = generateTables;
         return this;
@@ -507,29 +542,35 @@ public class DaobabGenerator {
         return generateViews;
     }
 
+    /** Enables or disables generating views. */
     public DaobabGenerator enableViewGeneration(boolean generateViews) {
         this.generateViews = generateViews;
         return this;
     }
 
+    /** Whether column-interface generation is enabled. */
     public boolean isEnabledColumnsGeneration() {
         return generateColumns;
     }
 
+    /** Enables or disables generating the shared column interfaces. */
     public DaobabGenerator enableColumnsGeneration(boolean generateColumns) {
         this.generateColumns = generateColumns;
         return this;
     }
 
+    /** Whether DTO generation is enabled. */
     public boolean isEnabledDtoGeneration() {
         return generateDtos;
     }
 
+    /** Enables or disables generating the DTOs. */
     public DaobabGenerator enableDtoGeneration(boolean generateDtos) {
         this.generateDtos = generateDtos;
         return this;
     }
 
+    /** Whether "definitions only" generation is enabled. */
     public boolean isEnabledDefinitionsOnlyGeneration() {
         return generateDefinitionsOnly;
     }
@@ -546,6 +587,7 @@ public class DaobabGenerator {
     }
 
 
+    /** Prints the run summary (ordered catalogs/schemas/tables, settings and the generated counts). */
     private void summary(long startTime) {
         long stopTime = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("ss.SSS");
@@ -572,10 +614,12 @@ public class DaobabGenerator {
         System.out.println("---------------------------------------------------------");
     }
 
+    /** Generates a single column interface from its database name, JDBC type and Java type. */
     public void generateSingleColumn(String schema, String databaseColumnName, JdbcType jdbcType, Class<?> javaType) {
         generateSingleColumn(null, schema, databaseColumnName, null, jdbcType, javaType);
     }
 
+    /** Generates a single column interface with an explicit class name and package (catalog/schema). */
     public void generateSingleColumn(String catalog, String schema, String databaseColumnName, String javaClassName, JdbcType jdbcType, final Class<?> javaType) {
         GenerateColumn column = new GenerateColumn();
         column.setColumnName(databaseColumnName);
@@ -593,17 +637,20 @@ public class DaobabGenerator {
         writer.generateJavaColumn(catalog, schema, column, getPath(), isOverride());
     }
 
+    /** Restricts generation to the named tables. */
     public void generateOnlyTables(String... onlyAllowedTables) {
         if (onlyAllowedTables == null) return;
         this.onlyAllowedTables.addAll(Arrays.asList(onlyAllowedTables));
     }
 
 
+    /** Forces the Java type for a specific {@code table.column}. */
     public DaobabGenerator setEnforcedTypeFor(final String tableName, final String columnName, final Class<?> enforcedType) {
         typeConverter.setEnforcedTypeFor(tableName, columnName, enforcedType);
         return this;
     }
 
+    /** Overrides the Java type mapped to a JDBC type globally. */
     public DaobabGenerator setGeneralConversionFor(int jdbcType, final Class<?> enforcedType) {
         typeConverter.setGeneralConversionFor(jdbcType, enforcedType);
         return this;

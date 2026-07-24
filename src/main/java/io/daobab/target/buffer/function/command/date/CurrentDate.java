@@ -12,10 +12,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The {@code CURRENT_DATE} function: sets the current date on each row.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class CurrentDate extends BufferFunction<Object> {
 
+    /**
+     * Sets the current date as the function's value on each row.
+     */
     @SuppressWarnings("rawtypes")
     protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Plates rv = getClonedPlates(plates, false);
@@ -26,6 +31,7 @@ public class CurrentDate extends BufferFunction<Object> {
         return rv;
     }
 
+    /** The current date for each field value ({@code null} preserved). */
     @SuppressWarnings("rawtypes")
     @Override
     protected List<Object> applyOnFields(Map<String, BufferFunction> manager, List<?> fields, ColumnFunction<?, ?, ?, ?> function) {
@@ -41,6 +47,7 @@ public class CurrentDate extends BufferFunction<Object> {
         return rv;
     }
 
+    /** {@inheritDoc} {@link FunctionType#NORMAL}. */
     @Override
     public FunctionType getType() {
         return FunctionType.NORMAL;

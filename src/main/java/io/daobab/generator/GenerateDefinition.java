@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 import static io.daobab.generator.GenerateFormatter.decapitalize;
 
 /**
- * Builds the annotated definition interface for a table - the input for the daobab annotation processor.
- * Instead of ready entities, the generator may produce such definitions only and leave
- * the entity, column and DTO generation to the compilation.
+ * Builds the annotated {@code @DaobabTable} definition interface for a table - the input for the daobab
+ * annotation processor. In its "definitions only" mode the generator emits such definitions instead of ready
+ * entities, and leaves the entity, column and DTO generation to the compilation.
  *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
@@ -25,6 +25,9 @@ class GenerateDefinition {
     private GenerateDefinition() {
     }
 
+    /**
+     * The full definition-interface source, filling the definition template.
+     */
     static String getDefinitionContent(GenerateTable table, String tableName, String definitionPackage, String definitionName,
                                        String entityPackage, String columnPackage, String dtoPackage) {
         return new Replacer()
@@ -37,12 +40,14 @@ class GenerateDefinition {
                 .replaceAll(TemplateProvider.getTemplate(TemplateLanguage.JAVA, TemplateType.DEFINITION_INTERFACE));
     }
 
+    /** The {@code @DaobabTable} entity/column/dto package attributes. */
     private static String getTableAttributes(String entityPackage, String columnPackage, String dtoPackage) {
         return ",\n\t\tentityPackage = \"" + entityPackage + "\"," +
                 "\n\t\tcolumnPackage = \"" + columnPackage + "\"," +
                 "\n\t\tdtoPackage = \"" + dtoPackage + "\"";
     }
 
+    /** The {@code @DaobabColumn} definition methods; a composite primary key is not marked (and warns). */
     private static String getColumnMethods(GenerateTable table) {
         //the annotation processor does not support composite primary keys
         boolean markPrimaryKey = table.getPrimaryKeys() != null && table.getPrimaryKeys().size() == 1;
@@ -56,6 +61,7 @@ class GenerateDefinition {
                 .collect(Collectors.joining("\n\n"));
     }
 
+    /** One {@code @DaobabColumn(...)} method: the column attributes (name, primaryKey, size/lob, scale, notNull). */
     private static String getColumnMethod(GenerateTable table, GenerateColumn gc, boolean markPrimaryKey) {
         GeneratedColumnInTable git = gc.getColumnInTableOrCreate(table.getTableName());
 

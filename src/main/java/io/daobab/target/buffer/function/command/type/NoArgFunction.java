@@ -7,20 +7,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A {@link BufferFunction} that takes no argument - a no-op placeholder whose {@code applyOn*} methods return
+ * {@code null}.
+ *
+ * @param <F> the value type
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class NoArgFunction<F> extends BufferFunction<F> {
 
+    /**
+     * {@inheritDoc} Returns {@code null}.
+     */
     @Override
     protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         return null;
     }
 
+    /** {@inheritDoc} Returns {@code null}. */
     @Override
     protected final List<Object> applyOnFields(Map<String, BufferFunction> manager, List<?> fields, ColumnFunction<?, ?, ?, ?> function) {
         return null;
     }
 
+    /** {@inheritDoc} Returns {@code null}. */
     @Override
     public FunctionType getType() {
         return null;

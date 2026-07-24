@@ -14,11 +14,28 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
+ * Writes a generated source file to disk under {@code path/catalog/schema/subfolder}, creating the directory
+ * tree, using the language's file extension and honoring the {@code override} flag - an existing file is skipped
+ * (with a console message) unless overriding is requested.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface SaveGenerated {
 
 
+    /**
+     * Writes {@code fileContent} to {@code path/catalog/schema/subfolder/filename.ext} (UTF-8).
+     *
+     * @param fileContent the source to write
+     * @param fpath       the base output path
+     * @param catalog     the database catalog (becomes a sub-directory)
+     * @param schema      the database schema (becomes a sub-directory)
+     * @param subfolder   an optional extra sub-directory (e.g. {@code column})
+     * @param filename    the file name (without extension)
+     * @param type        the target language (decides the extension)
+     * @param override    whether to overwrite an existing file
+     * @throws DaobabException when {@code type} is {@code null}
+     */
     static void saveGeneratedTo(String fileContent, String fpath, String catalog, String schema, String subfolder, String filename, TemplateLanguage type, boolean override) {
         if (type == null) throw new DaobabException("File type must be provided");
 

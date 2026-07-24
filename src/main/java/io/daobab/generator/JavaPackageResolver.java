@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * Builds the Java package of the generated sources from the base package plus the database catalog and schema:
+ * it lower-cases them and appends a {@code _catalog} / {@code _schema} suffix when the name collides with a Java
+ * keyword, a Daobab keyword or a Windows-reserved name. The {@code %} wildcard and blanks are ignored.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class JavaPackageResolver {
@@ -31,6 +35,9 @@ public class JavaPackageResolver {
     private JavaPackageResolver() {
     }
 
+    /**
+     * The full package: {@code jpackage[.catalog][.schema]}.
+     */
     public static StringBuilder resolve(String jpackage, String catalog, String schema) {
 
         StringBuilder sb = new StringBuilder();
@@ -51,6 +58,7 @@ public class JavaPackageResolver {
         return sb;
     }
 
+    /** The catalog package segment (empty for a blank/wildcard catalog), suffixed on a reserved-name clash. */
     public static StringBuilder resolveCatalog(String catalog) {
         StringBuilder sb = new StringBuilder();
         if (catalog != null && !catalog.trim().isEmpty() && !"%".equals(catalog)) {
@@ -64,6 +72,7 @@ public class JavaPackageResolver {
         return sb;
     }
 
+    /** The schema package segment (empty for a blank/wildcard schema), suffixed on a reserved-name clash. */
     public static StringBuilder resolveSchema(String schema) {
         StringBuilder sb = new StringBuilder();
         if (schema != null && !schema.trim().isEmpty() && !"%".equals(schema)) {

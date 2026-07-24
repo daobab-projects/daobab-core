@@ -12,11 +12,25 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 /**
+ * Optimistic concurrency for an entity with a {@link PrimaryKey}: {@link #handleOCC} verifies no newer version of
+ * the row exists (by comparing the {@link #getOCCColumn() version column}) and then bumps the version - a number
+ * incremented by one, or the current timestamp/date for a temporal column. The {@code PrimaryKey.update} methods
+ * call it automatically when the entity implements this interface.
+ *
+ * @param <E> the entity type (a {@link PrimaryKey})
+ * @param <F> the version column type
+ * @param <R> the relation type
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKey<E, ?, ?>, F, R extends RelatedTo> extends OptimisticConcurrencyIndicator<E>, ParserGeneral {
 
+    /**
+     * Verifies no newer version of the row exists and bumps the version column, returning the entity with the
+     * new version set.
+     *
+     * @throws DaobabException on a concurrency conflict, or when the version column is neither a number nor a date
+     */
     @Override
     default E handleOCC(QueryTarget target, E entityToUpdate) {
         if (target == null) throw new MandatoryTargetException();
@@ -73,6 +87,9 @@ public interface OptimisticConcurrencyForPrimaryKey<E extends Entity & PrimaryKe
         return (E) getOCCColumn().setValue((R) entityToUpdate, (F) val);
     }
 
+    /**
+     * The version (optimistic-concurrency) column.
+     */
     Column<E, F, R> getOCCColumn();
 
 }

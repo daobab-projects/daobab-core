@@ -12,10 +12,15 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
+ * The {@code LOWER} function: lower-cases the string column of each row.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class Lower extends BufferFunction<String> {
 
+    /**
+     * Lower-cases the column value of each row.
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Plates rv = getClonedPlates(plates, false);
@@ -28,6 +33,7 @@ public class Lower extends BufferFunction<String> {
         return rv;
     }
 
+    /** Lower-cases each field value ({@code null} preserved). */
     @SuppressWarnings("rawtypes")
     @Override
     protected List<Object> applyOnFields(Map<String, BufferFunction> manager, List<?> fields, ColumnFunction<?, ?, ?, ?> function) {
@@ -42,6 +48,7 @@ public class Lower extends BufferFunction<String> {
         return rv;
     }
 
+    /** {@inheritDoc} {@link FunctionType#NORMAL}. */
     @Override
     public FunctionType getType() {
         return FunctionType.NORMAL;

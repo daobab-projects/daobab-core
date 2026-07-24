@@ -14,19 +14,31 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * Computes the joins connecting a set of source entities to a set of destination entities automatically - the
+ * engine behind {@code smartJoins()} / {@code joinRoute()} / {@code joinThrough()}.
+ * <p>
+ * It builds a graph of the target's entities, adding an edge between two tables whenever they share a column of
+ * the same name and type and at least one side is that table's primary key (a FK↔PK link), then runs Dijkstra's
+ * shortest path to turn every source→destination route into a chain of {@link JoinWrapper}s.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("rawtypes")
 public class JoinTracker {
 
+    /**
+     * Computes the joins linking the source points to the destinations (alias of {@link #calculateJoins}).
+     */
     public static List<JoinWrapper> calculateRoute(Target target, List<Entity> bunch, Collection<String> sourcePoints, Set<String> destinations, List<JoinWrapper> alreadyDefinedJoins) {
         return calculateJoins(target, bunch, sourcePoints, destinations, alreadyDefinedJoins);
     }
 
+    /** Computes the joins linking the named source entities to the destinations, keeping the already defined ones. */
     public static List<JoinWrapper> calculateJoins(Target target, List<Entity> bunch, Collection<String> sourcePoints, Set<String> destinations, List<JoinWrapper> alreadyDefinedJoins) {
         return calculateJoins(target, bunch, getEntities(target, sourcePoints, bunch), destinations, alreadyDefinedJoins);
     }
 
+    /** Computes the joins routing from the sources to the destinations via the given intermediate points, in order. */
     public static List<JoinWrapper> calculateThrough(Target target, List<Entity> bunch, Collection<String> sourcePoints, Set<String> destinations, List<JoinWrapper> alreadyDefinedJoins, List<String> throughtPoints) {
 
         Set<String> fromCol = new HashSet<>();
@@ -53,6 +65,17 @@ public class JoinTracker {
     }
 
 
+    /**
+     * Builds the entity graph and turns every shortest source→destination path into inner joins, appending them
+     * to (and deduplicating against) the already defined joins.
+     *
+     * @param target             the target resolving the entity names
+     * @param bunch              all the entities available to route through
+     * @param sourcePoints       the entities the routes start from
+     * @param dest               the entities the routes lead to (extended with the ones already referenced)
+     * @param alreadyDefinedJoins the joins already on the query
+     * @return the combined list of joins
+     */
     public static List<JoinWrapper> calculateJoins(Target target, List<Entity> bunch, List<Entity> sourcePoints, Set<String> dest, List<JoinWrapper> alreadyDefinedJoins) {
         Set<String> destinations = new HashSet<>();
         if (dest != null) destinations.addAll(dest);
@@ -109,6 +132,7 @@ public class JoinTracker {
         return rv;
     }
 
+    /** Whether an equivalent join (same table, type and {@code ON} column) is already in the list. */
     public static boolean addedAlready(JoinWrapper jw, List<JoinWrapper> list) {
         if (jw == null || list == null) return true;
         for (JoinWrapper a : list) {
@@ -120,6 +144,7 @@ public class JoinTracker {
         return false;
     }
 
+    /** The graph vertex representing the given entity, or {@code null}. */
     public static Vertex getByEntity(Entity entity, List<Vertex> list) {
         for (Vertex v : list) {
             if (v.getEntity().entityClass().equals(entity.entityClass())) return v;
@@ -127,6 +152,7 @@ public class JoinTracker {
         return null;
     }
 
+    /** The edge connecting the two vertices (in that direction), or {@code null}. */
     public static Edge getEdge(Vertex from, Vertex to, List<Edge> edges) {
         for (Edge e : edges) {
             if ((e.getFromNode().entityClass().equals(from.getEntity().entityClass()) && e.getToNode().entityClass().equals(to.getEntity().entityClass()))) {
@@ -136,6 +162,7 @@ public class JoinTracker {
         return null;
     }
 
+    /** Whether the shared column is a primary key on at least one of the two tables (a FK↔PK link). */
     public static boolean oneOfThemIsPk(Entity left, Entity right, Column leftcolumn, Column rightcolumn) {
         boolean leftIsPK = left instanceof PrimaryKey;
         boolean rightIsPK = right instanceof PrimaryKey;
@@ -146,6 +173,7 @@ public class JoinTracker {
         return leftColIsPK || rightColIsPK;
     }
 
+    /** The column linking the two tables (currently the left column). */
     public static Column getLink(Entity left, Entity right, Column leftcolumn, Column rightcolumn) {
         boolean leftIsPK = left instanceof PrimaryKey;
         boolean rightIsPK = right instanceof PrimaryKey;
@@ -156,6 +184,7 @@ public class JoinTracker {
         return leftcolumn;
     }
 
+    /** Resolves the given entity names to their instances among {@code allEntities} (first match per name). */
     public static List<Entity> getEntities(Target target, Collection<String> names, List<Entity> allEntities) {
         List<Entity> rv = new ArrayList<>();
         if (allEntities == null || allEntities.isEmpty() || names == null || names.isEmpty()) return rv;

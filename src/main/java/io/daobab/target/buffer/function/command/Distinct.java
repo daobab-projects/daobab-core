@@ -12,10 +12,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The {@code DISTINCT} function: keeps the first row (or value) for each distinct value of the column.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class Distinct extends BufferFunction<Object> {
 
+    /**
+     * Keeps the first plate row per distinct column value.
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         List<Plate> filtered = new ArrayList<>();
@@ -31,6 +36,7 @@ public class Distinct extends BufferFunction<Object> {
         return new PlateBuffer(filtered);
     }
 
+    /** Keeps the first occurrence of each distinct field value. */
     @SuppressWarnings("rawtypes")
     @Override
     protected List<Object> applyOnFields(Map<String, BufferFunction> manager, List<?> fields, ColumnFunction<?, ?, ?, ?> function) {
@@ -45,6 +51,7 @@ public class Distinct extends BufferFunction<Object> {
     }
 
 
+    /** {@inheritDoc} {@link FunctionType#NORMAL}. */
     @Override
     public FunctionType getType() {
         return FunctionType.NORMAL;

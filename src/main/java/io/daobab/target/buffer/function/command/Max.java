@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * The {@code MAX} aggregate: the greatest value of the numeric column across the buffer, per Java numeric type.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")

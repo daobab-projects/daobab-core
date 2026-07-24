@@ -9,12 +9,19 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 /**
+ * A small developer convenience (not part of the normal generation flow): it rewrites a generated column
+ * interface pasted in the system clipboard to change its field type - swapping the {@code import} and the
+ * {@code X.class} literal - and prints the result. The {@link #main} method is a manual entry point.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class DeveloperGenerator {
 
     private static final Writer writter = new Writer(TemplateLanguage.JAVA);
 
+    /**
+     * Manual entry point demonstrating {@link #changeColumnFieldClass}.
+     */
     public static void main(String[] sa) {
 //        String column=DeveloperGenerator.getColumnInterfaceFor("pl.trst.test","FIRST_NAME",JdbcType.VARCHAR);
 
@@ -23,6 +30,14 @@ public class DeveloperGenerator {
     }
 
 
+    /**
+     * Rewrites the column-interface source held in the system clipboard so the column's field type becomes
+     * {@code newFieldClass} (the {@code import} and the {@code getFieldClass()} class literal are swapped).
+     *
+     * @param column        the column whose current type is being replaced
+     * @param newFieldClass the new field type
+     * @return the rewritten source
+     */
     public static <F> String changeColumnFieldClass(Column<?, F, ?> column, Class<F> newFieldClass) {
         StringBuilder sb = new StringBuilder();
         String data = "";

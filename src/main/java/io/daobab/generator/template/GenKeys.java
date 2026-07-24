@@ -1,8 +1,13 @@
 package io.daobab.generator.template;
 
 /**
+ * The placeholder tokens (all {@code __UPPER_CASE}) substituted into the code templates by the {@link Replacer}
+ * while the generator fills a template - one constant per hole in the {@link JavaTemplates}/{@link KotlinTemplates}
+ * /{@link TypeScriptTemplates} strings (package, class name, column methods, DTO fields, ...).
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
+@SuppressWarnings("unused")
 public interface GenKeys {
 
     String TARGET_CLASS_NAME = "__TARGET_CLASS_NAME";

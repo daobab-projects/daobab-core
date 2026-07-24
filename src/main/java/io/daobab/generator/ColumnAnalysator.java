@@ -7,10 +7,19 @@ import java.util.stream.Collectors;
 import static io.daobab.generator.GenerateFormatter.toUpperCaseFirstCharacter;
 
 /**
+ * Resolves the final field name of each generated column and disambiguates the clashes - the runtime-generator
+ * counterpart of the annotation processor's {@code ensureColumnInterface}. A column name used once keeps its
+ * plain field name; a name shared by columns of <b>different</b> types is disambiguated with a type suffix
+ * ({@code NameTypeString} / {@code NameTypeInteger}, {@code byte[]} → {@code NameTypeByteArray}); any residual
+ * collision then gets a numeric counter. Finally the names that clash with a reserved word are fixed.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class ColumnAnalysator {
 
+    /**
+     * Appends {@code Column} to the final field name when it collides with a Java / Daobab / OS reserved word.
+     */
     static void fixColumnName(GenerateColumn col) {
         if (col == null) return;
         if (col.getFinalFieldName() == null || col.getFinalFieldName().isEmpty()) return;
@@ -19,6 +28,11 @@ public class ColumnAnalysator {
         }
     }
 
+    /**
+     * Assigns and disambiguates the final field name of every column: plain name when unique, a type suffix on a
+     * same-name/different-type clash, a numeric counter on any residual collision, and a reserved-word fix at the
+     * end (see the class description).
+     */
     static void compileNames(List<GenerateColumn> storage) {
         storage.stream()
                 .map(GenerateColumn::getColumnName)

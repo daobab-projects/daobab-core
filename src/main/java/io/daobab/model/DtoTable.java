@@ -3,10 +3,12 @@ package io.daobab.model;
 import java.util.Map;
 
 /**
- * A table entity which provides the conversion into its immutable DTO counterpart.
+ * A {@link Table} entity paired with an immutable DTO. {@link #toDto()} converts the entity to its DTO, and the
+ * generated {@code fromDto(dto)} static factory converts back. The generator and the annotation processor emit
+ * such entities (the ones with the {@code Entity} suffix) out of a {@code @DaobabTable} definition.
  *
- * @param <E> entity type
- * @param <D> DTO type
+ * @param <E> the entity type
+ * @param <D> the DTO type
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public abstract class DtoTable<E extends Table, D> extends Table<E> {
@@ -19,5 +21,8 @@ public abstract class DtoTable<E extends Table, D> extends Table<E> {
         super(dtoParameterMap);
     }
 
+    /**
+     * Converts this entity into its immutable DTO.
+     */
     public abstract D toDto();
 }

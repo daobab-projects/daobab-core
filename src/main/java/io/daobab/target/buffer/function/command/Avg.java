@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * The {@code AVG} aggregate: the {@link Sum} of the numeric column divided by the row count, per Java numeric
+ * type. Integer types divide with truncation; {@code BigDecimal} rounds half-up.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")

@@ -15,6 +15,11 @@ import static io.daobab.generator.template.TemplateLanguage.*;
 import static io.daobab.generator.template.TemplateType.*;
 
 /**
+ * Renders each generated artifact - the entity, the shared column interface, the DTO, the composite key and the
+ * target/tables classes (or the TypeScript tables) - by filling the language template with a {@link Replacer} and
+ * writing it through {@link SaveGenerated}. It keeps per-run counts of everything it produced, which
+ * {@link DaobabGenerator} accumulates.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class Writer {
@@ -29,18 +34,14 @@ public class Writer {
     private TemplateLanguage language;
     private boolean generateDtos = true;
 
+    /**
+     * @param language the target language of the generated sources
+     */
     public Writer(TemplateLanguage language) {
         this.language = language;
     }
 
-    public void setLanguage(TemplateLanguage language) {
-        this.language = language;
-    }
-
-    public void setGenerateDtos(boolean generateDtos) {
-        this.generateDtos = generateDtos;
-    }
-
+    /** Whether the composite-key name (plus counter suffix) is not already taken by another table. */
     private static boolean isCompositeKeyNameWithSuffixFree(String tableNameWithSuffix, int counter, List<GenerateTable> allTables) {
         for (GenerateTable generateTable : allTables) {
             if (GenerateFormatter.toCamelCase(generateTable.getTableName()).equals(counter == 0 ? tableNameWithSuffix : tableNameWithSuffix + counter)) {
@@ -50,6 +51,7 @@ public class Writer {
         return true;
     }
 
+    /** A free composite-key class name: {@code tableName + "Key"} plus a numeric suffix on a collision. */
     static String createCompositeKeyName(String tableName, List<GenerateTable> allTables) {
         String suffix = "Key";
         String tableNameWithKeySuffix = tableName + suffix;
@@ -63,12 +65,26 @@ public class Writer {
         return tableNameWithKeySuffix + counter;
     }
 
+    /**
+     * Sets the target language.
+     */
+    public void setLanguage(TemplateLanguage language) {
+        this.language = language;
+    }
+
+    /** Sets whether DTOs are generated. */
+    public void setGenerateDtos(boolean generateDtos) {
+        this.generateDtos = generateDtos;
+    }
+
+    /** Writes the composite-key type (Java only). */
     void generateCompositeKey(TemplateLanguage language, GenerateTable table, String path, boolean override) {
         if (Objects.requireNonNull(language) == TemplateLanguage.JAVA) {
             generateJavaCompositeKey(table, path, override);
         }
     }
 
+    /** Renders and writes the composite-key type of the table. */
     void generateJavaCompositeKey(GenerateTable table, String path, boolean override) {
 
         String tableNameCamel = GenerateFormatter.toCamelCase(table.getTableName());
@@ -86,6 +102,7 @@ public class Writer {
         generatedCompositesCount++;
     }
 
+    /** Renders and writes the target class and (for Java) its {@code Tables} interface for the given tables. */
     void generateJavaTarget(String catalog, String schema, List<GenerateTable> tables, String javaPackageName, String path, boolean override) {
         GenerateTarget target = new GenerateTarget();
         target.setSchemaName(schema);
@@ -120,6 +137,7 @@ public class Writer {
         saveGeneratedTo(replacer.replaceAll(TemplateProvider.getTemplate(language, DATABASE_TABLES_INTERFACE)), path, catalog, schema, null, target.getTargetTablesInterfaceName(), language, override);
     }
 
+    /** Renders and writes the TypeScript interface for each entity. */
     void createTypeScriptTables(String catalog, String schema, List<GenerateTable> entities, String path, boolean override) {
         if (entities == null) return;
 
@@ -140,6 +158,7 @@ public class Writer {
         }
     }
 
+    /** Renders and writes one shared column interface (with its usage doc table). */
     void generateJavaColumn(String catalog, String schema, GenerateColumn column, String path, boolean override) {
 
         Replacer replacer = new Replacer();
@@ -177,6 +196,7 @@ public class Writer {
         generatedDefinitionsCount++;
     }
 
+    /** Renders and writes the entity class (and its DTO when enabled), wiring the primary-key/composite-key parts. */
     void generateJavaTable(String catalog, String schema, GenerateTable table, List<GenerateTable> allTables, String javaackage, String path, boolean override, boolean schemaIntoTable) {
         String tableName = table.getTableName();
         String tableNameCamel = GenerateFormatter.toCamelCase(table.getTableName());

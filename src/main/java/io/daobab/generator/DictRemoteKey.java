@@ -1,5 +1,9 @@
 package io.daobab.generator;
+
 /**
+ * The map keys used when (de)serializing a query for remote execution - the transport vocabulary shared by the
+ * marshaller and the {@code toRemote}/{@code fromRemote} conversions.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public interface DictRemoteKey {

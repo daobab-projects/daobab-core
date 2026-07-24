@@ -17,6 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Maps a JDBC column type to the Java class the generator uses for it, with two levels of override: a global
+ * {@code jdbcType -> Class} table (customizable via {@link #setGeneralConversionFor}) and a per-{@code table.column}
+ * enforced type ({@link #setEnforcedTypeFor}). It also renders the JDBC type name and the TypeScript type of a
+ * Java class.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class JDBCTypeConverter {
@@ -26,6 +31,9 @@ public class JDBCTypeConverter {
     private final Map<String, Class<?>> enforcedTypes = new HashMap<>();
     private final Map<Integer, Class<?>> generalTypes;
 
+    /**
+     * Seeds the default {@code jdbcType -> Class} mapping.
+     */
     public JDBCTypeConverter() {
         generalTypes = new HashMap<>();
         generalTypes.put(Types.ARRAY, Object[].class);
@@ -70,6 +78,7 @@ public class JDBCTypeConverter {
 
     }
 
+    /** The name of a JDBC {@link Types} constant (e.g. {@code VARCHAR}), or an empty string when unknown. */
     public static String getDataBaseTypeName(int type) {
         return switch (type) {
             case (Types.ARRAY) -> "ARRAY";
@@ -116,6 +125,7 @@ public class JDBCTypeConverter {
 
     }
 
+    /** The TypeScript type ({@code string}/{@code number}/{@code Date}/{@code boolean}/{@code any}) of a Java class. */
     public static String convertToTS(Class<?> clazz) {
         if (clazz.equals(String.class)) return "string";
         if (Number.class.isAssignableFrom(clazz)) return "number";
@@ -127,6 +137,7 @@ public class JDBCTypeConverter {
 
     }
 
+    /** Whether {@code clazz} equals one of the given classes. */
     public static boolean isOneOf(Class<?> clazz, Class... classes) {
         if (clazz == null || classes == null) return false;
         for (Class<?> c : classes) {
@@ -145,16 +156,19 @@ public class JDBCTypeConverter {
         return tableName + "." + columnName;
     }
 
+    /** Forces the Java type for a specific {@code table.column}, overriding the general mapping. */
     public JDBCTypeConverter setEnforcedTypeFor(final String tableName, final String columnName, final Class<?> enforcedType) {
         enforcedTypes.put(getTableDotColumn(tableName, columnName), enforcedType);
         return this;
     }
 
+    /** Overrides the Java type mapped to a JDBC type globally. */
     public JDBCTypeConverter setGeneralConversionFor(int jdbcType, final Class<?> enforcedType) {
         generalTypes.put(jdbcType, enforcedType);
         return this;
     }
 
+    /** The Java class for the given column (honoring an enforced type, then the general mapping). */
     public Class<?> convert(String tableName, String columnName, int type, Integer size, Integer precision) {
         String tableDotColumn = getTableDotColumn(tableName, columnName);
 
@@ -182,6 +196,7 @@ public class JDBCTypeConverter {
         return convert(tableDotColumn, type);
     }
 
+    /** Whether the JDBC type is a numeric one. */
     public boolean isNumeric(int type) {
         switch (type) {
             case (Types.BIGINT):
@@ -199,10 +214,12 @@ public class JDBCTypeConverter {
         }
     }
 
+    /** The Java class for a generated column of the given table. */
     public Class<?> convert(String tableName, GenerateColumn generateColumn) {
         return convert(getTableDotColumn(tableName, generateColumn.getColumnName()), generateColumn.getDataType());
     }
 
+    /** The Java class for {@code table.column}: the enforced type if any, otherwise the general mapping ({@code Object} when unknown). */
     public Class<?> convert(String tableDotColumn, int type) {
         if (enforcedTypes.containsKey(tableDotColumn)) {
             return enforcedTypes.get(tableDotColumn);

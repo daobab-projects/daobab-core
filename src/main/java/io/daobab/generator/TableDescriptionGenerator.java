@@ -4,6 +4,11 @@ package io.daobab.generator;
 import java.util.List;
 
 /**
+ * Renders the aligned {@code <pre>} Javadoc table describing a generated table's columns (Name / Type / Size /
+ * DBName / DBType / Description), each cell padded to the column's maximum width, placed above the {@code tabXxx}
+ * fields of the generated {@code Tables} interface. The annotation processor mirrors this for the
+ * {@code @DaobabDataBase} tables.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class TableDescriptionGenerator {
@@ -23,6 +28,9 @@ public class TableDescriptionGenerator {
     private static final int DESCRIPTION = 6;
     private static final int NULLABLE = 7;
 
+    /**
+     * The Javadoc {@code <pre>} block describing the table's columns (aligned Name/Type/Size/DBName/DBType).
+     */
     public static String getTableDescription(GenerateTable table) {
         StringBuilder sb = new StringBuilder();
 
@@ -68,6 +76,7 @@ public class TableDescriptionGenerator {
         return sb.toString();
     }
 
+    /** Pads a cell to the column width: a leading space, the value, right padding, a trailing space. */
     private static StringBuilder fillGaps(String label, int maxSize) {
         StringBuilder sb = new StringBuilder();
         sb.append(" ");
@@ -83,6 +92,7 @@ public class TableDescriptionGenerator {
         return sb;
     }
 
+    /** The maximum rendered width of the given column ({@link #NAME}, {@link #TYPE}, ...) across the table's columns. */
     private static int getMaxSizeFor(int scenario, GenerateTable table) {
         int maxsize = 0;
 

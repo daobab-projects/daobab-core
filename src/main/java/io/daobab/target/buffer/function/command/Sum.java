@@ -15,6 +15,10 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
+ * The {@code SUM} aggregate: sums the numeric column across the buffer, with one implementation per Java numeric
+ * type ({@code Integer}, {@code Long}, {@code Double}, {@code BigDecimal}, ...) dispatched by the column type.
+ * The framework contract is documented on {@link BufferFunction}.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class Sum extends BufferFunction<Object> {

@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 import static io.daobab.generator.GenerateFormatter.decapitalize;
 
 /**
- * Builds the DTO class content and the entity to/from DTO conversion methods.
+ * Builds the DTO class content and the entity's to/from DTO conversion methods. The Java DTO is an immutable
+ * class with a builder; the Kotlin DTO is a {@code data class}. Equality is based on the single primary key when
+ * there is one, otherwise on all the fields.
  *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
@@ -20,6 +22,9 @@ class GenerateDto {
     private GenerateDto() {
     }
 
+    /**
+     * The full DTO class source for the given table (Java: immutable + builder, Kotlin: data class).
+     */
     static String getDtoClassContent(GenerateTable table, String dtoPackage, String dtoName, TemplateLanguage language) {
         if (language == TemplateLanguage.KOTLIN) {
             return new Replacer()
@@ -44,7 +49,7 @@ class GenerateDto {
     }
 
     /**
-     * The entity part: the fromDto factory and the toDto override.
+     * The entity part: the {@code fromDto} factory and the {@code toDto} override.
      */
     static String getConversionMethods(GenerateTable table, String entityName, String dtoName, TemplateLanguage language) {
         if (language == TemplateLanguage.KOTLIN) {
@@ -75,6 +80,7 @@ class GenerateDto {
         return sb.toString();
     }
 
+    /** The Kotlin {@code fromDto}/{@code toDto} conversions (a companion-object factory and the override). */
     private static String getKotlinConversionMethods(GenerateTable table, String entityName, String dtoName) {
         List<GenerateColumn> columns = table.getColumnList();
         StringBuilder sb = new StringBuilder();
@@ -98,6 +104,7 @@ class GenerateDto {
         return sb.toString();
     }
 
+    /** The Kotlin data-class constructor properties (nullable ones default to {@code null}). */
     private static String getKotlinFields(GenerateTable table) {
         return table.getColumnList().stream()
                 .map(gc -> "\tval " + fieldOf(gc) + ": " + kotlinTypeOf(gc)
@@ -131,10 +138,12 @@ class GenerateDto {
                 "\n}";
     }
 
+    /** Whether the column is nullable in this table. */
     private static boolean isNullable(GenerateTable table, GenerateColumn gc) {
         return gc.getColumnInTableOrCreate(table.getTableName()).isNullable();
     }
 
+    /** The Kotlin type of the column ({@code Integer} → {@code Int}, {@code byte[]} → {@code ByteArray}). */
     private static String kotlinTypeOf(GenerateColumn gc) {
         Class<?> fieldClass = gc.getFieldClass();
         if (Integer.class.equals(fieldClass)) {
@@ -146,18 +155,21 @@ class GenerateDto {
         return fieldClass.getSimpleName();
     }
 
+    /** The private final fields of the Java DTO. */
     private static String getFields(GenerateTable table) {
         return table.getColumnList().stream()
                 .map(gc -> "\tprivate final " + typeOf(gc) + " " + fieldOf(gc) + ";")
                 .collect(Collectors.joining("\n"));
     }
 
+    /** The builder-to-field assignments of the Java DTO constructor. */
     private static String getAssignments(GenerateTable table) {
         return table.getColumnList().stream()
                 .map(gc -> "\t\tthis." + fieldOf(gc) + " = builder." + fieldOf(gc) + ";")
                 .collect(Collectors.joining("\n"));
     }
 
+    /** The getters of the Java DTO. */
     private static String getGetters(GenerateTable table) {
         return table.getColumnList().stream()
                 .map(gc -> "\tpublic " + typeOf(gc) + " get" + gc.getFinalFieldName() + "() {"
@@ -166,6 +178,7 @@ class GenerateDto {
                 .collect(Collectors.joining("\n\n"));
     }
 
+    /** The Java DTO {@code equals}/{@code hashCode} (on the single primary key, or on all the fields). */
     private static String getEqualsHashCode(GenerateTable table, String dtoName) {
         List<GenerateColumn> primaryKeys = table.getPrimaryKeys();
         boolean singlePk = primaryKeys != null && primaryKeys.size() == 1;
@@ -199,12 +212,14 @@ class GenerateDto {
                 "\n\t}";
     }
 
+    /** The private fields of the Java DTO builder. */
     private static String getBuilderFields(GenerateTable table) {
         return table.getColumnList().stream()
                 .map(gc -> "\t\tprivate " + typeOf(gc) + " " + fieldOf(gc) + ";")
                 .collect(Collectors.joining("\n"));
     }
 
+    /** The fluent setter methods of the Java DTO builder. */
     private static String getBuilderMethods(GenerateTable table) {
         return table.getColumnList().stream()
                 .map(gc -> "\t\tpublic Builder " + fieldOf(gc) + "(" + typeOf(gc) + " " + fieldOf(gc) + ") {"
@@ -214,10 +229,12 @@ class GenerateDto {
                 .collect(Collectors.joining("\n\n"));
     }
 
+    /** The simple name of the column's Java type. */
     private static String typeOf(GenerateColumn gc) {
         return gc.getFieldClass().getSimpleName();
     }
 
+    /** The DTO field name (the final field name, decapitalized). */
     private static String fieldOf(GenerateColumn gc) {
         return decapitalize(gc.getFinalFieldName());
     }

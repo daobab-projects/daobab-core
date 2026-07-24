@@ -19,10 +19,18 @@ import io.daobab.target.buffer.single.Plates;
 import java.util.*;
 
 /**
+ * The registry of the in-memory {@link BufferFunction}s (keyed by their {@link DictFunctionBuffer} name) and the
+ * orchestrator applying them to a buffer. {@link #applyFunctions} runs the aggregated functions over the whole
+ * buffer first (collecting their single-row results), then the row-by-row ones, and joins everything into the
+ * final result.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class BufferFunctionManager extends HashMap<String, BufferFunction> implements FunctionWhispererBuffer {
 
+    /**
+     * Registers the supported in-memory buffer functions.
+     */
     public BufferFunctionManager() {
         put(DictFunctionBuffer.LENGTH, new Length());
         put(DictFunctionBuffer.COUNT, new Count());
@@ -37,6 +45,14 @@ public class BufferFunctionManager extends HashMap<String, BufferFunction> imple
         put(DictFunctionBuffer.YEAR, new Year());
     }
 
+    /**
+     * Applies the given functions to the buffer: the aggregated ones first (over the whole buffer), then the
+     * row-by-row ones, joining the results.
+     *
+     * @param plates the buffer rows
+     * @param map    the functions to apply, by their select-list position
+     * @return the transformed buffer
+     */
     public Plates applyFunctions(Plates plates, Map<Integer, ColumnFunction<?, ?, ?, ?>> map) {
         if (map.isEmpty()) {
             return plates;
@@ -94,6 +110,11 @@ public class BufferFunctionManager extends HashMap<String, BufferFunction> imple
         return rv;
     }
 
+    /**
+     * Applies the given functions to a flat field list.
+     *
+     * @throws DaobabException when no handler is registered for a function
+     */
     public List applyFunctionsField(List<?> plates, Map<Integer, ColumnFunction<?, ?, ?, ?>> map) {
         if (map.isEmpty()) {
             return plates;

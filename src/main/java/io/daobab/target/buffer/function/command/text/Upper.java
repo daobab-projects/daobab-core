@@ -9,10 +9,15 @@ import io.daobab.target.buffer.single.Plates;
 import java.util.*;
 
 /**
+ * The {@code UPPER} function: upper-cases the string column of each row (string columns only).
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class Upper extends BufferFunction<String> {
 
+    /**
+     * Upper-cases the column value of each row.
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Plates rv = getClonedPlates(plates, false);
@@ -25,6 +30,7 @@ public class Upper extends BufferFunction<String> {
         return rv;
     }
 
+    /** Upper-cases each field value ({@code null} preserved). */
     @SuppressWarnings("rawtypes")
     @Override
     protected List<Object> applyOnFields(Map<String, BufferFunction> manager, List<?> fields, ColumnFunction<?, ?, ?, ?> function) {
@@ -39,11 +45,13 @@ public class Upper extends BufferFunction<String> {
         return rv;
     }
 
+    /** {@inheritDoc} {@link FunctionType#NORMAL}. */
     @Override
     public FunctionType getType() {
         return FunctionType.NORMAL;
     }
 
+    /** {@inheritDoc} String columns only. */
     @Override
     protected Collection<Class<?>> getSuitableTypes() {
         return STRING_ONLY;

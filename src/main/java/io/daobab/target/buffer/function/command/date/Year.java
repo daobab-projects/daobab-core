@@ -15,6 +15,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
+ * The {@code YEAR} function: yields the current calendar year, converted to the column's numeric type. (This
+ * in-memory implementation returns the current year rather than extracting it from a date value.)
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class Year extends BufferFunction<Object> {

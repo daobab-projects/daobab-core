@@ -14,15 +14,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * A "plate": one row of a multi-entity query result, held as a map from entity class name to that entity's
+ * {@code fieldName -> value} map - so the same column name can coexist across joined entities. It exposes typed
+ * value accessors ({@link #getValue(Field)}), can rebuild whole entities from its cells ({@link #getEntity}), and
+ * can be flattened to a {@link FlatPlate} or serialized to JSON.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class Plate extends HashMap<String, Map<String, Object>> implements JsonProvider, ColumnsProvider {
 
+    /**
+     * The fields this plate holds.
+     */
     public transient List<Field> fields;
 
+    /** An empty plate. */
     public Plate() {
     }
 
+    /** A plate holding the given entity's column values. */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Plate(Entity entity) {
         this.fields = entity.columns().stream().map(TableColumn::getColumn).collect(Collectors.toList());
@@ -31,6 +41,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         }
     }
 
+    /** A deep copy of another plate (value by value). */
     public Plate(Plate plate) {
         this.fields = plate.fields();
         for (Field<?, ?, ?> tableColumn : fields) {
@@ -38,6 +49,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         }
     }
 
+    /** A copy of another plate: a shallow {@code putAll} when {@code quickCopy}, otherwise value by value. */
     public Plate(Plate plate, boolean quickCopy) {
         this.fields = plate.fields();
         if (quickCopy) {
@@ -49,6 +61,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         }
     }
 
+    /** An empty plate shaped for the given fields (their values initialized to {@code null}). */
     public Plate(Collection<Field> fields) {
         if (fields == null || fields.isEmpty()) {
             throw new MandatoryColumn();
@@ -57,10 +70,12 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         fields.forEach(c -> setValue(c, null));
     }
 
+    /** The fields this plate holds. */
     public List<Field> fields() {
         return fields;
     }
 
+    /** The fields that are {@link TableColumn}s. */
     @Override
     public List<TableColumn> columns() {
         return fields.stream()
@@ -68,10 +83,12 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
                 .map(TableColumn.class::cast).collect(Collectors.toList());
     }
 
+    /** The value of the field, wrapped in an {@link Optional}. */
     public <F> Optional<F> getValueOptional(Field<?, F, ?> df) {
         return Optional.ofNullable(getValue(df));
     }
 
+    /** The value of the field (matched by entity and field name), or {@code null}. */
     @SuppressWarnings("unchecked")
     public <F> F getValue(Field<?, F, ?> df) {
         if (df == null) return null;
@@ -80,6 +97,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         return (F) entityMap.get(df.getFieldName());
     }
 
+    /** The value of a function column (by its alias when set, otherwise its field name), or {@code null}. */
     @SuppressWarnings("unchecked")
     public <F> F getFunctionValue(ColumnFunction<?, F, ?, ?> df) {
         if (df == null) return null;
@@ -92,6 +110,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         }
     }
 
+    /** The value of the field, or {@code defaultValue} when absent or {@code null}. */
     @SuppressWarnings("unchecked")
     public <F> F getValueOrElse(Field<?, F, ?> df, F defaultValue) {
         if (df == null) return defaultValue;
@@ -104,6 +123,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         return rv;
     }
 
+    /** The value of the field cast to {@code clazz}, or {@code defaultValue} when absent or {@code null}. */
     public <F> F getValueOrElse(Field<?, F, ?> df, Class<F> clazz, F defaultValue) {
         if (df == null) return defaultValue;
         Map<String, Object> entityMap = get(df.entityClass().getName());
@@ -115,6 +135,11 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         return rv;
     }
 
+    /**
+     * The value of the column by its field name across all entities, ignoring the column's own entity.
+     *
+     * @throws DaobabException when the plate holds no such column, or more than one
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public <F> F getValueIgnoreEntity(Column<?, F, ?> df) {
         if (df == null) return null;
@@ -139,6 +164,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         return rv;
     }
 
+    /** The first value found under the given field name (across all entities), or {@code null}. */
     @SuppressWarnings("unchecked")
     public <F> F getValue(String fieldName) {
         if (fieldName == null) return null;
@@ -151,6 +177,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         return null;
     }
 
+    /** The first value found under the given field name, or {@code defaultValue} when absent. */
     @SuppressWarnings("unchecked")
     public <F> F getValueOrElse(String fieldName, F defaultValue) {
         if (fieldName == null) return defaultValue;
@@ -163,6 +190,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         return defaultValue;
     }
 
+    /** Rebuilds a whole entity of the given class from this plate's cells. */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public <E extends Entity> E getEntity(Class<E> entityClass) {
         if (entityClass == null) throw new MandatoryEntity();
@@ -175,18 +203,21 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         return builder.build();
     }
 
+    /** Rebuilds a whole entity of the given instance's class from this plate's cells. */
     @SuppressWarnings("unchecked")
     public <E extends Entity> E getEntity(E entity) {
         if (entity == null) throw new MandatoryEntity();
         return (E) getEntity(entity.getClass());
     }
 
+    /** Sets the value of the column of a {@link TableColumn}. */
     public <F> void setValue(TableColumn tableColumn, F val) {
         if (tableColumn == null) return;
         Column<?, ?, ?> column = tableColumn.getColumn();
         setValue(column, val);
     }
 
+    /** Sets the value of a field (under its entity name and field name). */
     @SuppressWarnings("rawtypes")
     public <F> void setValue(Field column, F val) {
         String entityName = column.entityClass().getName();
@@ -194,10 +225,12 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
                 .put(column.getFieldName(), val);
     }
 
+    /** This plate flattened into a {@link FlatPlate}. */
     public FlatPlate toFlat() {
         return toFlatPlate(new FlatPlateImpl(JsonConverterManager.INSTANCE.getPlateJsonConverter(this).toFlatJsonConversion()));
     }
 
+    /** Builds an entity of the given class from the given columns' values. */
     @SuppressWarnings("unchecked")
     public <E extends Entity> E toEntity(Class<E> entityClass, List<TableColumn> columns) {
 
@@ -229,12 +262,14 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
 //        return entity;
     }
 
+    /** Copies all of this plate's non-null entity maps into {@code flatPlate} and returns it. */
     public <M extends FlatPlate> M toFlatPlate(M flatPlate) {
         if (flatPlate == null) throw new AttemptToWriteIntoNullEntityException();
         values().stream().filter(Objects::nonNull).forEach(flatPlate::putAll);
         return flatPlate;
     }
 
+    /** Merges another plate into this one, keeping this plate's values on a clash. */
     public void joinPlate(Plate otherPlate) {
         for (Entry<String, Map<String, Object>> otherPlateEntry : otherPlate.entrySet()) {
             if (!this.containsKey(otherPlateEntry.getKey())) {
@@ -251,6 +286,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         }
     }
 
+    /** Restricts this plate to the entries present in {@code mask}, dropping the rest. */
     public void maskPlate(Plate mask) {
         for (Entry<String, Map<String, Object>> otherPlateEntry : mask.entrySet()) {
             if (!this.containsKey(otherPlateEntry.getKey())) {
@@ -269,6 +305,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         }
     }
 
+    /** This plate rendered as JSON ({@code []} when empty). */
     @Override
     public String toJson() {
 
@@ -280,6 +317,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
                 .toJson(new StringBuilder(), this).toString();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -289,6 +327,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         return Objects.equals(entrySet(), plate.entrySet());
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), fields);

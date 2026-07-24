@@ -12,10 +12,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The {@code LENGTH} function: the character length of the string column of each row ({@code 0} for a null value;
+ * string columns only).
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class Length extends BufferFunction<String> {
 
+    /**
+     * Replaces the column value of each row with its length ({@code 0} when null).
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Plates rv = getClonedPlates(plates, false);
@@ -31,6 +37,7 @@ public class Length extends BufferFunction<String> {
     }
 
 
+    /** The length of each field value ({@code 0} when null). */
     @SuppressWarnings("rawtypes")
     @Override
     protected List<Object> applyOnFields(Map<String, BufferFunction> manager, List<?> fields, ColumnFunction<?, ?, ?, ?> function) {
@@ -45,11 +52,13 @@ public class Length extends BufferFunction<String> {
         return rv;
     }
 
+    /** {@inheritDoc} {@link FunctionType#NORMAL}. */
     @Override
     public FunctionType getType() {
         return FunctionType.NORMAL;
     }
 
+    /** {@inheritDoc} String columns only. */
     @Override
     protected Collection<Class<?>> getSuitableTypes() {
         return STRING_ONLY;

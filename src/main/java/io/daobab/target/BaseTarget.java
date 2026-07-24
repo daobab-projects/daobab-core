@@ -28,6 +28,10 @@ import java.util.function.BiConsumer;
 import static java.lang.String.format;
 
 /**
+ * The common base of the concrete targets. On top of {@link Target} it adds: cached entity-name and column
+ * resolution, per-entity {@link DaobabInterceptor} registration with the {@code before*}/{@code after*} dispatch,
+ * optional statistics collection, an {@link AccessProtector}, and the shared {@link JsonConverterManager}.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 @SuppressWarnings("unused")
@@ -50,19 +54,25 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         accessProtector = new BasicAccessProtector(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Logger getLog() {
         return log;
     }
 
+    /** The registered interceptors, keyed by the entity they apply to. */
     protected Map<Entity, List<DaobabInterceptor>> getInterceptorsMap() {
         return interceptors;
     }
 
+    /** Registers an interceptor invoked for every entity of this target. */
     public void addInterceptorForAllEntities(DaobabInterceptor interceptor) {
         addInterceptor(interceptor, entityAny);
     }
 
+    /** Registers an interceptor for a single entity (skipping duplicates and interceptors already applied to all). */
     private void addInterceptor(DaobabInterceptor interceptor, Entity entity) {
         if (entity == null)
             throw new DaobabException("You cannot add interceptor to null entity. If you want to add interceptor to any Entity into target, use addInterceptorForAllEntities(DaobabInterceptor interceptor) method.");
@@ -93,6 +103,7 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
         }
     }
 
+    /** Registers an interceptor for each of the given entities. */
     public void addInterceptor(DaobabInterceptor interceptor, Entity... entities) {
         if (entities == null)
             throw new DaobabException("You cannot add interceptor to null entities. If you want to add interceptor to any Entity into target, use addInterceptorForAllEntities(DaobabInterceptor interceptor) method.");
@@ -109,6 +120,7 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
 //        return rv;
 //    }
 
+    /** Whether any interceptor has been registered. */
     protected boolean areInterceptorInUse() {
         return interceptors != null;
     }
@@ -122,35 +134,43 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
 //        }
     }
 
+    /** Dispatches the {@code beforeInsert} interceptors for the entity. */
     protected void beforeInsert(Entity entity) {
         handleInterceptorMethod(entity, (e, i) -> i.beforeInsert(e));
     }
 
+    /** Dispatches the {@code afterInsert} interceptors for the entity. */
     protected void afterInsert(Entity entity) {
         handleInterceptorMethod(entity, (e, i) -> i.afterInsert(e));
     }
 
+    /** Dispatches the {@code beforeUpdate} interceptors for the entity. */
     protected void beforeUpdate(Entity entity) {
         handleInterceptorMethod(entity, (e, i) -> i.beforeUpdate(e));
     }
 
+    /** Dispatches the {@code afterUpdate} interceptors for the entity. */
     protected void afterUpdate(Entity entity) {
         handleInterceptorMethod(entity, (e, i) -> i.afterUpdate(e));
     }
 
+    /** Dispatches the {@code beforeDelete} interceptors for the entity. */
     protected void beforeDelete(Entity entity) {
         handleInterceptorMethod(entity, (e, i) -> i.beforeDelete(e));
     }
 
+    /** Dispatches the {@code afterDelete} interceptors for the entity. */
     protected void afterDelete(Entity entity) {
         handleInterceptorMethod(entity, (e, i) -> i.afterDelete(e));
     }
 
+    /** {@inheritDoc} {@code false} by default; overridden by transactional targets. */
     public boolean isTransactionActive() {
         return false;
     }
 
 
+    /** The statistics collector (created lazily). */
     public StatisticCollector getStatisticCollector() {
         if (statistic == null) {
             statistic = new StatisticCollectorImpl();
@@ -159,37 +179,45 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public boolean isStatisticCollectingEnabled() {
         return statisticEnabled;
     }
 
+    /** Enables or disables statistics collection. */
     public void enableStatisticCollecting(boolean statisticEnabled) {
         this.statisticEnabled = statisticEnabled;
     }
 
+    /** {@inheritDoc} */
     @Override
     public AccessProtector getAccessProtector() {
         return accessProtector;
     }
 
+    /** Replaces the access protector. */
     public void setAccessProtector(AccessProtector accessProtector) {
         this.accessProtector = accessProtector;
     }
 
+    /** {@inheritDoc} The collected statistics, as queryable records. */
     @Override
     public Entities<StatisticRecord> getStatistics() {
         return getStatisticCollector().getTarget();
     }
 
+    /** The columns of the given entity/provider, cached by its class. */
     public List<TableColumn> getColumnsForTable(final ColumnsProvider entity) {
         return columnsCache.computeIfAbsent(entity.getClass(), e -> entity.columns());
     }
 
+    /** The shared JSON converter manager. */
     public JsonConverterManager getJsonConverterManager() {
         return jsonConverterManager;
     }
 
+    /** {@inheritDoc} Cached by entity class. */
     public String getEntityName(Class<? extends Entity> entityClass) {
         return entityNameCache.computeIfAbsent(entityClass, clazz -> EntityDuplication.getEntityName((Class<Entity>) clazz, this));
     }

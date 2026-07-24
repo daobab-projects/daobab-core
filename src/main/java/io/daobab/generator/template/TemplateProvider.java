@@ -3,6 +3,10 @@ package io.daobab.generator.template;
 import java.util.Objects;
 
 /**
+ * Resolves the code template for a {@link TemplateLanguage} + {@link TemplateType} pair (from
+ * {@link JavaTemplates} / {@link KotlinTemplates} / {@link TypeScriptTemplates}) and the file extension per
+ * language. Unsupported combinations return an empty template.
+ *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
 public class TemplateProvider {
@@ -10,6 +14,9 @@ public class TemplateProvider {
     private TemplateProvider() {
     }
 
+    /**
+     * The template for the given language and artifact type, or an empty string when unsupported.
+     */
     public static String getTemplate(TemplateLanguage language, TemplateType type) {
         switch (language) {
             default:
@@ -52,6 +59,7 @@ public class TemplateProvider {
     }
 
 
+    /** The source file extension for the language ({@code .java} / {@code .kt} / {@code .ts}). */
     public static String getFileExtension(TemplateLanguage language) {
         return switch (language) {
             default -> ".java";
