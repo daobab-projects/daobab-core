@@ -10,6 +10,7 @@ import io.daobab.target.database.converter.enums.StringBasedEnum;
 import io.daobab.target.database.converter.standard.*;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -87,6 +88,16 @@ public class DatabaseConverterManager {
     @SuppressWarnings({"java:S1452", "java:S3776", "unchecked", "rawtypes"})
     public Optional<DatabaseTypeConverter<?, ?>> getConverter(Column<?, ?, ?> column) {
         return cache.computeIfAbsent(target.getEntityName(column.entityClass()) + column.getFieldName(), tableColumn -> {
+
+            if (column.getColumnTypeConverter() != null) {
+                try {
+                    return Optional.of(column.getColumnTypeConverter().getDeclaredConstructor()
+                            .newInstance());
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
             DatabaseTypeConverter<?, ?> rv = columnConverters.get(tableColumn);
             if (rv == null) {

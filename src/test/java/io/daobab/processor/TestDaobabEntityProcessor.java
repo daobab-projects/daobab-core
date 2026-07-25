@@ -590,6 +590,102 @@ class TestDaobabEntityProcessor {
         assertFalse(Files.exists(noDtoResult.sourcesDir().resolve("apttest/Book.java")));
     }
 
+    /**
+     * A converter with the required no-argument constructor, converting an {@code Integer} column.
+     */
+    private static final String INT_CONVERTER = """
+            package apttest;
+            
+            import io.daobab.target.database.converter.type.TypeConverterIntegerBased;
+            
+            public class DoublingIntConverter extends TypeConverterIntegerBased<Integer> {
+                @Override
+                public Integer convertReadingTarget(Integer from) {
+                    return from;
+                }
+                @Override
+                public String convertWritingTarget(Integer to) {
+                    return to == null ? null : String.valueOf(to);
+                }
+            }
+            """;
+
+    @Test
+    void columnConverterIsWiredIntoTheColumn() throws Exception {
+        //a column declaring a typeConverterClass gets its converter pinned to the Column,
+        //so DatabaseConverterManager reads it back from getColumnTypeConverter()
+        String priceDef = """
+                package apttest;
+                
+                import io.daobab.annotation.DaobabColumn;
+                import io.daobab.annotation.DaobabTable;
+                
+                @DaobabTable(tableName = "PRICE")
+                public interface PriceDef {
+                    @DaobabColumn(primaryKey = true)
+                    Integer priceId();
+                
+                    @DaobabColumn(typeConverterClass = DoublingIntConverter.class)
+                    Integer amount();
+                }
+                """;
+
+        CompilationResult result = compile(
+                List.of("apttest/DoublingIntConverter.java", "apttest/PriceDef.java"),
+                List.of(INT_CONVERTER, priceDef));
+
+        assertTrue(result.success(), "compilation failed: " + result.diagnostics());
+
+        //the generated column interface wires the converter through the converter-aware factory
+        String amount = Files.readString(result.sourcesDir().resolve("apttest/column/Amount.java"));
+        assertTrue(amount.contains("getColumnWithConverter"), "the col() must wire the converter:\n" + amount);
+        assertTrue(amount.contains("apttest.DoublingIntConverter.class"), "the converter class must be referenced:\n" + amount);
+
+        try (URLClassLoader loader = new URLClassLoader(
+                new URL[]{result.classesDir().toUri().toURL()}, Entity.class.getClassLoader())) {
+
+            Class<?> entityClass = loader.loadClass("apttest.PriceEntity");
+            Class<?> converterClass = loader.loadClass("apttest.DoublingIntConverter");
+            Object price = entityClass.getConstructor().newInstance();
+
+            //the converter is reachable off the column, exactly where DatabaseConverterManager looks
+            Column<?, ?, ?> amountColumn = (Column<?, ?, ?>) entityClass.getMethod("colAmount").invoke(price);
+            assertEquals(converterClass, amountColumn.getColumnTypeConverter());
+
+            //a plain column keeps the automatic resolution (null converter)
+            Column<?, ?, ?> idColumn = (Column<?, ?, ?>) entityClass.getMethod("colPriceId").invoke(price);
+            assertNull(idColumn.getColumnTypeConverter());
+        }
+    }
+
+    @Test
+    void columnConverterTypeMismatchFailsCompilation() throws Exception {
+        //an Integer converter on a String column: the converter's column type does not match the field
+        String priceDef = """
+                package apttest;
+                
+                import io.daobab.annotation.DaobabColumn;
+                import io.daobab.annotation.DaobabTable;
+                
+                @DaobabTable(tableName = "PRICE")
+                public interface PriceDef {
+                    @DaobabColumn(primaryKey = true)
+                    Integer priceId();
+                
+                    @DaobabColumn(typeConverterClass = DoublingIntConverter.class)
+                    String label();
+                }
+                """;
+
+        CompilationResult result = compile(
+                List.of("apttest/DoublingIntConverter.java", "apttest/PriceDef.java"),
+                List.of(INT_CONVERTER, priceDef));
+
+        assertFalse(result.success());
+        assertTrue(result.diagnostics().contains("must match the annotated field type"),
+                "unexpected diagnostics: " + result.diagnostics());
+    }
+
     private record CompilationResult(boolean success, Path classesDir, Path sourcesDir, String diagnostics) {
     }
 }

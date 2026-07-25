@@ -82,6 +82,26 @@ entity + column interfaces + DTO **at compile time**. Registered via
   column (Table / Java Type / Size / Not-null). It's keyed by base name so shared interfaces list all tables.
   Caveat: usage is collected per compilation round.
 
+### `@DaobabColumn(typeConverterClass = ...)` — a per-column type converter (processor-only)
+
+`@DaobabColumn` takes an optional `typeConverterClass` (a `Class<? extends DatabaseTypeConverter>`, default the
+raw `DatabaseTypeConverter` interface as a "none" sentinel). When set, the generated column interface's
+`col<Name>()` calls `DaobabCache.getColumnWithConverter(...)` instead of `getColumn(...)`, passing the converter
+class; that factory (→ `ColumnCreator.createColumn(..., converterClass)`) returns a `Column` overriding
+`getColumnTypeConverter()`, which is exactly where `DatabaseConverterManager.getConverter()` looks first. So the
+annotation is the compile-time equivalent of hand-overriding `Column.getColumnTypeConverter()`.
+
+- **Validation** (`validateConverter` / `converterColumnType`): the converter's column type — the `T` of
+  `DatabaseTypeConverter<F, T>`, resolved by walking `directSupertypes` (so an intermediate base like
+  `TypeConverterIntegerBased<T>` is followed to `DatabaseTypeConverter<Integer, T>`) — must equal the annotated
+  method's (boxed) return type, else compilation fails. An unresolvable `T` (bound to a type variable) is skipped.
+- **Shared interfaces**: a column interface is shared by name+type, and it carries **one** converter
+  (`generatedColumnConverters`); two definitions reusing the same interface with different converters is an error.
+- **Read via `MirroredTypeException`** (single type), the counterpart of `tableMirrors()`'s `MirroredTypesException`.
+- **Generator parity note**: this is processor-only — the runtime generator reverse-engineers JDBC metadata, which
+  carries no converter info, so `GenerateDefinition` never emits `typeConverterClass` and the column templates are
+  unchanged. The wiring (`DaobabCache.getColumnWithConverter`, `ColumnCreator.createColumn` overload) lives in core.
+
 ### `@DaobabDataBase` — the database interface (same processor)
 
 `io.daobab.annotation.DaobabDataBase` (source retention, `@Target(TYPE)`) gathers a set of `@DaobabTable`

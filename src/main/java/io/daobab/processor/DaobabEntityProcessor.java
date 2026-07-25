@@ -8,10 +8,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import javax.lang.model.type.MirroredTypesException;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.*;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -25,7 +22,9 @@ import java.util.*;
  * For every definition interface the processor generates:
  * <ul>
  *     <li>a column interface per definition method (reused when a matching interface already exists,
- *     or disambiguated with a type suffix when a column of the same name but a different type shows up),</li>
+ *     or disambiguated with a type suffix when a column of the same name but a different type shows up);
+ *     when the column declares a {@code typeConverterClass}, its {@code col...()} wires that
+ *     {@code DatabaseTypeConverter} into the column - validated to match the field type,</li>
  *     <li>the entity class (named with the 'Entity' suffix) extending {@code DtoTable}, implementing
  *     the column interfaces and, when a primary key column is marked, the {@code PrimaryKey} interface;
  *     several marked columns form a composite primary key: a {@code XxxKey} interface grouping the key
@@ -45,6 +44,8 @@ public class DaobabEntityProcessor extends AbstractProcessor {
      * Lets many definitions share one column interface and disambiguates the type conflicts.
      */
     private final Map<String, String> generatedColumns = new HashMap<>();
+
+    private static final String CONVERTER_INTERFACE = "io.daobab.target.database.converter.type.DatabaseTypeConverter";
 
     /**
      * Column interface usage collected across all the definitions of the round: usage key -&gt; usages.
@@ -117,44 +118,12 @@ public class DaobabEntityProcessor extends AbstractProcessor {
     private static String usageKey(String columnPackage, String fieldName, String fieldType) {
         return columnPackage + "|" + fieldName + "|" + fieldType;
     }
-
     /**
-     * Every abstract, parameterless method of the definition describes one column.
+     * The type converter pinned to each generated column interface: fully qualified name -&gt; converter
+     * FQN (absent when the column declares no converter). A shared column interface carries one converter,
+     * so definitions reusing it must agree on it.
      */
-    private List<ColumnModel> readColumns(TypeElement definition) {
-        List<ColumnModel> columns = new ArrayList<>();
-
-        for (ExecutableElement method : ElementFilter.methodsIn(definition.getEnclosedElements())) {
-            if (method.getModifiers().contains(Modifier.DEFAULT) || method.getModifiers().contains(Modifier.STATIC)) {
-                continue;
-            }
-            if (!method.getParameters().isEmpty() || method.getReturnType().getKind() == TypeKind.VOID) {
-                error(method, "A column method has to be parameterless and has to return the column type");
-                return null;
-            }
-
-            DaobabColumn settings = method.getAnnotation(DaobabColumn.class);
-            String methodName = method.getSimpleName().toString();
-
-            ColumnModel column = new ColumnModel();
-            column.fieldName = capitalize(methodName);
-            column.fieldType = boxedTypeName(method.getReturnType());
-            if (settings == null) {
-                column.columnName = toUpperSnakeCase(methodName);
-            } else {
-                column.columnName = settings.name().isEmpty() ? toUpperSnakeCase(methodName) : settings.name();
-                column.primaryKey = settings.primaryKey();
-                column.size = settings.size();
-                column.precision = settings.precision();
-                column.scale = settings.scale();
-                column.notNull = settings.notNull();
-                column.unique = settings.unique();
-                column.lob = settings.lob();
-            }
-            columns.add(column);
-        }
-        return columns;
-    }
+    private final Map<String, String> generatedColumnConverters = new HashMap<>();
 
     private static String sizeCell(ColumnModel c) {
         return c.lob ? "LOB" : (c.size > 0 ? Integer.toString(c.size) : "-");
@@ -237,62 +206,48 @@ public class DaobabEntityProcessor extends AbstractProcessor {
     }
 
     /**
-     * Reads and validates a definition. Returns the context to generate from, or {@code null} when the
-     * definition is invalid (an error is already reported) and has to be skipped.
+     * Every abstract, parameterless method of the definition describes one column.
      */
-    private EntityContext prepare(TypeElement definition) {
-        DaobabTable table = definition.getAnnotation(DaobabTable.class);
+    private List<ColumnModel> readColumns(TypeElement definition) {
+        List<ColumnModel> columns = new ArrayList<>();
 
-        String definitionPackage = processingEnv.getElementUtils().getPackageOf(definition).getQualifiedName().toString();
-        String definitionName = definition.getSimpleName().toString();
+        for (ExecutableElement method : ElementFilter.methodsIn(definition.getEnclosedElements())) {
+            if (method.getModifiers().contains(Modifier.DEFAULT) || method.getModifiers().contains(Modifier.STATIC)) {
+                continue;
+            }
+            if (!method.getParameters().isEmpty() || method.getReturnType().getKind() == TypeKind.VOID) {
+                error(method, "A column method has to be parameterless and has to return the column type");
+                return null;
+            }
 
-        EntityRef entityRef = resolveEntityRef(definition);
-        String entityName = entityRef.entityName;
-        String entityPackage = entityRef.entityPackage;
-        String columnPackage = table.columnPackage().isEmpty() ? definitionPackage + ".column" : table.columnPackage();
-        String tableName = table.tableName().isEmpty() ? toUpperSnakeCase(stripEntitySuffix(entityName)) : table.tableName();
+            DaobabColumn settings = method.getAnnotation(DaobabColumn.class);
+            String methodName = method.getSimpleName().toString();
 
-        boolean generateDto = table.generateDto();
-        String dtoName = table.dtoName().isEmpty() ? stripDefinitionSuffix(definitionName) : table.dtoName();
-        String dtoPackage = table.dtoPackage().isEmpty() ? entityPackage : table.dtoPackage();
+            ColumnModel column = new ColumnModel();
+            column.fieldName = capitalize(methodName);
+            column.fieldType = boxedTypeName(method.getReturnType());
+            column.returnType = method.getReturnType();
+            if (settings == null) {
+                column.columnName = toUpperSnakeCase(methodName);
+            } else {
+                column.columnName = settings.name().isEmpty() ? toUpperSnakeCase(methodName) : settings.name();
+                column.primaryKey = settings.primaryKey();
+                column.size = settings.size();
+                column.precision = settings.precision();
+                column.scale = settings.scale();
+                column.notNull = settings.notNull();
+                column.unique = settings.unique();
+                column.lob = settings.lob();
 
-        if (entityName.equals(definitionName) && entityPackage.equals(definitionPackage)) {
-            error(definition, "The generated entity would collide with its definition."
-                    + " Rename the definition (e.g. " + definitionName + "Def) or set the entityName/entityPackage attribute.");
-            return null;
+                TypeMirror converter = typeConverterMirror(settings);
+                if (converter != null && !isConverterSentinel(converter)) {
+                    column.converterMirror = converter;
+                    column.converterType = processingEnv.getTypeUtils().erasure(converter).toString();
+                }
+            }
+            columns.add(column);
         }
-
-        if (generateDto && dtoName.equals(definitionName) && dtoPackage.equals(definitionPackage)) {
-            error(definition, "The generated DTO would collide with its definition."
-                    + " Rename the definition (e.g. " + definitionName + "Def) or set the dtoName/dtoPackage attribute.");
-            return null;
-        }
-
-        if (generateDto && dtoName.equals(entityName) && dtoPackage.equals(entityPackage)) {
-            error(definition, "The generated DTO would collide with the generated entity."
-                    + " Set the dtoName or dtoPackage attribute.");
-            return null;
-        }
-
-        List<ColumnModel> columns = readColumns(definition);
-        if (columns == null) {
-            return null;
-        }
-        if (columns.isEmpty()) {
-            error(definition, "The definition has no column methods");
-            return null;
-        }
-        EntityContext context = new EntityContext();
-        context.definition = definition;
-        context.entityPackage = entityPackage;
-        context.columnPackage = columnPackage;
-        context.entityName = entityName;
-        context.tableName = tableName;
-        context.columns = columns;
-        context.generateDto = generateDto;
-        context.dtoPackage = dtoPackage;
-        context.dtoName = dtoName;
-        return context;
+        return columns;
     }
 
     /**
@@ -486,6 +441,155 @@ public class DaobabEntityProcessor extends AbstractProcessor {
     }
 
     /**
+     * Reads and validates a definition. Returns the context to generate from, or {@code null} when the
+     * definition is invalid (an error is already reported) and has to be skipped.
+     */
+    private EntityContext prepare(TypeElement definition) {
+        DaobabTable table = definition.getAnnotation(DaobabTable.class);
+
+        String definitionPackage = processingEnv.getElementUtils().getPackageOf(definition).getQualifiedName().toString();
+        String definitionName = definition.getSimpleName().toString();
+
+        EntityRef entityRef = resolveEntityRef(definition);
+        String entityName = entityRef.entityName;
+        String entityPackage = entityRef.entityPackage;
+        String columnPackage = table.columnPackage().isEmpty() ? definitionPackage + ".column" : table.columnPackage();
+        String tableName = table.tableName().isEmpty() ? toUpperSnakeCase(stripEntitySuffix(entityName)) : table.tableName();
+
+        boolean generateDto = table.generateDto();
+        String dtoName = table.dtoName().isEmpty() ? stripDefinitionSuffix(definitionName) : table.dtoName();
+        String dtoPackage = table.dtoPackage().isEmpty() ? entityPackage : table.dtoPackage();
+
+        if (entityName.equals(definitionName) && entityPackage.equals(definitionPackage)) {
+            error(definition, "The generated entity would collide with its definition."
+                    + " Rename the definition (e.g. " + definitionName + "Def) or set the entityName/entityPackage attribute.");
+            return null;
+        }
+
+        if (generateDto && dtoName.equals(definitionName) && dtoPackage.equals(definitionPackage)) {
+            error(definition, "The generated DTO would collide with its definition."
+                    + " Rename the definition (e.g. " + definitionName + "Def) or set the dtoName/dtoPackage attribute.");
+            return null;
+        }
+
+        if (generateDto && dtoName.equals(entityName) && dtoPackage.equals(entityPackage)) {
+            error(definition, "The generated DTO would collide with the generated entity."
+                    + " Set the dtoName or dtoPackage attribute.");
+            return null;
+        }
+
+        List<ColumnModel> columns = readColumns(definition);
+        if (columns == null) {
+            return null;
+        }
+        if (columns.isEmpty()) {
+            error(definition, "The definition has no column methods");
+            return null;
+        }
+        for (ColumnModel column : columns) {
+            if (column.converterMirror != null && !validateConverter(definition, column)) {
+                return null;
+            }
+        }
+        EntityContext context = new EntityContext();
+        context.definition = definition;
+        context.entityPackage = entityPackage;
+        context.columnPackage = columnPackage;
+        context.entityName = entityName;
+        context.tableName = tableName;
+        context.columns = columns;
+        context.generateDto = generateDto;
+        context.dtoPackage = dtoPackage;
+        context.dtoName = dtoName;
+        return context;
+    }
+
+    /**
+     * Reads the {@code typeConverterClass()} of a {@link DaobabColumn}. A class-valued annotation member is
+     * not available as a {@code Class} during annotation processing - accessing it throws
+     * {@link MirroredTypeException} carrying the {@link TypeMirror} instead.
+     */
+    private TypeMirror typeConverterMirror(DaobabColumn settings) {
+        try {
+            settings.typeConverterClass();
+            return null;
+        } catch (MirroredTypeException e) {
+            return e.getTypeMirror();
+        }
+    }
+
+    /**
+     * Whether the mirror is the annotation's default - the raw converter interface, meaning "no converter".
+     */
+    private boolean isConverterSentinel(TypeMirror converter) {
+        return processingEnv.getTypeUtils().erasure(converter).toString().equals(CONVERTER_INTERFACE);
+    }
+
+    /**
+     * The Daobab column type a converter produces - the {@code T} of {@code DatabaseTypeConverter<F, T>} -
+     * resolved through the converter's type hierarchy (so an intermediate base such as
+     * {@code TypeConverterIntegerBased<T>} is followed to {@code DatabaseTypeConverter<Integer, T>}).
+     * Returns {@code null} when it cannot be determined (e.g. the converter binds {@code T} to a type
+     * variable rather than a concrete type).
+     */
+    private TypeMirror converterColumnType(TypeMirror converter) {
+        var types = processingEnv.getTypeUtils();
+        TypeElement dtc = processingEnv.getElementUtils().getTypeElement(CONVERTER_INTERFACE);
+        if (dtc == null) {
+            return null;
+        }
+        TypeMirror dtcErasure = types.erasure(dtc.asType());
+
+        Deque<TypeMirror> queue = new ArrayDeque<>();
+        queue.add(converter);
+        Set<String> visited = new HashSet<>();
+        while (!queue.isEmpty()) {
+            TypeMirror current = queue.poll();
+            if (!(current instanceof DeclaredType declared)) {
+                continue;
+            }
+            if (types.isSameType(types.erasure(current), dtcErasure)) {
+                List<? extends TypeMirror> args = declared.getTypeArguments();
+                if (args.size() != 2) {
+                    return null;
+                }
+                TypeMirror columnType = args.get(1);
+                return columnType.getKind() == TypeKind.TYPEVAR ? null : columnType;
+            }
+            if (visited.add(types.erasure(current).toString())) {
+                queue.addAll(types.directSupertypes(current));
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Validates that a column's declared converter produces the column's own type: the {@code T} of
+     * {@code DatabaseTypeConverter<F, T>} has to match the annotated method's return type. Reports an error
+     * and returns {@code false} on a mismatch (e.g. an {@code Integer} converter on a {@code LocalDateTime}
+     * column). A converter whose column type cannot be resolved is left alone.
+     */
+    private boolean validateConverter(TypeElement definition, ColumnModel column) {
+        TypeMirror columnType = converterColumnType(column.converterMirror);
+        if (columnType == null) {
+            return true;
+        }
+        var types = processingEnv.getTypeUtils();
+        TypeMirror fieldType = column.returnType;
+        if (fieldType.getKind().isPrimitive()) {
+            fieldType = types.boxedClass((PrimitiveType) fieldType).asType();
+        }
+        if (!types.isSameType(types.erasure(columnType), types.erasure(fieldType))) {
+            error(definition, "The type converter " + column.converterType + " converts to "
+                    + simpleName(types.erasure(columnType).toString()) + ", but the column " + column.fieldName
+                    + " is of type " + simpleName(boxedTypeName(column.returnType))
+                    + ". The converter's column type must match the annotated field type.");
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Resolves the column interface for the given column, generating it unless a matching one
      * already exists. Column interfaces are shared between entities by their simple name, so when a
      * column of the same name but a different type shows up, the field name is disambiguated with a
@@ -505,6 +609,15 @@ public class DaobabEntityProcessor extends AbstractProcessor {
             String alreadyGeneratedType = generatedColumns.get(fqcn);
             if (alreadyGeneratedType != null) {
                 if (alreadyGeneratedType.equals(column.fieldType)) {
+                    //one shared column interface carries one converter: the definitions reusing it must agree
+                    String existingConverter = generatedColumnConverters.get(fqcn);
+                    if (!Objects.equals(existingConverter, column.converterType)) {
+                        error(definition, "Column " + candidate + " is shared, but its type converter differs:"
+                                + " already generated with " + (existingConverter == null ? "none" : existingConverter)
+                                + ", now requested with " + (column.converterType == null ? "none" : column.converterType)
+                                + ". A shared column interface must declare the same converter everywhere.");
+                        return false;
+                    }
                     column.fieldName = candidate;
                     return true;
                 }
@@ -526,6 +639,9 @@ public class DaobabEntityProcessor extends AbstractProcessor {
             String doc = columnDoc(candidate, columnUsage.get(usageKey(columnPackage, baseName, column.fieldType)));
             writeColumnInterface(definition, columnPackage, column, doc);
             generatedColumns.put(fqcn, column.fieldType);
+            if (column.converterType != null) {
+                generatedColumnConverters.put(fqcn, column.converterType);
+            }
             return true;
         }
 
@@ -589,8 +705,15 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         sb.append(doc);
         sb.append("\t@SuppressWarnings({\"rawtypes\", \"unchecked\"})\n");
         sb.append("\tdefault Column<E, ").append(type).append(", ").append(name).append("> col").append(name).append("() {\n");
-        sb.append("\t\treturn DaobabCache.getColumn(\"").append(name).append("\", \"").append(column.columnName)
-                .append("\", (Table<?>) this, ").append(type).append(".class);\n");
+        if (column.converterType == null) {
+            sb.append("\t\treturn DaobabCache.getColumn(\"").append(name).append("\", \"").append(column.columnName)
+                    .append("\", (Table<?>) this, ").append(type).append(".class);\n");
+        } else {
+            //pin the declared converter to the column, so DatabaseConverterManager uses it in preference
+            //to the automatically resolved one (the col() yields a Column whose getColumnTypeConverter() returns it)
+            sb.append("\t\treturn DaobabCache.getColumnWithConverter(\"").append(name).append("\", \"").append(column.columnName)
+                    .append("\", (Table<?>) this, ").append(type).append(".class, ").append(column.converterType).append(".class);\n");
+        }
         sb.append("\t}\n");
         sb.append("}\n");
 
@@ -986,6 +1109,18 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         boolean notNull;
         boolean unique;
         boolean lob;
+        /**
+         * The FQN of the {@code DatabaseTypeConverter} pinned to the column, or {@code null} when none is declared.
+         */
+        String converterType;
+        /**
+         * The converter's type mirror, for validating it against the field type; {@code null} when none is declared.
+         */
+        TypeMirror converterMirror;
+        /**
+         * The method's declared return type, for boxing and converter validation.
+         */
+        TypeMirror returnType;
     }
 
     /**

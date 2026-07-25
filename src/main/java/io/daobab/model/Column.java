@@ -1,6 +1,7 @@
 package io.daobab.model;
 
 import io.daobab.query.marker.ColumnOrQuery;
+import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 
 /**
  * A named database column of an entity: a {@link Field} that additionally knows its {@link #getColumnName()
@@ -20,6 +21,21 @@ public interface Column<E extends Entity, F, R extends RelatedTo> extends Field<
      * The database column name.
      */
     String getColumnName();
+
+    /**
+     * The converter Daobab uses to translate this column's value to and from its raw database (JDBC)
+     * representation. Returning a converter class pins it to this column: the
+     * {@link io.daobab.target.database.converter.DatabaseConverterManager} instantiates it (through its
+     * no-argument constructor) and uses it in preference to the automatically resolved one. Returning
+     * {@code null} - the default - lets Daobab pick the right converter automatically from the column type.
+     * <p>
+     * Override it when a column carries a custom type that the built-in converters do not handle.
+     *
+     * @return the converter class for this column, or {@code null} to let Daobab choose one automatically
+     */
+    default Class<DatabaseTypeConverter<?, F>> getColumnTypeConverter() {
+        return null;
+    }
 
     /** This column re-homed onto {@code entity}, carrying its current value - to compare columns across tables. */
     @SuppressWarnings("unchecked")
