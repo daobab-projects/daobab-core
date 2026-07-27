@@ -15,12 +15,13 @@ public class EntityBufferGenerator {
     public Entities<Film> getFilms(){
         List<Film> filmList = new ArrayList<>();
         for (int i = 1; i <= size; i++) {
-            Film film = new Film();
-            film.setFilmId(i);
-            film.setDescription("sss");
-            film.setRating(randomString(rates));
-            film.setRentalRate(randomBigDecimal(new BigDecimal(10), new BigDecimal(20)));
-            film.setLength(randomInt(60, 120));
+            //Table is immutable: each setter returns a new entity, so chain them
+            Film film = new Film()
+                    .setFilmId(i)
+                    .setDescription("sss")
+                    .setRating(randomString(rates))
+                    .setRentalRate(randomBigDecimal(new BigDecimal(10), new BigDecimal(20)))
+                    .setLength(randomInt(60, 120));
             filmList.add(film);
         }
         Collections.shuffle(filmList);
@@ -35,12 +36,13 @@ public class EntityBufferGenerator {
     public Entities<Film> getFilms2() {
         List<Film> filmList = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
-            Film film = new Film();
-            film.setFilmId(i);
-            film.setDescription("sss");
-            film.setRating(randomString(rates));
-            film.setRentalRate(randomBigDecimal(new BigDecimal(10), new BigDecimal(20)));
-            film.setLength(randomInt(60, 120));
+            //Table is immutable: each setter returns a new entity, so chain them
+            Film film = new Film()
+                    .setFilmId(i)
+                    .setDescription("sss")
+                    .setRating(randomString(rates))
+                    .setRentalRate(randomBigDecimal(new BigDecimal(10), new BigDecimal(20)))
+                    .setLength(randomInt(60, 120));
             filmList.add(film);
         }
 //        Collections.shuffle(filmList);

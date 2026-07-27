@@ -143,7 +143,8 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
         E entityToRemove = get(position);
         int entityLocation = locations.get(position);
         locations.remove(position);
-        removed.add(position);
+        //free the physical slot (not the logical position) so a later add can reuse it
+        removed.add(entityLocation);
         additionalParameters.remove(entityLocation);
 
         if (entityToRemove == null) {
@@ -156,10 +157,10 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
 
             BitBufferIndexBase index = indexRepository[pointer];
             if (index != null) {
-                index.removeValue(column.getValueOf((RelatedTo) entityToRemove), position);
+                //keyed by the physical slot, consistent with add()'s index.addValue(value, entityLocation)
+                index.removeValue(column.getValueOf((RelatedTo) entityToRemove), entityLocation);
             }
         }
-        totalBufferActiveElements.decrementAndGet();
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

@@ -42,7 +42,9 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     public int pageMaxCapacityBytes = 2;
     public int totalEntitySpace = 0;
     protected int pageMaxCapacity;
-    protected AtomicInteger totalBufferActiveElements = new AtomicInteger(0);
+    //high-water mark of physical slots ever handed out: a brand-new element takes the next slot from here,
+    //while a slot freed by remove() is reused from `removed`. The active element count is locations.size().
+    protected final AtomicInteger highestLocation = new AtomicInteger(0);
     //in bytes, all pages
     protected int totalBufferSize;
     protected List<ByteBuffer> pages;
@@ -53,7 +55,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     protected BitBufferIndexBase[] indexRepository;
     protected boolean isIndexRepositoryEmpty = true;
     protected List<Integer> locations = new ArrayList<>();
-    protected LinkedList<Integer> removed = new LinkedList<>();
+    protected Deque<Integer> removed = new ArrayDeque<>();
     protected Map<Integer, HashMap<String, Object>> additionalParameters = new HashMap<>();
     private AccessProtector accessProtector = new BasicAccessProtector(this);
 
@@ -132,20 +134,13 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     }
 
     protected Integer getNextFreeLocation() {
-        if (removed.isEmpty()) {
-            int thisLocation = totalBufferActiveElements.getAndIncrement();
-            locations.add(thisLocation);
-            return thisLocation;
-        } else {
-            int rm = removed.removeFirst();
-            locations.add(rm);
-            totalBufferActiveElements.decrementAndGet();
-            return rm;
-        }
+        int slot = removed.isEmpty() ? highestLocation.getAndIncrement() : removed.removeFirst();
+        locations.add(slot);
+        return slot;
     }
 
     public int size() {
-        return totalBufferActiveElements.get();
+        return locations.size();
     }
 
     public boolean isEmpty() {
