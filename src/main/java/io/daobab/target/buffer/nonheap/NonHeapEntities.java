@@ -37,7 +37,7 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
     public NonHeapEntities(List<E> entities, BitFieldRegistry bitFieldRegistry) {
 
         super(bitFieldRegistry);
-        E entity = entities == null || entities.isEmpty() ? null : entities.get(0);
+        E entity = entities == null || entities.isEmpty() ? null : entities.getFirst();
         adjustForCapacity(8);//1 << pageMaxCapacityBytes;
         this.entityClass = (Class<E>) entity.entityClass();
         this.columns = getColumnsForTable(entity);
@@ -268,7 +268,7 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
     public <E extends Entity> E readEntity(BufferQueryEntity<E> query) {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        return (E) finalFilter((Query) query).get(0);
+        return (E) finalFilter((Query) query).getFirst();
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -283,7 +283,7 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
     @Override
     public <E extends Entity, F> F readField(BufferQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
-        return (F) finalFilterField((BufferQueryField) query).get(0);
+        return (F) finalFilterField((BufferQueryField) query).getFirst();
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -297,7 +297,7 @@ public class NonHeapEntities<E extends Entity> extends NonHeapBuffer<E> implemen
     @Override
     public Plate readPlate(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
-        return readPlateList(query).get(0);
+        return readPlateList(query).getFirst();
     }
 
     @Override

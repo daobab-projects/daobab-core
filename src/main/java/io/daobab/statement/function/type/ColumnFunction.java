@@ -124,7 +124,7 @@ public class ColumnFunction<E extends Entity, F, R extends RelatedTo, C> impleme
         } else {
             Query<E, ?, ?> query = (Query<E, ?, ?>) col;
             this.query = query;
-            Column<E, F, R> column = (query.getFields().get(0)).getColumn();
+            Column<E, F, R> column = (query.getFields().getFirst()).getColumn();
             columnClass = (Class<C>) column.getFieldClass();
             thisEntity = (E) dummy.getInstance();
         }

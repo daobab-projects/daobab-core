@@ -36,7 +36,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
         super(entities);
 
         if (!entities.isEmpty()) {
-            E entity = entities.get(0);
+            E entity = entities.getFirst();
             setPrimaryKey(entity instanceof PrimaryKey);
         }
     }
@@ -213,7 +213,7 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
 
     //TODO: move up
     public EntityList<E> calculateIndexes() {
-        E entity = entities.get(0);
+        E entity = entities.getFirst();
         List<TableColumn> columns = entity.columns();
         for (TableColumn tableColumn : columns) {
 

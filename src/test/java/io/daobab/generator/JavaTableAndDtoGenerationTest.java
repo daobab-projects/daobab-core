@@ -66,6 +66,10 @@ class JavaTableAndDtoGenerationTest {
         assertTrue(entitySource.contains("public ModelItem toDto()"), entitySource);
         assertTrue(entitySource.contains("import gentest.dto.ModelItem;"), entitySource);
 
+        //the DTO is generated as a record (so it can be read straight from a query via readRecord)
+        String dtoSource = Files.readString(dtoFile);
+        assertTrue(dtoSource.contains("public record ModelItem("), dtoSource);
+
         Path classesDir = compile(outDir);
 
         try (URLClassLoader loader = new URLClassLoader(
@@ -74,6 +78,7 @@ class JavaTableAndDtoGenerationTest {
             Class<?> entityClass = loader.loadClass("gentest.table.ModelItemEntity");
             Class<?> dtoClass = loader.loadClass("gentest.dto.ModelItem");
             assertTrue(DtoTable.class.isAssignableFrom(entityClass));
+            assertTrue(dtoClass.isRecord(), "the generated DTO must be a record");
 
             Object entity = entityClass.getConstructor().newInstance();
             entity = entityClass.getMethod("setModelItemId", Integer.class).invoke(entity, 5);

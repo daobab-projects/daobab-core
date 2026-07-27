@@ -253,7 +253,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 rsReader.bindParameters(stmt, s.getIdentifierStorage().getBoundParameters());
                 ResultSet rs = stmt.executeQuery();
 
-                Column column = s.getFields().get(0).getColumn();
+                Column column = s.getFields().getFirst().getColumn();
                 DatabaseTypeConverter<?, ?> typeConverter = query.getTarget().getConverterManager().getConverter(column).orElse(null);
 
                 if (rs.next()) {
@@ -320,7 +320,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 stmt = conn.prepareStatement(sqlQuery);
                 rsReader.bindParameters(stmt, s.getIdentifierStorage().getBoundParameters());
                 ResultSet rs = stmt.executeQuery();
-                Column<?, ?, ?> column = s.getFields().get(0).getColumn();
+                Column<?, ?, ?> column = s.getFields().getFirst().getColumn();
 
                 DatabaseTypeConverter<?, ?> optype = query.getTarget().getConverterManager().getConverter(column).orElse(null);
 
@@ -595,6 +595,53 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         });
     }
 
+    /**
+     * Reads a single row of the entity query and maps it onto the given record type, positionally: the query's
+     * selected columns are assigned to the record components in order (the first selected column to the first
+     * record component, and so on). The number of selected columns must match the number of record components,
+     * otherwise a {@link DaobabException} is thrown. Returns {@code null} when the query matches no row.
+     *
+     * @param query       the entity query whose (first) row is read
+     * @param recordClass the record type to instantiate; its components must line up with the selected columns
+     * @param <E>         the entity type
+     * @param <R>         the record type
+     * @return the record built from the row, or {@code null} when there is no row
+     */
+    default <E extends Entity, R extends Record> R readRecord(DataBaseQueryEntity<E> query, Class<R> recordClass) {
+        List<TableColumn> fields = new ArrayList<>(query.getFields());
+        RecordMapper.validateComponentCount(recordClass, fields.size());
+
+        E entity = readEntity(query);
+        if (entity == null) {
+            return null;
+        }
+        return RecordMapper.fromEntity(entity, fields, recordClass);
+    }
+
+    /**
+     * Reads every row of the entity query and maps each onto the given record type - the list counterpart of
+     * {@link #readRecord(DataBaseQueryEntity, Class)}. The query's selected columns are assigned to the record
+     * components positionally, and the number of selected columns must match the number of record components,
+     * otherwise a {@link DaobabException} is thrown.
+     *
+     * @param query       the entity query whose rows are read
+     * @param recordClass the record type to instantiate; its components must line up with the selected columns
+     * @param <E>         the entity type
+     * @param <R>         the record type
+     * @return the records built from the rows, in row order (empty when the query matches nothing)
+     */
+    default <E extends Entity, R extends Record> List<R> readRecordList(DataBaseQueryEntity<E> query, Class<R> recordClass) {
+        List<TableColumn> fields = new ArrayList<>(query.getFields());
+        RecordMapper.validateComponentCount(recordClass, fields.size());
+
+        Entities<E> entities = readEntityList(query);
+        List<R> rv = new ArrayList<>(entities.size());
+        for (E entity : entities) {
+            rv.add(RecordMapper.fromEntity(entity, fields, recordClass));
+        }
+        return rv;
+    }
+
     default <T, I> T doSthOnConnection(I functionInput, BiFunction<? super I, Connection, ? extends T> function) {
         Connection conn = null;
         try {
@@ -671,6 +718,54 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
                 rsReader.closeStatement(stmt, this);
             }
         });
+    }
+
+
+    /**
+     * Reads a single row of the query and maps it onto the given record type, positionally: the query's
+     * selected columns are assigned to the record components in order (the first selected column to the first
+     * record component, the second to the second, and so on). The number of selected columns must match the
+     * number of record components, otherwise a {@link DaobabException} is thrown. Returns {@code null} when
+     * the query matches no row.
+     *
+     * @param query       the plate query whose (first) row is read
+     * @param recordClass the record type to instantiate; its components must line up with the selected columns
+     * @param <R>         the record type
+     * @return the record built from the row, or {@code null} when there is no row
+     */
+    default <R extends Record> R readRecord(DataBaseQueryPlate query, Class<R> recordClass) {
+        List<TableColumn> fields = new ArrayList<>(query.getFields());
+        RecordMapper.validateComponentCount(recordClass, fields.size());
+
+        Plate plate = readPlate(query);
+        if (plate == null) {
+            return null;
+        }
+        return RecordMapper.fromPlate(plate, fields, recordClass);
+    }
+
+    /**
+     * Reads every row of the query and maps each onto the given record type - the list counterpart of
+     * {@link #readRecord(DataBaseQueryPlate, Class)}. The query's selected columns are assigned to the record
+     * components positionally (the first selected column to the first record component, and so on), and the
+     * number of selected columns must match the number of record components, otherwise a {@link DaobabException}
+     * is thrown.
+     *
+     * @param query       the plate query whose rows are read
+     * @param recordClass the record type to instantiate; its components must line up with the selected columns
+     * @param <R>         the record type
+     * @return the records built from the rows, in row order (empty when the query matches nothing)
+     */
+    default <R extends Record> List<R> readRecordList(DataBaseQueryPlate query, Class<R> recordClass) {
+        List<TableColumn> fields = new ArrayList<>(query.getFields());
+        RecordMapper.validateComponentCount(recordClass, fields.size());
+
+        PlateBuffer plates = readPlateList(query);
+        List<R> rv = new ArrayList<>(plates.size());
+        for (Plate plate : plates) {
+            rv.add(RecordMapper.fromPlate(plate, fields, recordClass));
+        }
+        return rv;
     }
 
 

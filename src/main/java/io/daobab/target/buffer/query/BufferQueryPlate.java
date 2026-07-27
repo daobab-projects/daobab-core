@@ -39,7 +39,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
             columns.addAll(e.columns());
         }
 
-        TableColumn tableColumn = columns.get(0);
+        TableColumn tableColumn = columns.getFirst();
         if (tableColumn == null) throw new MandatoryColumn();
         init(target, tableColumn.getColumn().getInstance());
         andColumn(tableColumn.getColumn());
@@ -90,7 +90,7 @@ public final class BufferQueryPlate extends BufferQueryBase<Entity, BufferQueryP
     @SuppressWarnings("rawtypes")
     public BufferQueryPlate(BufferQueryTarget target, List<? extends Column> columndaos) {
 
-        Column<?, ?, ?> field = columndaos.get(0);
+        Column<?, ?, ?> field = columndaos.getFirst();
         if (field == null) throw new MandatoryColumn();
         init(target, field.getInstance());
         andColumn(field);

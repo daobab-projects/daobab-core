@@ -37,7 +37,6 @@ public interface QueryDataBaseHandler extends Target, QueryHandler {
 
     <E extends Entity,F> F readField(FrozenDataBaseQueryField<E,F> query, List<Object> parameters, Column<?, ?, ?> column, DatabaseTypeConverter<?, ?> typeConverter);
 
-
     <E extends Entity, F> List<F> readFieldList(DataBaseQueryField<E, F> query);
 
     <E extends Entity,F> List<F> readFieldList(FrozenDataBaseQueryField<E,F> query, List<Object> parameters, Column<?, ?, ?> column, DatabaseTypeConverter<?, ?> typeConverter);
@@ -49,6 +48,14 @@ public interface QueryDataBaseHandler extends Target, QueryHandler {
     Plates readPlateList(DataBaseQueryPlate query);
 
     Plates readPlateList(FrozenDataBaseQueryPlate query, List<Object> parameters,DatabaseTypeConverter<?, ?>[] typeConverters);
+
+    <R extends Record> R readRecord(DataBaseQueryPlate query, Class<R> recordClass);
+
+    <R extends Record> List<R> readRecordList(DataBaseQueryPlate query, Class<R> recordClass);
+
+    <E extends Entity, R extends Record> R readRecord(DataBaseQueryEntity<E> query, Class<R> recordClass);
+
+    <E extends Entity, R extends Record> List<R> readRecordList(DataBaseQueryEntity<E> query, Class<R> recordClass);
 
     <E extends Entity> int delete(DataBaseQueryDelete<E> query, boolean transaction);
 

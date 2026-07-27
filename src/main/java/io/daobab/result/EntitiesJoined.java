@@ -29,7 +29,7 @@ public class EntitiesJoined extends WhereBase implements QueryWhisperer {
 
         columnsProviders.forEach(entity -> rows.add(new Plate(entity)));
         if (!rows.isEmpty()) {
-            rootPlate = rows.get(0);
+            rootPlate = rows.getFirst();
             join(query);
         }else{
             rootPlate = PlateCreator.ofTableColumnList(query.getFields());

@@ -30,7 +30,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
     }
 
     public NonHeapPlates(List<Plate> plates, BitFieldRegistry bitFieldRegistry) {
-        this(plates == null || plates.isEmpty() ? null : plates.get(0), plates == null ? 8 : plates.size(), bitFieldRegistry);
+        this(plates == null || plates.isEmpty() ? null : plates.getFirst(), plates == null ? 8 : plates.size(), bitFieldRegistry);
         if (plates != null) {
             plates.forEach(this::add);
         }
@@ -226,7 +226,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.READ);
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         Query q = query;
-        return (E) finalFilter(q).get(0);
+        return (E) finalFilter(q).getFirst();
     }
 
     @SuppressWarnings("unchecked")
@@ -246,7 +246,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
     public <E extends Entity, F> F readField(BufferQueryField<E, F> query) {
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         BufferQueryField q = query;
-        return (F) finalFilterField(q).get(0);
+        return (F) finalFilterField(q).getFirst();
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -265,7 +265,7 @@ public class NonHeapPlates extends NonHeapBuffer<Plate> {
     @Override
     public Plate readPlate(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
-        return readPlateList(query).get(0);
+        return readPlateList(query).getFirst();
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

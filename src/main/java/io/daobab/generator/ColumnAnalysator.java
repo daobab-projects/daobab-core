@@ -42,7 +42,7 @@ public class ColumnAnalysator {
                             .filter(r -> r.getFinalFieldName() == null && columnName != null && columnName.equals(r.getColumnName()))
                             .collect(Collectors.toList());
                     if (columnList.size() == 1) {
-                        columnList.get(0).setFinalFieldName(toUpperCaseFirstCharacter(columnList.get(0).getFieldName().replaceAll("\\s", "")));
+                        columnList.getFirst().setFinalFieldName(toUpperCaseFirstCharacter(columnList.getFirst().getFieldName().replaceAll("\\s", "")));
                     } else {
                         columnList.stream()
                                 .map(GenerateColumn::getFieldClass)

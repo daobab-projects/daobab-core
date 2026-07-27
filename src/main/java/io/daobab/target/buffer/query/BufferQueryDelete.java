@@ -65,7 +65,7 @@ public final class BufferQueryDelete<E extends Entity> extends BufferQueryBase<E
             if (getFields().isEmpty()) {
                 throw new DaobabException("You cannot convert delete query to select query without entity or column provided.");
             }
-            query = new BufferQueryEntity<>(getTarget(), getFields().get(0).getColumn());
+            query = new BufferQueryEntity<>(getTarget(), getFields().getFirst().getColumn());
         } else {
             query = new BufferQueryEntity<>(getTarget(), getEntity());
         }

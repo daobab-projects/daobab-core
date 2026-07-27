@@ -38,7 +38,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
             columns.addAll(target.getColumnsForTable(e));
         }
 
-        TableColumn fieldDao = columns.get(0);
+        TableColumn fieldDao = columns.getFirst();
         if (fieldDao == null) throw new MandatoryColumn();
         init(target, fieldDao.getColumn().getInstance());
         getFields().addAll(columns);
@@ -65,7 +65,7 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
     @SuppressWarnings("rawtypes")
     public DataBaseQueryPlate(QueryTarget target, List<? extends Column> column) {
 
-        Column<?, ?, ?> field = column.get(0);
+        Column<?, ?, ?> field = column.getFirst();
         if (field == null) throw new MandatoryColumn();
         init(target, field.getInstance());
         andColumn(field);

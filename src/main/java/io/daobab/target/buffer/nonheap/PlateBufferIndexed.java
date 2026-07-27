@@ -97,8 +97,8 @@ public abstract class PlateBufferIndexed {
         PlateBufferIndexed that = (PlateBufferIndexed) o;
         if (!Objects.equals(plateList.size(), that.plateList.size())) return false;
         if (!plateList.isEmpty()) {
-            Plate plate = plateList.get(0);
-            Plate thatPlate = that.plateList.get(0);
+            Plate plate = plateList.getFirst();
+            Plate thatPlate = that.plateList.getFirst();
             return plate.equals(thatPlate);
         }
         return Objects.equals(plateList, that.plateList);
@@ -106,6 +106,6 @@ public abstract class PlateBufferIndexed {
 
     @Override
     public int hashCode() {
-        return Objects.hash(plateList, plateList.size(), plateList.isEmpty() ? 0 : plateList.get(0).hashCode());
+        return Objects.hash(plateList, plateList.size(), plateList.isEmpty() ? 0 : plateList.getFirst().hashCode());
     }
 }

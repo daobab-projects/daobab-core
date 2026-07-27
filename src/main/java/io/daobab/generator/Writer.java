@@ -217,7 +217,7 @@ public class Writer {
         if (pkExist) {
             if (table.getPrimaryKeys().size() == 1) {
                 replacer.add(GenKeys.PK_IMPORT, "import " + PrimaryKey.class.getName() + endImport)
-                        .add(GenKeys.PK_TYPE_IMPORT, "import " + table.getPrimaryKeys().get(0).getFieldClass().getName() + endImport + "\n");
+                        .add(GenKeys.PK_TYPE_IMPORT, "import " + table.getPrimaryKeys().getFirst().getFieldClass().getName() + endImport + "\n");
             } else {
                 replacer.add(GenKeys.PK_IMPORT, "import " + PrimaryCompositeKey.class.getName() + endImport + "\n" + "import " + CompositeColumns.class.getName() + endImport)
                         .add(GenKeys.PK_TYPE_IMPORT, "");
@@ -239,7 +239,7 @@ public class Writer {
                 .add(GenKeys.TABLE_PACKAGE, table.getJavaPackage());
         if (pkExist) {
             if (table.getPrimaryKeys().size() == 1) {
-                GenerateColumn pkCol = table.getPrimaryKeys().get(0);
+                GenerateColumn pkCol = table.getPrimaryKeys().getFirst();
                 GeneratedColumnInTable git = pkCol.getColumnInTableOrCreate(tableName);
                 String pkColSimpleName = table.getPkTypeSimpleName(language, pkCol);
                 if (language == KOTLIN) {
@@ -247,7 +247,7 @@ public class Writer {
                     replacer.add(GenKeys.PK_ID_METHOD, table.getPkIdMethod(language));
                 } else {
                     //Java
-                    replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + entityName + "," + pkColSimpleName + "," + table.getPrimaryKeys().get(0).getFinalFieldNameShortOrLong(tableNameCamel) + ">");
+                    replacer.add(GenKeys.PK_INTERFACE, PrimaryKey.class.getSimpleName() + "<" + entityName + "," + pkColSimpleName + "," + table.getPrimaryKeys().getFirst().getFinalFieldNameShortOrLong(tableNameCamel) + ">");
                     replacer.add(GenKeys.PK_ID_METHOD, table.getPkIdMethod(language));
                 }
 

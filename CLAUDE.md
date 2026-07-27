@@ -138,10 +138,20 @@ optional), `targetPackage()` (default: the annotated element's package). When **
 
 ### DTO generation (both paths)
 
-Entities get an `Entity` suffix and extend `DtoTable<E, D>`; a plain-Java immutable DTO with a builder is
-generated (deliberately **no Lombok** — Daobab must not force the dependency), with `toDto()`/`fromDto()`.
-Kotlin path emits a `data class` DTO. TypeScript path unchanged. Reference pattern: `ModelItemEntity`/`ModelItem`
-in the sibling project `E:\IdeaProjects\item-collector`.
+Entities get an `Entity` suffix and extend `DtoTable<E, D>`; the Java DTO is generated as a **`record`** — one
+component per column, **in column order**, so its canonical constructor lines up with a query's selected columns
+and the DTO can be read straight through `DataBaseTargetLogic.readRecord`/`readRecordList` (deliberately **no
+Lombok** — Daobab must not force the dependency). For backward compatibility the record still carries `getXxx()`
+getters and a static `builder()` (the entity's `fromDto` uses the getters, `toDto` uses the builder), and keeps
+equality on the **single** primary key (a composite key or none uses the record's default all-component equality,
+so no `equals`/`hashCode` override is emitted). Kotlin path emits a `data class` DTO (its primary constructor is
+the all-args ctor); TypeScript path unchanged. Reference pattern: `ModelItemEntity`/`ModelItem` in the sibling
+project `E:\IdeaProjects\item-collector`.
+
+- Generator side: `GenerateDto` fills `JavaTemplates.DTO_CLASS_TEMP` (now a `record` shape) — note the template
+  is a compile-time constant inlined into `TemplateProvider`, so after editing it **`mvn clean`** is needed
+  (incremental builds keep the old inlined value). Processor side: `DaobabEntityProcessor.writeDto` emits the
+  same record shape directly.
 
 ### Composite primary keys (both paths)
 

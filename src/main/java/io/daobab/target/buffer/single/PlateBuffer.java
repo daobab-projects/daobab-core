@@ -80,7 +80,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
             return null;
         }
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
-        return (E1) rv.get(0);
+        return (E1) rv.getFirst();
     }
 
     @Override
@@ -127,7 +127,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
 
     private Plate readPlateFromBuffer(BufferQueryPlate query) {
         PlateBuffer plateBuffer = resultPlateList(query);
-        return plateBuffer.isEmpty() ? null : plateBuffer.get(0);
+        return plateBuffer.isEmpty() ? null : plateBuffer.getFirst();
     }
 
     @SuppressWarnings("unchecked")
@@ -140,7 +140,7 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
         }
         matched = new BufferFunctionManager().applyFunctions(matched, query.getFunctionMap());
         Plates elements = matched.orderAndLimit(query);
-        Column<E, F, R> firstColumn = query.getFields().get(0).getColumn();
+        Column<E, F, R> firstColumn = query.getFields().getFirst().getColumn();
         List<F> results = elements.stream().map(e -> firstColumn.getValueOf((R) e)).collect(Collectors.toList());
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
         return results;
@@ -155,13 +155,13 @@ public class PlateBuffer extends PlateBufferIndexed implements Plates, Statistic
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return null;
         }
-        Plate el = matched.orderAndLimit(query).get(0);
+        Plate el = matched.orderAndLimit(query).getFirst();
         if (el == null) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return null;
         }
 
-        Column<E, F, R> col = query.getFields().get(0).getColumn();
+        Column<E, F, R> col = query.getFields().getFirst().getColumn();
         F rv = col.getValueOf((R) el);
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
         return rv;

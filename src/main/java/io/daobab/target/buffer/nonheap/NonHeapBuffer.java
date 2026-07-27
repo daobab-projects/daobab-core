@@ -209,8 +209,8 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
 
     @SuppressWarnings("unchecked")
     public <F> List<F> finalFilterField(BufferQueryField<?, F> query) {
-        int columnIntoEntityPosition = getColumnIntoEntityPosition(query.getFields().get(0).getColumn());
-        int columnBufferRowPosition = getBufferPositionOfColumn(query.getFields().get(0).getColumn());
+        int columnIntoEntityPosition = getColumnIntoEntityPosition(query.getFields().getFirst().getColumn());
+        int columnBufferRowPosition = getBufferPositionOfColumn(query.getFields().getFirst().getColumn());
 
         List<Integer> ids = finalFilter(filterByIndexes(null, query.getWhereWrapper()), query);
         List<F> rv = new ArrayList<>(ids.size());
@@ -223,7 +223,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
     @Override
     public Plate readPlate(BufferQueryPlate query) {
         getAccessProtector().removeViolatedInfoColumns(query.getFields(), OperationType.READ);
-        return readPlateList(query).get(0);
+        return readPlateList(query).getFirst();
     }
 
     @Override

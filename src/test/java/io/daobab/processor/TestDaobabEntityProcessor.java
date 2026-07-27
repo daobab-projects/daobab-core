@@ -1,12 +1,16 @@
 package io.daobab.processor;
 
 import io.daobab.model.*;
+import io.daobab.target.buffer.single.Entities;
+import io.daobab.target.buffer.single.EntityList;
 import io.daobab.target.database.MockDataBase;
+import io.daobab.target.database.query.DataBaseQueryEntity;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.*;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.RecordComponent;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -684,6 +688,58 @@ class TestDaobabEntityProcessor {
         assertFalse(result.success());
         assertTrue(result.diagnostics().contains("must match the annotated field type"),
                 "unexpected diagnostics: " + result.diagnostics());
+    }
+
+    @Test
+    void generatedDtoIsARecordReadableWithReadRecord() throws Exception {
+        CompilationResult result = compile(List.of("apttest/BookDef.java"), List.of(BOOK_DEFINITION));
+        assertTrue(result.success(), "compilation failed: " + result.diagnostics());
+
+        try (URLClassLoader loader = new URLClassLoader(
+                new URL[]{result.classesDir().toUri().toURL()}, Entity.class.getClassLoader())) {
+
+            Class<?> bookClass = loader.loadClass("apttest.BookEntity");
+            Class<?> dtoClass = loader.loadClass("apttest.Book");
+
+            //the generated DTO is a record, and its components mirror the entity columns in order
+            assertTrue(dtoClass.isRecord(), "the generated DTO must be a record");
+            assertEquals(List.of("bookId", "title", "printDate", "pages"),
+                    Arrays.stream(dtoClass.getRecordComponents()).map(RecordComponent::getName).toList());
+
+            //a row read as an entity maps straight into the DTO record via readRecordList
+            //(the map-backed entity is immutable, so each setter returns the entity to keep using)
+            Entity tmp = (Entity) bookClass.getConstructor().newInstance();
+            tmp = (Entity) bookClass.getMethod("setBookId", Integer.class).invoke(tmp, 7);
+            tmp = (Entity) bookClass.getMethod("setTitle", String.class).invoke(tmp, "Dune");
+            tmp = (Entity) bookClass.getMethod("setPages", Integer.class).invoke(tmp, 412);
+            final Entity book = tmp;
+
+            MockDataBase target = new MockDataBase() {
+                @SuppressWarnings({"unchecked", "rawtypes"})
+                @Override
+                public <E extends Entity> Entities<E> readEntityList(DataBaseQueryEntity<E> query) {
+                    return (Entities<E>) new EntityList<>(List.of(book), book);
+                }
+            };
+
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            DataBaseQueryEntity<Entity> query = target.select(book);
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            List<?> records = target.readRecordList(query, (Class) dtoClass);
+
+            assertEquals(1, records.size());
+            Object dto = records.get(0);
+            assertEquals(dtoClass, dto.getClass());
+            assertEquals(7, dtoClass.getMethod("getBookId").invoke(dto));
+            assertEquals("Dune", dtoClass.getMethod("getTitle").invoke(dto));
+            assertEquals(412, dtoClass.getMethod("getPages").invoke(dto));
+
+            //the builder and the canonical constructor agree
+            Object built = dtoClass.getMethod("builder").invoke(null);
+            built.getClass().getMethod("bookId", Integer.class).invoke(built, 7);
+            Object builtDto = built.getClass().getMethod("build").invoke(built);
+            assertEquals(dto, builtDto); //DTO equality is on the primary key
+        }
     }
 
     private record CompilationResult(boolean success, Path classesDir, Path sourcesDir, String diagnostics) {

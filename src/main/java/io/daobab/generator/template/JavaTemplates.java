@@ -168,21 +168,17 @@ class JavaTemplates {
             "\n" + GenKeys.TYPE_IMPORTS +
             "\nimport java.util.Objects;" +
             "\n" +
-            "\npublic final class " + GenKeys.DTO_NAME + " {" +
-            "\n" +
-            "\n" + GenKeys.DTO_FIELDS +
-            "\n" +
-            "\n\tprivate " + GenKeys.DTO_NAME + "(Builder builder) {" +
-            "\n" + GenKeys.DTO_ASSIGNMENTS +
-            "\n\t}" +
-            "\n" +
-            "\n\tpublic static Builder builder() {" +
-            "\n\t\treturn new Builder();" +
-            "\n\t}" +
+            "\npublic record " + GenKeys.DTO_NAME + "(" +
+            "\n" + GenKeys.DTO_RECORD_COMPONENTS +
+            "\n) {" +
             "\n" +
             "\n" + GenKeys.DTO_GETTERS +
             "\n" +
             "\n" + GenKeys.DTO_EQUALS_HASHCODE +
+            "\n" +
+            "\n\tpublic static Builder builder() {" +
+            "\n\t\treturn new Builder();" +
+            "\n\t}" +
             "\n" +
             "\n\tpublic static final class Builder {" +
             "\n" +
@@ -194,7 +190,7 @@ class JavaTemplates {
             "\n" + GenKeys.DTO_BUILDER_METHODS +
             "\n" +
             "\n\t\tpublic " + GenKeys.DTO_NAME + " build() {" +
-            "\n\t\t\treturn new " + GenKeys.DTO_NAME + "(this);" +
+            "\n\t\t\treturn new " + GenKeys.DTO_NAME + "(" + GenKeys.DTO_BUILDER_BUILD_ARGS + ");" +
             "\n\t\t}" +
             "\n\t}" +
             "\n}";

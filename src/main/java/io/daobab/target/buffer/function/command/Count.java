@@ -24,7 +24,7 @@ public class Count extends BufferFunction<Object> {
     protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Long count = plates.stream().map(p -> p.getValue(function.getFinalColumn())).filter(Objects::nonNull).count();
         Plates rv = getClonedPlates(plates, true);
-        rv.get(0).setValue(function, count);
+        rv.getFirst().setValue(function, count);
         return rv;
     }
 

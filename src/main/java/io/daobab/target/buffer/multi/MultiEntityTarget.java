@@ -125,7 +125,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
                 if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
                 return null;
             }
-            result = plates.get(0).getEntity(query.getEntityClass());
+            result = plates.getFirst().getEntity(query.getEntityClass());
         }
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, result == null ? 0 : 1);
         return result;
@@ -167,8 +167,8 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
                 if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
                 return null;
             }
-            Column<?, ?, ?> col = query.getFields().get(0).getColumn();
-            result = (F) plates.get(0).getValue(col);
+            Column<?, ?, ?> col = query.getFields().getFirst().getColumn();
+            result = (F) plates.getFirst().getValue(col);
         }
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, result == null ? 0 : 1);
         return result;
@@ -210,7 +210,7 @@ public class MultiEntityTarget extends BaseTarget implements MultiEntity, Buffer
         if (query.getJoins().isEmpty()) {
             results = entities.readFieldList(query);
         } else {
-            Column<?, ?, ?> col = query.getFields().get(0).getColumn();
+            Column<?, ?, ?> col = query.getFields().getFirst().getColumn();
             results = (List<F>) makeJoinJob(query, entities).stream().map(p -> p.getValue(col)).collect(Collectors.toList());
         }
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());

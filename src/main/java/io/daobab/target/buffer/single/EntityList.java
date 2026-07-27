@@ -93,7 +93,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
         EntityList<E> results = new EntityList<>(filter((Query<E, ?, ?>) query), (Class<E>) query.getEntityClass());
         results.orderAndLimit((Query<E, ?, ?>) query);
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
-        return (E1) results.get(0);
+        return (E1) results.getFirst();
     }
 
     @SuppressWarnings("unchecked")
@@ -128,7 +128,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
 
     private Plate readPlateFromBuffer(BufferQueryPlate query) {
         Plates proj = resultPlates(query);
-        return proj.isEmpty() ? null : proj.get(0);
+        return proj.isEmpty() ? null : proj.getFirst();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -140,7 +140,7 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
             return new ArrayList<>();
         }
         Entities<E> entities = matched.orderAndLimit(query);
-        Column<E, F, R> firstColumn = query.getFields().get(0).getColumn();
+        Column<E, F, R> firstColumn = query.getFields().getFirst().getColumn();
         List<F> results = entities.stream().map(e -> firstColumn.getValueOf((R) e)).collect(Collectors.toList());
         if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, results.size());
         return results;
@@ -155,13 +155,13 @@ public class EntityList<E extends Entity> extends EntitiesBufferIndexed<E> imple
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return null;
         }
-        E el = matched.orderAndLimit(query).get(0);
+        E el = matched.orderAndLimit(query).getFirst();
         if (el == null) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 0);
             return null;
         }
 
-        Column<E, F, R> firstColumn = query.getFields().get(0).getColumn();
+        Column<E, F, R> firstColumn = query.getFields().getFirst().getColumn();
         F rv;
         if (firstColumn instanceof ColumnFunction) {
             ColumnFunction columnFunction = (ColumnFunction) firstColumn;

@@ -70,7 +70,7 @@ public class BufferFunctionManager extends HashMap<String, BufferFunction> imple
 
         Plate aggregatedPlate = new Plate();
         for (Plates aggregatedPlates : aggregatedResults) {
-            aggregatedPlate.joinPlate(aggregatedPlates.get(0));
+            aggregatedPlate.joinPlate(aggregatedPlates.getFirst());
         }
 
         Plates resultPlates = plates;
@@ -87,12 +87,12 @@ public class BufferFunctionManager extends HashMap<String, BufferFunction> imple
         Plates rv = resultPlates;
 
         if (!aggregatedResults.isEmpty() && nonAggregativeWereInUse) {
-            Plate rvPlate = resultPlates.get(0);
+            Plate rvPlate = resultPlates.getFirst();
             for (Plates agg : aggregatedResults) {
                 if (agg.isEmpty()) {
                     continue; //shouldn't happen
                 }
-                rvPlate.joinPlate(agg.get(0));
+                rvPlate.joinPlate(agg.getFirst());
             }
             rvPlate.joinPlate(aggregatedPlate);
             rv = new PlateBuffer(Collections.singletonList(rvPlate));
@@ -102,7 +102,7 @@ public class BufferFunctionManager extends HashMap<String, BufferFunction> imple
                 if (agg.isEmpty()) {
                     continue; //shouldn't happen
                 }
-                plate.joinPlate(agg.get(0));
+                plate.joinPlate(agg.getFirst());
             }
 
             rv = new PlateBuffer(Collections.singletonList(plate));

@@ -99,7 +99,7 @@ public class ManyArgumentsFunction<E extends Entity, F, R extends RelatedTo, C> 
             if (o instanceof DataBaseQueryField) {
                 List<TableColumn> columns = ((DataBaseQueryField<?, ?>) o).getFields();
                 if (columns == null || columns.isEmpty()) continue;
-                return columns.get(0).getColumn().getFieldClass();
+                return columns.getFirst().getColumn().getFieldClass();
             }
         }
         return Object.class;

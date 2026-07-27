@@ -30,8 +30,9 @@ import java.util.*;
  *     several marked columns form a composite primary key: a {@code XxxKey} interface grouping the key
  *     columns is generated next to the entity, which implements it together with
  *     {@code PrimaryCompositeKey} - matching the generator's composite key output,</li>
- *     <li>an immutable DTO class with a builder, connected to the entity by the
- *     {@code toDto()}/{@code fromDto(dto)} conversion methods.</li>
+ *     <li>an immutable DTO generated as a Java {@code record} (its canonical constructor lets it be read
+ *     straight from a query via {@code readRecord}/{@code readRecordList}), kept with getters and a builder,
+ *     connected to the entity by the {@code toDto()}/{@code fromDto(dto)} conversion methods.</li>
  * </ul>
  * The processor is based purely on the JDK annotation processing API - no third party libraries.
  *
@@ -838,7 +839,7 @@ public class DaobabEntityProcessor extends AbstractProcessor {
                              String compositeKeyName) throws IOException {
 
         List<ColumnModel> pkColumns = columns.stream().filter(c -> c.primaryKey).toList();
-        ColumnModel pk = pkColumns.size() == 1 ? pkColumns.get(0) : null;
+        ColumnModel pk = pkColumns.size() == 1 ? pkColumns.getFirst() : null;
         boolean compositePk = pkColumns.size() > 1;
 
         //the column interfaces are imported by their simple names, so a DTO of the same name has to stay fully qualified
@@ -968,74 +969,55 @@ public class DaobabEntityProcessor extends AbstractProcessor {
     }
 
     /**
-     * The immutable DTO counterpart of the entity: final fields, getters, a builder
-     * and equality based on the primary key (or on all the fields when there is no primary key).
+     * The immutable DTO counterpart of the entity, generated as a Java {@code record}: one component per column
+     * (in column order, so its canonical constructor lines up with a query's selected columns and the DTO can be
+     * read straight through {@code readRecord}/{@code readRecordList}). It also keeps {@code getXxx()} getters and
+     * a builder for backward compatibility, and equality on the single primary key (a composite key or none keeps
+     * the record's default all-component equality).
      */
     private void writeDto(TypeElement definition, String dtoPackage, String dtoName, List<ColumnModel> columns) throws IOException {
-        //equality on the single primary key; a composite key (or none) falls back to all the fields, like the generator
         List<ColumnModel> pkColumns = columns.stream().filter(c -> c.primaryKey).toList();
-        ColumnModel pk = pkColumns.size() == 1 ? pkColumns.get(0) : null;
+        ColumnModel pk = pkColumns.size() == 1 ? pkColumns.getFirst() : null;
 
         StringBuilder sb = new StringBuilder();
         sb.append("package ").append(dtoPackage).append(";\n\n");
-        sb.append("import java.util.Objects;\n\n");
-        sb.append("public final class ").append(dtoName).append(" {\n\n");
-
-        for (ColumnModel column : columns) {
-            sb.append("\tprivate final ").append(column.fieldType).append(" ").append(decapitalize(column.fieldName)).append(";\n");
+        if (pk != null) {
+            sb.append("import java.util.Objects;\n\n");
         }
-        sb.append("\n");
 
-        sb.append("\tprivate ").append(dtoName).append("(Builder builder) {\n");
-        for (ColumnModel column : columns) {
-            String field = decapitalize(column.fieldName);
-            sb.append("\t\tthis.").append(field).append(" = builder.").append(field).append(";\n");
+        //a record: one component per column, in column order
+        sb.append("public record ").append(dtoName).append("(\n");
+        for (int i = 0; i < columns.size(); i++) {
+            ColumnModel column = columns.get(i);
+            sb.append("\t\t").append(column.fieldType).append(" ").append(decapitalize(column.fieldName));
+            sb.append(i < columns.size() - 1 ? ",\n" : "\n");
         }
-        sb.append("\t}\n\n");
+        sb.append(") {\n\n");
 
-        sb.append("\tpublic static Builder builder() {\n");
-        sb.append("\t\treturn new Builder();\n");
-        sb.append("\t}\n\n");
-
+        //getters kept for backward compatibility (the entity's fromDto and existing code use them)
         for (ColumnModel column : columns) {
             sb.append("\tpublic ").append(column.fieldType).append(" get").append(column.fieldName).append("() {\n");
             sb.append("\t\treturn ").append(decapitalize(column.fieldName)).append(";\n");
             sb.append("\t}\n\n");
         }
 
-        String hashBody;
-        String equalsBody;
         if (pk != null) {
             String pkField = decapitalize(pk.fieldName);
-            hashBody = "Objects.hashCode(" + pkField + ")";
-            equalsBody = "Objects.equals(" + pkField + ", other." + pkField + ")";
-        } else {
-            StringBuilder hash = new StringBuilder("Objects.hash(");
-            StringBuilder equals = new StringBuilder();
-            for (int i = 0; i < columns.size(); i++) {
-                String field = decapitalize(columns.get(i).fieldName);
-                hash.append(field);
-                equals.append("Objects.equals(").append(field).append(", other.").append(field).append(")");
-                if (i < columns.size() - 1) {
-                    hash.append(", ");
-                    equals.append("\n\t\t\t\t&& ");
-                }
-            }
-            hash.append(")");
-            hashBody = hash.toString();
-            equalsBody = equals.toString();
+            sb.append("\t@Override\n");
+            sb.append("\tpublic int hashCode() {\n");
+            sb.append("\t\treturn Objects.hashCode(").append(pkField).append(");\n");
+            sb.append("\t}\n\n");
+            sb.append("\t@Override\n");
+            sb.append("\tpublic boolean equals(Object obj) {\n");
+            sb.append("\t\tif (this == obj) return true;\n");
+            sb.append("\t\tif (obj == null || getClass() != obj.getClass()) return false;\n");
+            sb.append("\t\t").append(dtoName).append(" other = (").append(dtoName).append(") obj;\n");
+            sb.append("\t\treturn Objects.equals(").append(pkField).append(", other.").append(pkField).append(");\n");
+            sb.append("\t}\n\n");
         }
 
-        sb.append("\t@Override\n");
-        sb.append("\tpublic int hashCode() {\n");
-        sb.append("\t\treturn ").append(hashBody).append(";\n");
-        sb.append("\t}\n\n");
-        sb.append("\t@Override\n");
-        sb.append("\tpublic boolean equals(Object obj) {\n");
-        sb.append("\t\tif (this == obj) return true;\n");
-        sb.append("\t\tif (obj == null || getClass() != obj.getClass()) return false;\n");
-        sb.append("\t\t").append(dtoName).append(" other = (").append(dtoName).append(") obj;\n");
-        sb.append("\t\treturn ").append(equalsBody).append(";\n");
+        sb.append("\tpublic static Builder builder() {\n");
+        sb.append("\t\treturn new Builder();\n");
         sb.append("\t}\n\n");
 
         sb.append("\tpublic static final class Builder {\n\n");
@@ -1051,7 +1033,12 @@ public class DaobabEntityProcessor extends AbstractProcessor {
             sb.append("\t\t}\n\n");
         }
         sb.append("\t\tpublic ").append(dtoName).append(" build() {\n");
-        sb.append("\t\t\treturn new ").append(dtoName).append("(this);\n");
+        sb.append("\t\t\treturn new ").append(dtoName).append("(");
+        for (int i = 0; i < columns.size(); i++) {
+            sb.append(decapitalize(columns.get(i).fieldName));
+            if (i < columns.size() - 1) sb.append(", ");
+        }
+        sb.append(");\n");
         sb.append("\t\t}\n");
         sb.append("\t}\n");
         sb.append("}\n");

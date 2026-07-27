@@ -22,7 +22,7 @@ public class CountAll extends BufferFunction<Object> {
     @SuppressWarnings("rawtypes")
     protected Plates applyOnPlates(Map<String, BufferFunction> manager, Plates plates, ColumnFunction<?, ?, ?, ?> function) {
         Plates rv = getClonedPlates(plates, true);
-        rv.get(0).setValue(function, plates.size());
+        rv.getFirst().setValue(function, plates.size());
         return rv;
     }
 

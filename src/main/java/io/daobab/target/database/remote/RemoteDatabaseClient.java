@@ -12,6 +12,7 @@ import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.buffer.single.Plates;
 import io.daobab.target.database.QueryTarget;
+import io.daobab.target.database.RecordMapper;
 import io.daobab.target.database.converter.dateformat.DatabaseDateConverter;
 import io.daobab.target.database.converter.type.DatabaseTypeConverter;
 import io.daobab.target.database.query.*;
@@ -57,7 +58,6 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
         return log;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <E extends Entity> Entities<E> readEntityList(DataBaseQueryEntity<E> query) {
         ResponseWrapper response = callEndpoint(query, false);
@@ -163,6 +163,44 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
     @Override
     public Plate readPlate(FrozenDataBaseQueryPlate query, List<Object> parameters, DatabaseTypeConverter<?, ?>[] typeConverters) {
         return null;
+    }
+
+    @Override
+    public <R extends Record> R readRecord(DataBaseQueryPlate query, Class<R> recordClass) {
+        List<TableColumn> fields = new ArrayList<>(query.getFields());
+        RecordMapper.validateComponentCount(recordClass, fields.size());
+        Plate plate = readPlate(query);
+        return plate == null ? null : RecordMapper.fromPlate(plate, fields, recordClass);
+    }
+
+    @Override
+    public <R extends Record> List<R> readRecordList(DataBaseQueryPlate query, Class<R> recordClass) {
+        List<TableColumn> fields = new ArrayList<>(query.getFields());
+        RecordMapper.validateComponentCount(recordClass, fields.size());
+        List<R> rv = new ArrayList<>();
+        for (Plate plate : readPlateList(query)) {
+            rv.add(RecordMapper.fromPlate(plate, fields, recordClass));
+        }
+        return rv;
+    }
+
+    @Override
+    public <E extends Entity, R extends Record> R readRecord(DataBaseQueryEntity<E> query, Class<R> recordClass) {
+        List<TableColumn> fields = new ArrayList<>(query.getFields());
+        RecordMapper.validateComponentCount(recordClass, fields.size());
+        E entity = readEntity(query);
+        return entity == null ? null : RecordMapper.fromEntity(entity, fields, recordClass);
+    }
+
+    @Override
+    public <E extends Entity, R extends Record> List<R> readRecordList(DataBaseQueryEntity<E> query, Class<R> recordClass) {
+        List<TableColumn> fields = new ArrayList<>(query.getFields());
+        RecordMapper.validateComponentCount(recordClass, fields.size());
+        List<R> rv = new ArrayList<>();
+        for (E entity : readEntityList(query)) {
+            rv.add(RecordMapper.fromEntity(entity, fields, recordClass));
+        }
+        return rv;
     }
 
     @Override

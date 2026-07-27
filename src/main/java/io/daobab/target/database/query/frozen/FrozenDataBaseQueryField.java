@@ -29,7 +29,7 @@ public class FrozenDataBaseQueryField<E extends Entity, F> extends FrozenDataBas
         if (originalQuery.getFields() == null || originalQuery.getFields().isEmpty()) {
             throw new DaobabException("Field query has no column to return");
         }
-        column = originalQuery.getFields().get(0).getColumn();
+        column = originalQuery.getFields().getFirst().getColumn();
         typeConverter = originalQuery.getTarget().getConverterManager().getConverter(column).orElse(null);
 
         fieldJsonConversion = (FieldJsonConversion<F>) target.getJsonConverterManager().getFieldJsonConverter(column);

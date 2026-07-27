@@ -73,7 +73,7 @@ public final class DataBaseQueryField<E extends Entity, F> extends DataBaseQuery
     }
 
     public TableColumn getSelectedColumn() {
-        return fields.get(0);
+        return fields.getFirst();
     }
 
     public FrozenDataBaseQueryField<E,F> freezeQuery() {

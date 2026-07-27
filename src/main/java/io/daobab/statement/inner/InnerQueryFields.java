@@ -61,7 +61,7 @@ public class InnerQueryFields<E extends Entity, F> implements QueryExpressionPro
     @Override
     public Optional<F> findFirst() {
         List<F> many = findMany();
-        return many.isEmpty() ? Optional.empty() : Optional.of(many.get(0));
+        return many.isEmpty() ? Optional.empty() : Optional.of(many.getFirst());
     }
 
 

@@ -90,7 +90,7 @@ public interface FunctionWhispererMySql {
         List<Object> objects = new ArrayList<>();
         objects.add(field);
         objects.add(query);
-        return new ManyArgumentsFunction<>(DictFunctionMySql.FIELD, query.getFields().get(0).getColumn().getFieldClass(), objects);
+        return new ManyArgumentsFunction<>(DictFunctionMySql.FIELD, query.getFields().getFirst().getColumn().getFieldClass(), objects);
     }
 
     /**

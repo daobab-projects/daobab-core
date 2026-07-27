@@ -268,7 +268,7 @@ public class GenerateTable {
     public String getPkIdMethod(TemplateLanguage language) {
         if (getPrimaryKeys() == null || getPrimaryKeys().isEmpty()) return "";
 
-        GenerateColumn pk = getPrimaryKeys().get(0);
+        GenerateColumn pk = getPrimaryKeys().getFirst();
 
         Replacer replacer = new Replacer();
 

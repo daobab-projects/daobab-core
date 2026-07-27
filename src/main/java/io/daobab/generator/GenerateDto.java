@@ -11,9 +11,10 @@ import java.util.stream.Collectors;
 import static io.daobab.generator.GenerateFormatter.decapitalize;
 
 /**
- * Builds the DTO class content and the entity's to/from DTO conversion methods. The Java DTO is an immutable
- * class with a builder; the Kotlin DTO is a {@code data class}. Equality is based on the single primary key when
- * there is one, otherwise on all the fields.
+ * Builds the DTO class content and the entity's to/from DTO conversion methods. The Java DTO is a {@code record}
+ * (its canonical constructor lets it be read straight from a query via {@code readRecord}), kept with getters and
+ * a builder for backward compatibility; the Kotlin DTO is a {@code data class}. Equality is based on the single
+ * primary key when there is one, otherwise on all the fields.
  *
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
@@ -38,12 +39,12 @@ class GenerateDto {
         return new Replacer()
                 .add(GenKeys.DTO_PACKAGE, dtoPackage)
                 .add(GenKeys.TYPE_IMPORTS, table.getTypeImports(TemplateLanguage.JAVA))
-                .add(GenKeys.DTO_FIELDS, getFields(table))
-                .add(GenKeys.DTO_ASSIGNMENTS, getAssignments(table))
+                .add(GenKeys.DTO_RECORD_COMPONENTS, getRecordComponents(table))
                 .add(GenKeys.DTO_GETTERS, getGetters(table))
                 .add(GenKeys.DTO_EQUALS_HASHCODE, getEqualsHashCode(table, dtoName))
                 .add(GenKeys.DTO_BUILDER_FIELDS, getBuilderFields(table))
                 .add(GenKeys.DTO_BUILDER_METHODS, getBuilderMethods(table))
+                .add(GenKeys.DTO_BUILDER_BUILD_ARGS, getBuildArgs(table))
                 .add(GenKeys.DTO_NAME, dtoName)
                 .replaceAll(TemplateProvider.getTemplate(TemplateLanguage.JAVA, TemplateType.DTO_CLASS));
     }
@@ -121,7 +122,7 @@ class GenerateDto {
         if (primaryKeys == null || primaryKeys.size() != 1) {
             return "";
         }
-        GenerateColumn pk = primaryKeys.get(0);
+        GenerateColumn pk = primaryKeys.getFirst();
         String pkField = fieldOf(pk);
         String hashBody = isNullable(table, pk) ? pkField + "?.hashCode() ?: 0" : pkField + ".hashCode()";
 
@@ -155,18 +156,22 @@ class GenerateDto {
         return fieldClass.getSimpleName();
     }
 
-    /** The private final fields of the Java DTO. */
-    private static String getFields(GenerateTable table) {
+    /**
+     * The record components of the Java DTO (one per column, in column order).
+     */
+    private static String getRecordComponents(GenerateTable table) {
         return table.getColumnList().stream()
-                .map(gc -> "\tprivate final " + typeOf(gc) + " " + fieldOf(gc) + ";")
-                .collect(Collectors.joining("\n"));
+                .map(gc -> "\t\t" + typeOf(gc) + " " + fieldOf(gc))
+                .collect(Collectors.joining(",\n"));
     }
 
-    /** The builder-to-field assignments of the Java DTO constructor. */
-    private static String getAssignments(GenerateTable table) {
+    /**
+     * The field names passed to the record's canonical constructor from the builder's {@code build()}.
+     */
+    private static String getBuildArgs(GenerateTable table) {
         return table.getColumnList().stream()
-                .map(gc -> "\t\tthis." + fieldOf(gc) + " = builder." + fieldOf(gc) + ";")
-                .collect(Collectors.joining("\n"));
+                .map(GenerateDto::fieldOf)
+                .collect(Collectors.joining(", "));
     }
 
     /** The getters of the Java DTO. */
@@ -178,29 +183,21 @@ class GenerateDto {
                 .collect(Collectors.joining("\n\n"));
     }
 
-    /** The Java DTO {@code equals}/{@code hashCode} (on the single primary key, or on all the fields). */
+    /**
+     * The Java DTO {@code equals}/{@code hashCode} override on the single primary key. A composite key (or none)
+     * returns an empty string, keeping the record's default all-component equality.
+     */
     private static String getEqualsHashCode(GenerateTable table, String dtoName) {
         List<GenerateColumn> primaryKeys = table.getPrimaryKeys();
         boolean singlePk = primaryKeys != null && primaryKeys.size() == 1;
-
-        String hashBody;
-        String equalsBody;
-        if (singlePk) {
-            String pkField = fieldOf(primaryKeys.get(0));
-            hashBody = "Objects.hashCode(" + pkField + ")";
-            equalsBody = "Objects.equals(" + pkField + ", other." + pkField + ")";
-        } else {
-            hashBody = table.getColumnList().stream()
-                    .map(GenerateDto::fieldOf)
-                    .collect(Collectors.joining(", ", "Objects.hash(", ")"));
-            equalsBody = table.getColumnList().stream()
-                    .map(gc -> "Objects.equals(" + fieldOf(gc) + ", other." + fieldOf(gc) + ")")
-                    .collect(Collectors.joining("\n\t\t\t\t&& "));
+        if (!singlePk) {
+            return "";
         }
 
+        String pkField = fieldOf(primaryKeys.getFirst());
         return "\t@Override" +
                 "\n\tpublic int hashCode() {" +
-                "\n\t\treturn " + hashBody + ";" +
+                "\n\t\treturn Objects.hashCode(" + pkField + ");" +
                 "\n\t}" +
                 "\n" +
                 "\n\t@Override" +
@@ -208,7 +205,7 @@ class GenerateDto {
                 "\n\t\tif (this == obj) return true;" +
                 "\n\t\tif (obj == null || getClass() != obj.getClass()) return false;" +
                 "\n\t\t" + dtoName + " other = (" + dtoName + ") obj;" +
-                "\n\t\treturn " + equalsBody + ";" +
+                "\n\t\treturn Objects.equals(" + pkField + ", other." + pkField + ");" +
                 "\n\t}";
     }
 

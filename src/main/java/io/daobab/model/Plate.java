@@ -149,7 +149,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         } else if (columnsToSet.size() > 1) {
             throw new DaobabException("Plate contains more than one column " + df.getFieldName());
         }
-        return (F) getValue(columnsToSet.get(0));
+        return (F) getValue(columnsToSet.getFirst());
     }
 
     @SuppressWarnings("rawtypes")

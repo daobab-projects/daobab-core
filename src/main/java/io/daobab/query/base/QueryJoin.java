@@ -164,7 +164,7 @@ public interface QueryJoin<Q extends Query> {
 
     /** Inner-joins {@code joinedTable} on a composite key. */
     default <E extends Entity, K extends Composite> Q join(E joinedTable, CompositeColumns<K> compositeColumns) {
-        return join(JoinType.INNER, joinedTable, compositeColumns.get(0).getColumn(), new WhereAnd().equal(compositeColumns, (K) joinedTable));
+        return join(JoinType.INNER, joinedTable, compositeColumns.getFirst().getColumn(), new WhereAnd().equal(compositeColumns, (K) joinedTable));
     }
 
     /** Inner-joins {@code joinedTable} on the column, with an extra where condition. */
@@ -279,7 +279,7 @@ public interface QueryJoin<Q extends Query> {
     /** Joins {@code joinedTable} on the given columns with the given join type (multiple columns are AND-ed). */
     default <E extends Entity> Q join(JoinType type, E joinedTable, List<Column<?, ?, ?>> joinByColumns) {
         if (joinByColumns.size() == 1) {
-            getJoins().add(new JoinWrapper(type, joinedTable, joinByColumns.get(0)));
+            getJoins().add(new JoinWrapper(type, joinedTable, joinByColumns.getFirst()));
         } else {
 
             WhereAnd whr = new WhereAnd();
@@ -304,7 +304,7 @@ public interface QueryJoin<Q extends Query> {
     /** Joins {@code joinedTable} on the given columns (AND-ed) plus an extra where condition. */
     default <E extends Entity> Q join(JoinType type, E joinedTable, List<Column<?, ?, ?>> joinByColumns, Where where) {
         if (joinByColumns.size() == 1) {
-            getJoins().add(new JoinWrapper(type, joinedTable, joinByColumns.get(0)));
+            getJoins().add(new JoinWrapper(type, joinedTable, joinByColumns.getFirst()));
         } else {
 
             WhereAnd whr = new WhereAnd();
