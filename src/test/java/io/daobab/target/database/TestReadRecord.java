@@ -37,7 +37,7 @@ class TestReadRecord {
         target.onePlate = new Plate(actor(1, "NICK", "WAHLBERG"));
 
         DataBaseQueryPlate query = target.select(TAB.colActorId(), TAB.colFirstName());
-        ActorNames rec = target.readRecord(query, ActorNames.class);
+        ActorNames rec = target.readRecordPlate(query, ActorNames.class);
 
         assertEquals(new ActorNames(1, "NICK"), rec);
     }
@@ -49,7 +49,7 @@ class TestReadRecord {
         target.manyPlates.add(new Plate(actor(2, "ED", "CHASE")));
 
         DataBaseQueryPlate query = target.select(TAB.colActorId(), TAB.colFirstName());
-        List<ActorNames> recs = target.readRecordList(query, ActorNames.class);
+        List<ActorNames> recs = target.readRecordPlateList(query, ActorNames.class);
 
         assertEquals(List.of(new ActorNames(1, "NICK"), new ActorNames(2, "ED")), recs);
     }
@@ -62,7 +62,7 @@ class TestReadRecord {
         target.onePlate = null;
 
         DataBaseQueryPlate query = target.select(TAB.colActorId(), TAB.colFirstName());
-        assertNull(target.readRecord(query, ActorNames.class));
+        assertNull(target.readRecordPlate(query, ActorNames.class));
     }
 
     @Test
@@ -72,7 +72,7 @@ class TestReadRecord {
 
         // a 4-component record against a 2-column query
         DaobabException ex = assertThrows(DaobabException.class,
-                () -> target.readRecord(query, ActorFull.class));
+                () -> target.readRecordPlate(query, ActorFull.class));
         assertTrue(ex.getMessage().contains("match the selected columns"), ex.getMessage());
     }
 
@@ -82,7 +82,7 @@ class TestReadRecord {
         target.oneActor = actor(5, "PENELOPE", "GUINESS");
 
         DataBaseQueryEntity<Actor> query = target.select(TAB);
-        ActorFull rec = target.readRecord(query, ActorFull.class);
+        ActorFull rec = target.readRecordPlate(query, ActorFull.class);
 
         assertEquals(new ActorFull(5, "PENELOPE", "GUINESS", TS), rec);
     }
@@ -109,7 +109,7 @@ class TestReadRecord {
         target.oneActor = null;
 
         DataBaseQueryEntity<Actor> query = target.select(TAB);
-        assertNull(target.readRecord(query, ActorFull.class));
+        assertNull(target.readRecordPlate(query, ActorFull.class));
     }
 
     @Test

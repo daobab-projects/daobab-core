@@ -49,11 +49,11 @@ public interface QueryDataBaseHandler extends Target, QueryHandler {
 
     Plates readPlateList(FrozenDataBaseQueryPlate query, List<Object> parameters,DatabaseTypeConverter<?, ?>[] typeConverters);
 
-    <R extends Record> R readRecord(DataBaseQueryPlate query, Class<R> recordClass);
+    <R extends Record> R readRecordPlate(DataBaseQueryPlate query, Class<R> recordClass);
 
-    <R extends Record> List<R> readRecordList(DataBaseQueryPlate query, Class<R> recordClass);
+    <R extends Record> List<R> readRecordPlateList(DataBaseQueryPlate query, Class<R> recordClass);
 
-    <E extends Entity, R extends Record> R readRecord(DataBaseQueryEntity<E> query, Class<R> recordClass);
+    <E extends Entity, R extends Record> R readRecordPlate(DataBaseQueryEntity<E> query, Class<R> recordClass);
 
     <E extends Entity, R extends Record> List<R> readRecordList(DataBaseQueryEntity<E> query, Class<R> recordClass);
 

@@ -51,6 +51,16 @@ public class FrozenDataBaseQueryPlate extends FrozenDataBaseQueryBase<Entity, Da
                 return Optional.ofNullable(target.readPlate(frozenDataBaseQueryPlate, parameters, typeConverters));
             }
 
+            @Override
+            public <R extends Record> R findOneRecords(Class<R> recordClass) {
+                return null;
+            }
+
+            @Override
+            public <R extends Record> List<R> findManyRecords(Class<R> recordClass) {
+                return List.of();
+            }
+
         };
     }
 
@@ -65,6 +75,16 @@ public class FrozenDataBaseQueryPlate extends FrozenDataBaseQueryBase<Entity, Da
     public Optional<Plate> findFirst() {
         validateEmptyParameters();
         return Optional.ofNullable(target.readPlate(this, Collections.emptyList(), typeConverters));
+    }
+
+    @Override
+    public <R extends Record> R findOneRecords(Class<R> recordClass) {
+        return null;//target.readRecordPlate(get, recordClass));
+    }
+
+    @Override
+    public <R extends Record> List<R> findManyRecords(Class<R> recordClass) {
+        return List.of();
     }
 
     @Override

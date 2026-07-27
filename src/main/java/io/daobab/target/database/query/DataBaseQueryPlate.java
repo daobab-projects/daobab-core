@@ -99,6 +99,15 @@ public final class DataBaseQueryPlate extends DataBaseQueryBase<Entity, DataBase
         return getTarget().readPlateList(modifyQuery(this));
     }
 
+    public <R extends Record> List<R> findManyRecords(Class<R> recordClass) {
+        return getTarget().readRecordPlateList(modifyQuery(this), recordClass);
+    }
+
+
+    public <R extends Record> R findOneRecords(Class<R> recordClass) {
+        return getTarget().readRecordPlate(modifyQuery(this), recordClass);
+    }
+
     @Override
     public Optional<Plate> findFirst() {
         return Optional.ofNullable(getTarget().readPlate(modifyQuery(this)));

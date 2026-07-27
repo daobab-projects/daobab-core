@@ -32,6 +32,10 @@ public interface PlateProvider {
         findMany().forEach(consumer);
     }
 
+    <R extends Record> R findOneRecords(Class<R> recordClass);
+
+    <R extends Record> List<R> findManyRecords(Class<R> recordClass);
+
 
     default FieldsProvider<Plate> filter(Predicate<Plate> predicate) {
         if (predicate == null) throw new NullFunction();

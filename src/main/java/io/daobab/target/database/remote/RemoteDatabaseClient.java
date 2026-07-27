@@ -166,7 +166,7 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
     }
 
     @Override
-    public <R extends Record> R readRecord(DataBaseQueryPlate query, Class<R> recordClass) {
+    public <R extends Record> R readRecordPlate(DataBaseQueryPlate query, Class<R> recordClass) {
         List<TableColumn> fields = new ArrayList<>(query.getFields());
         RecordMapper.validateComponentCount(recordClass, fields.size());
         Plate plate = readPlate(query);
@@ -174,7 +174,7 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
     }
 
     @Override
-    public <R extends Record> List<R> readRecordList(DataBaseQueryPlate query, Class<R> recordClass) {
+    public <R extends Record> List<R> readRecordPlateList(DataBaseQueryPlate query, Class<R> recordClass) {
         List<TableColumn> fields = new ArrayList<>(query.getFields());
         RecordMapper.validateComponentCount(recordClass, fields.size());
         List<R> rv = new ArrayList<>();
@@ -185,7 +185,7 @@ public abstract class RemoteDatabaseClient extends BaseTarget implements QueryTa
     }
 
     @Override
-    public <E extends Entity, R extends Record> R readRecord(DataBaseQueryEntity<E> query, Class<R> recordClass) {
+    public <E extends Entity, R extends Record> R readRecordPlate(DataBaseQueryEntity<E> query, Class<R> recordClass) {
         List<TableColumn> fields = new ArrayList<>(query.getFields());
         RecordMapper.validateComponentCount(recordClass, fields.size());
         E entity = readEntity(query);

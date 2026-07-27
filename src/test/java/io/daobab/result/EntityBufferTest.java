@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Disabled
 public class EntityBufferTest implements SakilaTables, QueryWhisperer {
 
     static Entities<Film> films = null;

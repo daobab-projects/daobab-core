@@ -607,7 +607,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
      * @param <R>         the record type
      * @return the record built from the row, or {@code null} when there is no row
      */
-    default <E extends Entity, R extends Record> R readRecord(DataBaseQueryEntity<E> query, Class<R> recordClass) {
+    default <E extends Entity, R extends Record> R readRecordPlate(DataBaseQueryEntity<E> query, Class<R> recordClass) {
         List<TableColumn> fields = new ArrayList<>(query.getFields());
         RecordMapper.validateComponentCount(recordClass, fields.size());
 
@@ -620,7 +620,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
     /**
      * Reads every row of the entity query and maps each onto the given record type - the list counterpart of
-     * {@link #readRecord(DataBaseQueryEntity, Class)}. The query's selected columns are assigned to the record
+     * {@link #readRecordPlate(DataBaseQueryEntity, Class)}. The query's selected columns are assigned to the record
      * components positionally, and the number of selected columns must match the number of record components,
      * otherwise a {@link DaobabException} is thrown.
      *
@@ -733,7 +733,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
      * @param <R>         the record type
      * @return the record built from the row, or {@code null} when there is no row
      */
-    default <R extends Record> R readRecord(DataBaseQueryPlate query, Class<R> recordClass) {
+    default <R extends Record> R readRecordPlate(DataBaseQueryPlate query, Class<R> recordClass) {
         List<TableColumn> fields = new ArrayList<>(query.getFields());
         RecordMapper.validateComponentCount(recordClass, fields.size());
 
@@ -746,7 +746,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
     /**
      * Reads every row of the query and maps each onto the given record type - the list counterpart of
-     * {@link #readRecord(DataBaseQueryPlate, Class)}. The query's selected columns are assigned to the record
+     * {@link #readRecordPlate(DataBaseQueryPlate, Class)}. The query's selected columns are assigned to the record
      * components positionally (the first selected column to the first record component, and so on), and the
      * number of selected columns must match the number of record components, otherwise a {@link DaobabException}
      * is thrown.
@@ -756,7 +756,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
      * @param <R>         the record type
      * @return the records built from the rows, in row order (empty when the query matches nothing)
      */
-    default <R extends Record> List<R> readRecordList(DataBaseQueryPlate query, Class<R> recordClass) {
+    default <R extends Record> List<R> readRecordPlateList(DataBaseQueryPlate query, Class<R> recordClass) {
         List<TableColumn> fields = new ArrayList<>(query.getFields());
         RecordMapper.validateComponentCount(recordClass, fields.size());
 
