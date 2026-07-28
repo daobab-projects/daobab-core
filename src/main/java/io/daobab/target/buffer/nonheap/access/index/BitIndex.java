@@ -366,7 +366,9 @@ public abstract class BitIndex<K, B extends BitField<K>, I extends BitIndex<K, B
         }
 
         fromKeyNo = Math.max(0, fromKeyNo);
-        toKeyNo = Math.min(keysLength - 1, toKeyNo);
+        //toKeyNo is the exclusive upper bound of the loop below (it reads up to index toKeyNo-1), so it must be
+        //allowed to reach keysLength - clamping to keysLength-1 dropped the last (maximum) key from the range
+        toKeyNo = Math.min(keysLength, toKeyNo);
 
         Integer[][] rv = new Integer[toKeyNo - fromKeyNo][];
         for (int i = 0; i < toKeyNo - fromKeyNo; i++) {

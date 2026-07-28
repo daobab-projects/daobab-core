@@ -384,12 +384,13 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
 
         String relations = wrapper.getRelationBetweenExpressions();
 
-        boolean[][] flags;
-
-        if (OR.equals(relations)) {
-            flags = new boolean[1][size()];
-        } else {
-            flags = new boolean[wrapper.getCounter()][size()];
+        //A BitSet per condition (one shared set for OR) replaces the former boolean[condition][size()] matrix:
+        //8x less memory, primitive (no boxing), and the OR result below is iterated in O(hits) via nextSetBit.
+        int bufferSize = size();
+        int rows = OR.equals(relations) ? 1 : wrapper.getCounter();
+        BitSet[] flags = new BitSet[rows];
+        for (int i = 0; i < rows; i++) {
+            flags[i] = new BitSet(bufferSize);
         }
 
         List<Integer> skipSteps = new ArrayList<>();
@@ -406,12 +407,12 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
 
                 if (OR.equals(relations)) {
                     for (int in : indexedFilterResult.getPointers()) {
-                        flags[0][in] = true;
+                        flags[0].set(in);
                     }
                 } else {
                     int size = indexedFilterResult.getPointers().length;
                     for (int in : indexedFilterResult.getPointers()) {
-                        flags[indexedArguments][in] = true;
+                        flags[indexedArguments].set(in);
                     }
 
                     if (lowestSize > size) {
@@ -441,7 +442,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
 
                     int size = filtered.length;
                     for (int in : filtered) {
-                        flags[indexedArguments][in] = true;
+                        flags[indexedArguments].set(in);
                     }
                     if (lowestSize > size) {
                         lowestSize = size;
@@ -452,14 +453,14 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
                 case OR: {
                     Integer[] filtered = index.filter(operator, val);
                     for (int in : filtered) {
-                        flags[0][in] = true;
+                        flags[0].set(in);
                     }
                     break;
                 }
                 case NOT: {
                     Integer[] filtered = index.filterNegative(operator, val);
                     for (int in : filtered) {
-                        flags[indexedArguments][in] = true;
+                        flags[indexedArguments].set(in);
                     }
                     break;
                 }
@@ -470,16 +471,14 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
         List<Integer> pointers = new ArrayList<>();
         if (entitiesToHandle == null) {
             if (OR.equals(relations)) {
-                for (int p = 0; p < flags[0].length; p++) {
-                    if (flags[0][p]) {
-                        pointers.add(p);
-                    }
+                for (int p = flags[0].nextSetBit(0); p >= 0; p = flags[0].nextSetBit(p + 1)) {
+                    pointers.add(p);
                 }
             } else {
                 for (int p : lowestCollection) {
                     int o = 0;
                     for (; o < indexedArguments; o++) {
-                        if (!flags[o][p]) {
+                        if (!flags[o].get(p)) {
                             break;
                         }
                     }
@@ -491,7 +490,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
         } else {
             if (OR.equals(relations)) {
                 for (int p = 0; p < entitiesToHandle.size(); p++) {
-                    if (flags[0][entitiesToHandle.get(p)]) {
+                    if (flags[0].get(entitiesToHandle.get(p))) {
                         pointers.add(p);
                     }
                 }
@@ -499,7 +498,7 @@ public abstract class NonHeapBuffer<E> extends BaseTarget implements BufferQuery
                 for (int p = 0; p < entitiesToHandle.size(); p++) {
                     int o = 0;
                     for (; o < indexedArguments; o++) {
-                        if (!flags[o][entitiesToHandle.get(p)]) {
+                        if (!flags[o].get(entitiesToHandle.get(p))) {
                             break;
                         }
                     }

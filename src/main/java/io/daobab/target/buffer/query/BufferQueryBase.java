@@ -25,7 +25,10 @@ import io.daobab.statement.where.base.WhereBase;
 import io.daobab.target.buffer.BufferQueryTarget;
 import org.slf4j.Logger;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.UnaryOperator;
 
 
@@ -34,6 +37,17 @@ import java.util.function.UnaryOperator;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBase> implements Query<E, BufferQueryTarget, Q>, QueryJoin<Q>, QueryWhere<Q>, QueryOrder<Q>, QueryLimit<Q>, QueryHaving<Q>, QuerySetOperator<Q>, RemoteQuery<Q>, ILoggerBean {
+
+    //a cheap, monotonic per-run query identifier - avoids the SecureRandom cost (and lock contention) of
+    //UUID.randomUUID() on every buffer query execution. Unique per JVM run, which is all a statistics
+    //correlation key needs.
+    private static final AtomicLong QUERY_ID_SEQUENCE = new AtomicLong();
+
+    //cached no-arg constructor per EnhancedEntity class, so modifyQuery() does not repeat the reflective lookup
+    private static final Map<Class<?>, Constructor<?>> ENHANCED_ENTITY_CONSTRUCTORS = new ConcurrentHashMap<>();
+
+    //cached columnName -> TableColumn map per entity class, so getInfoColumn() is an O(1) lookup instead of a scan
+    private static final Map<Class<?>, Map<String, TableColumn>> INFO_COLUMNS_BY_ENTITY = new ConcurrentHashMap<>();
 
     public List<Column<?, ?, ?>> _groupBy = new ArrayList<>();
     public String _groupByAlias = null;
@@ -316,7 +330,8 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     public void fromRemote(BufferQueryTarget target, Map<String, Object> rv) {
         setTarget(target);
         if (!this.getClass().getName().equals(rv.get(DictRemoteKey.QUERY_CLASS))) {
-            System.out.println("classname is wrong"); //TODO: exception
+            getLog().warn("Remote query class mismatch: expected {}, received {}",
+                    this.getClass().getName(), rv.get(DictRemoteKey.QUERY_CLASS));
         }
 
         Object where = rv.get(DictRemoteKey.WHERE);
@@ -345,12 +360,19 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
     }
 
     protected <Q1 extends Query> Q1 modifyQuery(Q1 query) {
-        query.setIdentifier(UUID.randomUUID().toString());
+        query.setIdentifier(Long.toUnsignedString(QUERY_ID_SEQUENCE.incrementAndGet()));
         if (query.getEntityClass() == null) return query;
 
         if (EnhancedEntity.class.isAssignableFrom(query.getEntityClass())) {
             try {
-                EnhancedEntity emb = (EnhancedEntity) query.getEntityClass().getDeclaredConstructor().newInstance();
+                Constructor<?> constructor = ENHANCED_ENTITY_CONSTRUCTORS.computeIfAbsent(query.getEntityClass(), clazz -> {
+                    try {
+                        return clazz.getDeclaredConstructor();
+                    } catch (NoSuchMethodException e) {
+                        throw new DaobabEntityCreationException(clazz, e);
+                    }
+                });
+                EnhancedEntity emb = (EnhancedEntity) constructor.newInstance();
                 if (emb.joinedColumns() != null) {
                     for (Column<?, ?, ?> joinedColumn : emb.joinedColumns()) {
                         for (TableColumn col : emb.columns()) {
@@ -396,12 +418,16 @@ public abstract class BufferQueryBase<E extends Entity, Q extends BufferQueryBas
             return new TableColumn(column);
         }
 
-        for (TableColumn ic : column.getInstance().columns()) {
-            if (ic.getColumn().equalsColumn(column)) {
-                return ic;
+        //equalsColumn compares by column name, so an O(1) name lookup (built once per entity class) is
+        //equivalent to the former linear scan over the entity's columns
+        Map<String, TableColumn> byName = INFO_COLUMNS_BY_ENTITY.computeIfAbsent(column.entityClass(), c -> {
+            Map<String, TableColumn> map = new HashMap<>();
+            for (TableColumn ic : column.getInstance().columns()) {
+                map.putIfAbsent(ic.getColumn().getColumnName(), ic);
             }
-        }
-        return null;
+            return map;
+        });
+        return byName.get(column.getColumnName());
     }
 
     public String getSentQuery() {

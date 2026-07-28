@@ -9,7 +9,9 @@ import java.util.*;
 
 public class EntityBufferGenerator {
 
-    private static final int size = 1000000;
+    //100k keeps the smoke/benchmark builds meaningful but CI-friendly; calculateIndexes now actually builds
+    //the indexes (it used to silently build empty ones), so 1,000,000 made ProjectionBoxTest take ~1 minute
+    private static final int size = 100000;
     private final List<String> rates = Arrays.asList("perfect", "very good", "good", "medium", "poor", "disaster");
 
     public Entities<Film> getFilms(){

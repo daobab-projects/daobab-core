@@ -42,10 +42,8 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
     }
 
     private Optional<Index<E, ?>> getIndexFor(Column<E, ?, ?> column) {
-        return indexRepository.entrySet().stream()
-                .filter(entry -> column.getColumnName().equals(entry.getKey()))
-                .findAny()
-                .map(Map.Entry::getValue);
+        //indexRepository is keyed by column name, so a direct lookup replaces the former stream scan
+        return Optional.ofNullable(indexRepository.get(column.getColumnName()));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -86,7 +84,12 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
                 }
             }
         } else {
-            entities.stream().filter(generalPredicate).forEach(rv::add);
+            //a plain loop avoids the stream/spliterator/lambda overhead on this per-row hot path
+            for (E entity : entities) {
+                if (generalPredicate.test(entity)) {
+                    rv.add(entity);
+                }
+            }
         }
         return rv;
     }
@@ -125,9 +128,10 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
     @SuppressWarnings({"unchecked", "rawtypes"})
     private ResultEntitiesWithSkipStepsWrapper<E> filter(Where wrapper) {
         String relations = wrapper.getRelationBetweenExpressions();
-        List<E> result = new LinkedList<>();
-        List<Number> resultPk = new LinkedList<>();
-        List<Integer> skipSteps = new LinkedList<>();
+        //ArrayList over LinkedList: better cache locality and random access on these result collections
+        List<E> result = new ArrayList<>();
+        List<Number> resultPk = new ArrayList<>();
+        List<Integer> skipSteps = new ArrayList<>();
 
         for (int counter = 1; (counter < wrapper.getCounter()) && result.isEmpty(); counter++) {
             if (!wrapper.mayBeIndexedForPointer(counter)) {
@@ -213,6 +217,15 @@ public abstract class EntitiesBufferIndexed<E extends Entity> extends ListProxy<
 
     //TODO: move up
     public EntityList<E> calculateIndexes() {
+        //Populate the pk->entity map the indexes are built from. It was previously left empty, so every index
+        //was built over nothing (getValues() returned nothing) and filtering over an index returned no rows.
+        valueMap.clear();
+        long counter = 0;
+        for (E e : entities) {
+            Number pk = counter++;
+            valueMap.put(pk, new FakePkEntity<>(pk, e));
+        }
+
         E entity = entities.getFirst();
         List<TableColumn> columns = entity.columns();
         for (TableColumn tableColumn : columns) {

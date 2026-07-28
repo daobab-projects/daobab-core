@@ -15,8 +15,8 @@ public class ProjectionBoxTest implements SakilaTables {
     @BeforeAll
     public static void before(){
         EntityBufferGenerator generator=new EntityBufferGenerator();
+        //getFilms() already builds the indexes; no need to calculateIndexes() a second time
         films=generator.getFilms();
-        films.calculateIndexes();
 
 
     }
