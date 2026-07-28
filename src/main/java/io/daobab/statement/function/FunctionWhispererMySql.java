@@ -656,9 +656,9 @@ public interface FunctionWhispererMySql {
      * <p>
      * This function will return one of the following:
      * <p>
-     * If number > 0, it returns 1
-     * If number = 0, it returns 0
-     * If number < 0, it returns -1
+     * If {@code number > 0}, it returns 1
+     * If {@code number = 0}, it returns 0
+     * If {@code number < 0}, it returns -1
      */
     default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, Integer> sign(ColumnOrQuery<E, F, R> columnOrQuery) {
         return new ColumnFunction<>(columnOrQuery, DictFunctionMySql.SIGN, Integer.class);

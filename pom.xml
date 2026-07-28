@@ -136,7 +136,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.6.3</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -153,6 +153,10 @@
                 <configuration>
                     <minmemory>128m</minmemory>
                     <maxmemory>1g</maxmemory>
+                    <!-- stop the plugin from probing target/javadoc-bundle-options as an offline link
+                         ("Error fetching link ... Ignored it." noise) -->
+                    <detectOfflineLinks>false</detectOfflineLinks>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
                 </configuration>
             </plugin>
 
@@ -182,10 +186,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.6.3</version>
                 <configuration>
                     <stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
                     <show>public</show>
+                    <detectOfflineLinks>false</detectOfflineLinks>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
                 </configuration>
             </plugin>
         </plugins>
@@ -303,7 +309,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.6.3</version>
                         <configuration>
                             <additionalJOptions>
                                 <additionalJOption>-Xdoclint:none</additionalJOption>

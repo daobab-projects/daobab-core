@@ -741,17 +741,17 @@ public interface FunctionWhispererOracle {
      * <p>
      * For value of NUMBER type, the sign is:
      * <p>
-     * -1 if n<0
+     * -1 if {@code n < 0}
      * <p>
-     * 0 if n=0
+     * 0 if {@code n = 0}
      * <p>
-     * 1 if n>0
+     * 1 if {@code n > 0}
      * <p>
      * For binary floating-point numbers (BINARY_FLOAT and BINARY_DOUBLE), this function returns the sign bit of the number. The sign bit is:
      * <p>
-     * -1 if n<0
+     * -1 if {@code n < 0}
      * <p>
-     * +1 if n>=0 or n=NaN
+     * +1 if {@code n >= 0} or {@code n = NaN}
      */
     default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, BigDecimal> sign(ColumnOrQuery<E, F, R> column) {
         return new ColumnFunction<>(column, DictFunctionOracle.SIGN, BigDecimal.class);
@@ -1211,7 +1211,7 @@ public interface FunctionWhispererOracle {
     //TODO: expand it
 
     /**
-     * CUME_DIST calculates the cumulative distribution of a value in a group of values. The range of values returned by CUME_DIST is >0 to <=1. Tie values always evaluate to the same cumulative distribution value.
+     * CUME_DIST calculates the cumulative distribution of a value in a group of values. The range of values returned by CUME_DIST is {@code > 0} to {@code <= 1}. Tie values always evaluate to the same cumulative distribution value.
      * This function takes as arguments any numeric datatype or any nonnumeric datatype that can be implicitly converted to a numeric datatype. Oracle Database determines the argument with the highest numeric precedence, implicitly converts the remaining arguments to that datatype, makes the calculation, and returns NUMBER.
      */
     default <E extends Entity, F, R extends RelatedTo> ColumnFunction<E, F, R, F> cumeDist(ColumnOrQuery<E, F, R> column) {
