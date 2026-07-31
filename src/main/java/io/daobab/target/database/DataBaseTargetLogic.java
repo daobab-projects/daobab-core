@@ -240,7 +240,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         getAccessProtector().removeViolatedInfoColumns3(query.getFields(), OperationType.READ);
         return doSthOnConnection(query, (s, conn) -> {
             if (s.getFields() == null || s.getFields().isEmpty()) {
-                throw new DaobabException("Query points no column to return");
+                throw new DaobabException("Query points at no column to return");
             }
 
             ResultSetReader rsReader = getResultSetReader();
@@ -308,7 +308,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
             if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
             if (s.getFields() == null || s.getFields().isEmpty()) {
-                throw new DaobabException("Query points no column to return");
+                throw new DaobabException("Query points at no column to return");
             }
 
             ResultSetReader rsReader = getResultSetReader();

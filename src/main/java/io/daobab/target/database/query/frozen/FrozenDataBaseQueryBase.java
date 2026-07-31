@@ -67,7 +67,7 @@ public abstract class FrozenDataBaseQueryBase<E extends Entity, Q extends DataBa
 
     protected void validateEmptyParameters() {
         if (areParametersNeeded()) {
-            throw new DaobabException("This query needs %s parameters and got none.", getQueryParametersInjectionPoints().size());
+            throw new DaobabException("This query needs %s parameters but got none.", getQueryParametersInjectionPoints().size());
         }
     }
 
@@ -106,7 +106,7 @@ public abstract class FrozenDataBaseQueryBase<E extends Entity, Q extends DataBa
     @SuppressWarnings("unchecked")
     public B cacheResultsForPeriod(TemporalAmount period) {
         if (areParametersNeeded()) {
-            throw new DaobabException("Cache cannot be used for parameters needed query");
+            throw new DaobabException("Cache cannot be used for a query that needs parameters");
         }
         this.cachedPeriod = period;
         this.cacheUsed = true;

@@ -73,7 +73,7 @@ public class PlateJsonConversion extends FromJsonContext {
     public Map<String, FieldJsonConversion> toFlatJsonConversion() {
         Map<String, FieldJsonConversion> jsonConverters = new HashMap<>();
         if (fieldJsonConversions.size() < fields.size()) {
-            throw new DaobabException("Json converters doesn't match with fields number");
+            throw new DaobabException("JSON converters don't match the number of fields");
         }
         for (int i = 0; i < fields.size(); i++) {
             String fieldName = fields.get(i).getFieldName();
@@ -99,7 +99,7 @@ public class PlateJsonConversion extends FromJsonContext {
     public Plate fromJson(String sb) {
         Map<String, String> hashMap = new HashMap<>();
         if (!sb.startsWith("{") || !sb.endsWith("}")) {
-            throw new DaobabException("Cannot convert an json array");
+            throw new DaobabException("Cannot convert a JSON array");
         }
         sb = sb.substring(sb.indexOf("{") + 1, sb.lastIndexOf("}"));
 

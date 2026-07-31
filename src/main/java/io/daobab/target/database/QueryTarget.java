@@ -244,7 +244,7 @@ public interface QueryTarget extends Target, QueryDataBaseHandler, FrozenQueryBu
     }
 
     default <E extends Entity> DataBaseIdGeneratorSupplier getPrimaryKeyGenerator(E entity) {
-        throw new DaobabException("Provide a getPrimaryKeyGenerator() method into " + this.getClass().getName());
+        throw new DaobabException("Provide a getPrimaryKeyGenerator() method in " + this.getClass().getName());
     }
 
     DatabaseDateConverter getDatabaseDateConverter();

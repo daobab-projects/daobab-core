@@ -103,7 +103,7 @@ public abstract class JsonCollectionBaseConverter<C extends Collection> extends 
     public C fromJson(String json) {
         String js = json.trim();
         if (!js.startsWith("[") || !js.endsWith("]")) {
-            throw new DaobabException("Cannot convert an json array");
+            throw new DaobabException("Cannot convert a JSON array");
         }
         js = js.substring(js.indexOf("[") + 1, js.lastIndexOf("]")).trim();
 

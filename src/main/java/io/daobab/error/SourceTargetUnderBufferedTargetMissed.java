@@ -8,7 +8,7 @@ import io.daobab.target.buffer.multi.MultiEntity;
 public class SourceTargetUnderBufferedTargetMissed extends DaobabException {
 
     public SourceTargetUnderBufferedTargetMissed(Class<? extends MultiEntity> clazz) {
-        super("MultiEntity must have source target specified. " + clazz + " has not.");
+        super("MultiEntity must have a source target specified. " + clazz + " has none.");
     }
 
 }

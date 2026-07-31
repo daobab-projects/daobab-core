@@ -316,7 +316,7 @@ public class DaobabGenerator {
     @SuppressWarnings("java:S112")
     public String getPath() {
         if (filePath == null || filePath.trim().isEmpty())
-            throw new RuntimeException("Path must be provided. Daobab generator need to know, where to write generated files.");
+            throw new RuntimeException("Path must be provided. Daobab generator needs to know where to write the generated files.");
 
         return filePath;
     }

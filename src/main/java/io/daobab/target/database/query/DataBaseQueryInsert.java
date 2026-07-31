@@ -163,7 +163,7 @@ public final class DataBaseQueryInsert<E extends Entity> extends DataBaseQueryBa
         }
 
         if (!getTarget().equals(query.getTarget())) {
-            throw new DaobabException("Insert and select query has to have the same target.");
+            throw new DaobabException("Insert and select queries must have the same target.");
         }
 
         setSelectQuery(query);

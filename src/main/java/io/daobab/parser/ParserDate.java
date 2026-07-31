@@ -36,7 +36,7 @@ public class ParserDate {
             xmlCalendar.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
             return xmlCalendar;
         } catch (Exception ex) {
-            throw new ParserException("Data parser from java.util.Date to javax.xml.datatype.XMLGregorianCalendar failed for value :" + from, ex);
+            throw new ParserException("Data parser from java.util.Date to javax.xml.datatype.XMLGregorianCalendar failed for value: " + from, ex);
         }
     }
 

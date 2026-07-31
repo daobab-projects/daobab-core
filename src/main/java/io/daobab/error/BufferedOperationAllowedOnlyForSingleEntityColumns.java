@@ -6,7 +6,7 @@ package io.daobab.error;
 public class BufferedOperationAllowedOnlyForSingleEntityColumns extends DaobabException {
 
     public BufferedOperationAllowedOnlyForSingleEntityColumns() {
-        super("Query can not be proceeded in cache when points at more than one Entity.");
+        super("Query cannot be processed in cache when it points at more than one Entity.");
     }
 
 }

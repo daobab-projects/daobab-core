@@ -96,7 +96,7 @@ public final class BufferQueryInsert<E extends Entity> extends BufferQueryBase<E
         }
 
         if (!getTarget().equals(query.getTarget())) {
-            throw new DaobabException("Insert and select query has to have the same target.");
+            throw new DaobabException("Insert and select queries must have the same target.");
         }
 
         return this;

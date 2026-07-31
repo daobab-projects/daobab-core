@@ -145,7 +145,7 @@ public class Plate extends HashMap<String, Map<String, Object>> implements JsonP
         if (df == null) return null;
         List<Column> columnsToSet = getColumnIgnoreEntity(df);
         if (columnsToSet.isEmpty()) {
-            throw new DaobabException("Plate doesn't contains column " + df.getFieldName());
+            throw new DaobabException("Plate doesn't contain column " + df.getFieldName());
         } else if (columnsToSet.size() > 1) {
             throw new DaobabException("Plate contains more than one column " + df.getFieldName());
         }

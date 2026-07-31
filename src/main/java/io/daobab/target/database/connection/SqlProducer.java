@@ -971,7 +971,7 @@ public interface SqlProducer extends QueryResolverTransmitter, DataBaseTargetLog
         List<ParameterInjectionPoint> injectionPoints = frozenQueryProvider.getQueryParametersInjectionPoints();
 
         if (injectionPoints.size() != parameters.size()) {
-            throw new DaobabException("The number of parameters (%s) doesn't match with the query parameters count (%s)", injectionPoints.size(), parameters.size());
+            throw new DaobabException("The number of parameters (%s) doesn't match the query's parameter count (%s)", injectionPoints.size(), parameters.size());
         }
 
         String sqlQuery = frozenQueryProvider.getFrozenQuery();

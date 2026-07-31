@@ -46,7 +46,7 @@ public class EntityBuilder<E extends Entity> {
                 .filter(name -> params.get(name) == null)
                 .collect(Collectors.joining(","));
         if (!notNullNotProvided.isEmpty()) {
-            throw new DaobabException("Entity %s has not-null fields having null value: %s", clazz.getName(), notNullNotProvided);
+            throw new DaobabException("Entity %s has not-null fields with a null value: %s", clazz.getName(), notNullNotProvided);
         }
     }
 

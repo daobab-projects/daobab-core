@@ -87,11 +87,11 @@ public class JsonStringConverter extends JsonConverter<String> {
 
                     // expect 4 digits
                     if (i + 4 > input.length()) {
-                        throw new DaobabException("Not enough unicode digits! ");
+                        throw new DaobabException("Not enough Unicode digits! ");
                     }
                     for (char x : input.substring(i, i + 4).toCharArray()) {
                         if (!Character.isLetterOrDigit(x)) {
-                            throw new DaobabException("Bad character in unicode escape.");
+                            throw new DaobabException("Bad character in Unicode escape.");
                         }
                         hex.append(Character.toLowerCase(x));
                     }

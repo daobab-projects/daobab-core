@@ -162,7 +162,7 @@ public interface BufferQueryTarget extends Target, BufferQueryHandler {
     }
 
     default <E extends Entity> BufferIdGeneratorSupplier getPrimaryKeyGenerator(E entity) {
-        throw new DaobabException("Provide a getPrimaryKeyGenerator() method into " + this.getClass().getName());
+        throw new DaobabException("Provide a getPrimaryKeyGenerator() method in " + this.getClass().getName());
     }
 
 

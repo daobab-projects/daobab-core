@@ -75,7 +75,7 @@ public class EntityJsonConversion<E extends Entity> extends FromJsonContext {
     public E fromJson(Class<E> entityClass, String sb) {
         Map<String, String> hashMap = new HashMap<>();
         if (!sb.startsWith("{") || !sb.endsWith("}")) {
-            throw new DaobabException("Cannot convert an json array");
+            throw new DaobabException("Cannot convert a JSON array");
         }
         sb = sb.substring(sb.indexOf("{") + 1, sb.lastIndexOf("}"));
 

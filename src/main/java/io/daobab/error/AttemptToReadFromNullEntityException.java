@@ -13,7 +13,7 @@ public class AttemptToReadFromNullEntityException extends DaobabException {
     }
 
     public AttemptToReadFromNullEntityException(Class<? extends Entity> clazz, String field) {
-        super("Attempt to read from entity which is null. Entity:" + clazz.getSimpleName() + " field " + field);
+        super("Attempt to read from an entity which is null. Entity:" + clazz.getSimpleName() + " field " + field);
     }
 
     public AttemptToReadFromNullEntityException(Column<?, ?, ?> column) {

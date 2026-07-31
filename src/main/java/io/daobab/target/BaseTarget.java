@@ -75,8 +75,8 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     /** Registers an interceptor for a single entity (skipping duplicates and interceptors already applied to all). */
     private void addInterceptor(DaobabInterceptor interceptor, Entity entity) {
         if (entity == null)
-            throw new DaobabException("You cannot add interceptor to null entity. If you want to add interceptor to any Entity into target, use addInterceptorForAllEntities(DaobabInterceptor interceptor) method.");
-        if (interceptor == null) throw new DaobabException("You cannot add interceptor which is null");
+            throw new DaobabException("You cannot add an interceptor to a null entity. If you want to add an interceptor to any entity in the target, use the addInterceptorForAllEntities(DaobabInterceptor interceptor) method.");
+        if (interceptor == null) throw new DaobabException("You cannot add an interceptor which is null");
         List<DaobabInterceptor> interceptors = getInterceptorsMap().get(entity);
         List<DaobabInterceptor> interceptors_for_any_entity = getInterceptorsMap().get(entityAny);
 
@@ -106,8 +106,8 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     /** Registers an interceptor for each of the given entities. */
     public void addInterceptor(DaobabInterceptor interceptor, Entity... entities) {
         if (entities == null)
-            throw new DaobabException("You cannot add interceptor to null entities. If you want to add interceptor to any Entity into target, use addInterceptorForAllEntities(DaobabInterceptor interceptor) method.");
-        if (interceptor == null) throw new DaobabException("You cannot add interceptor which is null");
+            throw new DaobabException("You cannot add an interceptor to null entities. If you want to add an interceptor to any entity in the target, use the addInterceptorForAllEntities(DaobabInterceptor interceptor) method.");
+        if (interceptor == null) throw new DaobabException("You cannot add an interceptor which is null");
         for (Entity ent : entities) {
             addInterceptor(interceptor, ent);
         }

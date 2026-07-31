@@ -66,7 +66,7 @@ public final class EntityCreator {
     public static <E extends Entity> Entities<E> createEntityListFromJson(Class<E> entityClass, String json) {
         String js = json.trim();
         if (!js.startsWith("[") || !js.endsWith("]")) {
-            throw new DaobabException("Cannot convert an json array");
+            throw new DaobabException("Cannot convert a JSON array");
         }
         js = js.substring(js.indexOf("["), js.lastIndexOf("]"));
         Matcher matcher = Pattern.compile("\\{[^}]*\\}").matcher(js);
@@ -117,7 +117,7 @@ public final class EntityCreator {
 //
 //    static Plate clonePlate(Plate src) {
 //        if (src.size() == 0) {
-//            throw new DaobabException("Entity to clone need to have at least one column.");
+//            throw new DaobabException("Entity to clone needs to have at least one column.");
 //        }
 //        Plate clone;
 //        try {
