@@ -4,6 +4,12 @@ import io.daobab.converter.json.JsonConverter;
 
 import java.time.DayOfWeek;
 
+/**
+ * JSON converter for {@link java.time.DayOfWeek}: written as its quoted numeric value 1-7 (Monday=1)
+ * and parsed with {@link java.time.DayOfWeek#of(int)} (numeric, not the enum name).
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonLocalDayOfWeekConverter extends JsonConverter<DayOfWeek> {
 
 

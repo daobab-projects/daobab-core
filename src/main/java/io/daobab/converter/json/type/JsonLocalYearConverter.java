@@ -4,6 +4,12 @@ import io.daobab.converter.json.JsonConverter;
 
 import java.time.Year;
 
+/**
+ * JSON converter for {@link java.time.Year}: written as its quoted numeric value
+ * (e.g. {@code "2026"}) and parsed with {@link java.time.Year#of(int)}.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonLocalYearConverter extends JsonConverter<Year> {
 
 

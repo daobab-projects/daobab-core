@@ -4,6 +4,12 @@ import io.daobab.converter.json.JsonConverter;
 
 import java.time.Month;
 
+/**
+ * JSON converter for {@link java.time.Month}: written as its quoted numeric value 1-12 and parsed
+ * with {@link java.time.Month#of(int)} (numeric, not the enum name).
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonLocalMonthConverter extends JsonConverter<Month> {
 
 

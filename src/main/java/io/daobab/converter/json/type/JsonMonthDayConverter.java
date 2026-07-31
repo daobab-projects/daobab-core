@@ -4,6 +4,12 @@ import io.daobab.converter.json.JsonConverter;
 
 import java.time.MonthDay;
 
+/**
+ * JSON converter for {@link java.time.MonthDay}: written as its quoted ISO text
+ * (e.g. {@code "--07-11"}) and parsed with {@link java.time.MonthDay#parse(CharSequence)}.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonMonthDayConverter extends JsonConverter<MonthDay> {
 
     @Override

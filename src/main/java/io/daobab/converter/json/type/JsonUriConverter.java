@@ -6,6 +6,12 @@ import io.daobab.error.DaobabException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/**
+ * JSON converter for {@link java.net.URI}: written as quoted URI text and parsed with the
+ * {@code URI(String)} constructor.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonUriConverter extends JsonConverter<URI> {
 
     @Override

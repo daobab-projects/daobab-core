@@ -1,6 +1,8 @@
 package io.daobab.model;
 
 
+import io.daobab.converter.json.JsonConverter;
+
 /**
  * A typed accessor to one value of an entity - the abstraction behind {@link Column}. It knows its field name
  * and type and reads/writes the value on an entity instance. {@link #transformTo(Entity)} re-homes the accessor
@@ -11,6 +13,7 @@ package io.daobab.model;
  * @param <R> the relation the value is read from
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
  */
+@SuppressWarnings("rawtypes")
 public interface Field<E extends Entity, F, R extends RelatedTo> {
 
     /**
@@ -20,14 +23,17 @@ public interface Field<E extends Entity, F, R extends RelatedTo> {
 
 
     /** The field value type. */
+    @SuppressWarnings("rawtypes")
     Class getFieldClass();
 
     /** The element type when the field is a collection, or {@code null} otherwise. */
+    @SuppressWarnings("rawtypes")
     default Class getInnerTypeClass() {
         return null;
     }
 
     /** The owning entity's class. */
+    @SuppressWarnings("unchecked")
     default Class<E> entityClass() {
         return (Class<E>) getInstance().getClass();
     }
@@ -42,7 +48,12 @@ public interface Field<E extends Entity, F, R extends RelatedTo> {
     /** The entity instance this field is bound to. */
     E getInstance();
 
+    default JsonConverter<F> getJsonConverter() {
+        return null;
+    }
+
     /** The value on the field's own {@link #getInstance() instance}, or {@code null} when there is none. */
+    @SuppressWarnings("unchecked")
     default F getThisValue() {
         R te = (R) getInstance();
         if (te == null) return null;

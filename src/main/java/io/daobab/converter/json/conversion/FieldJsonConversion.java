@@ -23,7 +23,11 @@ public class FieldJsonConversion<F> {
     public FieldJsonConversion(Field<?, F, ?> field, JsonConverterManager manager) {
         targetField = field;
         fieldName = field.getFieldName();
-        jsonConverter = (JsonConverter<F>) manager.getConverter(field).orElseThrow(() -> new DaobabException("Cannot find Json converter for %s", field.getFieldClass()));
+        if (field.getJsonConverter() != null) {
+            jsonConverter = field.getJsonConverter();
+        } else {
+            jsonConverter = (JsonConverter<F>) manager.getConverter(field).orElseThrow(() -> new DaobabException("Cannot find Json converter for %s", field.getFieldClass()));
+        }
     }
 
     public StringBuilder toJson(StringBuilder sb, F value) {

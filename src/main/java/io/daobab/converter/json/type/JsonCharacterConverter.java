@@ -3,6 +3,12 @@ package io.daobab.converter.json.type;
 import io.daobab.converter.json.JsonConverter;
 import io.daobab.error.DaobabException;
 
+/**
+ * JSON converter for {@link Character}: written as a quoted single-character JSON string, escaped
+ * the same way as {@link JsonStringConverter} (so {@code '\n'} becomes {@code "\\n"}).
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonCharacterConverter extends JsonConverter<Character> {
 
     @Override

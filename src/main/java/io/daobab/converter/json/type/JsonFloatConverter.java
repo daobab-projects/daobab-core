@@ -2,9 +2,20 @@ package io.daobab.converter.json.type;
 
 import io.daobab.converter.json.JsonConverter;
 
+/**
+ * JSON converter for {@link Float}: written as a bare JSON number with trailing zeros trimmed
+ * (see {@link #numberToString(Float)}) and parsed with {@link Float#parseFloat(String)}. {@code NaN} and the
+ * infinities are written as {@code null}, since JSON has no token for them.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonFloatConverter extends JsonConverter<Float> {
     @Override
     public void toJson(StringBuilder sb, Float obj) {
+        if (obj.isNaN() || obj.isInfinite()) {
+            sb.append("null");
+            return;
+        }
         sb.append(numberToString(obj));
     }
 

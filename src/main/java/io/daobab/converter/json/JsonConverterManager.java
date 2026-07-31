@@ -13,11 +13,22 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
+import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
 import java.util.*;
 
+/**
+ * The registry and resolver of the JSON {@link JsonConverter}s. The singleton {@link #INSTANCE} maps every
+ * supported Java type to its converter (registered in the constructor, extensible via
+ * {@link #registerTypeConverter(Class, JsonConverter)}), and resolves the converter for a queried {@code Field} -
+ * unwrapping {@code Optional}/{@code List} inner types, treating enums by name and daobab entities through their
+ * own {@code toJson}. Resolved lookups are cached. It is the JSON-wire counterpart of the database
+ * {@code DatabaseConverterManager}.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 @SuppressWarnings({"java:S6548", "rawtypes"})
 public class JsonConverterManager {
 
@@ -73,6 +84,13 @@ public class JsonConverterManager {
         registerTypeConverter(MonthDay.class, new JsonMonthDayConverter());
         registerTypeConverter(Duration.class, new JsonDurationConverter());
         registerTypeConverter(Period.class, new JsonPeriodConverter());
+        //parity with the DB type converters in io.daobab.target.database.converter.type
+        registerTypeConverter(java.sql.Array.class, new JsonArrayConverter());
+        registerTypeConverter(SQLXML.class, new JsonSqlXmlConverter());
+        registerTypeConverter(Void.class, new JsonVoidConverter());
+        //additional commonly-used value types
+        registerTypeConverter(ZoneId.class, new JsonZoneIdConverter());
+        registerTypeConverter(Currency.class, new JsonCurrencyConverter());
 
 //        for (Entity entity : target.getTables()) {
 //            if (entity instanceof PrimaryKey) {

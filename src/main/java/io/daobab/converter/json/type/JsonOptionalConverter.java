@@ -4,6 +4,13 @@ import io.daobab.converter.json.JsonConverter;
 
 import java.util.Optional;
 
+/**
+ * JSON converter for an {@link java.util.Optional}: an empty optional is written as {@code null},
+ * otherwise the wrapped value is serialized by the {@code innerTypeConverter}; {@code null}/empty text reads
+ * back to {@link java.util.Optional#empty()}.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonOptionalConverter extends JsonConverter<Optional> {
 
     final JsonConverter innerTypeConverter;

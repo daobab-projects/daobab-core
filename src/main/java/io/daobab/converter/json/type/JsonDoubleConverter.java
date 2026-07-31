@@ -2,9 +2,20 @@ package io.daobab.converter.json.type;
 
 import io.daobab.converter.json.JsonConverter;
 
+/**
+ * JSON converter for {@link Double}: written as a bare JSON number with trailing zeros trimmed
+ * (see {@link #numberToString(Double)}) and parsed with {@link Double#parseDouble(String)}. {@code NaN} and the
+ * infinities are written as {@code null}, since JSON has no token for them.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonDoubleConverter extends JsonConverter<Double> {
     @Override
     public void toJson(StringBuilder sb, Double obj) {
+        if (obj.isNaN() || obj.isInfinite()) {
+            sb.append("null");
+            return;
+        }
         sb.append(numberToString(obj));
     }
 

@@ -4,6 +4,13 @@ import io.daobab.converter.json.JsonConverter;
 
 import java.time.ZonedDateTime;
 
+/**
+ * JSON converter for {@link java.time.ZonedDateTime}: written as a quoted date-time with the zone
+ * offset appended (e.g. {@code "2026-07-11T13:05:09.123+02:00"}) and parsed with
+ * {@link java.time.ZonedDateTime#parse(CharSequence)}.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonZonedDateTimeConverter extends JsonConverter<ZonedDateTime> {
 
     @Override

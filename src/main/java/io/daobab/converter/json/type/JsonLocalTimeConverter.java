@@ -4,6 +4,12 @@ import io.daobab.converter.json.JsonConverter;
 
 import java.time.LocalTime;
 
+/**
+ * JSON converter for {@link java.time.LocalTime}: written as a quoted {@code HH:mm:ss.SSS} value
+ * (millisecond precision) and parsed with {@link java.time.LocalTime#parse(CharSequence)}.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonLocalTimeConverter extends JsonConverter<LocalTime> {
 
     @Override

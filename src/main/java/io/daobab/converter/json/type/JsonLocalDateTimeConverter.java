@@ -5,6 +5,12 @@ import io.daobab.converter.json.JsonConverter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * JSON converter for {@link java.time.LocalDateTime}: written as a quoted
+ * {@code yyyy-MM-dd'T'HH:mm:ss.SSS} value (millisecond precision) and parsed back with the same pattern.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonLocalDateTimeConverter extends JsonConverter<LocalDateTime> {
 
     static final String dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS";

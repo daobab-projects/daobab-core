@@ -3,6 +3,12 @@ package io.daobab.converter.json.type;
 import io.daobab.converter.json.JsonConverter;
 import io.daobab.error.DaobabException;
 
+/**
+ * JSON converter for {@link String}: written as a quoted, escaped JSON string (control characters,
+ * quotes and backslashes escaped, non-ASCII emitted as {@code \\uXXXX}) and unescaped on read.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonStringConverter extends JsonConverter<String> {
     @Override
     public void toJson(StringBuilder sb, String obj) {

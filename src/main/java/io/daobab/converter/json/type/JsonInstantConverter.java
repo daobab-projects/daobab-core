@@ -6,6 +6,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+/**
+ * JSON converter for {@link java.time.Instant}: written as the UTC {@link java.time.LocalDateTime}
+ * ({@code yyyy-MM-dd'T'HH:mm:ss.SSS}) and read back as the instant at that UTC time.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonInstantConverter extends JsonConverter<Instant> {
 
     private final JsonLocalDateTimeConverter jsonLocalDateConverter = new JsonLocalDateTimeConverter();

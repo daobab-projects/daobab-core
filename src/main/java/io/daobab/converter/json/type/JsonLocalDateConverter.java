@@ -4,6 +4,12 @@ import io.daobab.converter.json.JsonConverter;
 
 import java.time.LocalDate;
 
+/**
+ * JSON converter for {@link java.time.LocalDate}: written as a quoted {@code yyyy-MM-dd} value and
+ * parsed with {@link java.time.LocalDate#parse(CharSequence)}.
+ *
+ * @author Klaudiusz Wojtkowiak, (C) Elephant Software
+ */
 public class JsonLocalDateConverter extends JsonConverter<LocalDate> {
 
 
