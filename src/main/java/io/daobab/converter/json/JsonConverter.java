@@ -29,7 +29,7 @@ public abstract class JsonConverter<F> implements JsonType<F> {
     }
 
     protected void appendDate(StringBuilder sb,int year, int month,int day){
-        sb.append(year);
+        appendPaddedYear(sb, year);
         sb.append(PAUSE);
         if (month<10){
             sb.append("0");
@@ -40,6 +40,25 @@ public abstract class JsonConverter<F> implements JsonType<F> {
             sb.append("0");
         }
         sb.append(day);
+    }
+
+    /**
+     * Appends the year zero-padded to at least four digits, so ISO parsers accept it (e.g. year 753 -&gt; 0753).
+     * Negative years are emitted with the sign and the digits padded to four.
+     */
+    protected void appendPaddedYear(StringBuilder sb, int year) {
+        if (year < 0) {
+            sb.append('-');
+            year = -year;
+        }
+        if (year < 10) {
+            sb.append("000");
+        } else if (year < 100) {
+            sb.append("00");
+        } else if (year < 1000) {
+            sb.append("0");
+        }
+        sb.append(year);
     }
 
     protected void appendTime(StringBuilder sb,int hour, int minute,int second,long nano){
