@@ -11,7 +11,6 @@ import io.daobab.target.database.query.DataBaseQueryDelete;
 import io.daobab.target.database.query.DataBaseQueryInsert;
 import io.daobab.target.database.query.DataBaseQueryUpdate;
 import io.daobab.transaction.Propagation;
-import io.daobab.transaction.TransactionIndicator;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -144,20 +143,13 @@ public abstract class AboveMultiEntityTarget extends QueryMultiEntityTarget impl
         this.propagateModifications = propagateModifications;
     }
 
+    /**
+     * Resolves the propagation through {@link TransactionalTarget#handleTransactionalTarget}, the single
+     * implementation of it. Kept as a method of this class because a buffer target is not a
+     * {@link TransactionalTarget} itself - only its subclasses may be - so it cannot inherit that default.
+     */
     public <Y, T extends TransactionalTarget> Y handleTransactionalTarget(T target, Propagation propagation, BiFunction<QueryHandler, Boolean, Y> jobToDo) {
-        TransactionIndicator indicator = propagation.mayBeProceeded(target);
-        switch (indicator) {
-            case EXECUTE_WITHOUT: {
-                return jobToDo.apply(target, false);
-            }
-            case START_NEW_JUST_FOR_IT: {
-                return target.wrapTransaction(t -> jobToDo.apply(t.getSourceTarget(), true));
-            }
-            case GO_AHEAD: {
-                return jobToDo.apply(target, true);
-            }
-        }
-        throw new DaobabException("Problem related to specific propagation and transaction");
+        return target.handleTransactionalTarget(target, propagation, jobToDo);
     }
 
 

@@ -29,10 +29,7 @@ public class JsonStringConverter extends JsonConverter<String> {
 
         for (int i = 0; i < input.length(); i++) {
             char ch = input.charAt(i);
-            int chx = (int) ch;
-
-            // let's not put any nulls in our strings
-            assert (chx != 0);
+            int chx = ch;
 
             if (ch == '\n') {
                 output.append("\\n");
@@ -48,9 +45,8 @@ public class JsonStringConverter extends JsonConverter<String> {
                 output.append("\\b");
             } else if (ch == '\f') {
                 output.append("\\f");
-            } else if (chx >= 0x10000) {
-                assert false : "Java stores as u16, so it should never give us a character that's bigger than 2 bytes. It literally can't.";
-            } else if (chx > 127) {
+            } else if (chx < 0x20 || chx > 127) {
+                //every remaining control character has to be escaped as well, otherwise the output is not valid JSON
                 output.append(String.format("\\u%04x", chx));
             } else {
                 output.append(ch);
@@ -90,7 +86,7 @@ public class JsonStringConverter extends JsonConverter<String> {
                         throw new DaobabException("Not enough Unicode digits! ");
                     }
                     for (char x : input.substring(i, i + 4).toCharArray()) {
-                        if (!Character.isLetterOrDigit(x)) {
+                        if (Character.digit(x, 16) < 0) {
                             throw new DaobabException("Bad character in Unicode escape.");
                         }
                         hex.append(Character.toLowerCase(x));

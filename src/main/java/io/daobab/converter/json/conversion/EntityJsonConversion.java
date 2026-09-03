@@ -38,7 +38,7 @@ public class EntityJsonConversion<E extends Entity> extends FromJsonContext {
         if (entity == null) return sb;
         int maxSizeMinus1 = fields.size() - 1;
         sb.append("{");
-        for (int i = 0; i < fieldJsonConversions.size(); i++) {
+        for (int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
             FieldJsonConversion fieldJsonConversion = fieldJsonConversions.get(field.getFieldName());
             fieldJsonConversion.toJson(sb, field.getValue((RelatedTo) entity));

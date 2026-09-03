@@ -29,7 +29,7 @@ public class JsonCharacterConverter extends JsonConverter<Character> {
             sb.append("\\b");
         } else if (ch == '\f') {
             sb.append("\\f");
-        } else if (ch > 127) {
+        } else if (ch < 0x20 || ch > 127) {
             sb.append(String.format("\\u%04x", (int) ch));
         } else {
             sb.append(ch);

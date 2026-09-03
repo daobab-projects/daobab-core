@@ -1,7 +1,6 @@
 package io.daobab.target.database;
 
 import io.daobab.dict.DictDatabaseType;
-import io.daobab.error.DaobabException;
 import io.daobab.error.DaobabSQLException;
 import io.daobab.error.MandatoryColumn;
 import io.daobab.error.MandatoryEntity;
@@ -9,7 +8,6 @@ import io.daobab.model.Column;
 import io.daobab.model.Entity;
 import io.daobab.statement.where.WhereAnd;
 import io.daobab.target.BaseTarget;
-import io.daobab.target.QueryHandler;
 import io.daobab.target.database.connection.JDBCResultSetReader;
 import io.daobab.target.database.connection.ResultSetReader;
 import io.daobab.target.database.converter.DatabaseConverterManager;
@@ -19,17 +17,11 @@ import io.daobab.target.database.meta.MetaDataBaseTarget;
 import io.daobab.target.database.meta.MetaDataTables;
 import io.daobab.target.database.meta.table.MetaColumn;
 import io.daobab.target.database.meta.table.MetaTable;
-import io.daobab.target.database.query.DataBaseQueryDelete;
-import io.daobab.target.database.query.DataBaseQueryInsert;
-import io.daobab.target.database.query.DataBaseQueryUpdate;
-import io.daobab.transaction.Propagation;
-import io.daobab.transaction.TransactionIndicator;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.BiFunction;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -167,34 +159,8 @@ public abstract class DataBaseTarget extends BaseTarget implements DataBaseTarge
         this.dataBaseMinorVersion = dataBaseMinorVersion;
     }
 
-    public <E extends Entity> int delete(DataBaseQueryDelete<E> query, Propagation propagation) {
-        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).delete(query, transaction));
-    }
-
-    public <E extends Entity> int update(DataBaseQueryUpdate<E> query, Propagation propagation) {
-        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).update(query, transaction));
-    }
-
-    public <E extends Entity> E insert(DataBaseQueryInsert<E> query, Propagation propagation) {
-        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).insert(query, transaction));
-    }
-
-    public <Y, T extends TransactionalTarget> Y handleTransactionalTarget(T target, Propagation propagation, BiFunction<QueryHandler, Boolean, Y> jobToDo) {
-        TransactionIndicator indicator = propagation.mayBeProceeded(target);
-        switch (indicator) {
-            case EXECUTE_WITHOUT: {
-                return jobToDo.apply(target, false);
-            }
-            case START_NEW_JUST_FOR_IT: {
-                return target.wrapTransaction(t -> jobToDo.apply(t.getSourceTarget(), true));
-            }
-            case GO_AHEAD: {
-                return jobToDo.apply(target, true);
-            }
-        }
-        throw new DaobabException("Problem related to specific propagation and transaction");
-    }
-
+    //delete/update/insert under a Propagation and handleTransactionalTarget are inherited: they are defaulted in
+    //DataBaseTargetLogic and TransactionalTarget, so a plain target and an open transaction share one implementation
 
     public String getSchemaName() {
         return schemaName;

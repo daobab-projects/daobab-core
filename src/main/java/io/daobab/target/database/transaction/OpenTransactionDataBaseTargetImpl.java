@@ -8,7 +8,6 @@ import io.daobab.model.ProcedureParameters;
 import io.daobab.query.base.QuerySpecialParameters;
 import io.daobab.statement.base.IdentifierStorage;
 import io.daobab.target.BaseTarget;
-import io.daobab.target.buffer.single.PlateBuffer;
 import io.daobab.target.database.*;
 import io.daobab.target.database.connection.ResultSetReader;
 import io.daobab.target.database.converter.DatabaseConverterManager;
@@ -22,7 +21,9 @@ import io.daobab.transaction.Propagation;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * @author Klaudiusz Wojtkowiak, (C) Elephant Software
@@ -68,19 +69,26 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     }
 
 
+    /**
+     * {@inheritDoc} This transaction is finished once it has been committed or rolled back, and every entry
+     * point that could hand it work goes through here or through {@link #getConnection()}.
+     */
     @Override
-    public Connection getConnection() {
+    public void validateUsable() {
         if (!isTransactionActive()) {
             throw new TransactionClosedException(this);
         }
+    }
+
+    @Override
+    public Connection getConnection() {
+        validateUsable();
         return conn;
     }
 
     @Override
     public void commit() {
-        if (!isTransactionActive()) {
-            throw new TransactionClosedException(this);
-        }
+        validateUsable();
         try {
             conn.commit();
         } catch (SQLException e) {
@@ -92,8 +100,19 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
 
     }
 
+    /**
+     * Rolls this transaction back and closes its connection. Deliberately the one operation that stays quiet on
+     * an already finished transaction: it is cleanup, and the common {@code catch} block that calls it after a
+     * {@code commit()} which itself threw must report the commit failure, not an exception about the
+     * transaction being closed.
+     */
     @Override
     public void rollback() {
+        if (!isTransactionActive()) {
+            //already finished by a commit() or an earlier rollback() - there is nothing left to undo, and the
+            //connection is closed, so touching it would only mask whatever ended the transaction
+            return;
+        }
         try {
             conn.rollback();
         } catch (SQLException e) {
@@ -105,6 +124,51 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
 
     }
 
+
+    /**
+     * {@inheritDoc} Implemented as a JDBC {@link Savepoint} on this transaction's connection: the savepoint is
+     * taken before the work, released when it succeeds and rolled back to when it fails - so a failed nested
+     * transaction undoes only itself and this transaction stays open and usable.
+     */
+    @Override
+    public <R> R wrapNestedTransaction(Supplier<R> work) {
+        //throws when this transaction is already finished, before any savepoint is taken
+        Connection connection = getConnection();
+        Savepoint savepoint;
+        try {
+            savepoint = connection.setSavepoint();
+        } catch (SQLException e) {
+            throw new DaobabSQLException("Cannot start a nested transaction", e);
+        }
+        try {
+            R rv = work.get();
+            releaseSavepoint(connection, savepoint);
+            return rv;
+        } catch (RuntimeException e) {
+            rollbackTo(connection, savepoint, e);
+            throw e;
+        }
+    }
+
+    private void rollbackTo(Connection connection, Savepoint savepoint, RuntimeException cause) {
+        try {
+            connection.rollback(savepoint);
+        } catch (SQLException e) {
+            //the reason the work failed stays the primary one, but a savepoint rollback that itself failed
+            //leaves this transaction in an unknown state and must not disappear silently
+            cause.addSuppressed(e);
+        }
+    }
+
+    private void releaseSavepoint(Connection connection, Savepoint savepoint) {
+        try {
+            connection.releaseSavepoint(savepoint);
+        } catch (SQLException | UnsupportedOperationException e) {
+            //not every driver can release a savepoint (Oracle and Microsoft SQL Server cannot). The savepoint
+            //goes away with the enclosing transaction anyway, so work that succeeded must not fail over this.
+            getLog().debug("Cannot release the savepoint of a nested transaction: {}", e.getMessage());
+        }
+    }
 
     @Override
     public String getDataBaseProductName() {
@@ -131,8 +195,18 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
         return db.toInsertSqlQuery(base);
     }
 
+    /**
+     * Always fails: a transaction cannot be started on top of another one. Use {@link Propagation#NESTED} for a
+     * nested transaction, or {@link Propagation#REQUIRED_NEW} for an independent one.
+     *
+     * @throws TransactionClosedException when this transaction is already finished
+     * @throws TransactionOpenedException when it is still running
+     */
     @Override
     public OpenTransactionDataBaseTargetImpl beginTransaction() {
+        //a finished transaction is closed, not opened: reporting it as opened would send the caller looking for
+        //a transaction that is no longer there
+        validateUsable();
         throw new TransactionOpenedException();
     }
 
@@ -141,35 +215,10 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
         return db.getTables();
     }
 
-    @Override
-    public <E extends Entity, F> F readField(DataBaseQueryField<E, F> statementBase) {
-        return db.readField(statementBase);
-    }
-
-    @Override
-    public PlateBuffer readPlateList(DataBaseQueryPlate statementBase) {
-        return db.readPlateList(statementBase);
-    }
-
-    @Override
-    public <E extends Entity> int delete(DataBaseQueryDelete<E> query, boolean transaction) {
-        return db.delete(query, transaction);
-    }
-
-    @Override
-    public <E extends Entity> int delete(DataBaseQueryDelete<E> query, Propagation propagation) {
-        return db.delete(query, propagation);
-    }
-
-    @Override
-    public <E extends Entity> int update(DataBaseQueryUpdate<E> query, Propagation propagation) {
-        return db.update(query, propagation);
-    }
-
-    @Override
-    public <E extends Entity> E insert(DataBaseQueryInsert<E> query, Propagation propagation) {
-        return db.insert(query, propagation);
-    }
+    //Reads, DML and stored procedures are NOT delegated to the source target on purpose: the DataBaseTargetLogic
+    //defaults take their connection from getConnection() below, which is this transaction's connection, and
+    //ownsConnection() stops them from committing or closing it. Delegating them to db used to hand every
+    //statement a fresh connection of its own, so it ran outside the transaction and rollback() could not undo it.
 
     @Override
     public <E extends Entity> String toSqlQuery(DataBaseQueryBase<E, ?> query) {
@@ -182,18 +231,18 @@ public class OpenTransactionDataBaseTargetImpl extends BaseTarget implements Ope
     }
 
     @Override
-    public <O extends ProcedureParameters, I extends ProcedureParameters> O callProcedure(String name, I in, O out) {
-        return db.callProcedure(name, in, out);
-    }
-
-    @Override
     public DataSource getDataSource() {
         return db.getDataSource();
     }
 
-    //    @Override
+    /**
+     * {@inheritDoc} The target this transaction was opened on, so work that has to escape this transaction
+     * (a {@code REQUIRED_NEW} or {@code NOT_SUPPORTED} propagation) gets a connection of its own instead of
+     * this transaction's. Resolved transitively, so it is always a target with no transaction of its own.
+     */
+    @Override
     public TransactionalTarget getSourceTarget() {
-        return db;
+        return db.getSourceTarget();
     }
 
     @Override

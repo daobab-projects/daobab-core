@@ -44,15 +44,17 @@ public interface OptimisticConcurrencyForPrimaryCompositeKey<E extends PrimaryCo
 
         Object val;
 
-        if (getOCCColumn().getFieldClass().isAssignableFrom(BigDecimal.class)) {
+        Class<?> occFieldClass = getOCCColumn().getFieldClass();
+
+        if (BigDecimal.class.isAssignableFrom(occFieldClass)) {
             if (cellval == null) {
-                val = new BigDecimal(0);
+                val = BigDecimal.ZERO;
             } else {
                 BigDecimal bd = (BigDecimal) cellval;
                 val = bd.add(BigDecimal.ONE);
             }
 
-        } else if (getOCCColumn().getFieldClass().isAssignableFrom(Long.class)) {
+        } else if (Long.class.isAssignableFrom(occFieldClass)) {
             if (cellval == null) {
                 val = 0L;
             } else {
@@ -60,7 +62,7 @@ public interface OptimisticConcurrencyForPrimaryCompositeKey<E extends PrimaryCo
                 val = bd + 1;
             }
 
-        } else if (getOCCColumn().getFieldClass().isAssignableFrom(Integer.class)) {
+        } else if (Integer.class.isAssignableFrom(occFieldClass)) {
             if (cellval == null) {
                 val = 0;
             } else {
@@ -68,7 +70,7 @@ public interface OptimisticConcurrencyForPrimaryCompositeKey<E extends PrimaryCo
                 val = bd + 1;
             }
 
-        } else if (getOCCColumn().getFieldClass().isAssignableFrom(Double.class)) {
+        } else if (Double.class.isAssignableFrom(occFieldClass)) {
             if (cellval == null) {
                 val = 0D;
             } else {
@@ -76,12 +78,13 @@ public interface OptimisticConcurrencyForPrimaryCompositeKey<E extends PrimaryCo
                 val = bd + 1;
             }
 
-        } else if (getOCCColumn().getFieldClass().isAssignableFrom(Timestamp.class)) {
+            //the java.sql types are subclasses of java.util.Date, so they have to be matched before it
+        } else if (Timestamp.class.isAssignableFrom(occFieldClass)) {
             val = toCurrentTimestampTimeZoneDefault();
-        } else if (getOCCColumn().getFieldClass().isAssignableFrom(Date.class)) {
-            val = new Date();
-        } else if (getOCCColumn().getFieldClass().isAssignableFrom(java.sql.Date.class)) {
+        } else if (java.sql.Date.class.isAssignableFrom(occFieldClass)) {
             val = toCurrentDateSQL();
+        } else if (Date.class.isAssignableFrom(occFieldClass)) {
+            val = new Date();
         } else {
             throw new DaobabException("Optimistic Concurrency Control Exception for Entity " + target.getEntityName(entityToUpdate.entityClass()) + " pointed OCC column has to be either Number or Date related type ");
         }

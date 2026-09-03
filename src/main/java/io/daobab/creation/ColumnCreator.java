@@ -72,7 +72,7 @@ public class ColumnCreator {
                 if (obj == null) return false;
                 if (getClass() != obj.getClass()) return false;
                 Column other = (Column) obj;
-                return Objects.equals(hashCode(), other.hashCode());
+                return Objects.equals(toString(), other.toString());
             }
         };
 
@@ -149,7 +149,7 @@ public class ColumnCreator {
                 if (obj == null) return false;
                 if (getClass() != obj.getClass()) return false;
                 Column other = (Column) obj;
-                return Objects.equals(hashCode(), other.hashCode());
+                return Objects.equals(toString(), other.toString());
             }
         };
 

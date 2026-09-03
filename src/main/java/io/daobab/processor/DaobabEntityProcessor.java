@@ -721,13 +721,31 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         writeSource(columnPackage + "." + name, sb.toString(), definition);
     }
 
+    /**
+     * The annotated elements in a stable, alphabetical order. {@code RoundEnvironment} hands them over in an
+     * unspecified order, which would otherwise decide - differently on every build - which definition keeps a
+     * clashing column's plain name and which one is pushed onto the type-qualified one, and in which order the
+     * tables show up in the generated Javadoc tables.
+     */
+    private static List<Element> sortedByName(Set<? extends Element> elements) {
+        List<Element> sorted = new ArrayList<>(elements);
+        sorted.sort(Comparator.comparing(DaobabEntityProcessor::elementName));
+        return sorted;
+    }
+
+    private static String elementName(Element element) {
+        return element instanceof TypeElement typeElement
+                ? typeElement.getQualifiedName().toString()
+                : element.getSimpleName().toString();
+    }
+
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         List<EntityContext> contexts = new ArrayList<>();
         //all the @DaobabTable definitions of the round indexed by package, so a @DaobabDataBase can
         //pick up a whole package by name instead of listing every definition class
         Map<String, List<TypeElement>> definitionsByPackage = new LinkedHashMap<>();
-        for (Element element : roundEnv.getElementsAnnotatedWith(DaobabTable.class)) {
+        for (Element element : sortedByName(roundEnv.getElementsAnnotatedWith(DaobabTable.class))) {
             if (element.getKind() != ElementKind.INTERFACE) {
                 error(element, "@DaobabTable may annotate an interface only");
                 continue;
@@ -778,7 +796,7 @@ public class DaobabEntityProcessor extends AbstractProcessor {
         }
 
         //assemble the database interfaces gathering every entity of a @DaobabDataBase into one place
-        for (Element element : roundEnv.getElementsAnnotatedWith(DaobabDataBase.class)) {
+        for (Element element : sortedByName(roundEnv.getElementsAnnotatedWith(DaobabDataBase.class))) {
             if (element.getKind() != ElementKind.INTERFACE && element.getKind() != ElementKind.CLASS) {
                 error(element, "@DaobabDataBase may annotate a type only");
                 continue;

@@ -55,4 +55,10 @@ public class MetaSchema extends Table<MetaSchema> implements
         return Objects.equals(getId(), other.getId());
     }
 
+    /** Consistent with {@link #equals(Object)}: the identity is the primary key. */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getId());
+    }
+
 }

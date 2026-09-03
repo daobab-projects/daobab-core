@@ -37,7 +37,7 @@ public class DaobabCache {
 
         return INSTANCE.columnsOf(entity.entityClass()).computeIfAbsent(fieldName,
                 x -> {
-                    if (clazz.isAssignableFrom(Optional.class) || clazz.isAssignableFrom(Collection.class)) {
+                    if (Optional.class.isAssignableFrom(clazz) || Collection.class.isAssignableFrom(clazz)) {
                         throw new DaobabException("Collections, Arrays and Optionals have to provide innerTypeClass as well");
                     }
                     return ColumnCreator.createColumn(fieldName, columnName, entity, clazz);
@@ -57,7 +57,7 @@ public class DaobabCache {
     public static <E extends Table<?>, F> Column getColumnWithConverter(String fieldName, String columnName, E entity, Class<F> clazz, Class<? extends DatabaseTypeConverter> converterClass) {
         return INSTANCE.columnsOf(entity.entityClass()).computeIfAbsent(fieldName,
                 x -> {
-                    if (clazz.isAssignableFrom(Optional.class) || clazz.isAssignableFrom(Collection.class)) {
+                    if (Optional.class.isAssignableFrom(clazz) || Collection.class.isAssignableFrom(clazz)) {
                         throw new DaobabException("Collections, Arrays and Optionals have to provide innerTypeClass as well");
                     }
                     return ColumnCreator.createColumn(fieldName, columnName, entity, clazz, converterClass);

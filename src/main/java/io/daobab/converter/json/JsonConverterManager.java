@@ -18,6 +18,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * The registry and resolver of the JSON {@link JsonConverter}s. The singleton {@link #INSTANCE} maps every
@@ -32,12 +34,14 @@ import java.util.*;
 @SuppressWarnings({"java:S6548", "rawtypes"})
 public class JsonConverterManager {
 
-    private final Map<String, Optional<JsonConverter<?>>> cache = new HashMap<>();
-    private final Map<Field<?, ?, ?>, JsonConverter<?>> fieldConverters = new HashMap<>();
-    private final Map<Field<?, ?, ?>, FieldJsonConversion<?>> fieldJsonConversions = new HashMap<>();
-    private final Map<Plate, PlateJsonConversion> plateJsonConversions = new HashMap<>();
-    private final Map<Entity, EntityJsonConversion> entityJsonConversions = new HashMap<>();
-    private final Map<Class<?>, JsonConverter<?>> typeConverters = new HashMap<>();
+    private final Map<Field<?, ?, ?>, JsonConverter<?>> fieldConverters = new ConcurrentHashMap<>();
+    private final Map<Field<?, ?, ?>, FieldJsonConversion<?>> fieldJsonConversions = new ConcurrentHashMap<>();
+    //keyed by the plate's field list (its shape), not by the plate itself: a plate is a mutable row of data,
+    //so keying by the row would grow the cache without a bound and let a key change its own hash code
+    private final Map<List<Field>, PlateJsonConversion> plateJsonConversions = new ConcurrentHashMap<>();
+    //keyed by the entity class, not by the entity instance, for the same reason
+    private final Map<Class<? extends Entity>, EntityJsonConversion> entityJsonConversions = new ConcurrentHashMap<>();
+    private final Map<Class<?>, JsonConverter<?>> typeConverters = new ConcurrentHashMap<>();
 
     public static final JsonConverterManager INSTANCE = new JsonConverterManager();
 
@@ -101,87 +105,104 @@ public class JsonConverterManager {
     }
 
 
-    @SuppressWarnings({"java:S1452", "java:S3776", "unchecked"})
+    @SuppressWarnings({"java:S1452", "unchecked"})
     public Optional<JsonConverter<?>> getConverter(Field<?, ?, ?> field) {
         JsonConverter<?> jc = fieldConverters.computeIfAbsent(field, fld -> {
             Class fieldClass = fld.getFieldClass();
 
-            if (fieldClass.isAssignableFrom(Optional.class)) {
-                Class innerFieldClass = field.getInnerTypeClass();
-                if (innerFieldClass == null) {
-                    throw new DaobabException("InnerFieldClass has to be provided for a field " + field);
-                }
-                Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
-                return innerFieldConverter.map(JsonOptionalConverter::new).orElseThrow(() -> new DaobabException("Cannot find a converter"));
+            if (Optional.class.isAssignableFrom(fieldClass)) {
+                return wrapInnerConverter(fld, JsonOptionalConverter::new);
             }
 
-            if (fieldClass.isAssignableFrom(List.class)) {
-                Class innerFieldClass = field.getInnerTypeClass();
-                if (innerFieldClass == null) {
-                    throw new DaobabException("InnerFieldClass has to be provided for field " + field);
-                }
-                Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
-                return innerFieldConverter.map(JsonListConverter::new).orElseThrow(() -> new DaobabException("Cannot find a converter"));
+            if (List.class.isAssignableFrom(fieldClass)) {
+                return wrapInnerConverter(fld, JsonListConverter::new);
             }
 
-            if (fieldClass.isAssignableFrom(Set.class)) {
-                Class innerFieldClass = field.getInnerTypeClass();
-                if (innerFieldClass == null) {
-                    throw new DaobabException("InnerFieldClass has to be provided for field " + field);
-                }
-                Optional<JsonConverter<?>> innerFieldConverter = getTypeConverter(innerFieldClass);
-                return innerFieldConverter.map(JsonSetConverter::new).orElseThrow(() -> new DaobabException("Cannot find a converter"));
+            if (Set.class.isAssignableFrom(fieldClass)) {
+                return wrapInnerConverter(fld, JsonSetConverter::new);
             }
 
             if (fieldClass.isEnum()) {
                 return new JsonEnumConverter(fieldClass);
-            } else if (fieldClass.isAssignableFrom(Entity.class)) {
+            } else if (Entity.class.isAssignableFrom(fieldClass)) {
                 return new JsonDaobabEntityConverter(fieldClass);
             } else {
-                return typeConverters.get(fld.getFieldClass());
+                return typeConverters.get(fieldClass);
             }
         });
         return Optional.ofNullable(jc);
     }
 
-    public Optional<JsonConverter<?>> getTypeConverter(Class<?> clazz) {
-        JsonConverter<?> jc = typeConverters.computeIfAbsent(clazz, field -> {
+    /**
+     * Resolves the converter of a wrapper field's inner type ({@code Optional}, {@code List}, {@code Set}) and
+     * wraps it with the matching collection/optional converter.
+     */
+    private JsonConverter<?> wrapInnerConverter(Field<?, ?, ?> field, Function<JsonConverter<?>, JsonConverter<?>> wrapper) {
+        Class<?> innerFieldClass = field.getInnerTypeClass();
+        if (innerFieldClass == null) {
+            throw new DaobabException("InnerFieldClass has to be provided for a field " + field);
+        }
+        return getTypeConverter(innerFieldClass)
+                .map(wrapper)
+                .orElseThrow(() -> new DaobabException("Cannot find a converter for the inner type %s", innerFieldClass));
+    }
 
-            if (clazz.isEnum()) {
-                return new JsonEnumConverter(clazz);
-            } else if (clazz.isAssignableFrom(Entity.class)) {
-                return new JsonDaobabEntityConverter(clazz);
-            } else {
-                return typeConverters.get(clazz);
-            }
-        });
+    @SuppressWarnings({"java:S1452", "unchecked"})
+    public Optional<JsonConverter<?>> getTypeConverter(Class<?> clazz) {
+        JsonConverter<?> registered = typeConverters.get(clazz);
+        if (registered != null) {
+            return Optional.of(registered);
+        }
+        JsonConverter<?> jc = null;
+        if (clazz.isEnum()) {
+            jc = new JsonEnumConverter(clazz);
+        } else if (Entity.class.isAssignableFrom(clazz)) {
+            jc = new JsonDaobabEntityConverter(clazz);
+        }
+        if (jc != null) {
+            typeConverters.put(clazz, jc);
+        }
         return Optional.ofNullable(jc);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public <E extends Entity> EntityJsonConversion<E> getEntityJsonConverter(E entity) {
-        return entityJsonConversions.computeIfAbsent(entity, f -> new EntityJsonConversion(f, this));
+        return entityJsonConversions.computeIfAbsent(entity.entityClass(), c -> new EntityJsonConversion(entity, this));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <F> FieldJsonConversion<F> getFieldJsonConverter(Field<?, F, ?> entity) {
-        return (FieldJsonConversion<F>) fieldJsonConversions.computeIfAbsent(entity, f -> new FieldJsonConversion(f, this));
+    public <F> FieldJsonConversion<F> getFieldJsonConverter(Field<?, F, ?> field) {
+        return (FieldJsonConversion<F>) fieldJsonConversions.computeIfAbsent(field, f -> new FieldJsonConversion(f, this));
     }
 
-    public PlateJsonConversion getPlateJsonConverter(Plate entity) {
-        return plateJsonConversions.computeIfAbsent(entity, f -> new PlateJsonConversion(f, this));
+    @SuppressWarnings("rawtypes")
+    public PlateJsonConversion getPlateJsonConverter(Plate plate) {
+        List<Field> fields = plate.fields();
+        if (fields == null) {
+            throw new DaobabException("Cannot convert a plate carrying no fields into JSON");
+        }
+        return plateJsonConversions.computeIfAbsent(fields, f -> new PlateJsonConversion(f, this));
     }
 
     public <F> JsonConverterManager registerTypeConverter(Class<F> type, JsonConverter<F> typeConverter) {
         typeConverters.put(type, typeConverter);
-        cache.clear();
+        clearResolved();
         return this;
     }
 
     public void clear() {
-        fieldConverters.clear();
         typeConverters.clear();
-        cache.clear();
+        clearResolved();
+    }
+
+    /**
+     * Drops everything resolved from the registered type converters, so the next lookup rebuilds it.
+     */
+    private void clearResolved() {
+        fieldConverters.clear();
+        fieldJsonConversions.clear();
+        plateJsonConversions.clear();
+        entityJsonConversions.clear();
     }
 
 

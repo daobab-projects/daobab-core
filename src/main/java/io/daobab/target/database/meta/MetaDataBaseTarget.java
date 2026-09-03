@@ -11,6 +11,7 @@ import io.daobab.target.database.connection.JdbcType;
 import io.daobab.target.database.meta.column.dict.MetaRule;
 import io.daobab.target.database.meta.table.*;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -53,78 +54,79 @@ public class MetaDataBaseTarget extends AboveMultiEntityTarget implements MetaDa
         List<MetaForeignKey> foreignKeys = new ArrayList<>();
         List<MetaPrimaryKey> primaryKeys = new ArrayList<>();
 
-        DatabaseMetaData databaseMetaData = getSourceTarget().getDataSource().getConnection().getMetaData();
+        try (Connection connection = getSourceTarget().getDataSource().getConnection()) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
 
 
-        ResultSet rsTable = databaseMetaData.getTables(catalog, schema, "%", new String[]{"TABLE", "VIEW"});
+            ResultSet rsTable = databaseMetaData.getTables(catalog, schema, "%", new String[]{"TABLE", "VIEW"});
 
-        while (rsTable.next()) {
-            MetaTable mt = new MetaTable()
-                    .setTableName(rsTable.getString("TABLE_NAME"))
-                    .setRemarks(rsTable.getString("REMARKS"))
-                    .setTableType(rsTable.getString("TABLE_TYPE"));
+            while (rsTable.next()) {
+                MetaTable mt = new MetaTable()
+                        .setTableName(rsTable.getString("TABLE_NAME"))
+                        .setRemarks(rsTable.getString("REMARKS"))
+                        .setTableType(rsTable.getString("TABLE_TYPE"));
 
-            String primaryKeyColumn = null;
+                String primaryKeyColumn = null;
 
-            ResultSet rsPk = databaseMetaData.getPrimaryKeys(catalog, schema, mt.getTableName());
-            while (rsPk.next()) {
-                primaryKeyColumn = rsPk.getString("COLUMN_NAME");
+                ResultSet rsPk = databaseMetaData.getPrimaryKeys(catalog, schema, mt.getTableName());
+                while (rsPk.next()) {
+                    primaryKeyColumn = rsPk.getString("COLUMN_NAME");
+                }
+
+                foreignKeys.addAll(readForeignKeys(databaseMetaData.getExportedKeys(catalog, schema, mt.getTableName())));
+                primaryKeys.addAll(readPrimaryKeys(databaseMetaData.getPrimaryKeys(catalog, schema, mt.getTableName())));
+                indexes.addAll(readIndexes(databaseMetaData.getIndexInfo(catalog, schema, mt.getTableName(), false, false)));
+
+                ResultSet rsColumn = databaseMetaData.getColumns(catalog, schema, mt.getTableName(), "%");
+
+                int counter = 0;
+                while (rsColumn.next()) {
+                    MetaColumn mc = new MetaColumn();
+                    String columnName = rsColumn.getString("COLUMN_NAME");
+                    mc.setColumnName(columnName.contains(" ") ? "`" + columnName + "`" : columnName);
+    //            mc.setPrimaryKey(mc.getColumnName().equals(primaryKeyColumn));
+                    mc.setColumnSize(rsColumn.getInt("COLUMN_SIZE"));
+                    mc.setDecimalDigits(rsColumn.getInt("DECIMAL_DIGITS"));
+                    mc.setNullable(rsColumn.getBoolean("NULLABLE"));
+                    mc.setRemarks(rsColumn.getString("REMARKS"));
+                    mc.setDatatype(JdbcType.valueOf(rsColumn.getInt("DATA_TYPE")));
+                    mc.setTableName(rsColumn.getString("TABLE_NAME"));
+                    mc.setFieldClass(typeConverter.convert(JDBCTypeConverter.UNKNOWN_TABLE, rsColumn.getInt("DATA_TYPE")));
+                    mc.setColumnDefault(rsColumn.getString(mc.colColumnDefault().getColumnName()));
+                    mc.setOrdinalPosition(rsColumn.getInt(mc.colOrdinalPosition().getColumnName()));
+                    mc.setTableColumnName(mc.getTableName() + "." + mc.getColumnName());
+                    columns.add(mc);
+
+                    counter++;
+                }
+
+                mt.setColumnCount(counter);
+                tables.add(mt);
             }
 
-            foreignKeys.addAll(readForeignKeys(databaseMetaData.getExportedKeys(catalog, schema, mt.getTableName())));
-            primaryKeys.addAll(readPrimaryKeys(databaseMetaData.getPrimaryKeys(catalog, schema, mt.getTableName())));
-            indexes.addAll(readIndexes(databaseMetaData.getIndexInfo(catalog, schema, mt.getTableName(), false, false)));
+            tables.forEach(t -> quickAccessMetaTable.put(t.getTableName(), t));
+            columns.forEach(t -> quickAccessMetaColumn.put(t.getTableColumnName(), t));
 
-            ResultSet rsColumn = databaseMetaData.getColumns(catalog, schema, mt.getTableName(), "%");
-
-            int counter = 0;
-            while (rsColumn.next()) {
-                MetaColumn mc = new MetaColumn();
-                String columnName = rsColumn.getString("COLUMN_NAME");
-                mc.setColumnName(columnName.contains(" ") ? "`" + columnName + "`" : columnName);
-//            mc.setPrimaryKey(mc.getColumnName().equals(primaryKeyColumn));
-                mc.setColumnSize(rsColumn.getInt("COLUMN_SIZE"));
-                mc.setDecimalDigits(rsColumn.getInt("DECIMAL_DIGITS"));
-                mc.setNullable(rsColumn.getBoolean("NULLABLE"));
-                mc.setRemarks(rsColumn.getString("REMARKS"));
-                mc.setDatatype(JdbcType.valueOf(rsColumn.getInt("DATA_TYPE")));
-                mc.setTableName(rsColumn.getString("TABLE_NAME"));
-                mc.setFieldClass(typeConverter.convert(JDBCTypeConverter.UNKNOWN_TABLE, rsColumn.getInt("DATA_TYPE")));
-                mc.setColumnDefault(rsColumn.getString(mc.colColumnDefault().getColumnName()));
-                mc.setOrdinalPosition(rsColumn.getInt(mc.colOrdinalPosition().getColumnName()));
-                mc.setTableColumnName(mc.getTableName() + "." + mc.getColumnName());
-                columns.add(mc);
-
-                counter++;
-            }
-
-            mt.setColumnCount(counter);
-            tables.add(mt);
+            put(new EntityList<>(tables, MetaTable.class),
+                    new EntityList<>(columns, MetaColumn.class),
+                    new EntityList<>(foreignKeys, MetaForeignKey.class),
+                    new EntityList<>(primaryKeys, MetaPrimaryKey.class),
+                    new EntityList<>(indexes, MetaIndex.class),
+                    getTargetSchemas());
         }
-
-        tables.forEach(t -> quickAccessMetaTable.put(t.getTableName(), t));
-        columns.forEach(t -> quickAccessMetaColumn.put(t.getTableColumnName(), t));
-
-        put(new EntityList<>(tables, MetaTable.class),
-                new EntityList<>(columns, MetaColumn.class),
-                new EntityList<>(foreignKeys, MetaForeignKey.class),
-                new EntityList<>(primaryKeys, MetaPrimaryKey.class),
-                new EntityList<>(indexes, MetaIndex.class),
-                getTargetSchemas());
     }
 
     private EntityList<MetaSchema> getTargetSchemas() throws SQLException {
-        DatabaseMetaData databaseMetaData = getSourceTarget().getDataSource().getConnection().getMetaData();
-
-        ResultSet rs = databaseMetaData.getSchemas();
         List<MetaSchema> schemas = new ArrayList<>();
+        try (Connection connection = getSourceTarget().getDataSource().getConnection();
+             ResultSet rs = connection.getMetaData().getSchemas()) {
+            while (rs.next()) {
+                MetaSchema schema = new MetaSchema();
+                schema.setCatalogName(rs.getString("TABLE_CATALOG"));
+                schema.setSchemaName(rs.getString("TABLE_SCHEM"));
 
-        while (rs.next()) {
-            MetaSchema schema = new MetaSchema();
-            schema.setCatalogName(rs.getString("TABLE_CATALOG"));
-            schema.setSchemaName(rs.getString("TABLE_SCHEM"));
-
-            schemas.add(schema);
+                schemas.add(schema);
+            }
         }
         return new EntityList<>(schemas, MetaSchema.class);
     }

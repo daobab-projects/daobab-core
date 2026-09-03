@@ -12,7 +12,6 @@ import io.daobab.query.base.QuerySpecialParameters;
 import io.daobab.target.buffer.single.Entities;
 import io.daobab.target.buffer.single.EntityList;
 import io.daobab.target.buffer.single.PlateBuffer;
-import io.daobab.target.database.connection.ConnectionGateway;
 import io.daobab.target.database.connection.QueryResolverTransmitter;
 import io.daobab.target.database.connection.ResultSetReader;
 import io.daobab.target.database.converter.*;
@@ -28,6 +27,7 @@ import io.daobab.target.database.transaction.OpenTransactionDataBaseTargetImpl;
 import io.daobab.target.protection.AccessProtector;
 import io.daobab.target.protection.OperationType;
 import io.daobab.target.statistic.StatisticCollectorProvider;
+import io.daobab.transaction.Propagation;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
@@ -63,8 +63,31 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
     @Override
     AccessProtector getAccessProtector();
 
+    /**
+     * Whether a connection handed out by {@link #getConnection()} belongs to the operation that asked for it, so
+     * that operation has to commit and close it itself.
+     * <p>
+     * A target running an open transaction
+     * ({@link io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget}) keeps a single connection
+     * for the whole transaction and closes it on {@code commit()}/{@code rollback()}, so every query running
+     * inside it has to leave that connection alone - otherwise the first statement would commit and close the
+     * transaction out from under the next one.
+     *
+     * @return {@code true} when the caller owns the connection, {@code false} when it is borrowed from an open
+     * transaction
+     */
+    default boolean ownsConnection() {
+        return !isTransactionActive();
+    }
+
+    /**
+     * Closes the connection, but only when this target {@link #ownsConnection() owns} it. A connection borrowed
+     * from an open transaction is left untouched - the transaction closes it itself.
+     */
     default void closeConnection(Connection connection) {
-        closeConnectionPsychically(connection);
+        if (ownsConnection()) {
+            closeConnectionPsychically(connection);
+        }
     }
 
     default Connection getConnection() {
@@ -118,10 +141,11 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             throw new MandatoryWhere();
         }
         Connection conn = null;
+        boolean commit = false;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         try {
             conn = getConnection();
-            if (transaction) {
+            if (transaction && ownsConnection()) {
                 conn.setAutoCommit(false);
             }
             if (query.getEntity() != null) query.getEntity().beforeDelete(this);
@@ -130,12 +154,13 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             int rv = getResultSetReader().execute(sqlQuery, query.getIdentifierStorage().getBoundParameters(), conn, this);
             if (query.getEntity() != null) query.getEntity().afterDelete(this);
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
+            commit = true;
             return rv;
         } catch (SQLException e) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
             throw new DaobabSQLException(e);
         } finally {
-            finalConnectionClose(conn, transaction);
+            finalConnectionClose(conn, transaction, commit);
         }
     }
 
@@ -145,10 +170,11 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             throw new MandatoryWhere();
         }
         Connection conn = null;
+        boolean commit = false;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         try {
             conn = getConnection();
-            if (transaction) {
+            if (transaction && ownsConnection()) {
                 conn.setAutoCommit(false);
             }
             if (query.getEntity() != null) query.getEntity().beforeUpdate(this);
@@ -157,12 +183,13 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             int rv = getResultSetReader().executeUpdate(q, conn);
             if (query.getEntity() != null) query.getEntity().afterUpdate(this);
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
+            commit = true;
             return rv;
         } catch (SQLException e) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
             throw new DaobabSQLException(e);
         } finally {
-            finalConnectionClose(conn, transaction);
+            finalConnectionClose(conn, transaction, commit);
         }
     }
 
@@ -171,10 +198,11 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
         getAccessProtector().validateEntityAllowedFor(query.getEntityName(), OperationType.INSERT);
         Connection conn = null;
         PrimaryKey pk = null;
+        boolean commit = false;
         if (isStatisticCollectingEnabled()) getStatisticCollector().send(query);
         try {
             conn = getConnection();
-            if (transaction) {
+            if (transaction && ownsConnection()) {
                 conn.setAutoCommit(false);
             }
             if (query.isPkResolved()) {
@@ -204,20 +232,66 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
 
             query.getEntity().afterInsert(this);
             if (isStatisticCollectingEnabled()) getStatisticCollector().received(query, 1);
+            commit = true;
             return (E) pk;
         } catch (SQLException e) {
             if (isStatisticCollectingEnabled()) getStatisticCollector().error(query, e);
             throw new DaobabSQLException(e);
         } finally {
-            finalConnectionClose(conn, transaction);
+            finalConnectionClose(conn, transaction, commit);
         }
     }
 
     default void finalConnectionClose(Connection conn, boolean transaction) {
+        finalConnectionClose(conn, transaction, true);
+    }
+
+    /**
+     * Runs the delete under the requested {@link Propagation}. Defaulted here so a plain target and an
+     * {@link io.daobab.target.database.transaction.OpenedTransactionDataBaseTarget} resolve the propagation
+     * against themselves - an open transaction reports {@link #isTransactionActive()}, so the work stays on its
+     * connection instead of being handed to a fresh one.
+     */
+    @Override
+    default <E extends Entity> int delete(DataBaseQueryDelete<E> query, Propagation propagation) {
+        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).delete(query, transaction));
+    }
+
+    /** Runs the update under the requested {@link Propagation}. See {@link #delete(DataBaseQueryDelete, Propagation)}. */
+    @Override
+    default <E extends Entity> int update(DataBaseQueryUpdate<E> query, Propagation propagation) {
+        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).update(query, transaction));
+    }
+
+    /** Runs the insert under the requested {@link Propagation}. See {@link #delete(DataBaseQueryDelete, Propagation)}. */
+    @Override
+    default <E extends Entity> E insert(DataBaseQueryInsert<E> query, Propagation propagation) {
+        return handleTransactionalTarget(this, propagation, (target, transaction) -> ((QueryDataBaseHandler) target).insert(query, transaction));
+    }
+
+    /**
+     * Ends the work done on the connection: a transactional call is committed when {@code commit} is set and
+     * rolled back otherwise, and the connection is closed either way. A statement that threw must never be
+     * committed, so the callers pass {@code false} whenever the operation did not run to its end.
+     *
+     * @param conn        the connection to finish with, may be {@code null}
+     * @param transaction whether the operation ran inside a transaction of its own
+     * @param commit      {@code true} to commit that transaction, {@code false} to roll it back
+     */
+    default void finalConnectionClose(Connection conn, boolean transaction, boolean commit) {
+        if (!ownsConnection()) {
+            //the connection is borrowed from an open transaction: that transaction decides when to commit and
+            //when to close. A failed statement simply propagates, leaving the decision to the transaction owner.
+            return;
+        }
         if (conn != null) {
             try {
                 if (transaction) {
-                    conn.commit();
+                    if (commit) {
+                        conn.commit();
+                    } else {
+                        conn.rollback();
+                    }
                 }
                 if (!conn.isClosed()) conn.close();
 
@@ -648,9 +722,7 @@ public interface DataBaseTargetLogic extends QueryResolverTransmitter, QueryTarg
             conn = getConnection();
             return function.apply(functionInput, conn);
         } finally {
-            if (!(this instanceof OpenTransactionDataBaseTargetImpl)) {
-                ConnectionGateway.closeConnectionIfOpened(conn);
-            }
+            closeConnection(conn);
         }
     }
 

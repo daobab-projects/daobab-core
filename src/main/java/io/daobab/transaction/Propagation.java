@@ -19,7 +19,10 @@ public enum Propagation {
     /**
      * Execute within a nested transaction if a current transaction exists, behave like PROPAGATION_REQUIRED else.
      * <p>
-     * Start a nested transaction if a transaction exists, start a new transaction otherwise.
+     * Start a nested transaction if a transaction exists, start a new transaction otherwise. The nested
+     * transaction is a JDBC {@link java.sql.Savepoint} on the enclosing transaction's connection: failing work
+     * is rolled back to that savepoint only, so the enclosing transaction stays open and keeps everything it
+     * did before, and the final commit is still its own decision.
      */
     NESTED,
 
@@ -61,6 +64,12 @@ public enum Propagation {
     public TransactionIndicator mayBeProceeded(Target target) {
         if (target == null) {
             throw new MandatoryTargetException();
+        }
+
+        if (this == NESTED) {
+            //a nested transaction needs a transaction to nest into: it becomes a savepoint inside the open one,
+            //and with nothing to nest into NESTED behaves exactly like REQUIRED
+            return target.isTransactionActive() ? GO_AHEAD_NESTED : START_NEW_JUST_FOR_IT;
         }
 
         if ((this == MANDATORY || this == SUPPORTS || this == REQUIRED) && target.isTransactionActive()) {

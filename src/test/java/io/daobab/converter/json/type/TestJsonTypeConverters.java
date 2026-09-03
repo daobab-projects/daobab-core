@@ -462,5 +462,24 @@ class TestJsonTypeConverters {
         assertConverterType(Currency.class, JsonCurrencyConverter.class);
     }
 
+    @Test
+    void stringEscapesEveryControlCharacter() {
+        //a raw character below 0x20 is not valid inside a JSON string, so the ones without a short escape
+        //have to come out as \\uXXXX
+        assertEquals("\"a\\u0000b\\u001fc\"", toJsonString(new JsonStringConverter(), "a\u0000b\u001fc"));
+        assertEquals("a\u0000b\u001fc", new JsonStringConverter().fromJson("a\\u0000b\\u001fc"));
+    }
+
+    @Test
+    void stringRejectsANonHexUnicodeEscape() {
+        assertThrows(DaobabException.class, () -> new JsonStringConverter().fromJson("\\u00zz"));
+    }
+
+    @Test
+    void characterEscapesAControlCharacter() {
+        assertEquals("\"\\u0001\"", toJsonString(new JsonCharacterConverter(), '\u0001'));
+        assertEquals(Character.valueOf('\u0001'), new JsonCharacterConverter().fromJson("\\u0001"));
+    }
+
     private enum Color {RED, GREEN}
 }
