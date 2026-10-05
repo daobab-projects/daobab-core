@@ -19,13 +19,17 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DatabaseConverterManager {
 
     private final DataBaseTarget target;
-    private final Map<String, Optional<DatabaseTypeConverter<?, ?>>> cache = new HashMap<>();
-    private final Map<String, DatabaseTypeConverter<?, ?>> columnConverters = new HashMap<>();
-    private final Map<Class<?>, DatabaseTypeConverter<?, ?>> typeConverters = new HashMap<>();
+    // One manager is shared by every thread using the target, and getConverter() fills the cache
+    // lazily. With plain HashMaps two threads hitting a not-yet-cached column at the same time met
+    // inside computeIfAbsent and one of them got ConcurrentModificationException.
+    private final Map<String, Optional<DatabaseTypeConverter<?, ?>>> cache = new ConcurrentHashMap<>();
+    private final Map<String, DatabaseTypeConverter<?, ?>> columnConverters = new ConcurrentHashMap<>();
+    private final Map<Class<?>, DatabaseTypeConverter<?, ?>> typeConverters = new ConcurrentHashMap<>();
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public DatabaseConverterManager(DataBaseTarget target) {
@@ -138,13 +142,23 @@ public class DatabaseConverterManager {
 
 
     public <F> DatabaseConverterManager setColumnConverter(Column<?, F, ?> column, DatabaseTypeConverter<F, ?> typeConverter) {
-        columnConverters.put(target.getEntityName(column.entityClass()) + column.getFieldName(), typeConverter);
-        cache.put(target.getEntityName(column.entityClass()) + column.getFieldName(), Optional.ofNullable(typeConverter));
+        String key = target.getEntityName(column.entityClass()) + column.getFieldName();
+        // ConcurrentHashMap does not accept null values - a null converter means "no column override".
+        if (typeConverter == null) {
+            columnConverters.remove(key);
+        } else {
+            columnConverters.put(key, typeConverter);
+        }
+        cache.put(key, Optional.ofNullable(typeConverter));
         return this;
     }
 
     public <F> DatabaseConverterManager registerTypeConverter(Class<?> type, DatabaseTypeConverter<F, ?> typeConverter) {
-        typeConverters.put(type, typeConverter);
+        if (typeConverter == null) {
+            typeConverters.remove(type);
+        } else {
+            typeConverters.put(type, typeConverter);
+        }
         cache.clear();
         return this;
     }

@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -44,11 +44,13 @@ public abstract class BaseTarget implements Target, StatisticCollectorProvider, 
     private boolean statisticEnabled = false;
     private AccessProtector accessProtector;
 
-    private final Map<Class<?>, String> entityNameCache = new HashMap<>();
+    // Concurrent: filled lazily by whichever thread queries an entity first (see getConverter note
+    // in DatabaseConverterManager) - a plain HashMap threw ConcurrentModificationException under load.
+    private final Map<Class<?>, String> entityNameCache = new ConcurrentHashMap<>();
 
     private final JsonConverterManager jsonConverterManager = JsonConverterManager.INSTANCE;
 
-    private final Map<Class<? extends ColumnsProvider>, List<TableColumn>> columnsCache = new HashMap<>();
+    private final Map<Class<? extends ColumnsProvider>, List<TableColumn>> columnsCache = new ConcurrentHashMap<>();
 
     protected BaseTarget() {
         accessProtector = new BasicAccessProtector(this);
