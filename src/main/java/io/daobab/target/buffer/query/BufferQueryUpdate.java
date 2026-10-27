@@ -61,7 +61,8 @@ public final class BufferQueryUpdate<E extends Entity> extends BufferQueryBase<E
 
     @SuppressWarnings("unchecked")
     public BufferQueryUpdate(BufferQueryTarget target, SetFields setFields) {
-        if (setFields == null || setFields.getCounter() == 0) {
+        // getCounter() is the next free pointer and starts at 1, so an empty set is size() == 0.
+        if (setFields == null || setFields.size() == 0) {
             throw new AtLeastOneColumnToUpdateIsRequired();
         }
         init(target, target.getEntityName(setFields.getFieldForPointer(1).entityClass()));

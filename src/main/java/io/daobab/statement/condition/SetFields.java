@@ -8,6 +8,7 @@ import io.daobab.model.TableColumn;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
 
 
 /**
@@ -133,9 +134,11 @@ public class SetFields {
 
     /** The value assigned to the given column (matched by entity and field name), or {@code null}. */
     public Object getValueForColumn(Column<?, ?, ?> col) {
-        for (int i = 0; i < counter; i++) {
+        // Assignments occupy the pointers 1 .. counter - 1; pointer 0 is never used.
+        for (int i = 1; i < counter; i++) {
             Column<?, ?, ?> column = (Column<?, ?, ?>) hash.get(FIELD + i);
-            if (col.entityClass().equals(column.entityClass()) && col.getFieldName().equals(column.getFieldName())) {
+            if (column != null && Objects.equals(col.entityClass(), column.entityClass())
+                    && col.getFieldName().equals(column.getFieldName())) {
                 return hash.get(VALUE + i);
             }
         }
